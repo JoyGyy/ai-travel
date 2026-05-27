@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--c-paper);
+  color: var(--c-ink);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+:root {
+  --c-terracotta: #c2724b;
+  --c-terracotta-light: #d4916d;
+  --c-sand: #f5e6d3;
+  --c-cream: #fdf6ec;
+  --c-forest: #1b4332;
+  --c-forest-light: #2d6a4f;
+  --c-gold: #d4a574;
+  --c-gold-light: #e8c9a0;
+  --c-ink: #2d2a26;
+  --c-ink-light: #6b6560;
+  --c-paper: #faf6f1;
+  --c-paper-dark: #f0e8dd;
+  --c-white: #fffcf8;
+
+  --font-serif: 'Noto Serif SC', 'Songti SC', Georgia, serif;
+  --font-sans: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --adm-color-primary: #c2724b;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+}

@@ -12,24 +12,35 @@ const router = Router()
 
 /**
  * 根据用户消息和 RAG 上下文生成 Mock 回复
- * @param {string} message - 用户消息
- * @param {object} ragResult - RAG 检索结果
- * @returns {string} 回复内容
  */
 function getMockResponse(message, ragResult) {
   if (ragResult) {
     const { attractions, food, bestSeason, transportation } = ragResult
-    const isFood = message.includes('美食') || message.includes('吃')
-    const isTransport = message.includes('交通') || message.includes('怎么去') || message.includes('怎么走')
+    const city = ragResult.city || '该城市'
+    const isFood = /美食|吃|餐厅|小吃/.test(message)
+    const isTransport = /交通|怎么去|怎么走|机场|高铁|火车站/.test(message)
+    const isPlan = /天|日|行程|预算|规划|攻略|玩/.test(message) || (/去/.test(message) && !/^去[^\s]{2,4}$/.test(message.trim()))
+    const allCitySpots = require('../knowledge/attractions.json').find(c => c.city === city)?.attractions || []
+    const isSpecificSpot = allCitySpots.find(a => message.includes(a.name))
 
+    if (isSpecificSpot) {
+      return `**${isSpecificSpot.name}**\n\n${isSpecificSpot.description || ''}\n\n门票：${isSpecificSpot.ticket ? isSpecificSpot.ticket + '元' : '免费'}\n开放时间：${isSpecificSpot.openTime || '全天'}\n建议游玩时长：${isSpecificSpot.duration || '2-3小时'}\n交通：${isSpecificSpot.transportation || '公共交通可达'}\n\n建议提前规划好行程，避免高峰期。`
+    }
     if (isFood) {
-      return `${ragResult.city || '该城市'}特色美食推荐：\n\n${food.map((f, i) => `${i + 1}. ${f}`).join('\n')}\n\n建议去当地人常去的老店品尝，味道更正宗。`
+      return `${city}特色美食推荐：\n\n${food.map((f, i) => `${i + 1}. ${f}`).join('\n')}\n\n建议去当地人常去的老店品尝，味道更正宗。`
     }
     if (isTransport) {
-      return `${ragResult.city || '该城市'}交通指南：\n\n${transportation || '建议乘坐公共交通，方便快捷。景区之间可乘坐地铁或公交。'}\n\n最佳旅行季节：${bestSeason || '春秋两季'}。`
+      return `${city}交通指南：\n\n${transportation || '建议乘坐公共交通，方便快捷。景区之间可乘坐地铁或公交。'}\n\n最佳旅行季节：${bestSeason || '春秋两季'}。`
+    }
+    if (isPlan) {
+      const days = message.match(/(\d)\s*[天日]/)?.[1]
+      const budget = message.match(/(\d+)\s*(元|块|¥|￥)/)?.[1]
+      const dayText = days ? `${days}天` : '3天'
+      const spotList = attractions.slice(0, days ? Number(days) * 2 : 6)
+      return `为您规划${city}${dayText}行程：\n\n${spotList.map((a, i) => `**第${Math.floor(i / 2) + 1}${i % 2 === 0 ? '上午' : '下午'}** — ${a.name}（${a.duration || '2-3小时'}）`).join('\n')}\n\n推荐美食：${food.slice(0, 3).join('、')}${budget ? `\n预算参考：${budget}元足够${dayText}深度游` : ''}\n最佳季节：${bestSeason || '春秋两季'}。\n\n想要更详细的行程安排，可以使用首页的「行程规划」功能！`
     }
     const topSpots = attractions.slice(0, 5)
-    return `为您推荐${ragResult.city || ''}热门景点：\n\n${topSpots.map((a, i) => `${i + 1}. **${a.name}** — ${a.description?.slice(0, 30) || ''}${a.ticket || ''}`).join('\n')}\n\n推荐美食：${food.slice(0, 3).join('、')}。\n最佳季节：${bestSeason || '春秋两季'}。\n\n需要更详细的行程规划吗？`
+    return `${city}热门景点推荐：\n\n${topSpots.map((a, i) => `${i + 1}. **${a.name}** — ${a.description || ''}${a.ticket && a.ticket !== 0 ? `（门票${a.ticket}元）` : '（免费）'}`).join('\n')}\n\n推荐美食：${food.slice(0, 3).join('、')}。\n最佳季节：${bestSeason || '春秋两季'}。\n\n需要更详细的行程规划吗？`
   }
 
   if (message.includes('保险')) {
@@ -61,7 +72,7 @@ router.post('/chat', async (req, res) => {
     let ragResult = null
     const cities = getAllCities()
 
-    // 检查消息中是否包含城市名
+    // 先检查是否包含城市名
     for (const city of cities) {
       if (message.includes(city)) {
         const result = retrieve(city, [], city)
@@ -69,6 +80,21 @@ router.post('/chat', async (req, res) => {
           ragResult = { ...result, city }
           contextInfo = `\n\n参考信息：${city}的热门景点有${result.attractions.slice(0, 5).map(a => a.name).join('、')}。推荐美食：${result.food.join('、')}。最佳季节：${result.bestSeason}。`
           ragSources = result.attractions.slice(0, 5).map(a => a.name)
+          break
+        }
+      }
+    }
+
+    // 如果没匹配到城市，检查是否提到景点名
+    if (!ragResult) {
+      const attractionsDB = require('../knowledge/attractions.json')
+      for (const cityData of attractionsDB) {
+        const found = cityData.attractions.find(a => message.includes(a.name))
+        if (found) {
+          const result = retrieve(cityData.city, [], message)
+          ragResult = { ...result, city: cityData.city }
+          contextInfo = `\n\n参考信息：${found.name}位于${cityData.city}。${cityData.city}的热门景点还有${result.attractions.filter(a => a.name !== found.name).slice(0, 4).map(a => a.name).join('、')}。`
+          ragSources = [found.name, ...result.attractions.filter(a => a.name !== found.name).slice(0, 4).map(a => a.name)]
           break
         }
       }

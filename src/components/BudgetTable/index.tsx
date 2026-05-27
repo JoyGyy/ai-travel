@@ -24,7 +24,7 @@ const labels: Record<keyof BudgetBreakdown, string> = {
  */
 export function BudgetTable({ data }: BudgetTableProps) {
   return (
-    <div className="px-4 mb-2">
+    <div className="px-4 mb-2 md:px-8">
       {/* 标题区域 */}
       <div className="flex items-center gap-2 py-2 px-1" style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', fontWeight: 600, color: 'var(--c-ink)' }}>
         <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--c-terracotta)' }} />

@@ -40,7 +40,7 @@ export default function Profile() {
     <div className="min-h-screen" style={{ background: 'var(--c-paper)' }}>
       {/* Hero 区域 - 用户头像和昵称 */}
       <div
-        className="relative px-6 pt-11 pb-12 text-center overflow-hidden"
+        className="relative px-6 pt-11 pb-12 text-center overflow-hidden md:px-12 md:pt-16 md:pb-16"
         style={{ background: 'linear-gradient(160deg, var(--c-forest) 0%, #2d6a4f 100%)' }}
       >
         {/* 装饰性圆形 */}
@@ -61,7 +61,7 @@ export default function Profile() {
       </div>
 
       {/* 功能列表区域 */}
-      <div className="px-4 -mt-5 relative z-10">
+      <div className="px-4 -mt-5 relative z-10 md:px-8 md:max-w-lg md:mx-auto">
         {/* 我的服务卡片 */}
         <div className="rounded-[18px] mb-3 overflow-hidden" style={{ background: 'var(--c-white)', boxShadow: '0 2px 12px rgba(45, 42, 38, 0.05)' }}>
           <div className="flex items-center gap-2 px-[18px] pt-4 pb-1 text-[13px] font-semibold" style={{ color: 'var(--c-ink-light)' }}>

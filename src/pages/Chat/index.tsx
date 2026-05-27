@@ -90,7 +90,7 @@ export default function Chat() {
     <div className="flex flex-col min-h-screen" style={{ background: 'var(--c-paper)' }}>
       {/* 页面头部 */}
       <div
-        className="relative overflow-hidden px-6 pt-6 pb-8"
+        className="relative overflow-hidden px-6 pt-6 pb-8 md:px-12 md:pt-8 md:pb-10"
         style={{ background: 'linear-gradient(160deg, var(--c-forest) 0%, #2d6a4f 100%)' }}
       >
         {/* 装饰性圆形 */}
@@ -111,7 +111,7 @@ export default function Chat() {
       </div>
 
       {/* 消息列表区域 */}
-      <div ref={messagesRef} className="flex-1 overflow-y-auto px-4 pt-5 -mt-3 relative z-10">
+      <div ref={messagesRef} className="flex-1 overflow-y-auto px-4 pt-5 -mt-3 relative z-10 md:px-8">
         {/* 渲染所有消息 */}
         {messages.map((msg, i) => (
           <ChatBubble key={i} role={msg.role} content={msg.content} />
@@ -147,7 +147,7 @@ export default function Chat() {
             </div>
             {/* 快速问题列表 */}
             <p className="text-sm font-semibold mb-3 pl-1" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-ink-light)' }}>试试这样问</p>
-            <div className="flex flex-col gap-2.5">
+            <div className="flex flex-col gap-2.5 md:flex-row md:gap-3">
               {quickQuestions.map((q, i) => (
                 <button
                   key={q}
@@ -169,8 +169,8 @@ export default function Chat() {
       </div>
 
       {/* 底部输入栏 */}
-      <div className="px-4 py-2.5 pb-[18px] border-t" style={{ background: 'var(--c-white)', borderColor: 'var(--c-paper-dark)' }}>
-        <div className="flex items-center gap-2.5">
+      <div className="px-4 py-2.5 pb-[18px] border-t md:px-8" style={{ background: 'var(--c-white)', borderColor: 'var(--c-paper-dark)' }}>
+        <div className="flex items-center gap-2.5 md:max-w-2xl md:mx-auto">
           {/* 消息输入框 */}
           <input
             type="text"

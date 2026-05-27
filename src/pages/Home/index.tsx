@@ -53,7 +53,7 @@ export default function Home() {
     <div className="min-h-screen" style={{ background: 'var(--c-paper)' }}>
       {/* Hero 区域 - 展示标题和副标题 */}
       <div
-        className="relative overflow-hidden px-6 pb-14 pt-12"
+        className="relative overflow-hidden px-6 pb-14 pt-12 md:px-12 md:pb-20 md:pt-16"
         style={{ background: 'linear-gradient(160deg, var(--c-forest) 0%, #1b4332 40%, #2d6a4f 100%)' }}
       >
         {/* 装饰性圆形背景 */}
@@ -76,7 +76,7 @@ export default function Home() {
       </div>
 
       {/* 表单区域 */}
-      <div className="px-4 -mt-7 relative z-10" onClick={() => showDropdown && setShowDropdown(false)}>
+      <div className="px-4 -mt-7 relative z-10 md:px-8" onClick={() => showDropdown && setShowDropdown(false)}>
         <div className="rounded-[20px] overflow-hidden" style={{ background: 'var(--c-white)', boxShadow: '0 4px 24px rgba(45, 42, 38, 0.08)' }}>
           {/* 表单标题 */}
           <div className="flex items-center gap-2 pt-[18px] px-5 text-[15px] font-semibold" style={{ color: 'var(--c-ink)' }}>
@@ -171,7 +171,7 @@ export default function Home() {
       </div>
 
       {/* 热门城市推荐区域 */}
-      <div className="px-4 py-7 pb-8">
+      <div className="px-4 py-7 pb-8 md:px-8 md:py-10">
         {/* 标题 - 带装饰线 */}
         <div className="flex items-center gap-4 mb-4">
           <div className="flex-1 h-px" style={{ background: 'var(--c-paper-dark)' }} />
@@ -179,7 +179,7 @@ export default function Home() {
           <div className="flex-1 h-px" style={{ background: 'var(--c-paper-dark)' }} />
         </div>
         {/* 热门城市标签列表 */}
-        <div className="flex flex-wrap gap-2.5">
+        <div className="flex flex-wrap gap-2.5 md:gap-3.5">
           {hotCities.map(name => (
             <button
               key={name}

@@ -41,7 +41,7 @@ export default function History() {
   return (
     <div className="min-h-screen" style={{ background: 'var(--c-paper)' }}>
       {/* 页面头部 */}
-      <div className="px-6 pt-6 pb-8" style={{ background: 'linear-gradient(160deg, var(--c-forest) 0%, #2d6a4f 100%)' }}>
+      <div className="px-6 pt-6 pb-8 md:px-12 md:pt-8 md:pb-10" style={{ background: 'linear-gradient(160deg, var(--c-forest) 0%, #2d6a4f 100%)' }}>
         <p className="mb-2 text-[10px] font-semibold tracking-[3px]" style={{ color: 'var(--c-gold-light)' }}>TRAVEL HISTORY</p>
         <h1 className="mb-1.5 text-[26px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-cream)' }}>历史记录</h1>
         <p className="text-[13px] font-light" style={{ color: 'rgba(253, 246, 236, 0.7)' }}>你的每一次旅程</p>
@@ -60,7 +60,7 @@ export default function History() {
 
       {/* 历史记录列表 */}
       {records.length > 0 && (
-        <div className="flex flex-col gap-3 p-4">
+        <div className="flex flex-col gap-3 p-4 md:p-6 md:grid md:grid-cols-2 md:gap-5">
           {records.map((record, i) => (
             <div key={i} className="rounded-2xl overflow-hidden" style={{ background: 'var(--c-white)', boxShadow: '0 2px 8px rgba(45, 42, 38, 0.05)' }}>
               {/* 记录卡片头部 - 点击展开/收起 */}

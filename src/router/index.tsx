@@ -84,14 +84,10 @@ function Layout() {
         </div>
       )}
 
-      {/* 内容区域 - 限宽 1200px 居中 */}
-      <div className="mx-auto" style={{ maxWidth: '1200px' }}>
-        {/* Suspense 提供加载状态，当 lazy 组件加载时显示 fallback 内容 */}
-        <Suspense fallback={<div className="flex items-center justify-center h-screen" style={{ color: 'var(--c-ink-light)' }}>加载中...</div>}>
-          {/* Outlet 渲染匹配的子路由组件 */}
-          <Outlet />
-        </Suspense>
-      </div>
+      {/* 内容区域 - 不限宽，由各页面自行控制 Hero 全宽 + 内容限宽 */}
+      <Suspense fallback={<div className="flex items-center justify-center h-screen" style={{ color: 'var(--c-ink-light)' }}>加载中...</div>}>
+        <Outlet />
+      </Suspense>
 
       {/* 移动端底部导航栏 - PC 端隐藏 */}
       {showTabbar && (

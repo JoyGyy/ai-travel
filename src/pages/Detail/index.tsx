@@ -123,9 +123,9 @@ export default function Detail() {
 
   return (
     <div style={{ background: 'var(--c-paper)', paddingBottom: '24px' }}>
-      {/* Hero 区域 - 显示城市名称和行程概览 */}
+      {/* Hero 区域 - 全宽展示 */}
       <div
-        className="relative px-6 pt-5 pb-9 md:px-12 md:pt-8 md:pb-14"
+        className="relative px-6 pt-5 pb-9 md:pt-8 md:pb-14"
         style={{ background: 'linear-gradient(160deg, var(--c-forest) 0%, #2d6a4f 100%)' }}
       >
         {/* 返回按钮 */}
@@ -146,6 +146,8 @@ export default function Detail() {
         </p>
       </div>
 
+      {/* 内容区域 - 限宽居中 */}
+      <div className="md:max-w-2xl md:mx-auto">
       {/* 加载状态 - Agent 步骤可视化 */}
       {isLoading && (
         <div className="pt-5">
@@ -279,6 +281,7 @@ export default function Detail() {
           </div>
         </>
       )}
+      </div>
     </div>
   )
 }

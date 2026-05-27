@@ -40,7 +40,7 @@ export default function Profile() {
     <div className="min-h-screen" style={{ background: 'var(--c-paper)' }}>
       {/* Hero 区域 - 用户头像和昵称 */}
       <div
-        className="relative px-6 pt-11 pb-12 text-center overflow-hidden md:px-12 md:pt-16 md:pb-16"
+        className="relative px-6 pt-11 pb-12 text-center overflow-hidden md:pt-16 md:pb-16"
         style={{ background: 'linear-gradient(160deg, var(--c-forest) 0%, #2d6a4f 100%)' }}
       >
         {/* 装饰性圆形 */}

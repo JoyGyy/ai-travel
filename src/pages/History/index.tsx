@@ -41,7 +41,7 @@ export default function History() {
   return (
     <div className="min-h-screen" style={{ background: 'var(--c-paper)' }}>
       {/* 页面头部 */}
-      <div className="px-6 pt-6 pb-8 md:px-12 md:pt-8 md:pb-10" style={{ background: 'linear-gradient(160deg, var(--c-forest) 0%, #2d6a4f 100%)' }}>
+      <div className="px-6 pt-6 pb-8 md:pt-8 md:pb-10" style={{ background: 'linear-gradient(160deg, var(--c-forest) 0%, #2d6a4f 100%)' }}>
         <p className="mb-2 text-[10px] font-semibold tracking-[3px]" style={{ color: 'var(--c-gold-light)' }}>TRAVEL HISTORY</p>
         <h1 className="mb-1.5 text-[26px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-cream)' }}>历史记录</h1>
         <p className="text-[13px] font-light" style={{ color: 'rgba(253, 246, 236, 0.7)' }}>你的每一次旅程</p>

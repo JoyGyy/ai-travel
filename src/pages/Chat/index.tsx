@@ -90,7 +90,7 @@ export default function Chat() {
     <div className="flex flex-col min-h-screen" style={{ background: 'var(--c-paper)' }}>
       {/* 页面头部 */}
       <div
-        className="relative overflow-hidden px-6 pt-6 pb-8 md:px-12 md:pt-8 md:pb-10"
+        className="relative overflow-hidden px-6 pt-6 pb-8 md:pt-8 md:pb-10"
         style={{ background: 'linear-gradient(160deg, var(--c-forest) 0%, #2d6a4f 100%)' }}
       >
         {/* 装饰性圆形 */}
@@ -110,8 +110,8 @@ export default function Chat() {
         </div>
       </div>
 
-      {/* 消息列表区域 */}
-      <div ref={messagesRef} className="flex-1 overflow-y-auto px-4 pt-5 -mt-3 relative z-10 md:px-8">
+      {/* 消息列表区域 - 限宽居中 */}
+      <div ref={messagesRef} className="flex-1 overflow-y-auto px-4 pt-5 -mt-3 relative z-10 md:max-w-2xl md:mx-auto md:px-6">
         {/* 渲染所有消息 */}
         {messages.map((msg, i) => (
           <ChatBubble key={i} role={msg.role} content={msg.content} />

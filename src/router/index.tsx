@@ -69,7 +69,7 @@ function Layout() {
   const showTabbar = tabRoutes.includes(location.pathname)
 
   return (
-    <div className={`min-h-screen ${showTabbar ? 'pb-[50px] md:pb-0' : ''}`} style={{ background: 'var(--c-paper)' }}>
+    <div className={`flex flex-col h-screen ${showTabbar ? 'pb-[50px] md:pb-0' : ''}`} style={{ background: 'var(--c-paper)' }}>
       {/* PC 端顶部导航栏 - 仅在 md 及以上屏幕显示 */}
       {showTabbar && (
         <div className="hidden md:block sticky top-0 z-50" style={{ background: 'var(--c-white)', borderBottom: '1px solid var(--c-paper-dark)' }}>

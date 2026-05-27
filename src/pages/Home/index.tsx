@@ -50,7 +50,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--c-paper)' }}>
+    <div className="flex-1 overflow-y-auto" style={{ background: 'var(--c-paper)' }}>
       {/* Hero 区域 - 全宽展示标题和副标题 */}
       <div
         className="relative overflow-hidden px-6 pb-14 pt-12 md:pb-20 md:pt-16"

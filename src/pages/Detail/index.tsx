@@ -122,7 +122,7 @@ export default function Detail() {
   }
 
   return (
-    <div style={{ background: 'var(--c-paper)', paddingBottom: '24px' }}>
+    <div className="flex-1 overflow-y-auto" style={{ background: 'var(--c-paper)', paddingBottom: '24px' }}>
       {/* Hero 区域 - 全宽展示 */}
       <div
         className="relative px-6 pt-5 pb-9 md:pt-8 md:pb-14"

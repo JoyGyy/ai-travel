@@ -87,7 +87,7 @@ export default function Chat() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ background: 'var(--c-paper)' }}>
+    <div className="flex flex-col h-full" style={{ background: 'var(--c-paper)' }}>
       {/* 页面头部 */}
       <div
         className="relative overflow-hidden px-6 pt-6 pb-8 md:pt-8 md:pb-10"

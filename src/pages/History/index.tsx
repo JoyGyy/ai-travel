@@ -39,7 +39,7 @@ export default function History() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--c-paper)' }}>
+    <div className="flex-1 overflow-y-auto" style={{ background: 'var(--c-paper)' }}>
       {/* 页面头部 */}
       <div className="px-6 pt-6 pb-8 md:pt-8 md:pb-10" style={{ background: 'linear-gradient(160deg, var(--c-forest) 0%, #2d6a4f 100%)' }}>
         <p className="mb-2 text-[10px] font-semibold tracking-[3px]" style={{ color: 'var(--c-gold-light)' }}>TRAVEL HISTORY</p>

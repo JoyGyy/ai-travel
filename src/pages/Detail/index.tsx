@@ -147,7 +147,7 @@ export default function Detail() {
       </div>
 
       {/* 内容区域 - 限宽居中 */}
-      <div className="md:max-w-2xl md:mx-auto">
+      <div className="md:max-w-4xl md:mx-auto">
       {/* 加载状态 - Agent 步骤可视化 */}
       {isLoading && (
         <div className="pt-5">
@@ -180,7 +180,7 @@ export default function Detail() {
         <>
           {/* 行程概览条 - 显示目的地、天数、预算 */}
           <div
-            className="flex items-center mx-4 -mt-5 px-5 py-4 relative z-10 rounded-2xl md:mx-8 md:px-8 md:py-5"
+            className="flex items-center mx-4 -mt-5 px-5 py-4 relative z-10 rounded-2xl md:mx-auto md:px-8 md:py-5 md:max-w-4xl"
             style={{ background: 'var(--c-white)', boxShadow: '0 2px 12px rgba(45, 42, 38, 0.06)' }}
           >
             <div className="flex-1 flex flex-col items-center gap-1">
@@ -210,7 +210,7 @@ export default function Detail() {
             <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--c-terracotta)' }} />
             <span>每日行程</span>
           </div>
-          <div className="mx-4 rounded-2xl overflow-hidden md:mx-8" style={{ background: 'var(--c-white)' }}>
+          <div className="mx-4 rounded-2xl overflow-hidden md:mx-auto md:max-w-4xl md:px-0" style={{ background: 'var(--c-white)' }}>
             {itinerary.map(item => (
               <div key={item.day} className="border-b last:border-b-0" style={{ borderColor: 'var(--c-paper-dark)' }}>
                 {/* 日期标题 - 点击展开/收起 */}
@@ -251,7 +251,7 @@ export default function Detail() {
                 <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--c-terracotta)' }} />
                 <span>温馨提示</span>
               </div>
-              <div className="mx-4 p-4 rounded-2xl md:mx-8 md:p-6" style={{ background: 'var(--c-white)', boxShadow: '0 1px 4px rgba(45, 42, 38, 0.04)' }}>
+              <div className="mx-4 p-4 rounded-2xl md:mx-auto md:max-w-4xl md:p-6" style={{ background: 'var(--c-white)', boxShadow: '0 1px 4px rgba(45, 42, 38, 0.04)' }}>
                 {tips.map((tip, i) => (
                   <div key={i} className="flex items-start gap-2.5 text-[13px] leading-relaxed py-1.5" style={{ color: 'var(--c-ink-light)' }}>
                     <span className="w-[5px] h-[5px] rounded-full mt-[7px] shrink-0" style={{ background: 'var(--c-gold)' }} />
@@ -263,7 +263,7 @@ export default function Detail() {
           )}
 
           {/* 操作按钮区域 */}
-          <div className="flex flex-col gap-2.5 px-4 pt-5 md:px-8 md:max-w-lg md:mx-auto">
+          <div className="flex flex-col gap-2.5 px-4 pt-5 md:px-8 md:max-w-4xl md:mx-auto">
             <div className="flex gap-2.5">
               {/* 取消推荐按钮 */}
               <button onClick={cancelPlan} className="flex-1 h-[46px] rounded-full text-[15px] font-semibold border-none cursor-pointer" style={{ background: 'var(--c-paper-dark)', color: 'var(--c-ink-light)' }}>

@@ -111,7 +111,7 @@ export default function Chat() {
       </div>
 
       {/* 消息列表区域 - 限宽居中 */}
-      <div ref={messagesRef} className="flex-1 overflow-y-auto px-4 pt-5 -mt-3 relative z-10 md:max-w-2xl md:mx-auto md:px-6">
+      <div ref={messagesRef} className="flex-1 overflow-y-auto px-4 pt-5 -mt-3 relative z-10 md:max-w-3xl md:mx-auto md:px-6">
         {/* 渲染所有消息 */}
         {messages.map((msg, i) => (
           <ChatBubble key={i} role={msg.role} content={msg.content} />
@@ -170,7 +170,7 @@ export default function Chat() {
 
       {/* 底部输入栏 */}
       <div className="px-4 py-2.5 pb-[18px] border-t md:px-8" style={{ background: 'var(--c-white)', borderColor: 'var(--c-paper-dark)' }}>
-        <div className="flex items-center gap-2.5 md:max-w-2xl md:mx-auto">
+        <div className="flex items-center gap-2.5 md:max-w-3xl md:mx-auto">
           {/* 消息输入框 */}
           <input
             type="text"

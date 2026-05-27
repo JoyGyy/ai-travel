@@ -61,7 +61,7 @@ export default function Profile() {
       </div>
 
       {/* 功能列表区域 */}
-      <div className="px-4 -mt-5 relative z-10 md:px-8 md:max-w-lg md:mx-auto">
+      <div className="px-4 -mt-5 relative z-10 md:px-8 md:max-w-2xl md:mx-auto">
         {/* 我的服务卡片 */}
         <div className="rounded-[18px] mb-3 overflow-hidden" style={{ background: 'var(--c-white)', boxShadow: '0 2px 12px rgba(45, 42, 38, 0.05)' }}>
           <div className="flex items-center gap-2 px-[18px] pt-4 pb-1 text-[13px] font-semibold" style={{ color: 'var(--c-ink-light)' }}>

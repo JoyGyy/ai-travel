@@ -76,7 +76,7 @@ export default function Home() {
       </div>
 
       {/* 表单区域 - 限宽居中 */}
-      <div className="px-4 -mt-7 relative z-10 md:max-w-xl md:mx-auto md:px-6" onClick={() => showDropdown && setShowDropdown(false)}>
+      <div className="px-4 -mt-7 relative z-10 md:max-w-3xl md:mx-auto md:px-6" onClick={() => showDropdown && setShowDropdown(false)}>
         <div className="rounded-[20px] overflow-hidden" style={{ background: 'var(--c-white)', boxShadow: '0 4px 24px rgba(45, 42, 38, 0.08)' }}>
           {/* 表单标题 */}
           <div className="flex items-center gap-2 pt-[18px] px-5 text-[15px] font-semibold" style={{ color: 'var(--c-ink)' }}>
@@ -171,7 +171,7 @@ export default function Home() {
       </div>
 
       {/* 热门城市推荐区域 - 限宽居中 */}
-      <div className="px-4 py-7 pb-8 md:max-w-xl md:mx-auto md:px-6 md:py-10">
+      <div className="px-4 py-7 pb-8 md:max-w-3xl md:mx-auto md:px-6 md:py-10">
         {/* 标题 - 带装饰线 */}
         <div className="flex items-center gap-4 mb-4">
           <div className="flex-1 h-px" style={{ background: 'var(--c-paper-dark)' }} />

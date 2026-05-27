@@ -60,7 +60,7 @@ export default function History() {
 
       {/* 历史记录列表 */}
       {records.length > 0 && (
-        <div className="flex flex-col gap-3 p-4 md:p-6 md:grid md:grid-cols-2 md:gap-5">
+        <div className="flex flex-col gap-3 p-4 md:p-6 md:grid md:grid-cols-2 md:gap-5 md:max-w-4xl md:mx-auto">
           {records.map((record, i) => (
             <div key={i} className="rounded-2xl overflow-hidden" style={{ background: 'var(--c-white)', boxShadow: '0 2px 8px rgba(45, 42, 38, 0.05)' }}>
               {/* 记录卡片头部 - 点击展开/收起 */}

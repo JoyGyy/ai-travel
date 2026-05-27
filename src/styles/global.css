@@ -1,12 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
-body {
-  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: var(--c-paper);
-  color: var(--c-ink);
+/* 将项目颜色映射到 Tailwind 主题 */
+@theme {
+  --color-primary: #c2724b;
+  --color-primary-light: #d4916d;
+  --color-sand: #f5e6d3;
+  --color-cream: #fdf6ec;
+  --color-forest: #1b4332;
+  --color-forest-light: #2d6a4f;
+  --color-gold: #d4a574;
+  --color-gold-light: #e8c9a0;
+  --color-ink: #2d2a26;
+  --color-ink-light: #6b6560;
+  --color-paper: #faf6f1;
+  --color-paper-dark: #f0e8dd;
+  --color-card: #fffcf8;
 }
 
 :root {
@@ -28,6 +37,19 @@ body {
   --font-sans: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
 
   --adm-color-primary: #c2724b;
+
+  /* 统一阴影 token */
+  --shadow-sm: 0 1px 4px rgba(45, 42, 38, 0.04);
+  --shadow-md: 0 2px 12px rgba(45, 42, 38, 0.06);
+  --shadow-lg: 0 4px 24px rgba(45, 42, 38, 0.08);
+}
+
+body {
+  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--c-paper);
+  color: var(--c-ink);
 }
 
 @keyframes spin {
@@ -39,15 +61,38 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 @keyframes bounce {
   0%, 60%, 100% { transform: translateY(0); }
   30% { transform: translateY(-4px); }
 }
 
-/* PC 端基础调整 */
-@media (min-width: 768px) {
-  body {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(194, 114, 75, 0.3); }
+  50% { box-shadow: 0 0 0 8px rgba(194, 114, 75, 0); }
+}
+
+@keyframes dotBounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+/* 选中文本颜色 */
+::selection {
+  background: rgba(194, 114, 75, 0.15);
+  color: var(--c-ink);
 }

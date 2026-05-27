@@ -131,13 +131,13 @@ export default function Detail() {
         {/* 返回按钮 */}
         <button
           onClick={() => navigate(-1)}
-          className="absolute top-3.5 left-4 w-9 h-9 rounded-full flex items-center justify-center border-none cursor-pointer"
+          className="absolute top-3.5 left-4 w-9 h-9 rounded-full flex items-center justify-center border-none cursor-pointer transition-all duration-200 hover:scale-110"
           style={{ background: 'rgba(255, 252, 248, 0.15)' }}
         >
           <LeftOutline style={{ color: 'var(--c-cream)', fontSize: '18px' }} />
         </button>
-        <p className="mt-2 mb-2 text-[11px] font-semibold tracking-[3px]" style={{ fontFamily: 'var(--font-sans)', color: 'var(--c-gold-light)' }}>ITINERARY</p>
-        <h1 className="mb-2 text-[32px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-cream)' }}>{city}</h1>
+        <p className="mt-2 mb-2 text-[11px] font-semibold tracking-[4px]" style={{ fontFamily: 'var(--font-sans)', color: 'var(--c-gold-light)' }}>ITINERARY</p>
+        <h1 className="mb-2 text-[32px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-cream)', textShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>{city}</h1>
         <p className="text-sm font-light" style={{ color: 'rgba(253, 246, 236, 0.7)' }}>
           {days}
           {' '}
@@ -180,8 +180,8 @@ export default function Detail() {
         <>
           {/* 行程概览条 - 显示目的地、天数、预算 */}
           <div
-            className="flex items-center mx-4 -mt-5 px-5 py-4 relative z-10 rounded-2xl md:mx-auto md:px-8 md:py-5 md:max-w-4xl"
-            style={{ background: 'var(--c-white)', boxShadow: '0 2px 12px rgba(45, 42, 38, 0.06)' }}
+            className="flex items-center mx-4 -mt-5 px-5 py-4 relative z-10 rounded-2xl md:mx-auto md:px-8 md:py-5 md:max-w-4xl transition-shadow duration-200"
+            style={{ background: 'var(--c-white)', boxShadow: 'var(--shadow-md)' }}
           >
             <div className="flex-1 flex flex-col items-center gap-1">
               <span className="text-[11px] font-medium" style={{ color: 'var(--c-ink-light)' }}>目的地</span>
@@ -207,7 +207,7 @@ export default function Detail() {
 
           {/* 每日行程列表 */}
           <div className="flex items-center gap-2 px-5 pt-6 pb-3" style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', fontWeight: 600, color: 'var(--c-ink)' }}>
-            <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--c-terracotta)' }} />
+            <div className="w-2 h-2 rounded-full" style={{ background: 'var(--c-terracotta)' }} />
             <span>每日行程</span>
           </div>
           <div className="mx-4 rounded-2xl overflow-hidden md:mx-auto md:max-w-4xl md:px-0" style={{ background: 'var(--c-white)' }}>
@@ -227,7 +227,7 @@ export default function Detail() {
                 >
                   <span className="text-sm font-medium" style={{ color: 'var(--c-ink)' }}>{item.date}</span>
                   {/* 展开/收起图标 */}
-                  <span className="text-xs transition-transform" style={{ color: '#999', transform: activeKeys.includes(String(item.day)) ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
+                  <span className="text-xs transition-transform duration-200" style={{ color: '#999', transform: activeKeys.includes(String(item.day)) ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
                 </button>
                 {/* 展开的行程详情 */}
                 {activeKeys.includes(String(item.day)) && (
@@ -248,10 +248,10 @@ export default function Detail() {
           {tips.length > 0 && (
             <div className="pb-2">
               <div className="flex items-center gap-2 px-5 pt-6 pb-3" style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', fontWeight: 600, color: 'var(--c-ink)' }}>
-                <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--c-terracotta)' }} />
+                <div className="w-2 h-2 rounded-full" style={{ background: 'var(--c-terracotta)' }} />
                 <span>温馨提示</span>
               </div>
-              <div className="mx-4 p-4 rounded-2xl md:mx-auto md:max-w-4xl md:p-6" style={{ background: 'var(--c-white)', boxShadow: '0 1px 4px rgba(45, 42, 38, 0.04)' }}>
+              <div className="mx-4 p-4 rounded-2xl md:mx-auto md:max-w-4xl md:p-6" style={{ background: 'var(--c-white)', boxShadow: 'var(--shadow-sm)' }}>
                 {tips.map((tip, i) => (
                   <div key={i} className="flex items-start gap-2.5 text-[13px] leading-relaxed py-1.5" style={{ color: 'var(--c-ink-light)' }}>
                     <span className="w-[5px] h-[5px] rounded-full mt-[7px] shrink-0" style={{ background: 'var(--c-gold)' }} />

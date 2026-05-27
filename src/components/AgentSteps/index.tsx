@@ -3,15 +3,15 @@
  * 展示 AI Agent 的多步骤推理过程，包括解析意图、检索知识库、规划行程等
  */
 import type { AgentStep } from '@/types'
-import { CheckCircleOutline, RightOutline } from 'antd-mobile-icons'
+import { CheckCircleOutline, LocationOutline, PayCircleOutline, RightOutline, SearchOutline, UnorderedListOutline, FlagOutline } from 'antd-mobile-icons'
 
 /** 步骤配置 */
 const STEP_CONFIG = [
-  { step: 1, name: '解析意图', icon: '🔍' },
-  { step: 2, name: '知识库检索', icon: '📚' },
-  { step: 3, name: '行程规划', icon: '🗺️' },
-  { step: 4, name: '预算计算', icon: '💰' },
-  { step: 5, name: '生成建议', icon: '💡' },
+  { step: 1, name: '解析意图', Icon: SearchOutline },
+  { step: 2, name: '知识库检索', Icon: UnorderedListOutline },
+  { step: 3, name: '行程规划', Icon: LocationOutline },
+  { step: 4, name: '预算计算', Icon: PayCircleOutline },
+  { step: 5, name: '生成建议', Icon: FlagOutline },
 ]
 
 interface AgentStepsProps {
@@ -49,7 +49,7 @@ export function AgentSteps({ steps, currentStep }: AgentStepsProps) {
   return (
     <div
       className="mx-4 mb-4 rounded-2xl overflow-hidden"
-      style={{ background: 'var(--c-white)', boxShadow: '0 2px 12px rgba(45, 42, 38, 0.06)' }}
+      style={{ background: 'var(--c-white)', boxShadow: 'var(--shadow-md)' }}
     >
       <div className="px-5 pt-4 pb-2">
         <span className="text-xs font-semibold tracking-wider" style={{ color: 'var(--c-terracotta)' }}>
@@ -68,17 +68,17 @@ export function AgentSteps({ steps, currentStep }: AgentStepsProps) {
                   className="w-8 h-8 rounded-full flex items-center justify-center text-sm shrink-0"
                   style={{
                     background: status === 'done'
-                      ? 'var(--c-forest)'
+                      ? 'linear-gradient(135deg, var(--c-forest) 0%, var(--c-forest-light) 100%)'
                       : status === 'running'
-                        ? 'var(--c-terracotta)'
+                        ? 'linear-gradient(135deg, var(--c-terracotta) 0%, var(--c-terracotta-light) 100%)'
                         : 'var(--c-paper-dark)',
                     color: status === 'pending' ? 'var(--c-ink-light)' : '#fff',
-                    animation: status === 'running' ? 'pulse 1.5s ease-in-out infinite' : 'none',
+                    animation: status === 'running' ? 'pulseGlow 1.5s ease-in-out infinite' : 'none',
                   }}
                 >
                   {status === 'done'
                     ? <CheckCircleOutline style={{ fontSize: '16px' }} />
-                    : config.icon}
+                    : <config.Icon style={{ fontSize: '16px' }} />}
                 </div>
                 {index < STEP_CONFIG.length - 1 && (
                   <div
@@ -121,13 +121,6 @@ export function AgentSteps({ steps, currentStep }: AgentStepsProps) {
         })}
       </div>
 
-      {/* 脉冲动画 */}
-      <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.6; }
-        }
-      `}</style>
     </div>
   )
 }

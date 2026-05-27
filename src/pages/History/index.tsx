@@ -42,15 +42,15 @@ export default function History() {
     <div className="flex-1 overflow-y-auto" style={{ background: 'var(--c-paper)' }}>
       {/* 页面头部 */}
       <div className="px-6 pt-6 pb-8 md:pt-8 md:pb-10" style={{ background: 'linear-gradient(160deg, var(--c-forest) 0%, #2d6a4f 100%)' }}>
-        <p className="mb-2 text-[10px] font-semibold tracking-[3px]" style={{ color: 'var(--c-gold-light)' }}>TRAVEL HISTORY</p>
-        <h1 className="mb-1.5 text-[26px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-cream)' }}>历史记录</h1>
+        <p className="mb-2 text-[10px] font-semibold tracking-[4px]" style={{ color: 'var(--c-gold-light)' }}>TRAVEL HISTORY</p>
+        <h1 className="mb-1.5 text-[26px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-cream)', textShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>历史记录</h1>
         <p className="text-[13px] font-light" style={{ color: 'rgba(253, 246, 236, 0.7)' }}>你的每一次旅程</p>
       </div>
 
       {/* 空状态 - 无历史记录时显示 */}
       {!records.length && (
         <div className="flex flex-col items-center py-20 gap-3">
-          <div className="w-20 h-20 rounded-full flex items-center justify-center" style={{ background: 'var(--c-sand)' }}>
+          <div className="w-20 h-20 rounded-full flex items-center justify-center animate-[pulseGlow_2s_ease-in-out_infinite]" style={{ background: 'var(--c-sand)' }}>
             <UnorderedListOutline style={{ fontSize: '48px', color: 'var(--c-gold)' }} />
           </div>
           <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', color: 'var(--c-ink)' }}>暂无历史记录</p>
@@ -62,7 +62,7 @@ export default function History() {
       {records.length > 0 && (
         <div className="flex flex-col gap-3 p-4 md:p-6 md:grid md:grid-cols-2 md:gap-5 md:max-w-4xl md:mx-auto">
           {records.map((record, i) => (
-            <div key={i} className="rounded-2xl overflow-hidden" style={{ background: 'var(--c-white)', boxShadow: '0 2px 8px rgba(45, 42, 38, 0.05)' }}>
+            <div key={i} className="rounded-2xl overflow-hidden transition-all duration-200 md:hover:-translate-y-0.5 md:hover:shadow-lg" style={{ background: 'var(--c-white)', boxShadow: 'var(--shadow-md)' }}>
               {/* 记录卡片头部 - 点击展开/收起 */}
               <div onClick={() => toggleCard(i)} className="flex items-center px-[18px] py-4 cursor-pointer active:bg-[var(--c-paper)]">
                 <div className="flex-1">
@@ -82,7 +82,7 @@ export default function History() {
                   </div>
                 </div>
                 {/* 展开/收起箭头 */}
-                <span className="shrink-0 ml-3 text-xs" style={{ color: '#999', transform: expandedCard === i ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>▼</span>
+                <span className="shrink-0 ml-3 text-xs transition-transform duration-200" style={{ color: '#999', transform: expandedCard === i ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
               </div>
 
               {/* 展开的详情内容 */}
@@ -124,10 +124,10 @@ export default function History() {
                   {record.tips && record.tips.length > 0 && (
                     <>
                       <div className="flex items-center gap-2 py-2 px-1" style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', fontWeight: 600, color: 'var(--c-ink)' }}>
-                        <div className="w-[5px] h-[5px] rounded-full" style={{ background: 'var(--c-terracotta)' }} />
+                        <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--c-terracotta)' }} />
                         <span>温馨提示</span>
                       </div>
-                      <div className="p-3 rounded-xl" style={{ background: 'var(--c-paper)' }}>
+                      <div className="p-3 rounded-xl" style={{ background: 'var(--c-white)', boxShadow: 'var(--shadow-sm)' }}>
                         {record.tips.map((tip, j) => (
                           <div key={j} className="flex items-start gap-2 text-xs leading-relaxed py-1" style={{ color: 'var(--c-ink-light)' }}>
                             <span className="w-1 h-1 rounded-full mt-1.5 shrink-0" style={{ background: 'var(--c-gold)' }} />
@@ -141,8 +141,8 @@ export default function History() {
                   {/* 删除按钮 */}
                   <div className="flex justify-end pt-3 px-2">
                     <button
-                      onClick={(e) => { e.stopPropagation(); deleteRecord(i) }} // 阻止事件冒泡，避免触发卡片展开
-                      className="px-3 py-1.5 rounded-full text-xs border-none cursor-pointer"
+                      onClick={(e) => { e.stopPropagation(); deleteRecord(i) }}
+                      className="px-3 py-1.5 rounded-full text-xs border-none cursor-pointer transition-colors duration-200 hover:text-[var(--c-error)]"
                       style={{ color: 'var(--c-ink-light)', background: 'var(--c-paper)' }}
                     >
                       删除记录

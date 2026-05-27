@@ -16,20 +16,36 @@ interface SpotItemProps {
  * 左侧显示时段标签，右侧显示景点详细信息
  */
 export function SpotItem({ period, data }: SpotItemProps) {
+  const periodColorMap: Record<string, string> = {
+    上午: 'var(--c-gold)',
+    下午: 'var(--c-terracotta)',
+    晚上: 'var(--c-forest)',
+  }
+  const periodColor = periodColorMap[period] || 'var(--c-terracotta)'
+
+  const periodBgMap: Record<string, string> = {
+    上午: 'var(--c-sand)',
+    下午: 'rgba(194, 114, 75, 0.1)',
+    晚上: 'rgba(27, 67, 50, 0.1)',
+  }
+  const periodBg = periodBgMap[period] || 'var(--c-sand)'
+
   return (
-    <div className="flex gap-3 py-3 border-b border-dashed" style={{ borderColor: 'var(--c-paper-dark)' }}>
-      {/* 时段标签 */}
+    <div
+      className="flex gap-3 py-3 border-b border-dashed transition-all duration-200"
+      style={{ borderColor: 'var(--c-paper-dark)', borderLeft: `3px solid ${periodColor}` }}
+    >
       <div
         className="shrink-0 self-start"
         style={{
           fontFamily: 'var(--font-serif)',
           fontSize: '12px',
           fontWeight: 600,
-          color: 'var(--c-terracotta)',
-          background: 'var(--c-sand)',
+          color: periodColor,
+          background: periodBg,
           padding: '4px 10px',
           borderRadius: '8px',
-          whiteSpace: 'nowrap', // 防止标签文字换行
+          whiteSpace: 'nowrap',
         }}
       >
         {period}

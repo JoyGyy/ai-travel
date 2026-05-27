@@ -29,7 +29,7 @@ export function ChatBubble({ role, content }: ChatBubbleProps) {
       {!isUser && (
         <div
           className="shrink-0 flex items-center justify-center"
-          style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'var(--c-sand)' }}
+          style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--c-sand) 0%, var(--c-cream) 100%)' }}
         >
           <ChatAddOutline style={{ fontSize: '14px', color: 'var(--c-terracotta)' }} />
         </div>
@@ -40,11 +40,11 @@ export function ChatBubble({ role, content }: ChatBubbleProps) {
         style={{
           // 用户消息右下角圆角小，AI 消息左下角圆角小，形成对话气泡效果
           borderRadius: isUser ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-          background: isUser ? 'var(--c-terracotta)' : 'var(--c-white)', // 用户消息使用主题色背景
+          background: isUser ? 'linear-gradient(135deg, var(--c-terracotta) 0%, var(--c-terracotta-light) 100%)' : 'var(--c-white)',
           color: isUser ? '#fff' : 'var(--c-ink)',
           whiteSpace: 'pre-wrap', // 保留换行符
           wordBreak: 'break-word', // 长文本自动换行
-          ...(isUser ? {} : { boxShadow: '0 1px 4px rgba(45, 42, 38, 0.05)' }), // AI 消息添加阴影
+          ...(isUser ? {} : { boxShadow: 'var(--shadow-sm)' }),
         }}
       >
         {content}

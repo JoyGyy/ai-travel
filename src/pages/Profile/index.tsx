@@ -44,18 +44,19 @@ export default function Profile() {
         style={{ background: 'linear-gradient(160deg, var(--c-forest) 0%, #2d6a4f 100%)' }}
       >
         {/* 装饰性圆形 */}
-        <div className="absolute bottom-[-30px] left-[-20px] w-30 h-30 rounded-full" style={{ background: 'rgba(212, 165, 116, 0.1)' }} />
+        <div className="absolute bottom-[-30px] left-[-20px] w-30 h-30 rounded-full" style={{ background: 'rgba(212, 165, 116, 0.1)', backdropFilter: 'blur(8px)' }} />
         <div className="relative z-10">
           {/* 用户头像 */}
           <div
-            className="w-[76px] h-[76px] rounded-full mx-auto mb-3.5 border-[3px]"
+            className="w-[88px] h-[88px] rounded-full mx-auto mb-3.5 border-[3px]"
             style={{
               borderColor: 'rgba(253, 246, 236, 0.25)',
               backgroundImage: 'url(https://img.yzcdn.cn/vant/cat.jpeg)',
               backgroundSize: 'cover',
+              boxShadow: '0 0 0 4px rgba(253,246,236,0.2), 0 4px 16px rgba(0,0,0,0.15)',
             }}
           />
-          <h2 className="mb-1.5 text-[22px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-cream)' }}>游客</h2>
+          <h2 className="mb-1.5 text-[22px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-cream)', textShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>游客</h2>
           <p className="text-[13px] font-light" style={{ color: 'rgba(253, 246, 236, 0.7)' }}>欢迎使用智能旅游助手</p>
         </div>
       </div>
@@ -63,14 +64,14 @@ export default function Profile() {
       {/* 功能列表区域 */}
       <div className="px-4 -mt-5 relative z-10 md:px-8 md:max-w-2xl md:mx-auto">
         {/* 我的服务卡片 */}
-        <div className="rounded-[18px] mb-3 overflow-hidden" style={{ background: 'var(--c-white)', boxShadow: '0 2px 12px rgba(45, 42, 38, 0.05)' }}>
+        <div className="rounded-[18px] mb-3 overflow-hidden" style={{ background: 'var(--c-white)', boxShadow: 'var(--shadow-md)' }}>
           <div className="flex items-center gap-2 px-[18px] pt-4 pb-1 text-[13px] font-semibold" style={{ color: 'var(--c-ink-light)' }}>
             <div className="w-[5px] h-[5px] rounded-full" style={{ background: 'var(--c-terracotta)' }} />
             <span>我的服务</span>
           </div>
           <div className="py-1">
             {/* 我的收藏 */}
-            <button onClick={showCollections} className="w-full flex items-center justify-between px-[18px] py-3.5 border-none bg-transparent cursor-pointer text-left">
+            <button onClick={showCollections} className="w-full flex items-center justify-between px-[18px] py-3.5 border-none bg-transparent cursor-pointer text-left transition-colors duration-200 hover:bg-[var(--c-paper)]">
               <div className="flex items-center gap-3">
                 <StarOutline style={{ fontSize: '18px', color: 'var(--c-terracotta)' }} />
                 <span className="text-sm" style={{ color: 'var(--c-ink)' }}>我的收藏</span>
@@ -97,7 +98,7 @@ export default function Profile() {
         </div>
 
         {/* 关于卡片 */}
-        <div className="rounded-[18px] overflow-hidden" style={{ background: 'var(--c-white)', boxShadow: '0 2px 12px rgba(45, 42, 38, 0.05)' }}>
+        <div className="rounded-[18px] overflow-hidden" style={{ background: 'var(--c-white)', boxShadow: 'var(--shadow-md)' }}>
           <div className="flex items-center gap-2 px-[18px] pt-4 pb-1 text-[13px] font-semibold" style={{ color: 'var(--c-ink-light)' }}>
             <div className="w-[5px] h-[5px] rounded-full" style={{ background: 'var(--c-terracotta)' }} />
             <span>关于</span>

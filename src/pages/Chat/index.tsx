@@ -94,11 +94,11 @@ export default function Chat() {
         style={{ background: 'linear-gradient(160deg, var(--c-forest) 0%, #2d6a4f 100%)' }}
       >
         {/* 装饰性圆形 */}
-        <div className="absolute -top-7 -right-7 w-25 h-25 rounded-full" style={{ background: 'rgba(212, 165, 116, 0.12)' }} />
+        <div className="absolute -top-7 -right-7 w-25 h-25 rounded-full" style={{ background: 'rgba(212, 165, 116, 0.12)', backdropFilter: 'blur(8px)' }} />
         <div className="flex justify-between items-start relative z-10">
           <div>
-            <p className="mb-2 text-[10px] font-semibold tracking-[3px]" style={{ color: 'var(--c-gold-light)' }}>AI ASSISTANT</p>
-            <h1 className="mb-1.5 text-[26px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-cream)' }}>旅行顾问</h1>
+            <p className="mb-2 text-[10px] font-semibold tracking-[4px]" style={{ color: 'var(--c-gold-light)' }}>AI ASSISTANT</p>
+            <h1 className="mb-1.5 text-[26px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-cream)', textShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>旅行顾问</h1>
             <p className="text-[13px] font-light" style={{ color: 'rgba(253, 246, 236, 0.7)' }}>有什么旅行问题，尽管问我</p>
           </div>
           {/* 清空按钮 - 仅在有消息时显示 */}
@@ -127,9 +127,9 @@ export default function Chat() {
               <ChatAddOutline style={{ fontSize: '14px', color: 'var(--c-terracotta)' }} />
             </div>
             <div className="flex gap-1 px-4 py-3 rounded-2xl rounded-tl-sm" style={{ background: 'var(--c-white)', boxShadow: '0 1px 4px rgba(45, 42, 38, 0.04)' }}>
-              <span className="w-[5px] h-[5px] rounded-full" style={{ background: 'var(--c-gold)', animation: 'bounce 1.2s infinite' }} />
-              <span className="w-[5px] h-[5px] rounded-full" style={{ background: 'var(--c-gold)', animation: 'bounce 1.2s infinite 0.2s' }} />
-              <span className="w-[5px] h-[5px] rounded-full" style={{ background: 'var(--c-gold)', animation: 'bounce 1.2s infinite 0.4s' }} />
+              <span className="w-[5px] h-[5px] rounded-full" style={{ background: 'var(--c-gold)', animation: 'dotBounce 1.2s infinite' }} />
+              <span className="w-[5px] h-[5px] rounded-full" style={{ background: 'var(--c-gold)', animation: 'dotBounce 1.2s infinite 0.15s' }} />
+              <span className="w-[5px] h-[5px] rounded-full" style={{ background: 'var(--c-gold)', animation: 'dotBounce 1.2s infinite 0.3s' }} />
             </div>
           </div>
         )}
@@ -139,11 +139,12 @@ export default function Chat() {
           <div className="pt-4">
             {/* 欢迎卡片 */}
             <div className="bg-white rounded-[20px] px-6 py-8 text-center mb-6" style={{ boxShadow: '0 2px 12px rgba(45, 42, 38, 0.05)' }}>
-              <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--c-sand)' }}>
+              <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'linear-gradient(135deg, var(--c-sand) 0%, var(--c-cream) 100%)', animation: 'pulseGlow 2s infinite' }}>
                 <CompassOutline style={{ fontSize: '32px', color: 'var(--c-terracotta)' }} />
               </div>
               <h2 className="text-xl font-bold mb-2" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-ink)' }}>你好，旅行者</h2>
-              <p className="text-sm" style={{ color: 'var(--c-ink-light)' }}>告诉我你的目的地，我来帮你规划</p>
+              <p className="text-sm mb-2" style={{ color: 'var(--c-ink-light)' }}>告诉我你的目的地，我来帮你规划</p>
+              <p className="text-xs" style={{ color: 'var(--c-ink-light)', opacity: 0.7 }}>基于 RAG 技术，提供精准旅行建议</p>
             </div>
             {/* 快速问题列表 */}
             <p className="text-sm font-semibold mb-3 pl-1" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-ink-light)' }}>试试这样问</p>
@@ -152,14 +153,12 @@ export default function Chat() {
                 <button
                   key={q}
                   onClick={() => sendMessage(q)}
-                  className="flex items-center gap-3 bg-white rounded-[14px] px-4 py-3.5 border-none cursor-pointer text-left active:scale-[0.98] active:bg-[var(--c-sand)] transition-all"
+                  className="flex items-center gap-3 bg-white rounded-[14px] px-4 py-3.5 border-none cursor-pointer text-left active:scale-[0.98] active:bg-[var(--c-sand)] hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
                   style={{ boxShadow: '0 1px 4px rgba(45, 42, 38, 0.04)', animation: `fadeUp 0.4s ease both ${i * 0.08}s` }}
                 >
-                  {/* 问题序号 */}
-                  <span className="text-[13px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-terracotta)', opacity: 0.6 }}>
-                    {String(i + 1).padStart(2, '0')}
+                  <span className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-primary-light text-white text-xs flex items-center justify-center shrink-0">
+                    {i + 1}
                   </span>
-                  {/* 问题内容 */}
                   <span className="text-[13px] leading-snug" style={{ color: 'var(--c-ink)' }}>{q}</span>
                 </button>
               ))}
@@ -179,8 +178,8 @@ export default function Chat() {
             onChange={e => setInputMsg(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && sendMessage()} // 按回车发送
             disabled={isLoading} // 加载时禁用输入
-            className="flex-1 h-10 px-[18px] rounded-full text-sm border-none outline-none"
-            style={{ background: 'var(--c-paper)', color: 'var(--c-ink)' }}
+            className="flex-1 h-10 px-[18px] rounded-full text-sm border-none outline-none focus:border-primary transition-colors"
+            style={{ background: 'var(--c-paper)', color: 'var(--c-ink)', boxShadow: 'inset 0 1px 3px rgba(45,42,38,0.06)' }}
           />
           {/* 发送按钮 */}
           <button
@@ -188,8 +187,7 @@ export default function Chat() {
             disabled={isLoading || !inputMsg.trim()} // 加载中或输入为空时禁用
             className="w-10 h-10 rounded-full flex items-center justify-center border-none cursor-pointer shrink-0 transition-all active:scale-[0.92]"
             style={{
-              // 根据状态切换按钮样式
-              background: isLoading || !inputMsg.trim() ? 'var(--c-paper-dark)' : 'var(--c-terracotta)',
+              background: isLoading || !inputMsg.trim() ? 'var(--c-paper-dark)' : 'linear-gradient(135deg, var(--c-terracotta) 0%, var(--c-terracotta-light) 100%)',
               color: isLoading || !inputMsg.trim() ? 'var(--c-ink-light)' : '#fff',
               cursor: isLoading || !inputMsg.trim() ? 'not-allowed' : 'pointer',
             }}

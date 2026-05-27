@@ -18,47 +18,63 @@ const tabs = [
  * 固定在页面底部，显示四个导航标签
  */
 export function TabBar() {
-  const location = useLocation() // 获取当前路由位置
-  const navigate = useNavigate() // 获取导航函数
+  const location = useLocation()
+  const navigate = useNavigate()
 
-  // 计算当前激活的标签键
-  // 对于根路径返回 '/'，其他路径取第一级路径
   const activeKey = location.pathname === '/' ? '/' : `/${location.pathname.split('/')[1]}`
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around"
+      className="fixed bottom-0 left-0 right-0 z-50 flex items-center"
       style={{
-        height: '50px',
-        background: 'var(--c-white)',
+        height: '56px',
+        background: 'rgba(255, 252, 248, 0.85)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
         borderTop: '1px solid var(--c-paper-dark)',
-        boxShadow: '0 -2px 12px rgba(45, 42, 38, 0.04)',
       }}
     >
-      {/* 遍历标签配置，渲染导航按钮 */}
-      {tabs.map(tab => (
-        <button
-          key={tab.key}
-          onClick={() => navigate(tab.key)} // 点击导航到对应路由
-          className="flex flex-col items-center justify-center gap-0.5 border-none bg-transparent cursor-pointer"
-          style={{ flex: 1, height: '100%' }}
-        >
-          {/* 图标 - 激活状态使用主题色 */}
-          <span
-            className="text-xl"
-            style={{ color: activeKey === tab.key ? 'var(--c-terracotta)' : 'var(--c-ink-light)' }}
+      {tabs.map(tab => {
+        const isActive = activeKey === tab.key
+        return (
+          <button
+            key={tab.key}
+            onClick={() => navigate(tab.key)}
+            className="flex flex-col items-center justify-center gap-1 border-none bg-transparent cursor-pointer relative"
+            style={{ flex: 1, height: '100%' }}
           >
-            {tab.icon}
-          </span>
-          {/* 标题文字 */}
-          <span
-            className="text-xs"
-            style={{ color: activeKey === tab.key ? 'var(--c-terracotta)' : 'var(--c-ink-light)' }}
-          >
-            {tab.title}
-          </span>
-        </button>
-      ))}
+            <span
+              className="text-[20px] transition-all duration-200"
+              style={{
+                color: isActive ? 'var(--c-terracotta)' : 'var(--c-ink-light)',
+                transform: isActive ? 'scale(1.1)' : 'scale(1)',
+              }}
+            >
+              {tab.icon}
+            </span>
+            <span
+              className="text-[10px] transition-all duration-200"
+              style={{
+                color: isActive ? 'var(--c-terracotta)' : 'var(--c-ink-light)',
+                fontWeight: isActive ? 600 : 400,
+              }}
+            >
+              {tab.title}
+            </span>
+            {/* 激活指示条 */}
+            {isActive && (
+              <span
+                className="absolute bottom-0 left-1/2 -translate-x-1/2 rounded-full"
+                style={{
+                  width: '16px',
+                  height: '3px',
+                  background: 'var(--c-terracotta)',
+                }}
+              />
+            )}
+          </button>
+        )
+      })}
     </div>
   )
 }

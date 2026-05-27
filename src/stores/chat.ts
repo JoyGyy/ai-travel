@@ -1,47 +1,42 @@
 /**
  * 聊天状态管理
- * 使用 Zustand 管理 AI 对话的全局状态
+ * 使用 Zustand + persist 中间件，刷新页面后消息不丢失
  */
 import type { ChatMessage } from '@/types'
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
-/** 聊天状态接口定义 */
 interface ChatState {
-  messages: ChatMessage[]     // 消息列表
-  isLoading: boolean          // 是否正在等待 AI 响应
-  addMessage: (msg: ChatMessage) => void      // 添加新消息
-  updateLastMessage: (content: string) => void // 更新最后一条消息的内容（用于流式输出）
-  clearMessages: () => void   // 清空所有消息
-  setLoading: (loading: boolean) => void       // 设置加载状态
+  messages: ChatMessage[]
+  isLoading: boolean
+  addMessage: (msg: ChatMessage) => void
+  updateLastMessage: (content: string) => void
+  clearMessages: () => void
+  setLoading: (loading: boolean) => void
 }
 
-/**
- * 创建聊天状态 store
- * Zustand 的 create 函数接收一个 set 函数用于更新状态
- */
-export const useChatStore = create<ChatState>(set => ({
-  messages: [], // 初始消息列表为空
-  isLoading: false, // 初始未加载
+export const useChatStore = create<ChatState>()(
+  persist(
+    set => ({
+      messages: [],
+      isLoading: false,
 
-  // 添加消息：将新消息追加到消息列表末尾
-  addMessage: msg =>
-    set(state => ({ messages: [...state.messages, msg] })),
+      addMessage: msg =>
+        set(state => ({ messages: [...state.messages, msg] })),
 
-  // 更新最后一条消息：用于 SSE 流式输出时逐步更新 AI 回复内容
-  updateLastMessage: content =>
-    set((state) => {
-      const messages = [...state.messages] // 创建新数组以触发 React 更新
-      const last = messages[messages.length - 1]
-      if (last) {
-        // 更新最后一条消息的内容，保持其他属性不变
-        messages[messages.length - 1] = { ...last, content }
-      }
-      return { messages }
+      updateLastMessage: content =>
+        set((state) => {
+          const messages = [...state.messages]
+          const last = messages[messages.length - 1]
+          if (last) {
+            messages[messages.length - 1] = { ...last, content }
+          }
+          return { messages }
+        }),
+
+      clearMessages: () => set({ messages: [] }),
+      setLoading: isLoading => set({ isLoading }),
     }),
-
-  // 清空消息：重置消息列表
-  clearMessages: () => set({ messages: [] }),
-
-  // 设置加载状态
-  setLoading: isLoading => set({ isLoading }),
-}))
+    { name: 'chat_messages' },
+  ),
+)

@@ -2,52 +2,39 @@
  * 历史记录页面
  * 展示用户之前生成的所有行程记录，支持查看详情和删除
  */
-import type { HistoryRecord } from '@/types'
 import { Dialog, Toast } from 'antd-mobile'
 import { UnorderedListOutline } from 'antd-mobile-icons'
 import { useState } from 'react'
 import { BudgetTable } from '@/components/BudgetTable'
 import { SpotItem } from '@/components/SpotItem'
-import { deleteHistoryRecord, loadHistory } from '@/utils/storage'
+import { useHistoryStore } from '@/stores/history'
 
 export default function History() {
-  // 使用 useState 初始化函数从 localStorage 加载历史记录
-  const [records, setRecords] = useState<HistoryRecord[]>(() => loadHistory())
-  const [expandedCard, setExpandedCard] = useState<number | null>(null) // 当前展开的卡片索引
-  const [expandedDays, setExpandedDays] = useState<string[]>([]) // 当前展开的日期列表
+  const { records, deleteRecord } = useHistoryStore()
+  const [expandedCard, setExpandedCard] = useState<number | null>(null)
+  const [expandedDays, setExpandedDays] = useState<string[]>([])
 
-  /**
-   * 切换卡片展开/收起状态
-   * @param index - 卡片索引
-   */
   function toggleCard(index: number) {
-    setExpandedCard(expandedCard === index ? null : index) // 切换展开状态
-    setExpandedDays([]) // 切换卡片时重置展开的日期
+    setExpandedCard(expandedCard === index ? null : index)
+    setExpandedDays([])
   }
 
-  /**
-   * 删除历史记录
-   * @param index - 要删除的记录索引
-   */
-  async function deleteRecord(index: number) {
+  async function handleDelete(index: number) {
     const result = await Dialog.confirm({ content: '确定要删除这条历史记录吗？' })
     if (result) {
-      deleteHistoryRecord(index) // 从 localStorage 删除
-      setRecords(prev => prev.filter((_, i) => i !== index)) // 从状态中移除
+      deleteRecord(index)
       Toast.show({ content: '已删除' })
     }
   }
 
   return (
     <div className="flex-1 overflow-y-auto" style={{ background: 'var(--c-paper)' }}>
-      {/* 页面头部 */}
       <div className="px-6 pt-6 pb-8 md:pt-8 md:pb-10" style={{ background: 'linear-gradient(160deg, var(--c-forest) 0%, #2d6a4f 100%)' }}>
         <p className="mb-2 text-[10px] font-semibold tracking-[4px]" style={{ color: 'var(--c-gold-light)' }}>TRAVEL HISTORY</p>
         <h1 className="mb-1.5 text-[26px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-cream)', textShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>历史记录</h1>
         <p className="text-[13px] font-light" style={{ color: 'rgba(253, 246, 236, 0.7)' }}>你的每一次旅程</p>
       </div>
 
-      {/* 空状态 - 无历史记录时显示 */}
       {!records.length && (
         <div className="flex flex-col items-center py-20 gap-3">
           <div className="w-20 h-20 rounded-full flex items-center justify-center animate-[pulseGlow_2s_ease-in-out_infinite]" style={{ background: 'var(--c-sand)' }}>
@@ -58,40 +45,28 @@ export default function History() {
         </div>
       )}
 
-      {/* 历史记录列表 */}
       {records.length > 0 && (
         <div className="flex flex-col gap-3 p-4 md:p-6 md:grid md:grid-cols-2 md:gap-5 md:max-w-4xl md:mx-auto">
           {records.map((record, i) => (
             <div key={i} className="rounded-2xl overflow-hidden transition-all duration-200 md:hover:-translate-y-0.5 md:hover:shadow-lg" style={{ background: 'var(--c-white)', boxShadow: 'var(--shadow-md)' }}>
-              {/* 记录卡片头部 - 点击展开/收起 */}
               <div onClick={() => toggleCard(i)} className="flex items-center px-[18px] py-4 cursor-pointer active:bg-[var(--c-paper)]">
                 <div className="flex-1">
                   <h3 className="mb-1.5 text-[17px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-ink)' }}>{record.city}</h3>
                   <div className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--c-ink-light)' }}>
-                    <span>
-                      {record.days}
-                      天
-                    </span>
+                    <span>{record.days}天</span>
                     <span className="w-[3px] h-[3px] rounded-full" style={{ background: 'var(--c-paper-dark)' }} />
-                    <span>
-                      ¥
-                      {record.budget}
-                    </span>
+                    <span>¥{record.budget}</span>
                     <span className="w-[3px] h-[3px] rounded-full" style={{ background: 'var(--c-paper-dark)' }} />
                     <span>{record.date}</span>
                   </div>
                 </div>
-                {/* 展开/收起箭头 */}
                 <span className="shrink-0 ml-3 text-xs transition-transform duration-200" style={{ color: '#999', transform: expandedCard === i ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
               </div>
 
-              {/* 展开的详情内容 */}
               {expandedCard === i && (
                 <div className="border-t p-3" style={{ borderColor: 'var(--c-paper-dark)' }}>
-                  {/* 每日行程列表 */}
                   {record.itinerary?.map(day => (
                     <div key={day.day} className="mb-2">
-                      {/* 日期标题 - 点击展开/收起 */}
                       <button
                         onClick={() => {
                           setExpandedDays(prev =>
@@ -106,7 +81,6 @@ export default function History() {
                         <span>{day.date}</span>
                         <span className="text-xs" style={{ color: '#999' }}>{expandedDays.includes(String(day.day)) ? '▲' : '▼'}</span>
                       </button>
-                      {/* 展开的景点详情 */}
                       {expandedDays.includes(String(day.day)) && (
                         <div className="px-2 pt-2">
                           <SpotItem period="上午" data={day.morning} />
@@ -117,10 +91,8 @@ export default function History() {
                     </div>
                   ))}
 
-                  {/* 预算明细 */}
-                  {record.budgetBreakdown && <BudgetTable data={record.budgetBreakdown} />}
+                  {record.budgetBreakdown && <BudgetTable data={record.budgetBreakdown as any} />}
 
-                  {/* 旅行提示 */}
                   {record.tips && record.tips.length > 0 && (
                     <>
                       <div className="flex items-center gap-2 py-2 px-1" style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', fontWeight: 600, color: 'var(--c-ink)' }}>
@@ -138,10 +110,9 @@ export default function History() {
                     </>
                   )}
 
-                  {/* 删除按钮 */}
                   <div className="flex justify-end pt-3 px-2">
                     <button
-                      onClick={(e) => { e.stopPropagation(); deleteRecord(i) }}
+                      onClick={(e) => { e.stopPropagation(); handleDelete(i) }}
                       className="px-3 py-1.5 rounded-full text-xs border-none cursor-pointer transition-colors duration-200 hover:text-[var(--c-error)]"
                       style={{ color: 'var(--c-ink-light)', background: 'var(--c-paper)' }}
                     >

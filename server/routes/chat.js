@@ -10,27 +10,33 @@ const { callLLMStream } = require('../services/llm')
 
 const router = Router()
 
-// Mock 回复模板：根据用户问题关键词匹配
-const mockResponses = {
-  '景点': '推荐您去以下景点：\n\n1. **故宫博物院** - 明清皇家宫殿，必去打卡地\n2. **长城** - 世界奇迹，气势磅礴\n3. **天坛公园** - 古代祭天场所，建筑精美\n\n建议提前网上预约门票，合理安排游览时间。',
-  '美食': '当地特色美食推荐：\n\n1. 烤鸭 - 皮脆肉嫩，当地名菜\n2. 小吃街 - 各种地道小吃集中地\n3. 特色面食 - 当地传统面食\n\n建议去当地人常去的老店品尝，味道更正宗。',
-  '攻略': '为您整理的旅行攻略：\n\n**交通**：建议乘坐公共交通，方便快捷\n**住宿**：建议住在市中心或景区附近\n**行程**：合理安排时间，不要贪多\n**预算**：提前规划好各项开支\n\n祝您旅途愉快！',
-  '保险': '旅行保险购买建议：\n\n1. 选择包含意外医疗和紧急救援的保险\n2. 注意保障范围是否覆盖目的地\n3. 高风险活动（如潜水、滑雪）需要额外保障\n4. 建议在出发前至少一天购买\n\n推荐平台：支付宝、携程、慧择等。',
-  'default': '你好！我是你的 AI 旅行顾问，可以帮你：\n\n1. 规划旅行行程\n2. 推荐当地景点和美食\n3. 提供旅行攻略和建议\n4. 解答旅行相关问题\n\n请告诉我你想去哪里旅行，我来帮你规划！',
-}
-
 /**
- * 根据用户消息生成 Mock 回复
+ * 根据用户消息和 RAG 上下文生成 Mock 回复
  * @param {string} message - 用户消息
+ * @param {object} ragResult - RAG 检索结果
  * @returns {string} 回复内容
  */
-function getMockResponse(message) {
-  for (const [keyword, response] of Object.entries(mockResponses)) {
-    if (keyword !== 'default' && message.includes(keyword)) {
-      return response
+function getMockResponse(message, ragResult) {
+  if (ragResult) {
+    const { attractions, food, bestSeason, transportation } = ragResult
+    const isFood = message.includes('美食') || message.includes('吃')
+    const isTransport = message.includes('交通') || message.includes('怎么去') || message.includes('怎么走')
+
+    if (isFood) {
+      return `${ragResult.city || '该城市'}特色美食推荐：\n\n${food.map((f, i) => `${i + 1}. ${f}`).join('\n')}\n\n建议去当地人常去的老店品尝，味道更正宗。`
     }
+    if (isTransport) {
+      return `${ragResult.city || '该城市'}交通指南：\n\n${transportation || '建议乘坐公共交通，方便快捷。景区之间可乘坐地铁或公交。'}\n\n最佳旅行季节：${bestSeason || '春秋两季'}。`
+    }
+    const topSpots = attractions.slice(0, 5)
+    return `为您推荐${ragResult.city || ''}热门景点：\n\n${topSpots.map((a, i) => `${i + 1}. **${a.name}** — ${a.description?.slice(0, 30) || ''}${a.ticket || ''}`).join('\n')}\n\n推荐美食：${food.slice(0, 3).join('、')}。\n最佳季节：${bestSeason || '春秋两季'}。\n\n需要更详细的行程规划吗？`
   }
-  return mockResponses.default
+
+  if (message.includes('保险')) {
+    return '旅行保险购买建议：\n\n1. 选择包含意外医疗和紧急救援的保险\n2. 注意保障范围是否覆盖目的地\n3. 高风险活动需要额外保障\n4. 建议在出发前至少一天购买\n\n推荐平台：支付宝、携程、慧择等。'
+  }
+
+  return '你好！我是你的 AI 旅行顾问，可以帮你：\n\n1. 规划旅行行程\n2. 推荐当地景点和美食\n3. 提供旅行攻略和建议\n4. 解答旅行相关问题\n\n请告诉我你想去哪里旅行，我来帮你规划！'
 }
 
 /**
@@ -52,6 +58,7 @@ router.post('/chat', async (req, res) => {
     // 尝试从知识库检索相关信息
     let contextInfo = ''
     let ragSources = []
+    let ragResult = null
     const cities = getAllCities()
 
     // 检查消息中是否包含城市名
@@ -59,6 +66,7 @@ router.post('/chat', async (req, res) => {
       if (message.includes(city)) {
         const result = retrieve(city, [], city)
         if (result) {
+          ragResult = { ...result, city }
           contextInfo = `\n\n参考信息：${city}的热门景点有${result.attractions.slice(0, 5).map(a => a.name).join('、')}。推荐美食：${result.food.join('、')}。最佳季节：${result.bestSeason}。`
           ragSources = result.attractions.slice(0, 5).map(a => a.name)
           break
@@ -87,7 +95,7 @@ router.post('/chat', async (req, res) => {
 
     // 如果 LLM 没有返回内容，使用 Mock 回复
     if (!usedLLM || !fullContent) {
-      const mockReply = getMockResponse(message)
+      const mockReply = getMockResponse(message, ragResult)
       // 模拟流式输出，逐字符发送
       let accumulated = ''
       for (const char of mockReply) {

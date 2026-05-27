@@ -254,7 +254,7 @@ export default function Detail() {
               <div className="mx-4 p-4 rounded-2xl md:mx-auto md:max-w-4xl md:p-6" style={{ background: 'var(--c-white)', boxShadow: 'var(--shadow-sm)' }}>
                 {tips.map((tip, i) => (
                   <div key={i} className="flex items-start gap-2.5 text-[13px] leading-relaxed py-1.5" style={{ color: 'var(--c-ink-light)' }}>
-                    <span className="w-[5px] h-[5px] rounded-full mt-[7px] shrink-0" style={{ background: 'var(--c-gold)' }} />
+                    <span className="w-1.5 h-1.5 rounded-full mt-[7px] shrink-0" style={{ background: 'var(--c-gold)' }} />
                     {tip}
                   </div>
                 ))}
@@ -266,16 +266,15 @@ export default function Detail() {
           <div className="flex flex-col gap-2.5 px-4 pt-5 md:px-8 md:max-w-4xl md:mx-auto">
             <div className="flex gap-2.5">
               {/* 取消推荐按钮 */}
-              <button onClick={cancelPlan} className="flex-1 h-[46px] rounded-full text-[15px] font-semibold border-none cursor-pointer" style={{ background: 'var(--c-paper-dark)', color: 'var(--c-ink-light)' }}>
+              <button onClick={cancelPlan} className="flex-1 h-[46px] rounded-full text-[15px] font-semibold border-none cursor-pointer transition-all duration-200 active:scale-[0.98]" style={{ background: 'var(--c-paper-dark)', color: 'var(--c-ink-light)', boxShadow: 'var(--shadow-sm)' }}>
                 取消推荐
               </button>
-              {/* 保存行程按钮 */}
-              <button onClick={handleSaveToCollections} className="flex-1 h-[46px] rounded-full text-[15px] font-semibold border-none cursor-pointer text-white" style={{ background: 'var(--c-terracotta)' }}>
+              <button onClick={handleSaveToCollections} className="flex-1 h-[46px] rounded-full text-[15px] font-semibold border-none cursor-pointer text-white transition-all duration-200 active:scale-[0.98]" style={{ background: 'linear-gradient(135deg, var(--c-terracotta) 0%, var(--c-terracotta-light) 100%)' }}>
                 保存行程
               </button>
             </div>
             {/* 咨询 AI 按钮 */}
-            <button onClick={() => navigate('/chat')} className="w-full h-[42px] rounded-full text-sm font-medium cursor-pointer" style={{ background: 'transparent', border: '1px solid var(--c-paper-dark)', color: 'var(--c-ink-light)' }}>
+            <button onClick={() => navigate('/chat')} className="w-full h-[42px] rounded-full text-sm font-medium cursor-pointer transition-all duration-200 active:scale-[0.98]" style={{ background: 'transparent', border: '1px solid var(--c-paper-dark)', color: 'var(--c-ink-light)' }}>
               咨询 AI
             </button>
           </div>

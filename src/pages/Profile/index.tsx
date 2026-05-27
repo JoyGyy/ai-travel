@@ -66,7 +66,7 @@ export default function Profile() {
         {/* 我的服务卡片 */}
         <div className="rounded-[18px] mb-3 overflow-hidden" style={{ background: 'var(--c-white)', boxShadow: 'var(--shadow-md)' }}>
           <div className="flex items-center gap-2 px-[18px] pt-4 pb-1 text-[13px] font-semibold" style={{ color: 'var(--c-ink-light)' }}>
-            <div className="w-[5px] h-[5px] rounded-full" style={{ background: 'var(--c-terracotta)' }} />
+            <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--c-terracotta)' }} />
             <span>我的服务</span>
           </div>
           <div className="py-1">
@@ -79,7 +79,7 @@ export default function Profile() {
               <RightOutline style={{ fontSize: '14px', color: '#999' }} />
             </button>
             {/* 历史记录 */}
-            <button onClick={() => navigate('/history')} className="w-full flex items-center justify-between px-[18px] py-3.5 border-none bg-transparent cursor-pointer text-left">
+            <button onClick={() => navigate('/history')} className="w-full flex items-center justify-between px-[18px] py-3.5 border-none bg-transparent cursor-pointer text-left transition-colors duration-200 hover:bg-[var(--c-paper)]">
               <div className="flex items-center gap-3">
                 <ClockCircleOutline style={{ fontSize: '18px', color: 'var(--c-terracotta)' }} />
                 <span className="text-sm" style={{ color: 'var(--c-ink)' }}>历史记录</span>
@@ -87,7 +87,7 @@ export default function Profile() {
               <RightOutline style={{ fontSize: '14px', color: '#999' }} />
             </button>
             {/* 设置 */}
-            <button onClick={() => Toast.show('功能开发中')} className="w-full flex items-center justify-between px-[18px] py-3.5 border-none bg-transparent cursor-pointer text-left">
+            <button onClick={() => Toast.show('功能开发中')} className="w-full flex items-center justify-between px-[18px] py-3.5 border-none bg-transparent cursor-pointer text-left transition-colors duration-200 hover:bg-[var(--c-paper)]">
               <div className="flex items-center gap-3">
                 <SetOutline style={{ fontSize: '18px', color: 'var(--c-terracotta)' }} />
                 <span className="text-sm" style={{ color: 'var(--c-ink)' }}>设置</span>
@@ -100,12 +100,12 @@ export default function Profile() {
         {/* 关于卡片 */}
         <div className="rounded-[18px] overflow-hidden" style={{ background: 'var(--c-white)', boxShadow: 'var(--shadow-md)' }}>
           <div className="flex items-center gap-2 px-[18px] pt-4 pb-1 text-[13px] font-semibold" style={{ color: 'var(--c-ink-light)' }}>
-            <div className="w-[5px] h-[5px] rounded-full" style={{ background: 'var(--c-terracotta)' }} />
+            <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--c-terracotta)' }} />
             <span>关于</span>
           </div>
           <div className="py-1">
             {/* 关于我们 */}
-            <button onClick={showAbout} className="w-full flex items-center justify-between px-[18px] py-3.5 border-none bg-transparent cursor-pointer text-left">
+            <button onClick={showAbout} className="w-full flex items-center justify-between px-[18px] py-3.5 border-none bg-transparent cursor-pointer text-left transition-colors duration-200 hover:bg-[var(--c-paper)]">
               <span className="text-sm" style={{ color: 'var(--c-ink)' }}>关于我们</span>
               <RightOutline style={{ fontSize: '14px', color: '#999' }} />
             </button>

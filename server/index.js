@@ -3,6 +3,8 @@
  * 提供旅行推荐和 AI 对话的 API 接口
  */
 
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') })
+
 const express = require('express')
 const cors = require('cors')
 
@@ -14,7 +16,7 @@ const PORT = process.env.PORT || 3030
 
 // CORS 配置：允许前端跨域请求
 app.use(cors({
-  origin: ['http://localhost:5181', 'http://127.0.0.1:5181'],
+  origin: true,
   credentials: true,
 }))
 

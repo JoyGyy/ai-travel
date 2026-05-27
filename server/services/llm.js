@@ -1,42 +1,44 @@
 /**
  * LLM 服务封装
- * 支持 Mock 模式和 SiliconFlow API 真实调用
+ * 支持 DeepSeek / SiliconFlow API 真实调用，无 key 时降级为 Mock
  */
 
-// 是否使用真实 LLM API（通过环境变量控制）
-const USE_REAL_LLM = process.env.USE_REAL_LLM === 'true'
-const SILICONFLOW_API_KEY = process.env.SILICONFLOW_API_KEY || ''
-const LLM_MODEL = process.env.LLM_MODEL || 'Qwen/Qwen2.5-7B-Instruct'
+const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || ''
+const DEEPSEEK_BASE_URL = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com/v1'
+const DEEPSEEK_MODEL = process.env.DEEPSEEK_MODEL || 'deepseek-chat'
+
+const SF_API_KEY = process.env.SILICONFLOW_API_KEY || ''
+const SF_BASE_URL = process.env.SILICONFLOW_BASE_URL || 'https://api.siliconflow.cn/v1'
+const SF_MODEL = process.env.SILICONFLOW_MODEL || 'Qwen/Qwen2.5-7B-Instruct'
 
 /**
- * 调用 LLM 生成内容
- * @param {string} systemPrompt - 系统提示词
- * @param {string} userPrompt - 用户提示词
- * @returns {Promise<string>} LLM 返回的文本
+ * 获取可用的 LLM 配置（优先 DeepSeek）
  */
-async function callLLM(systemPrompt, userPrompt) {
-  if (USE_REAL_LLM && SILICONFLOW_API_KEY) {
-    return await callSiliconFlow(systemPrompt, userPrompt)
+function getLLMConfig() {
+  if (DEEPSEEK_API_KEY) {
+    return { baseUrl: DEEPSEEK_BASE_URL, apiKey: DEEPSEEK_API_KEY, model: DEEPSEEK_MODEL }
   }
-  // Mock 模式：返回空字符串，由调用方自行处理
-  return ''
+  if (SF_API_KEY) {
+    return { baseUrl: SF_BASE_URL, apiKey: SF_API_KEY, model: SF_MODEL }
+  }
+  return null
 }
 
 /**
- * 调用 SiliconFlow API
- * @param {string} systemPrompt - 系统提示词
- * @param {string} userPrompt - 用户提示词
- * @returns {Promise<string>} LLM 返回的文本
+ * 调用 LLM 生成内容
  */
-async function callSiliconFlow(systemPrompt, userPrompt) {
-  const response = await fetch('https://api.siliconflow.cn/v1/chat/completions', {
+async function callLLM(systemPrompt, userPrompt) {
+  const config = getLLMConfig()
+  if (!config) return ''
+
+  const response = await fetch(`${config.baseUrl}/chat/completions`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${SILICONFLOW_API_KEY}`,
+      'Authorization': `Bearer ${config.apiKey}`,
     },
     body: JSON.stringify({
-      model: LLM_MODEL,
+      model: config.model,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
@@ -56,34 +58,19 @@ async function callSiliconFlow(systemPrompt, userPrompt) {
 
 /**
  * 流式调用 LLM
- * @param {string} systemPrompt - 系统提示词
- * @param {string} userPrompt - 用户提示词
- * @param {(chunk: string) => void} onChunk - 收到数据块时的回调
- * @returns {Promise<string>} 完整的回复内容
  */
 async function callLLMStream(systemPrompt, userPrompt, onChunk) {
-  if (USE_REAL_LLM && SILICONFLOW_API_KEY) {
-    return await callSiliconFlowStream(systemPrompt, userPrompt, onChunk)
-  }
-  return ''
-}
+  const config = getLLMConfig()
+  if (!config) return ''
 
-/**
- * 流式调用 SiliconFlow API
- * @param {string} systemPrompt - 系统提示词
- * @param {string} userPrompt - 用户提示词
- * @param {(chunk: string) => void} onChunk - 收到数据块时的回调
- * @returns {Promise<string>} 完整的回复内容
- */
-async function callSiliconFlowStream(systemPrompt, userPrompt, onChunk) {
-  const response = await fetch('https://api.siliconflow.cn/v1/chat/completions', {
+  const response = await fetch(`${config.baseUrl}/chat/completions`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${SILICONFLOW_API_KEY}`,
+      'Authorization': `Bearer ${config.apiKey}`,
     },
     body: JSON.stringify({
-      model: LLM_MODEL,
+      model: config.model,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },

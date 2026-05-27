@@ -3,7 +3,7 @@
  * 应用的主入口页面，提供行程规划表单和热门城市推荐
  */
 import { Toast } from 'antd-mobile'
-import { TagOutline } from 'antd-mobile-icons'
+import { CalendarOutline, EnvironmentOutline, PayCircleOutline, TagOutline } from 'antd-mobile-icons'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { allCities, hotCities } from '@/constants/cities'
@@ -57,14 +57,14 @@ export default function Home() {
         style={{ background: 'linear-gradient(160deg, var(--c-forest) 0%, #1b4332 40%, #2d6a4f 100%)' }}
       >
         {/* 装饰性圆形背景 */}
-        <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full" style={{ background: 'rgba(212, 165, 116, 0.15)' }}>
-          <div className="absolute -bottom-15 -left-20 w-30 h-30 rounded-full" style={{ background: 'rgba(212, 165, 116, 0.1)' }} />
+        <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-60" style={{ background: 'rgba(212, 165, 116, 0.15)', backdropFilter: 'blur(8px)' }}>
+          <div className="absolute -bottom-15 -left-20 w-30 h-30 rounded-full opacity-60" style={{ background: 'rgba(212, 165, 116, 0.1)', backdropFilter: 'blur(8px)' }} />
         </div>
         <div className="relative z-10">
-          <p className="mb-3 text-xs font-semibold tracking-[3px]" style={{ fontFamily: 'var(--font-sans)', color: 'var(--c-gold-light)' }}>
+          <p className="mb-3 text-xs font-semibold tracking-[4px]" style={{ fontFamily: 'var(--font-sans)', color: 'var(--c-gold-light)' }}>
             AI-POWERED TRAVEL
           </p>
-          <h1 className="mb-3 text-4xl font-bold leading-tight" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-cream)' }}>
+          <h1 className="mb-3 text-4xl md:text-5xl font-bold leading-tight" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-cream)', textShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
             智能旅游
             <br />
             助手
@@ -77,7 +77,7 @@ export default function Home() {
 
       {/* 表单区域 - 限宽居中 */}
       <div className="px-4 -mt-7 relative z-10 md:max-w-3xl md:mx-auto md:px-6" onClick={() => showDropdown && setShowDropdown(false)}>
-        <div className="rounded-[20px] overflow-hidden" style={{ background: 'var(--c-white)', boxShadow: '0 4px 24px rgba(45, 42, 38, 0.08)' }}>
+        <div className="rounded-[20px] overflow-hidden" style={{ background: 'var(--c-white)', boxShadow: 'var(--shadow-lg)' }}>
           {/* 表单标题 */}
           <div className="flex items-center gap-2 pt-[18px] px-5 text-[15px] font-semibold" style={{ color: 'var(--c-ink)' }}>
             <span className="flex items-center justify-center w-7 h-7 rounded-lg" style={{ background: 'var(--c-sand)', color: 'var(--c-terracotta)', fontSize: '14px' }}>
@@ -87,17 +87,20 @@ export default function Home() {
           </div>
 
           {/* 城市输入框 - 带搜索下拉功能 */}
-          <div className="relative px-5 py-3" onClick={e => e.stopPropagation()}>
+          <div className="relative px-5 py-3 border-b-2 transition-colors focus-within:border-[var(--c-terracotta)]" style={{ borderColor: 'var(--c-paper-dark)' }} onClick={e => e.stopPropagation()}>
             <label className="block text-xs mb-1.5 font-medium" style={{ color: 'var(--c-ink-light)' }}>目的地</label>
-            <input
-              type="text"
-              placeholder="输入搜索城市"
-              value={city}
-              onChange={(e) => { setCity(e.target.value); setShowDropdown(true) }}
-              onFocus={() => setShowDropdown(true)}
-              className="w-full py-2.5 px-0 text-sm border-0 outline-none"
-              style={{ background: 'transparent', color: 'var(--c-ink)' }}
-            />
+            <div className="flex items-center gap-2">
+              <EnvironmentOutline style={{ color: 'var(--c-ink-light)', fontSize: 18, flexShrink: 0 }} />
+              <input
+                type="text"
+                placeholder="输入搜索城市"
+                value={city}
+                onChange={(e) => { setCity(e.target.value); setShowDropdown(true) }}
+                onFocus={() => setShowDropdown(true)}
+                className="w-full py-2.5 px-0 text-sm border-0 outline-none"
+                style={{ background: 'transparent', color: 'var(--c-ink)' }}
+              />
+            </div>
             {/* 城市下拉列表 */}
             {showDropdown && (
               <div className="absolute left-0 right-0 z-10 max-h-60 overflow-y-auto border-t" style={{ background: 'var(--c-white)', borderColor: 'var(--c-paper-dark)', boxShadow: '0 8px 24px rgba(45, 42, 38, 0.12)' }}>
@@ -120,40 +123,43 @@ export default function Home() {
           </div>
 
           {/* 预算输入框 */}
-          <div className="px-5 py-3 border-t" style={{ borderColor: 'var(--c-paper-dark)' }}>
+          <div className="px-5 py-3 border-t border-b-2 transition-colors focus-within:border-[var(--c-terracotta)]" style={{ borderColor: 'var(--c-paper-dark)' }}>
             <label className="block text-xs mb-1.5 font-medium" style={{ color: 'var(--c-ink-light)' }}>预算(元)</label>
-            <input
-              type="number"
-              placeholder="输入预算金额"
-              value={budget}
-              onChange={e => setBudget(e.target.value)}
-              className="w-full py-2.5 px-0 text-sm border-0 outline-none"
-              style={{ background: 'transparent', color: 'var(--c-ink)' }}
-            />
+            <div className="flex items-center gap-2">
+              <PayCircleOutline style={{ color: 'var(--c-ink-light)', fontSize: 18, flexShrink: 0 }} />
+              <input
+                type="number"
+                placeholder="输入预算金额"
+                value={budget}
+                onChange={e => setBudget(e.target.value)}
+                className="w-full py-2.5 px-0 text-sm border-0 outline-none"
+                style={{ background: 'transparent', color: 'var(--c-ink)' }}
+              />
+            </div>
           </div>
 
           {/* 天数选择器 */}
-          <div className="px-5 py-3 border-t" style={{ borderColor: 'var(--c-paper-dark)' }}>
+          <div className="px-5 py-3 border-t border-b-2 transition-colors focus-within:border-[var(--c-terracotta)]" style={{ borderColor: 'var(--c-paper-dark)' }}>
             <label className="block text-xs mb-1.5 font-medium" style={{ color: 'var(--c-ink-light)' }}>天数</label>
-            <div className="flex items-center gap-3">
-              {/* 减少天数按钮 */}
-              <button
-                onClick={() => setDays(Math.max(1, days - 1))}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-lg font-medium border-none cursor-pointer"
-                style={{ background: 'var(--c-paper)', color: 'var(--c-ink)' }}
-              >
-                -
-              </button>
-              {/* 天数显示 */}
-              <span className="w-8 text-center text-base font-semibold" style={{ color: 'var(--c-ink)' }}>{days}</span>
-              {/* 增加天数按钮 */}
-              <button
-                onClick={() => setDays(Math.min(30, days + 1))}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-lg font-medium border-none cursor-pointer"
-                style={{ background: 'var(--c-paper)', color: 'var(--c-ink)' }}
-              >
-                +
-              </button>
+            <div className="flex items-center gap-2">
+              <CalendarOutline style={{ color: 'var(--c-ink-light)', fontSize: 18, flexShrink: 0 }} />
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setDays(Math.max(1, days - 1))}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-lg font-medium border-none cursor-pointer"
+                  style={{ background: 'var(--c-paper)', color: 'var(--c-ink)' }}
+                >
+                  -
+                </button>
+                <span className="w-8 text-center text-base font-semibold" style={{ color: 'var(--c-ink)' }}>{days}</span>
+                <button
+                  onClick={() => setDays(Math.min(30, days + 1))}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-lg font-medium border-none cursor-pointer"
+                  style={{ background: 'var(--c-paper)', color: 'var(--c-ink)' }}
+                >
+                  +
+                </button>
+              </div>
             </div>
           </div>
 
@@ -161,8 +167,8 @@ export default function Home() {
           <div className="px-5 pb-5 pt-2">
             <button
               onClick={onStart}
-              className="w-full h-[50px] rounded-full text-base font-semibold tracking-wider border-none cursor-pointer text-white"
-              style={{ background: 'var(--c-terracotta)' }}
+              className="w-full h-[50px] rounded-full text-base font-semibold tracking-wider border-none cursor-pointer text-white transition-all duration-200 hover:brightness-110 active:brightness-95"
+              style={{ background: 'linear-gradient(135deg, var(--c-terracotta) 0%, var(--c-terracotta-light) 100%)' }}
             >
               开始规划
             </button>
@@ -184,12 +190,12 @@ export default function Home() {
             <button
               key={name}
               onClick={() => selectCity(name)}
-              className="px-4 py-2 rounded-full text-[13px] font-medium border cursor-pointer active:scale-[0.96] transition-all"
+              className="px-4 py-2 rounded-full text-[13px] font-medium border cursor-pointer active:scale-[0.96] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
               style={{
-                // 选中状态的样式
                 background: city === name ? 'var(--c-terracotta)' : 'var(--c-white)',
                 color: city === name ? '#fff' : 'var(--c-ink-light)',
                 borderColor: city === name ? 'var(--c-terracotta)' : 'var(--c-paper-dark)',
+                boxShadow: city === name ? 'var(--shadow-md)' : undefined,
               }}
             >
               {name}

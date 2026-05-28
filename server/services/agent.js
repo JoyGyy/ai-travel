@@ -6,22 +6,7 @@
 
 const { retrieve } = require('./rag')
 const { sendSSE } = require('../utils/sse')
-
-// ========== LLM 配置 ==========
-
-const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || ''
-const DEEPSEEK_BASE_URL = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com/v1'
-const DEEPSEEK_MODEL = process.env.DEEPSEEK_MODEL || 'deepseek-chat'
-
-const SF_API_KEY = process.env.SILICONFLOW_API_KEY || ''
-const SF_BASE_URL = process.env.SILICONFLOW_BASE_URL || 'https://api.siliconflow.cn/v1'
-const SF_MODEL = process.env.SILICONFLOW_MODEL || 'Qwen/Qwen2.5-7B-Instruct'
-
-function getLLMConfig() {
-  if (DEEPSEEK_API_KEY) return { baseUrl: DEEPSEEK_BASE_URL, apiKey: DEEPSEEK_API_KEY, model: DEEPSEEK_MODEL }
-  if (SF_API_KEY) return { baseUrl: SF_BASE_URL, apiKey: SF_API_KEY, model: SF_MODEL }
-  return null
-}
+const { callLLMWithTools, getLLMConfig } = require('./llm')
 
 // ========== Agent System Prompt ==========
 
@@ -263,40 +248,6 @@ function executeTool(toolName, args, context) {
 
 // ========== LLM 调用（带 tools） ==========
 
-/**
- * 调用 LLM（支持 function calling）
- * @param {object[]} messages - 对话消息数组
- * @returns {object} LLM 响应
- */
-async function callLLMWithTools(messages) {
-  const config = getLLMConfig()
-  if (!config) return null
-
-  const response = await fetch(`${config.baseUrl}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${config.apiKey}`,
-    },
-    body: JSON.stringify({
-      model: config.model,
-      messages,
-      tools: AGENT_TOOLS,
-      tool_choice: 'auto',
-      temperature: 0.7,
-      max_tokens: 4096,
-    }),
-  })
-
-  if (!response.ok) {
-    const errText = await response.text().catch(() => '')
-    throw new Error(`LLM API 调用失败: ${response.status} ${errText}`)
-  }
-
-  const data = await response.json()
-  return data.choices?.[0]?.message || null
-}
-
 // ========== Agent 主流程 ==========
 
 const STEP_MAP = {
@@ -337,7 +288,7 @@ async function executeAgent(res, params) {
   try {
     // ReAct 循环：LLM 决定调用哪些工具
     for (let round = 0; round < 10; round++) {
-      const assistantMsg = await callLLMWithTools(messages)
+      const assistantMsg = await callLLMWithTools(messages, AGENT_TOOLS)
 
       if (!assistantMsg) {
         // LLM 无响应，降级到 Mock

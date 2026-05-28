@@ -1,6 +1,6 @@
 /**
  * LLM 服务封装
- * 支持 DeepSeek / SiliconFlow API 真实调用，无 key 时降级为 Mock
+ * 支持 DeepSeek / SiliconFlow API，含 function calling
  */
 
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || ''
@@ -11,21 +11,14 @@ const SF_API_KEY = process.env.SILICONFLOW_API_KEY || ''
 const SF_BASE_URL = process.env.SILICONFLOW_BASE_URL || 'https://api.siliconflow.cn/v1'
 const SF_MODEL = process.env.SILICONFLOW_MODEL || 'Qwen/Qwen2.5-7B-Instruct'
 
-/**
- * 获取可用的 LLM 配置（优先 DeepSeek）
- */
 function getLLMConfig() {
-  if (DEEPSEEK_API_KEY) {
-    return { baseUrl: DEEPSEEK_BASE_URL, apiKey: DEEPSEEK_API_KEY, model: DEEPSEEK_MODEL }
-  }
-  if (SF_API_KEY) {
-    return { baseUrl: SF_BASE_URL, apiKey: SF_API_KEY, model: SF_MODEL }
-  }
+  if (DEEPSEEK_API_KEY) return { baseUrl: DEEPSEEK_BASE_URL, apiKey: DEEPSEEK_API_KEY, model: DEEPSEEK_MODEL }
+  if (SF_API_KEY) return { baseUrl: SF_BASE_URL, apiKey: SF_API_KEY, model: SF_MODEL }
   return null
 }
 
 /**
- * 调用 LLM 生成内容
+ * 调用 LLM（纯文本）
  */
 async function callLLM(systemPrompt, userPrompt) {
   const config = getLLMConfig()
@@ -48,10 +41,7 @@ async function callLLM(systemPrompt, userPrompt) {
     }),
   })
 
-  if (!response.ok) {
-    throw new Error(`LLM API 调用失败: ${response.status}`)
-  }
-
+  if (!response.ok) throw new Error(`LLM API 调用失败: ${response.status}`)
   const data = await response.json()
   return data.choices?.[0]?.message?.content || ''
 }
@@ -81,9 +71,7 @@ async function callLLMStream(systemPrompt, userPrompt, onChunk) {
     }),
   })
 
-  if (!response.ok) {
-    throw new Error(`LLM API 调用失败: ${response.status}`)
-  }
+  if (!response.ok) throw new Error(`LLM API 流式调用失败: ${response.status}`)
 
   let fullContent = ''
   const reader = response.body.getReader()
@@ -92,28 +80,56 @@ async function callLLMStream(systemPrompt, userPrompt, onChunk) {
   while (true) {
     const { done, value } = await reader.read()
     if (done) break
-
     const chunk = decoder.decode(value)
-    const lines = chunk.split('\n')
-
-    for (const line of lines) {
+    for (const line of chunk.split('\n')) {
       if (line.startsWith('data: ') && line !== 'data: [DONE]') {
         try {
-          const data = JSON.parse(line.slice(6))
-          const content = data.choices?.[0]?.delta?.content || ''
+          const content = JSON.parse(line.slice(6)).choices?.[0]?.delta?.content || ''
           if (content) {
             fullContent += content
             onChunk(content)
           }
         }
-        catch {
-          // 忽略解析错误
-        }
+        catch { /* 忽略 */ }
       }
     }
   }
-
   return fullContent
 }
 
-module.exports = { callLLM, callLLMStream }
+/**
+ * 调用 LLM（支持 function calling）
+ * @param {object[]} messages - 对话历史
+ * @param {object[]} tools - 工具定义
+ * @returns {object|null} LLM 响应消息
+ */
+async function callLLMWithTools(messages, tools) {
+  const config = getLLMConfig()
+  if (!config) return null
+
+  const response = await fetch(`${config.baseUrl}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${config.apiKey}`,
+    },
+    body: JSON.stringify({
+      model: config.model,
+      messages,
+      tools,
+      tool_choice: 'auto',
+      temperature: 0.7,
+      max_tokens: 4096,
+    }),
+  })
+
+  if (!response.ok) {
+    const errText = await response.text().catch(() => '')
+    throw new Error(`LLM API 调用失败: ${response.status} ${errText}`)
+  }
+
+  const data = await response.json()
+  return data.choices?.[0]?.message || null
+}
+
+module.exports = { callLLM, callLLMStream, callLLMWithTools, getLLMConfig }

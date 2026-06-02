@@ -32,9 +32,9 @@ export default function History() {
       {/* 头部 */}
       <div
         className="relative px-6 pt-6 pb-8 md:pt-8 md:pb-10"
-        style={{ background: 'linear-gradient(160deg, var(--c-forest) 0%, #2d6a4f 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' }}
       >
-        <div className="absolute -top-8 -right-8 w-28 h-28 rounded-full" style={{ background: 'rgba(212, 165, 116, 0.06)', filter: 'blur(30px)' }} />
+        <div className="absolute -top-8 -right-8 w-28 h-28 rounded-full" style={{ background: 'rgba(99, 102, 241, 0.06)', filter: 'blur(30px)' }} />
         <p className="mb-2 text-[10px] font-semibold tracking-[4px]" style={{ color: 'var(--c-gold-light)', opacity: 0.75 }}>TRAVEL HISTORY</p>
         <h1 className="mb-1 text-[26px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-cream)', textShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>历史记录</h1>
         <p className="text-[12px] font-light" style={{ color: 'rgba(253, 246, 236, 0.5)' }}>你的每一次旅程</p>

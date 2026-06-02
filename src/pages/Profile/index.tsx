@@ -41,10 +41,10 @@ export default function Profile() {
       {/* Hero 区域 - 用户头像和昵称 */}
       <div
         className="relative px-6 pt-11 pb-12 text-center overflow-hidden md:pt-16 md:pb-16"
-        style={{ background: 'linear-gradient(160deg, var(--c-forest) 0%, #2d6a4f 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' }}
       >
         {/* 装饰性圆形 */}
-        <div className="absolute bottom-[-30px] left-[-20px] w-30 h-30 rounded-full" style={{ background: 'rgba(212, 165, 116, 0.1)', backdropFilter: 'blur(8px)' }} />
+        <div className="absolute bottom-[-30px] left-[-20px] w-30 h-30 rounded-full" style={{ background: 'rgba(99, 102, 241, 0.06)', filter: 'blur(30px)' }} />
         <div className="relative z-10">
           {/* 用户头像 */}
           <div

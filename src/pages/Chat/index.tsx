@@ -86,9 +86,9 @@ export default function Chat() {
       {/* 头部 */}
       <div
         className="relative overflow-hidden px-6 pt-6 pb-7 md:pt-8 md:pb-9"
-        style={{ background: 'linear-gradient(160deg, var(--c-forest) 0%, #2d6a4f 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' }}
       >
-        <div className="absolute -top-8 -right-8 w-28 h-28 rounded-full" style={{ background: 'rgba(212, 165, 116, 0.08)', filter: 'blur(30px)' }} />
+        <div className="absolute -top-8 -right-8 w-28 h-28 rounded-full" style={{ background: 'rgba(99, 102, 241, 0.08)', filter: 'blur(30px)' }} />
         <div className="flex justify-between items-start relative z-10">
           <div>
             <p className="mb-2 text-[10px] font-semibold tracking-[4px]" style={{ color: 'var(--c-gold-light)', opacity: 0.75 }}>AI ASSISTANT</p>
@@ -135,13 +135,13 @@ export default function Chat() {
             <div className="flex items-start gap-2.5 mb-3 pl-0.5">
               <div
                 className="shrink-0 flex items-center justify-center w-[30px] h-[30px] rounded-[10px]"
-                style={{ background: 'linear-gradient(135deg, var(--c-sand) 0%, var(--c-cream) 100%)', boxShadow: '0 1px 3px rgba(194, 114, 75, 0.1)' }}
+                style={{ background: 'linear-gradient(135deg, var(--c-sand) 0%, var(--c-cream) 100%)', boxShadow: '0 1px 3px rgba(99, 102, 241, 0.1)' }}
               >
                 <ChatAddOutline style={{ fontSize: '14px', color: 'var(--c-terracotta)' }} />
               </div>
               <div
                 className="flex gap-1.5 px-4 py-3 rounded-[4px_18px_18px_18px]"
-                style={{ background: 'var(--c-white)', boxShadow: '0 1px 4px rgba(45, 42, 38, 0.04), 0 0 0 1px rgba(240, 232, 221, 0.5)' }}
+                style={{ background: 'var(--c-white)', boxShadow: '0 1px 4px rgba(15, 23, 42, 0.04), 0 0 0 1px rgba(240, 232, 221, 0.5)' }}
               >
                 <span className="w-[5px] h-[5px] rounded-full" style={{ background: 'var(--c-gold)', animation: 'dotBounce 1.2s infinite' }} />
                 <span className="w-[5px] h-[5px] rounded-full" style={{ background: 'var(--c-gold)', animation: 'dotBounce 1.2s infinite 0.15s' }} />
@@ -231,7 +231,7 @@ export default function Chat() {
                 : 'linear-gradient(135deg, var(--c-terracotta) 0%, var(--c-terracotta-light) 100%)',
               color: isLoading || !inputMsg.trim() ? 'var(--c-ink-light)' : '#fff',
               cursor: isLoading || !inputMsg.trim() ? 'not-allowed' : 'pointer',
-              boxShadow: isLoading || !inputMsg.trim() ? 'none' : '0 2px 8px rgba(194, 114, 75, 0.2)',
+              boxShadow: isLoading || !inputMsg.trim() ? 'none' : '0 2px 8px rgba(99, 102, 241, 0.2)',
             }}
           >
             <CompassOutline style={{ fontSize: '18px' }} />

@@ -29,7 +29,7 @@ export function ChatBubble({ role, content }: ChatBubbleProps) {
             height: '30px',
             borderRadius: '10px',
             background: 'linear-gradient(135deg, var(--c-sand) 0%, var(--c-cream) 100%)',
-            boxShadow: '0 1px 3px rgba(194, 114, 75, 0.1)',
+            boxShadow: '0 1px 3px rgba(99, 102, 241, 0.1)',
           }}
         >
           <ChatAddOutline style={{ fontSize: '14px', color: 'var(--c-terracotta)' }} />
@@ -49,8 +49,8 @@ export function ChatBubble({ role, content }: ChatBubbleProps) {
           wordBreak: 'break-word',
           lineHeight: '1.7',
           ...(isUser
-            ? { boxShadow: '0 2px 8px rgba(194, 114, 75, 0.15)' }
-            : { boxShadow: '0 1px 4px rgba(45, 42, 38, 0.04), 0 0 0 1px rgba(240, 232, 221, 0.5)' }),
+            ? { boxShadow: '0 2px 8px rgba(99, 102, 241, 0.15)' }
+            : { boxShadow: '0 1px 4px rgba(15, 23, 42, 0.04), 0 0 0 1px rgba(240, 232, 221, 0.5)' }),
         }}
       >
         {isUser

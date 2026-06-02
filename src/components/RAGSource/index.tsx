@@ -11,14 +11,14 @@ export function RAGSource({ sources }: RAGSourceProps) {
     <div
       className="mx-4 mb-3 px-4 py-3 rounded-xl"
       style={{
-        background: 'rgba(27, 67, 50, 0.04)',
-        border: '1px solid rgba(27, 67, 50, 0.08)',
+        background: 'rgba(99, 102, 241, 0.04)',
+        border: '1px solid rgba(99, 102, 241, 0.08)',
         animation: 'fadeUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) both',
       }}
     >
       <div className="flex items-center gap-1.5 mb-2">
-        <LocationOutline style={{ fontSize: '13px', color: 'var(--c-forest)', opacity: 0.7 }} />
-        <span className="text-[11px] font-semibold tracking-wide" style={{ color: 'var(--c-forest)', opacity: 0.7 }}>
+        <LocationOutline style={{ fontSize: '13px', color: 'var(--c-ink)', opacity: 0.5 }} />
+        <span className="text-[11px] font-semibold tracking-wide" style={{ color: 'var(--c-ink)', opacity: 0.5 }}>
           参考来源
         </span>
       </div>
@@ -27,7 +27,7 @@ export function RAGSource({ sources }: RAGSourceProps) {
           <span
             key={i}
             className="px-2.5 py-1 rounded-lg text-[11px] font-medium"
-            style={{ background: 'rgba(27, 67, 50, 0.06)', color: 'var(--c-forest)' }}
+            style={{ background: 'rgba(99, 102, 241, 0.06)', color: 'var(--c-ink)' }}
           >
             {source}
           </span>

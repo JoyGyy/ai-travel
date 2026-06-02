@@ -25,8 +25,8 @@ export function SpotItem({ period, data }: SpotItemProps) {
 
   const periodBgMap: Record<string, string> = {
     上午: 'var(--c-sand)',
-    下午: 'rgba(194, 114, 75, 0.1)',
-    晚上: 'rgba(27, 67, 50, 0.1)',
+    下午: 'rgba(99, 102, 241, 0.1)',
+    晚上: 'rgba(30, 41, 59, 0.1)',
   }
   const periodBg = periodBgMap[period] || 'var(--c-sand)'
 

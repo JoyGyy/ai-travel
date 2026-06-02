@@ -88,9 +88,9 @@ export default function Detail() {
       {/* 头部 */}
       <div
         className="relative px-6 pt-5 pb-10 md:pt-8 md:pb-14"
-        style={{ background: 'linear-gradient(160deg, var(--c-forest) 0%, #2d6a4f 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' }}
       >
-        <div className="absolute -top-10 -right-10 w-36 h-36 rounded-full" style={{ background: 'rgba(212, 165, 116, 0.06)', filter: 'blur(30px)' }} />
+        <div className="absolute -top-10 -right-10 w-36 h-36 rounded-full" style={{ background: 'rgba(99, 102, 241, 0.06)', filter: 'blur(30px)' }} />
         <button
           onClick={() => navigate(-1)}
           className="absolute top-3.5 left-4 w-9 h-9 rounded-xl flex items-center justify-center border-none cursor-pointer transition-all active:scale-90"
@@ -130,7 +130,7 @@ export default function Detail() {
             <button
               onClick={() => navigate('/chat')}
               className="px-6 py-2.5 rounded-xl border-none cursor-pointer text-sm font-medium transition-all active:scale-95"
-              style={{ background: 'linear-gradient(135deg, var(--c-terracotta) 0%, var(--c-terracotta-light) 100%)', color: '#fff', boxShadow: '0 2px 8px rgba(194, 114, 75, 0.2)' }}
+              style={{ background: 'linear-gradient(135deg, var(--c-terracotta) 0%, var(--c-terracotta-light) 100%)', color: '#fff', boxShadow: '0 2px 8px rgba(99, 102, 241, 0.2)' }}
             >
               咨询 AI 生成行程
             </button>
@@ -227,7 +227,7 @@ export default function Detail() {
                 <button
                   onClick={handleSaveToCollections}
                   className="flex-1 h-11 rounded-xl text-[14px] font-semibold border-none cursor-pointer text-white transition-all active:scale-[0.98]"
-                  style={{ background: 'linear-gradient(135deg, var(--c-terracotta) 0%, var(--c-terracotta-light) 100%)', boxShadow: '0 2px 8px rgba(194, 114, 75, 0.2)' }}
+                  style={{ background: 'linear-gradient(135deg, var(--c-terracotta) 0%, var(--c-terracotta-light) 100%)', boxShadow: '0 2px 8px rgba(99, 102, 241, 0.2)' }}
                 >
                   保存行程
                 </button>

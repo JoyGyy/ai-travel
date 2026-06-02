@@ -37,11 +37,11 @@ export default function Home() {
       {/* Hero 区域 */}
       <div
         className="relative overflow-hidden px-6 pb-16 pt-14 md:pb-22 md:pt-18"
-        style={{ background: 'linear-gradient(160deg, var(--c-forest) 0%, #1b4332 40%, #2d6a4f 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)' }}
       >
         {/* 装饰性元素 */}
-        <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full" style={{ background: 'rgba(212, 165, 116, 0.08)', filter: 'blur(40px)' }} />
-        <div className="absolute bottom-0 left-0 w-32 h-32 rounded-full" style={{ background: 'rgba(212, 165, 116, 0.05)', filter: 'blur(30px)' }} />
+        <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full" style={{ background: 'rgba(99, 102, 241, 0.08)', filter: 'blur(40px)' }} />
+        <div className="absolute bottom-0 left-0 w-32 h-32 rounded-full" style={{ background: 'rgba(99, 102, 241, 0.05)', filter: 'blur(30px)' }} />
 
         <div className="relative z-10">
           <p className="mb-4 text-[11px] font-semibold tracking-[5px]" style={{ fontFamily: 'var(--font-sans)', color: 'var(--c-gold-light)', opacity: 0.8 }}>
@@ -174,7 +174,7 @@ export default function Home() {
               className="w-full h-12 rounded-xl text-[15px] font-semibold tracking-wider border-none cursor-pointer text-white transition-all duration-200 hover:brightness-105 active:scale-[0.98]"
               style={{
                 background: 'linear-gradient(135deg, var(--c-terracotta) 0%, var(--c-terracotta-light) 100%)',
-                boxShadow: '0 4px 14px rgba(194, 114, 75, 0.2)',
+                boxShadow: '0 4px 14px rgba(99, 102, 241, 0.2)',
               }}
             >
               开始规划
@@ -202,7 +202,7 @@ export default function Home() {
                 background: city === name ? 'var(--c-terracotta)' : 'var(--c-white)',
                 color: city === name ? '#fff' : 'var(--c-ink-light)',
                 borderColor: city === name ? 'var(--c-terracotta)' : 'rgba(240, 232, 221, 0.6)',
-                boxShadow: city === name ? '0 2px 8px rgba(194, 114, 75, 0.2)' : 'var(--shadow-xs)',
+                boxShadow: city === name ? '0 2px 8px rgba(99, 102, 241, 0.2)' : 'var(--shadow-xs)',
               }}
             >
               {name}

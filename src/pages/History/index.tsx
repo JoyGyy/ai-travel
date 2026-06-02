@@ -12,11 +12,18 @@ import { useHistoryStore } from '@/stores/history'
 export default function History() {
   const { records, deleteRecord } = useHistoryStore()
   const [expandedCard, setExpandedCard] = useState<number | null>(null)
-  const [expandedDays, setExpandedDays] = useState<string[]>([])
+  const [expandedDays, setExpandedDays] = useState<Record<number, string[]>>({})
 
   function toggleCard(index: number) {
     setExpandedCard(expandedCard === index ? null : index)
-    setExpandedDays([])
+  }
+
+  function toggleDay(cardIndex: number, day: string) {
+    setExpandedDays(prev => {
+      const current = prev[cardIndex] || []
+      const next = current.includes(day) ? current.filter(k => k !== day) : [...current, day]
+      return { ...prev, [cardIndex]: next }
+    })
   }
 
   async function handleDelete(index: number) {
@@ -98,16 +105,16 @@ export default function History() {
                   {record.itinerary?.map(day => (
                     <div key={day.day} className="mb-2">
                       <button
-                        onClick={() => setExpandedDays(prev => prev.includes(String(day.day)) ? prev.filter(k => k !== String(day.day)) : [...prev, String(day.day)])}
+                        onClick={() => toggleDay(i, String(day.day))}
                         className="w-full flex items-center justify-between px-3 py-2.5 text-left text-sm border-none rounded-xl cursor-pointer transition-colors"
                         style={{ background: 'var(--c-paper)', color: 'var(--c-ink)', fontWeight: 500 }}
                       >
                         <span>{day.date}</span>
                         <span className="text-[10px]" style={{ color: 'var(--c-ink-light)' }}>
-                          {expandedDays.includes(String(day.day)) ? '▲' : '▼'}
+                          {(expandedDays[i] || []).includes(String(day.day)) ? '▲' : '▼'}
                         </span>
                       </button>
-                      {expandedDays.includes(String(day.day)) && (
+                      {(expandedDays[i] || []).includes(String(day.day)) && (
                         <div className="px-1 pt-2">
                           <SpotItem period="上午" data={day.morning} />
                           <SpotItem period="下午" data={day.afternoon} />

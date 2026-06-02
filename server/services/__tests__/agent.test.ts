@@ -1,5 +1,25 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+// Mock 天气服务，避免测试时请求真实 API
+vi.mock('../weather', () => ({
+  getWeather: vi.fn(async (city: string) => ({
+    city,
+    temperature: 25,
+    feelsLike: 23,
+    humidity: 60,
+    windSpeed: 10,
+    weatherCode: 113,
+    weatherDesc: '晴',
+    forecast: [
+      { date: '2026-06-01', maxTemp: 28, minTemp: 20, weatherCode: 113, weatherDesc: '晴' },
+      { date: '2026-06-02', maxTemp: 27, minTemp: 19, weatherCode: 116, weatherDesc: '多云' },
+      { date: '2026-06-03', maxTemp: 26, minTemp: 18, weatherCode: 113, weatherDesc: '晴' },
+    ],
+  })),
+  isGoodForOutdoor: vi.fn(() => true),
+  getDressAdvice: vi.fn(() => ['天气舒适，建议穿长袖外套']),
+}))
+
 // 收集 SSE 写入的数据
 const writtenData: string[] = []
 

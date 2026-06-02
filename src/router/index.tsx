@@ -1,10 +1,10 @@
+import { AppOutline, ChatAddOutline, CompassOutline, UnorderedListOutline, UserOutline } from 'antd-mobile-icons'
 /**
  * 路由配置文件
  * 定义应用的所有路由规则和页面组件
  */
 import React, { Suspense } from 'react'
 import { createBrowserRouter, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { AppOutline, UnorderedListOutline, ChatAddOutline, CompassOutline, UserOutline } from 'antd-mobile-icons'
 import { TabBar } from '@/components/TabBar'
 
 const Home = React.lazy(() => import('@/pages/Home'))
@@ -13,6 +13,7 @@ const Chat = React.lazy(() => import('@/pages/Chat'))
 const History = React.lazy(() => import('@/pages/History'))
 const Profile = React.lazy(() => import('@/pages/Profile'))
 const Weather = React.lazy(() => import('@/pages/Weather'))
+const Collections = React.lazy(() => import('@/pages/Collections'))
 
 /** 天气图标（antd-mobile-icons 没有合适的天气图标） */
 function WeatherIcon() {
@@ -40,7 +41,7 @@ function DesktopNav() {
 
   return (
     <nav className="flex items-center gap-0.5">
-      {tabs.map(tab => {
+      {tabs.map((tab) => {
         const isActive = activeKey === tab.key
         return (
           <button
@@ -52,8 +53,14 @@ function DesktopNav() {
               color: isActive ? 'var(--c-terracotta)' : 'var(--c-ink-light)',
               fontWeight: isActive ? 600 : 400,
             }}
-            onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--c-paper)' }}
-            onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent' }}
+            onMouseEnter={(e) => {
+              if (!isActive)
+                e.currentTarget.style.background = 'var(--c-paper)'
+            }}
+            onMouseLeave={(e) => {
+              if (!isActive)
+                e.currentTarget.style.background = 'transparent'
+            }}
           >
             <span className="text-base">{tab.icon}</span>
             <span>{tab.title}</span>
@@ -104,7 +111,7 @@ function Layout() {
 
       {/* 内容区域 */}
       <Suspense
-        fallback={
+        fallback={(
           <div className="flex items-center justify-center h-screen">
             <div className="flex flex-col items-center gap-3">
               <div
@@ -114,7 +121,7 @@ function Layout() {
               <span className="text-[12px]" style={{ color: 'var(--c-ink-light)' }}>加载中...</span>
             </div>
           </div>
-        }
+        )}
       >
         <Outlet />
       </Suspense>
@@ -140,6 +147,7 @@ const router = createBrowserRouter([
       { path: 'chat', element: <Chat /> },
       { path: 'history', element: <History /> },
       { path: 'profile', element: <Profile /> },
+      { path: 'collections', element: <Collections /> },
     ],
   },
 ])

@@ -2,38 +2,22 @@
  * 个人中心页面
  * 展示用户信息和应用功能入口
  */
-import { Dialog, Toast } from 'antd-mobile'
+import { Toast } from 'antd-mobile'
 import { ClockCircleOutline, RightOutline, SetOutline, StarOutline } from 'antd-mobile-icons'
 import { useNavigate } from 'react-router-dom'
-import { loadCollections } from '@/utils/storage'
 
 export default function Profile() {
   const navigate = useNavigate()
 
-  /**
-   * 显示收藏列表
-   * 从 localStorage 加载收藏数据并弹窗展示
-   */
-  function showCollections() {
-    const items = loadCollections()
-    if (!items.length) {
-      Toast.show('暂无收藏')
-      return
-    }
-    // 将收藏列表格式化为字符串并显示
-    Dialog.alert({
-      content: items.map((item, i) => `${i + 1}. ${item.city || '行程'} — ${item.date || ''}`).join('\n'),
+  function handleClearCache() {
+    if (!window.confirm('确定要清除所有缓存数据吗？这将删除历史记录、收藏和行程缓存。')) return
+    const keys = Object.keys(localStorage)
+    keys.forEach((key) => {
+      if (key.startsWith('detail_') || key === 'travel_collections' || key === 'travel_history') {
+        localStorage.removeItem(key)
+      }
     })
-  }
-
-  /**
-   * 显示关于我们信息
-   */
-  function showAbout() {
-    Dialog.alert({
-      title: '关于我们',
-      content: '智能旅游助手 v1.0.0 — 基于 AI 技术的智能旅游规划平台，为您提供个性化的旅游行程推荐和实时旅游咨询服务',
-    })
+    Toast.show({ content: '缓存已清除', position: 'center' })
   }
 
   return (
@@ -71,7 +55,7 @@ export default function Profile() {
           </div>
           <div className="py-1">
             {/* 我的收藏 */}
-            <button onClick={showCollections} className="w-full flex items-center justify-between px-[18px] py-3.5 border-none bg-transparent cursor-pointer text-left transition-colors duration-200 hover:bg-[var(--c-paper)]">
+            <button onClick={() => navigate('/collections')} className="w-full flex items-center justify-between px-[18px] py-3.5 border-none bg-transparent cursor-pointer text-left transition-colors duration-200 hover:bg-[var(--c-paper)]">
               <div className="flex items-center gap-3">
                 <StarOutline style={{ fontSize: '18px', color: 'var(--c-terracotta)' }} />
                 <span className="text-sm" style={{ color: 'var(--c-ink)' }}>我的收藏</span>
@@ -87,7 +71,7 @@ export default function Profile() {
               <RightOutline style={{ fontSize: '14px', color: '#999' }} />
             </button>
             {/* 设置 */}
-            <button onClick={() => Toast.show('功能开发中')} className="w-full flex items-center justify-between px-[18px] py-3.5 border-none bg-transparent cursor-pointer text-left transition-colors duration-200 hover:bg-[var(--c-paper)]">
+            <button onClick={handleClearCache} className="w-full flex items-center justify-between px-[18px] py-3.5 border-none bg-transparent cursor-pointer text-left transition-colors duration-200 hover:bg-[var(--c-paper)]">
               <div className="flex items-center gap-3">
                 <SetOutline style={{ fontSize: '18px', color: 'var(--c-terracotta)' }} />
                 <span className="text-sm" style={{ color: 'var(--c-ink)' }}>设置</span>
@@ -105,7 +89,7 @@ export default function Profile() {
           </div>
           <div className="py-1">
             {/* 关于我们 */}
-            <button onClick={showAbout} className="w-full flex items-center justify-between px-[18px] py-3.5 border-none bg-transparent cursor-pointer text-left transition-colors duration-200 hover:bg-[var(--c-paper)]">
+            <button onClick={() => alert('智能旅游助手 v1.0.0\n基于 AI 技术的智能旅游规划平台，为您提供个性化的旅游行程推荐和实时旅游咨询服务')} className="w-full flex items-center justify-between px-[18px] py-3.5 border-none bg-transparent cursor-pointer text-left transition-colors duration-200 hover:bg-[var(--c-paper)]">
               <span className="text-sm" style={{ color: 'var(--c-ink)' }}>关于我们</span>
               <RightOutline style={{ fontSize: '14px', color: '#999' }} />
             </button>

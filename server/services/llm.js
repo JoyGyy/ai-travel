@@ -15,8 +15,8 @@ const SF_MODEL = process.env.SILICONFLOW_MODEL || 'Qwen/Qwen2.5-7B-Instruct'
 const LLM_TIMEOUT = 60_000
 
 function getLLMConfig() {
-  if (DEEPSEEK_API_KEY) return { baseUrl: DEEPSEEK_BASE_URL, apiKey: DEEPSEEK_API_KEY, model: DEEPSEEK_MODEL }
   if (SF_API_KEY) return { baseUrl: SF_BASE_URL, apiKey: SF_API_KEY, model: SF_MODEL }
+  if (DEEPSEEK_API_KEY) return { baseUrl: DEEPSEEK_BASE_URL, apiKey: DEEPSEEK_API_KEY, model: DEEPSEEK_MODEL }
   return null
 }
 

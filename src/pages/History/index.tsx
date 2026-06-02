@@ -120,17 +120,17 @@ export default function History() {
               }}
             >
               {/* 卡片头部 */}
-              <div
-                onClick={() => toggleCard(i)}
-                className="flex items-center gap-3 px-5 py-4 cursor-pointer transition-colors active:bg-[var(--c-paper)]"
-              >
+              <div className="flex items-center gap-3 px-5 py-4">
                 <span
                   className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-[12px] font-semibold"
                   style={{ background: 'var(--c-sand)', color: 'var(--c-terracotta)' }}
                 >
                   {seqNum}
                 </span>
-                <div className="flex-1 min-w-0">
+                <div
+                  onClick={() => toggleCard(i)}
+                  className="flex-1 min-w-0 cursor-pointer transition-colors active:bg-[var(--c-paper)] -mx-2 px-2 py-1 rounded-lg"
+                >
                   <h3 className="mb-1.5 text-[16px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-ink)' }}>
                     {record.city}
                   </h3>
@@ -142,8 +142,16 @@ export default function History() {
                     <span>{record.date}</span>
                   </div>
                 </div>
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleDelete(i) }}
+                  className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center border-none cursor-pointer transition-colors active:scale-90"
+                  style={{ background: 'var(--c-paper)', color: 'var(--c-ink-light)', fontSize: '13px' }}
+                >
+                  ✕
+                </button>
                 <span
-                  className="shrink-0 ml-3 text-[10px] transition-transform duration-200"
+                  onClick={() => toggleCard(i)}
+                  className="shrink-0 text-[10px] cursor-pointer transition-transform duration-200"
                   style={{ color: 'var(--c-ink-light)', transform: expandedCard === i ? 'rotate(180deg)' : 'rotate(0deg)' }}
                 >
                   ▼
@@ -194,15 +202,6 @@ export default function History() {
                     </>
                   )}
 
-                  <div className="flex justify-end pt-3 px-1">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleDelete(i) }}
-                      className="px-3 py-1.5 rounded-lg text-[11px] border-none cursor-pointer transition-colors"
-                      style={{ color: 'var(--c-ink-light)', background: 'var(--c-paper)' }}
-                    >
-                      删除记录
-                    </button>
-                  </div>
                 </div>
               )}
             </div>

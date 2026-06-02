@@ -9,9 +9,11 @@ import { useNavigate } from 'react-router-dom'
 import { allCities, hotCities } from '@/constants/cities'
 import { HomeWeather } from '@/components/HomeWeather'
 import { useWeather } from '@/hooks/useWeather'
+import { useAuthStore } from '@/stores/auth'
 
 export default function Home() {
   const navigate = useNavigate()
+  const user = useAuthStore(state => state.user)
   const [city, setCity] = useState('')
   const [budget, setBudget] = useState('')
   const [days, setDays] = useState(1)
@@ -44,6 +46,7 @@ export default function Home() {
   }, [city, fetchWeather])
 
   function onStart() {
+    if (!user) return navigate('/login')
     if (!city) return Toast.show('请选择目的地')
     if (!budget) return Toast.show('请输入预算')
     const budgetNum = Number(budget)

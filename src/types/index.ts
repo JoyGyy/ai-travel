@@ -105,3 +105,10 @@ export interface HistoryRecord {
   accommodation?: AccommodationInfo[] // 住宿推荐
   nightlife?: NightlifeInfo[] // 夜生活推荐
 }
+
+/** 用户信息 */
+export interface User {
+  id: string
+  username: string
+  createdAt: string
+}

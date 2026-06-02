@@ -3,7 +3,6 @@
  * 展示 AI 生成的旅行行程，包括每日安排、预算明细和旅行提示
  */
 import type { AgentStep, ItineraryResult } from '@/types'
-import { Toast } from 'antd-mobile'
 import { CompassOutline, LeftOutline, LocationOutline } from 'antd-mobile-icons'
 import { useEffect, useLayoutEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
@@ -14,7 +13,7 @@ import { SpotItem } from '@/components/SpotItem'
 import { WeatherCard } from '@/components/WeatherCard'
 import { useSSE } from '@/hooks/useSSE'
 import { useItineraryStore } from '@/stores/itinerary'
-import { loadItineraryCache, saveItineraryCache, saveToCollections, saveToHistory } from '@/utils/storage'
+import { loadItineraryCache, saveItineraryCache, saveToHistory } from '@/utils/storage'
 
 export default function Detail() {
   const navigate = useNavigate()
@@ -26,29 +25,27 @@ export default function Detail() {
 
   const {
     itinerary, budgetBreakdown, tips, weather, accommodation, nightlife,
-    agentSteps, currentAgentStep, isLoading,
+    agentSteps, currentAgentStep,
     setItinerary, setBudgetBreakdown, setTips, setWeather, setAccommodation, setNightlife,
-    addAgentStep, setCurrentAgentStep, setLoading,
+    addAgentStep, setCurrentAgentStep,
   } = useItineraryStore()
 
   const [activeKeys, setActiveKeys] = useState<string[]>([])
-  const [saved, setSaved] = useState(false)
+  const [showLoading, setShowLoading] = useState(true)
   const { sendRequest, abort } = useSSE()
 
-  // 组件挂载时立即显示加载动画，不等 useEffect
+  // 每次参数变化时同步重置加载状态（在浏览器绘制前）
   useLayoutEffect(() => {
-    setLoading(true)
-  }, [setLoading])
+    if (city) setShowLoading(true)
+  }, [city, budget, days])
 
   useEffect(() => {
     if (!city) return
 
     const cached = loadItineraryCache(city, budget, days)
     if (cached) {
-      // 先展示加载动画，再加载缓存数据
-      setLoading(true)
       useItineraryStore.setState({ agentSteps: [], currentAgentStep: 0 })
-      const timer = setTimeout(() => {
+      setTimeout(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setItinerary(cached.itinerary || [])
         setBudgetBreakdown(cached.budgetBreakdown || null)
@@ -56,16 +53,17 @@ export default function Detail() {
         setWeather(cached.weather || null)
         setAccommodation(cached.accommodation || [])
         setNightlife(cached.nightlife || [])
-        setLoading(false)
-      }, 1200)
-      return () => clearTimeout(timer)
+        setShowLoading(false)
+      }, 1500)
+      return
     }
 
     // BUG FIX: 先中止上一次请求，防止竞态条件（新 effect 先于旧 cleanup 执行）
     abort()
 
-    setLoading(true)
     useItineraryStore.setState({ agentSteps: [], currentAgentStep: 0 })
+
+    let dataReceived = false
 
     sendRequest('/api/travel/recommend', { city, budget, days }, {
       onStep: (step: unknown) => {
@@ -74,6 +72,7 @@ export default function Detail() {
         if (agentStep.status === 'complete') addAgentStep(agentStep)
       },
       onComplete: (result: unknown) => {
+        dataReceived = true
         const data = result as ItineraryResult
         const dailyItinerary = data.dailyItinerary || []
         const bd = data.budgetBreakdown || null
@@ -89,26 +88,17 @@ export default function Detail() {
         setNightlife(n)
         saveToHistory(data)
         saveItineraryCache(city, budget, days, { itinerary: dailyItinerary, budgetBreakdown: bd, tips: t, weather: w, accommodation: a, nightlife: n })
+        // 数据到达后等一下再关闭，让内容有渲染时间
+        setTimeout(() => setShowLoading(false), 800)
       },
-      onFinally: () => setLoading(false),
+      onFinally: () => {
+        // 请求失败时（onComplete 未触发）才立即关闭
+        if (!dataReceived) setShowLoading(false)
+      },
     })
 
     return () => abort()
-  }, [city, budget, days, sendRequest, abort, setItinerary, setBudgetBreakdown, setTips, addAgentStep, setCurrentAgentStep, setLoading])
-
-  function handleSaveToCollections() {
-    if (saved) return
-    try {
-      saveToCollections({ city, days, budget, date: new Date().toLocaleDateString('zh-CN'), timestamp: Date.now(), itinerary, budgetBreakdown, tips, weather, accommodation, nightlife })
-      setSaved(true)
-      Toast.show({ content: '已保存到我的收藏', position: 'center' })
-    }
-    catch { Toast.show({ content: '保存失败', position: 'center' }) }
-  }
-
-  function cancelPlan() {
-    if (window.confirm('确定要取消本次行程推荐吗？')) navigate(-1)
-  }
+  }, [city, budget, days, sendRequest, abort, setItinerary, setBudgetBreakdown, setTips, addAgentStep, setCurrentAgentStep])
 
   return (
     <div className="flex-1 overflow-y-auto" style={{ background: 'var(--c-paper)', paddingBottom: '24px' }}>
@@ -135,7 +125,7 @@ export default function Detail() {
       </div>
 
       <div className="md:max-w-4xl md:mx-auto">
-        {isLoading && (
+        {showLoading && (
           <div className="flex justify-center pt-6 px-4">
             <div
               className="w-full max-w-md rounded-2xl overflow-hidden"
@@ -199,7 +189,7 @@ export default function Detail() {
           </div>
         )}
 
-        {!isLoading && itinerary.length === 0 && (
+        {!showLoading && itinerary.length === 0 && (
           <div className="flex flex-col items-center py-24 gap-4">
             <div className="w-20 h-20 rounded-2xl flex items-center justify-center" style={{ background: 'var(--c-sand)' }}>
               <LocationOutline style={{ fontSize: '40px', color: 'var(--c-gold)' }} />
@@ -215,7 +205,7 @@ export default function Detail() {
           </div>
         )}
 
-        {!isLoading && itinerary.length > 0 && (
+        {!showLoading && itinerary.length > 0 && (
           <>
             {/* 摘要卡片 */}
             <div
@@ -310,29 +300,8 @@ export default function Detail() {
               </div>
             )}
 
-            {/* 操作按钮 */}
-            <div className="flex flex-col gap-2 px-4 pt-5 pb-4 md:px-8 md:max-w-4xl md:mx-auto">
-              <div className="flex gap-2">
-                <button
-                  onClick={cancelPlan}
-                  className="flex-1 h-11 rounded-xl text-[14px] font-semibold border-none cursor-pointer transition-all active:scale-[0.98]"
-                  style={{ background: 'var(--c-paper-dark)', color: 'var(--c-ink-light)', boxShadow: 'var(--shadow-xs)' }}
-                >
-                  取消推荐
-                </button>
-                <button
-                  onClick={handleSaveToCollections}
-                  className="flex-1 h-11 rounded-xl text-[14px] font-semibold border-none cursor-pointer transition-all active:scale-[0.98]"
-                  style={{
-                    background: saved ? 'var(--c-paper)' : 'linear-gradient(135deg, var(--c-terracotta) 0%, var(--c-terracotta-light) 100%)',
-                    color: saved ? 'var(--c-forest)' : '#fff',
-                    boxShadow: saved ? 'none' : '0 2px 8px rgba(99, 102, 241, 0.2)',
-                    border: saved ? '1px solid var(--c-forest)' : 'none',
-                  }}
-                >
-                  {saved ? '✓ 已收藏' : '保存行程'}
-                </button>
-              </div>
+            {/* 咨询 AI 按钮 */}
+            <div className="px-4 pt-5 pb-4 md:px-8 md:max-w-4xl md:mx-auto">
               <button
                 onClick={() => navigate('/chat')}
                 className="w-full h-10 rounded-xl text-[13px] font-medium cursor-pointer transition-all active:scale-[0.98]"

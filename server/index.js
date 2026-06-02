@@ -11,13 +11,15 @@ const cors = require('cors')
 const travelRoutes = require('./routes/travel')
 const chatRoutes = require('./routes/chat')
 const weatherRoutes = require('./routes/weather')
+const authRoutes = require('./routes/auth')
+const { createRateLimit } = require('./middleware/rateLimit')
 
 const app = express()
 const PORT = process.env.PORT || 3030
 
-// CORS 配置：允许前端跨域请求
+// CORS 配置：仅允许前端域名跨域请求
 app.use(cors({
-  origin: true,
+  origin: ['http://localhost:5181', 'http://localhost:3000'],
   credentials: true,
 }))
 
@@ -30,10 +32,16 @@ app.use((req, res, next) => {
   next()
 })
 
+// 限流：AI 接口每分钟最多 15 次
+const aiLimiter = createRateLimit({ windowMs: 60_000, maxRequests: 15, message: 'AI 请求过于频繁，请稍后再试' })
+// 限流：认证接口每分钟最多 10 次（防暴力破解）
+const authLimiter = createRateLimit({ windowMs: 60_000, maxRequests: 10, message: '登录请求过于频繁，请稍后再试' })
+
 // 挂载路由
-app.use('/api/travel', travelRoutes)
-app.use('/api/travel', chatRoutes)
+app.use('/api/travel', aiLimiter, travelRoutes)
+app.use('/api/travel', aiLimiter, chatRoutes)
 app.use('/api', weatherRoutes)
+app.use('/api/auth', authLimiter, authRoutes)
 
 // 健康检查接口
 app.get('/api/health', (req, res) => {

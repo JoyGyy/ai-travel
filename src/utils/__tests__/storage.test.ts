@@ -1,7 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
-  loadCollections,
-  saveToCollections,
   saveToHistory,
   loadItineraryCache,
   saveItineraryCache,
@@ -50,27 +48,6 @@ describe('Storage 工具函数', () => {
       const records = useHistoryStore.getState().records
       expect(records.length).toBe(1)
       expect(records[0].city).toBe('B')
-    })
-  })
-
-  describe('收藏', () => {
-    it('空存储应返回空数组', () => {
-      expect(loadCollections()).toEqual([])
-    })
-
-    it('保存后应能读取', () => {
-      const item = {
-        city: '北京',
-        days: 2,
-        budget: 3000,
-        date: '2026-05-27',
-        timestamp: Date.now(),
-        itinerary: [],
-        budgetBreakdown: null as any,
-        tips: [],
-      }
-      saveToCollections(item)
-      expect(loadCollections().length).toBe(1)
     })
   })
 

@@ -3,6 +3,7 @@
  * 根据消息角色（用户/AI）显示不同样式的气泡
  */
 import { ChatAddOutline } from 'antd-mobile-icons'
+import Markdown from 'react-markdown'
 
 interface ChatBubbleProps {
   role: 'user' | 'assistant'
@@ -55,7 +56,11 @@ export function ChatBubble({ role, content }: ChatBubbleProps) {
       >
         {isUser
           ? content
-          : <div className="markdown-body">{content}</div>}
+          : (
+              <div className="markdown-body">
+                <Markdown>{content}</Markdown>
+              </div>
+            )}
       </div>
     </div>
   )

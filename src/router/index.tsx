@@ -5,6 +5,7 @@ import { AppOutline, ChatAddOutline, CompassOutline, UnorderedListOutline, UserO
  */
 import React, { Suspense } from 'react'
 import { createBrowserRouter, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { TabBar } from '@/components/TabBar'
 
 const Home = React.lazy(() => import('@/pages/Home'))
@@ -13,7 +14,7 @@ const Chat = React.lazy(() => import('@/pages/Chat'))
 const History = React.lazy(() => import('@/pages/History'))
 const Profile = React.lazy(() => import('@/pages/Profile'))
 const Weather = React.lazy(() => import('@/pages/Weather'))
-const Collections = React.lazy(() => import('@/pages/Collections'))
+const Login = React.lazy(() => import('@/pages/Login'))
 
 /** 天气图标（antd-mobile-icons 没有合适的天气图标） */
 function WeatherIcon() {
@@ -142,12 +143,12 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { index: true, element: <Home /> },
-      { path: 'detail', element: <Detail /> },
+      { path: 'detail', element: <ProtectedRoute><Detail /></ProtectedRoute> },
       { path: 'weather', element: <Weather /> },
-      { path: 'chat', element: <Chat /> },
-      { path: 'history', element: <History /> },
+      { path: 'chat', element: <ProtectedRoute><Chat /></ProtectedRoute> },
+      { path: 'history', element: <ProtectedRoute><History /></ProtectedRoute> },
       { path: 'profile', element: <Profile /> },
-      { path: 'collections', element: <Collections /> },
+      { path: 'login', element: <Login /> },
     ],
   },
 ])

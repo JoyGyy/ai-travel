@@ -40,9 +40,10 @@ export function AgentSteps({ steps, currentStep }: AgentStepsProps) {
     switch (stepNum) {
       case 1: return `${d.city} · ${d.days}天 · ¥${d.budget}`
       case 2: return `找到 ${d.count} 个景点`
-      case 3: return `${d.days}天 · ${d.spotCount} 个景点`
-      case 4: return `总预算 ¥${Number(d.accommodation || 0) + Number(d.food || 0) + Number(d.transportation || 0) + Number(d.tickets || 0) + Number(d.other || 0)}`
-      case 5: return `${d.count} 条建议`
+      case 3: return d.temperature ? `${d.temperature}°C · ${d.weatherDesc}` : '天气查询完成'
+      case 4: return `${d.days}天行程 · ${d.spotCount} 个景点`
+      case 5: return `总预算 ¥${Number(d.accommodation || 0) + Number(d.food || 0) + Number(d.transportation || 0) + Number(d.tickets || 0) + Number(d.other || 0)}`
+      case 6: return `${d.count} 条建议`
       default: return ''
     }
   }

@@ -48,7 +48,13 @@ export function useSSE() {
 
       // BUG FIX: 检查 HTTP 状态码，非 2xx 时抛错
       if (!res.ok) {
-        throw new Error(`请求失败: HTTP ${res.status}`)
+        let msg = `请求失败: HTTP ${res.status}`
+        try {
+          const errData = await res.json()
+          if (errData.message) msg = errData.message
+        }
+        catch {}
+        throw new Error(msg)
       }
 
       // BUG FIX: 检查 response body 是否存在

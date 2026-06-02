@@ -5,7 +5,7 @@
 import type { AgentStep, ItineraryResult } from '@/types'
 import { Toast } from 'antd-mobile'
 import { CompassOutline, LeftOutline, LocationOutline } from 'antd-mobile-icons'
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { AccommodationCard } from '@/components/AccommodationCard'
 import { AgentSteps } from '@/components/AgentSteps'
@@ -34,6 +34,11 @@ export default function Detail() {
   const [activeKeys, setActiveKeys] = useState<string[]>([])
   const [saved, setSaved] = useState(false)
   const { sendRequest, abort } = useSSE()
+
+  // 组件挂载时立即显示加载动画，不等 useEffect
+  useLayoutEffect(() => {
+    setLoading(true)
+  }, [setLoading])
 
   useEffect(() => {
     if (!city) return

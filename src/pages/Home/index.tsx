@@ -4,7 +4,7 @@
  */
 import { Toast } from 'antd-mobile'
 import { CalendarOutline, EnvironmentOutline, PayCircleOutline, TagOutline } from 'antd-mobile-icons'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { allCities, hotCities } from '@/constants/cities'
 import { HomeWeather } from '@/components/HomeWeather'
@@ -18,6 +18,7 @@ export default function Home() {
   const [showDropdown, setShowDropdown] = useState(false)
   const { weather, loading: weatherLoading, fetchWeather } = useWeather()
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [navigating, setNavigating] = useState(false)
 
   const filteredCities = useMemo(() => {
     const keyword = city.trim()
@@ -43,13 +44,16 @@ export default function Home() {
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
   }, [city, fetchWeather])
 
-  function onStart() {
+  const onStart = useCallback(() => {
     if (!city) return Toast.show('请选择目的地')
     if (!budget) return Toast.show('请输入预算')
     const budgetNum = Number(budget)
     if (Number.isNaN(budgetNum) || budgetNum <= 0) return Toast.show('请输入有效的预算金额')
-    navigate(`/detail?city=${encodeURIComponent(city)}&budget=${budgetNum}&days=${days}`)
-  }
+    setNavigating(true)
+    setTimeout(() => {
+      navigate(`/detail?city=${encodeURIComponent(city)}&budget=${budgetNum}&days=${days}`)
+    }, 1800)
+  }, [city, budget, days, navigate])
 
   return (
     <div className="flex-1 overflow-y-auto" style={{ background: 'var(--c-paper)' }}>
@@ -249,6 +253,63 @@ export default function Home() {
           ))}
         </div>
       </div>
+
+      {/* 规划加载动画 */}
+      {navigating && (
+        <div
+          className="fixed inset-0 z-[999] flex flex-col items-center justify-center"
+          style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' }}
+        >
+          <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full" style={{ background: 'rgba(99, 102, 241, 0.08)', filter: 'blur(50px)' }} />
+          <div className="absolute bottom-10 -left-10 w-40 h-40 rounded-full" style={{ background: 'rgba(99, 102, 241, 0.06)', filter: 'blur(40px)' }} />
+
+          {/* 罗盘动画 */}
+          <div className="relative w-20 h-20 mb-8">
+            <div
+              className="absolute inset-0 rounded-full border-2 border-dotted"
+              style={{ borderColor: 'rgba(253, 246, 236, 0.15)', borderTopColor: 'var(--c-terracotta)', animation: 'spin 1.2s linear infinite' }}
+            />
+            <div
+              className="absolute inset-3 rounded-full border-2"
+              style={{ borderColor: 'rgba(253, 246, 236, 0.08)', animation: 'spin 2s linear infinite reverse' }}
+            />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style={{ color: 'var(--c-cream)' }}>
+                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor" opacity="0.9" />
+              </svg>
+            </div>
+          </div>
+
+          <p className="text-[16px] font-medium mb-2" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-cream)' }}>
+            AI 正在为你规划行程
+          </p>
+          <p className="text-[12px]" style={{ color: 'rgba(253, 246, 236, 0.45)' }}>
+            {city} · {days}天 · ¥{budget}
+          </p>
+
+          {/* 进度点动画 */}
+          <div className="flex items-center gap-2 mt-8">
+            {[0, 1, 2].map(i => (
+              <div
+                key={i}
+                className="w-1.5 h-1.5 rounded-full"
+                style={{
+                  background: 'var(--c-terracotta)',
+                  animation: 'pulseDot 1.4s ease-in-out infinite',
+                  animationDelay: `${i * 0.2}s`,
+                }}
+              />
+            ))}
+          </div>
+
+          <style>{`
+            @keyframes pulseDot {
+              0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+              40% { opacity: 1; transform: scale(1.2); }
+            }
+          `}</style>
+        </div>
+      )}
     </div>
   )
 }

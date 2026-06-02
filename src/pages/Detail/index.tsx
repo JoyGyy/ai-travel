@@ -7,9 +7,11 @@ import { Dialog, Toast } from 'antd-mobile'
 import { CompassOutline, LeftOutline, LocationOutline } from 'antd-mobile-icons'
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { AccommodationCard } from '@/components/AccommodationCard'
 import { AgentSteps } from '@/components/AgentSteps'
 import { BudgetTable } from '@/components/BudgetTable'
 import { SpotItem } from '@/components/SpotItem'
+import { WeatherCard } from '@/components/WeatherCard'
 import { useSSE } from '@/hooks/useSSE'
 import { useItineraryStore } from '@/stores/itinerary'
 import { loadItineraryCache, saveItineraryCache, saveToCollections, saveToHistory } from '@/utils/storage'
@@ -23,9 +25,9 @@ export default function Detail() {
   const days = Number(searchParams.get('days')) || 1
 
   const {
-    itinerary, budgetBreakdown, tips,
+    itinerary, budgetBreakdown, tips, weather, accommodation, nightlife,
     agentSteps, currentAgentStep, isLoading,
-    setItinerary, setBudgetBreakdown, setTips,
+    setItinerary, setBudgetBreakdown, setTips, setWeather, setAccommodation, setNightlife,
     addAgentStep, setCurrentAgentStep, setLoading,
   } = useItineraryStore()
 
@@ -41,6 +43,9 @@ export default function Detail() {
       setItinerary(cached.itinerary || [])
       setBudgetBreakdown(cached.budgetBreakdown || null)
       setTips(cached.tips || [])
+      setWeather(cached.weather || null)
+      setAccommodation(cached.accommodation || [])
+      setNightlife(cached.nightlife || [])
       return
     }
 
@@ -61,11 +66,17 @@ export default function Detail() {
         const dailyItinerary = data.dailyItinerary || []
         const bd = data.budgetBreakdown || null
         const t = data.tips || []
+        const w = data.weather || null
+        const a = data.accommodation || []
+        const n = data.nightlife || []
         setItinerary(dailyItinerary)
         setBudgetBreakdown(bd)
         setTips(t)
+        setWeather(w)
+        setAccommodation(a)
+        setNightlife(n)
         saveToHistory(data)
-        saveItineraryCache(city, budget, days, { itinerary: dailyItinerary, budgetBreakdown: bd, tips: t })
+        saveItineraryCache(city, budget, days, { itinerary: dailyItinerary, budgetBreakdown: bd, tips: t, weather: w, accommodation: a, nightlife: n })
       },
       onFinally: () => setLoading(false),
     })
@@ -75,7 +86,7 @@ export default function Detail() {
 
   function handleSaveToCollections() {
     try {
-      saveToCollections({ city, days, budget, date: new Date().toLocaleDateString('zh-CN'), itinerary, budgetBreakdown, tips })
+      saveToCollections({ city, days, budget, date: new Date().toLocaleDateString('zh-CN'), itinerary, budgetBreakdown, tips, weather, accommodation, nightlife })
       Toast.show({ content: '已保存到我的收藏' })
     }
     catch { Toast.show({ content: '保存失败' }) }
@@ -162,6 +173,24 @@ export default function Detail() {
                 <span className="text-[15px] font-semibold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-terracotta)' }}>¥{budget}</span>
               </div>
             </div>
+
+            {/* 天气卡片 */}
+            {weather && (
+              <div className="pt-5">
+                <div className="flex items-center gap-2.5 px-5 pb-3" style={{ fontFamily: 'var(--font-serif)', fontSize: '15px', fontWeight: 600, color: 'var(--c-ink)' }}>
+                  <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--c-terracotta)' }} />
+                  <span>实时天气</span>
+                </div>
+                <WeatherCard weather={weather} />
+              </div>
+            )}
+
+            {/* 住宿与夜生活推荐 */}
+            {(accommodation.length > 0 || nightlife.length > 0) && (
+              <div className="pt-5">
+                <AccommodationCard accommodation={accommodation} nightlife={nightlife} />
+              </div>
+            )}
 
             {/* 每日行程 */}
             <div className="flex items-center gap-2.5 px-5 pt-7 pb-3" style={{ fontFamily: 'var(--font-serif)', fontSize: '15px', fontWeight: 600, color: 'var(--c-ink)' }}>

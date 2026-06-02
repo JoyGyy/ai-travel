@@ -2,274 +2,2725 @@
   {
     "city": "北京",
     "attractions": [
-      { "name": "故宫博物院", "description": "明清两代皇家宫殿，世界上现存规模最大的宫殿型建筑群", "ticket": 60, "duration": "3-4小时", "tags": ["历史", "文化", "建筑", "必去"], "tips": "建议提前网上预约，周一闭馆" },
-      { "name": "八达岭长城", "description": "明长城中保存最好的一段，气势雄伟", "ticket": 40, "duration": "半天", "tags": ["历史", "户外", "必去"], "tips": "建议早出发避开人流，穿舒适运动鞋" },
-      { "name": "天坛公园", "description": "明清两代皇帝祭天祈谷的场所", "ticket": 15, "duration": "2-3小时", "tags": ["历史", "文化", "建筑"], "tips": "联票34元含祈年殿等景点" },
-      { "name": "颐和园", "description": "皇家园林，以昆明湖、万寿山为基础", "ticket": 30, "duration": "3-4小时", "tags": ["自然", "历史", "园林"], "tips": "建议从东宫门进入，联票60元" },
-      { "name": "天安门广场", "description": "世界上最大的城市广场之一", "ticket": 0, "duration": "1小时", "tags": ["历史", "文化", "免费"], "tips": "升旗仪式每天时间不同，提前查询" },
-      { "name": "南锣鼓巷", "description": "北京最有名的胡同街区，文创小店林立", "ticket": 0, "duration": "2小时", "tags": ["文化", "美食", "购物", "免费"], "tips": "周末人多，建议工作日前往" },
-      { "name": "什刹海", "description": "历史文化旅游风景区，周边有众多胡同和王府", "ticket": 0, "duration": "2-3小时", "tags": ["文化", "自然", "免费"], "tips": "傍晚散步最佳，冬天可以滑冰" },
-      { "name": "圆明园", "description": "清代皇家园林遗址，见证历史沧桑", "ticket": 10, "duration": "2-3小时", "tags": ["历史", "文化", "园林"], "tips": "联票25元含西洋楼遗址区" },
-      { "name": "798艺术区", "description": "由旧工厂改造的当代艺术聚集地", "ticket": 0, "duration": "2-3小时", "tags": ["艺术", "文化", "免费"], "tips": "周一很多画廊闭馆，建议周末前往" },
-      { "name": "恭王府", "description": "清代规模最大的王府建筑群", "ticket": 40, "duration": "2小时", "tags": ["历史", "建筑", "文化"], "tips": "需要提前预约，建议请讲解员" },
-      { "name": "雍和宫", "description": "北京最大的藏传佛教寺院", "ticket": 25, "duration": "1-2小时", "tags": ["文化", "宗教", "建筑"], "tips": "免费领取环保香，初一人最多" },
-      { "name": "国家博物馆", "description": "世界上单体建筑面积最大的博物馆", "ticket": 0, "duration": "3-4小时", "tags": ["历史", "文化", "免费"], "tips": "需要提前预约，周一闭馆" }
+      {
+        "name": "故宫博物院",
+        "description": "明清两代皇家宫殿，世界上现存规模最大的宫殿型建筑群",
+        "ticket": 60,
+        "duration": "3-4小时",
+        "tags": [
+          "历史",
+          "文化",
+          "建筑",
+          "必去"
+        ],
+        "tips": "建议提前网上预约，周一闭馆",
+        "indoor": true
+      },
+      {
+        "name": "八达岭长城",
+        "description": "明长城中保存最好的一段，气势雄伟",
+        "ticket": 40,
+        "duration": "半天",
+        "tags": [
+          "历史",
+          "户外",
+          "必去"
+        ],
+        "tips": "建议早出发避开人流，穿舒适运动鞋",
+        "indoor": false
+      },
+      {
+        "name": "天坛公园",
+        "description": "明清两代皇帝祭天祈谷的场所",
+        "ticket": 15,
+        "duration": "2-3小时",
+        "tags": [
+          "历史",
+          "文化",
+          "建筑"
+        ],
+        "tips": "联票34元含祈年殿等景点",
+        "indoor": true
+      },
+      {
+        "name": "颐和园",
+        "description": "皇家园林，以昆明湖、万寿山为基础",
+        "ticket": 30,
+        "duration": "3-4小时",
+        "tags": [
+          "自然",
+          "历史",
+          "园林"
+        ],
+        "tips": "建议从东宫门进入，联票60元",
+        "indoor": false
+      },
+      {
+        "name": "天安门广场",
+        "description": "世界上最大的城市广场之一",
+        "ticket": 0,
+        "duration": "1小时",
+        "tags": [
+          "历史",
+          "文化",
+          "免费"
+        ],
+        "tips": "升旗仪式每天时间不同，提前查询",
+        "indoor": false
+      },
+      {
+        "name": "南锣鼓巷",
+        "description": "北京最有名的胡同街区，文创小店林立",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "文化",
+          "美食",
+          "购物",
+          "免费"
+        ],
+        "tips": "周末人多，建议工作日前往",
+        "indoor": false
+      },
+      {
+        "name": "什刹海",
+        "description": "历史文化旅游风景区，周边有众多胡同和王府",
+        "ticket": 0,
+        "duration": "2-3小时",
+        "tags": [
+          "文化",
+          "自然",
+          "免费"
+        ],
+        "tips": "傍晚散步最佳，冬天可以滑冰",
+        "indoor": false
+      },
+      {
+        "name": "圆明园",
+        "description": "清代皇家园林遗址，见证历史沧桑",
+        "ticket": 10,
+        "duration": "2-3小时",
+        "tags": [
+          "历史",
+          "文化",
+          "园林"
+        ],
+        "tips": "联票25元含西洋楼遗址区",
+        "indoor": false
+      },
+      {
+        "name": "798艺术区",
+        "description": "由旧工厂改造的当代艺术聚集地",
+        "ticket": 0,
+        "duration": "2-3小时",
+        "tags": [
+          "艺术",
+          "文化",
+          "免费"
+        ],
+        "tips": "周一很多画廊闭馆，建议周末前往",
+        "indoor": true
+      },
+      {
+        "name": "恭王府",
+        "description": "清代规模最大的王府建筑群",
+        "ticket": 40,
+        "duration": "2小时",
+        "tags": [
+          "历史",
+          "建筑",
+          "文化"
+        ],
+        "tips": "需要提前预约，建议请讲解员",
+        "indoor": true
+      },
+      {
+        "name": "雍和宫",
+        "description": "北京最大的藏传佛教寺院",
+        "ticket": 25,
+        "duration": "1-2小时",
+        "tags": [
+          "文化",
+          "宗教",
+          "建筑"
+        ],
+        "tips": "免费领取环保香，初一人最多",
+        "indoor": true
+      },
+      {
+        "name": "国家博物馆",
+        "description": "世界上单体建筑面积最大的博物馆",
+        "ticket": 0,
+        "duration": "3-4小时",
+        "tags": [
+          "历史",
+          "文化",
+          "免费"
+        ],
+        "tips": "需要提前预约，周一闭馆",
+        "indoor": true
+      }
     ],
-    "food": ["北京烤鸭", "炸酱面", "豆汁", "卤煮火烧", "驴打滚", "冰糖葫芦"],
+    "food": [
+      "北京烤鸭",
+      "炸酱面",
+      "豆汁",
+      "卤煮火烧",
+      "驴打滚",
+      "冰糖葫芦"
+    ],
     "transport": "地铁覆盖广泛，建议办理一卡通；公交也很方便",
-    "bestSeason": "秋季（9-11月）"
+    "bestSeason": "秋季（9-11月）",
+    "accommodation": [
+      {
+        "name": "王府井/东单",
+        "type": "商圈",
+        "priceRange": "¥300-800",
+        "description": "市中心，交通便利，周边景点密集"
+      },
+      {
+        "name": "三里屯/工体",
+        "type": "潮流",
+        "priceRange": "¥400-1000",
+        "description": "夜生活丰富，年轻人聚集"
+      },
+      {
+        "name": "前门/大栅栏",
+        "type": "老北京",
+        "priceRange": "¥200-500",
+        "description": "靠近天安门，体验老北京风情"
+      }
+    ],
+    "nightlife": [
+      {
+        "name": "南锣鼓巷",
+        "type": "步行街",
+        "description": "文艺小店、特色小吃"
+      },
+      {
+        "name": "三里屯太古里",
+        "type": "酒吧街",
+        "description": "酒吧、夜店、潮流文化"
+      },
+      {
+        "name": "什刹海",
+        "type": "酒吧街",
+        "description": "湖边酒吧，氛围悠闲"
+      }
+    ]
   },
   {
     "city": "上海",
     "attractions": [
-      { "name": "外滩", "description": "上海的标志性景观，万国建筑博览群", "ticket": 0, "duration": "1-2小时", "tags": ["建筑", "夜景", "必去", "免费"], "tips": "夜景最美，建议傍晚前往" },
-      { "name": "东方明珠", "description": "上海地标性建筑，可俯瞰全城", "ticket": 199, "duration": "2-3小时", "tags": ["地标", "观光"], "tips": "建议买观光层+太空舱联票" },
-      { "name": "豫园", "description": "明代江南古典园林", "ticket": 40, "duration": "2小时", "tags": ["历史", "园林", "文化"], "tips": "城隍庙小吃街就在旁边" },
-      { "name": "南京路步行街", "description": "中华商业第一街", "ticket": 0, "duration": "2小时", "tags": ["购物", "美食", "免费"], "tips": "晚上灯光很美，适合拍照" },
-      { "name": "田子坊", "description": "上海独特的石库门建筑里的文艺街区", "ticket": 0, "duration": "2小时", "tags": ["文化", "购物", "免费"], "tips": "巷子较多容易迷路，反而更有趣" },
-      { "name": "新天地", "description": "时尚休闲文化中心，石库门建筑群", "ticket": 0, "duration": "2小时", "tags": ["美食", "夜景", "免费"], "tips": "酒吧和餐厅消费较高" },
-      { "name": "迪士尼乐园", "description": "中国大陆首座迪士尼主题乐园", "ticket": 475, "duration": "1天", "tags": ["娱乐", "亲子", "必去"], "tips": "建议工作日去，下载APP查看排队时间" },
-      { "name": "朱家角古镇", "description": "上海保存最完整的江南水乡古镇", "ticket": 0, "duration": "半天", "tags": ["古镇", "文化", "免费"], "tips": "建议坐船游览，粽子和扎肉必吃" },
-      { "name": "上海博物馆", "description": "中国古代艺术博物馆", "ticket": 0, "duration": "3小时", "tags": ["历史", "文化", "免费"], "tips": "需要提前预约，青铜器馆必看" },
-      { "name": "武康路", "description": "上海最有腔调的马路，梧桐树下的老洋房", "ticket": 0, "duration": "1-2小时", "tags": ["建筑", "文化", "免费"], "tips": "适合散步拍照，周边咖啡馆很多" },
-      { "name": "陆家嘴", "description": "上海金融中心，摩天大楼群", "ticket": 0, "duration": "1-2小时", "tags": ["地标", "建筑", "免费"], "tips": "夜景壮观，可在滨江大道散步" }
+      {
+        "name": "外滩",
+        "description": "上海的标志性景观，万国建筑博览群",
+        "ticket": 0,
+        "duration": "1-2小时",
+        "tags": [
+          "建筑",
+          "夜景",
+          "必去",
+          "免费"
+        ],
+        "tips": "夜景最美，建议傍晚前往",
+        "indoor": false
+      },
+      {
+        "name": "东方明珠",
+        "description": "上海地标性建筑，可俯瞰全城",
+        "ticket": 199,
+        "duration": "2-3小时",
+        "tags": [
+          "地标",
+          "观光"
+        ],
+        "tips": "建议买观光层+太空舱联票",
+        "indoor": true
+      },
+      {
+        "name": "豫园",
+        "description": "明代江南古典园林",
+        "ticket": 40,
+        "duration": "2小时",
+        "tags": [
+          "历史",
+          "园林",
+          "文化"
+        ],
+        "tips": "城隍庙小吃街就在旁边",
+        "indoor": true
+      },
+      {
+        "name": "南京路步行街",
+        "description": "中华商业第一街",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "购物",
+          "美食",
+          "免费"
+        ],
+        "tips": "晚上灯光很美，适合拍照",
+        "indoor": false
+      },
+      {
+        "name": "田子坊",
+        "description": "上海独特的石库门建筑里的文艺街区",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "文化",
+          "购物",
+          "免费"
+        ],
+        "tips": "巷子较多容易迷路，反而更有趣",
+        "indoor": false
+      },
+      {
+        "name": "新天地",
+        "description": "时尚休闲文化中心，石库门建筑群",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "美食",
+          "夜景",
+          "免费"
+        ],
+        "tips": "酒吧和餐厅消费较高",
+        "indoor": false
+      },
+      {
+        "name": "迪士尼乐园",
+        "description": "中国大陆首座迪士尼主题乐园",
+        "ticket": 475,
+        "duration": "1天",
+        "tags": [
+          "娱乐",
+          "亲子",
+          "必去"
+        ],
+        "tips": "建议工作日去，下载APP查看排队时间",
+        "indoor": true
+      },
+      {
+        "name": "朱家角古镇",
+        "description": "上海保存最完整的江南水乡古镇",
+        "ticket": 0,
+        "duration": "半天",
+        "tags": [
+          "古镇",
+          "文化",
+          "免费"
+        ],
+        "tips": "建议坐船游览，粽子和扎肉必吃",
+        "indoor": false
+      },
+      {
+        "name": "上海博物馆",
+        "description": "中国古代艺术博物馆",
+        "ticket": 0,
+        "duration": "3小时",
+        "tags": [
+          "历史",
+          "文化",
+          "免费"
+        ],
+        "tips": "需要提前预约，青铜器馆必看",
+        "indoor": true
+      },
+      {
+        "name": "武康路",
+        "description": "上海最有腔调的马路，梧桐树下的老洋房",
+        "ticket": 0,
+        "duration": "1-2小时",
+        "tags": [
+          "建筑",
+          "文化",
+          "免费"
+        ],
+        "tips": "适合散步拍照，周边咖啡馆很多",
+        "indoor": false
+      },
+      {
+        "name": "陆家嘴",
+        "description": "上海金融中心，摩天大楼群",
+        "ticket": 0,
+        "duration": "1-2小时",
+        "tags": [
+          "地标",
+          "建筑",
+          "免费"
+        ],
+        "tips": "夜景壮观，可在滨江大道散步",
+        "indoor": false
+      }
     ],
-    "food": ["小笼包", "生煎包", "蟹壳黄", "白斩鸡", "红烧肉", "排骨年糕"],
+    "food": [
+      "小笼包",
+      "生煎包",
+      "蟹壳黄",
+      "白斩鸡",
+      "红烧肉",
+      "排骨年糕"
+    ],
     "transport": "地铁网络发达，覆盖全市主要景点",
-    "bestSeason": "春季（3-5月）和秋季（9-11月）"
+    "bestSeason": "春季（3-5月）和秋季（9-11月）",
+    "accommodation": [
+      {
+        "name": "人民广场/南京路",
+        "type": "商圈",
+        "priceRange": "¥400-1000",
+        "description": "交通枢纽，步行可达外滩"
+      },
+      {
+        "name": "静安寺/淮海路",
+        "type": "精品",
+        "priceRange": "¥500-1200",
+        "description": "高端商圈，购物便利"
+      },
+      {
+        "name": "迪士尼周边",
+        "type": "亲子",
+        "priceRange": "¥300-800",
+        "description": "方便游玩迪士尼"
+      }
+    ],
+    "nightlife": [
+      {
+        "name": "新天地",
+        "type": "酒吧街",
+        "description": "高端酒吧、国际美食"
+      },
+      {
+        "name": "衡山路",
+        "type": "酒吧街",
+        "description": "梧桐树下的酒吧一条街"
+      },
+      {
+        "name": "外滩",
+        "type": "观光",
+        "description": "夜景壮观，江边漫步"
+      }
+    ]
   },
   {
     "city": "杭州",
     "attractions": [
-      { "name": "西湖", "description": "人间天堂，世界文化遗产", "ticket": 0, "duration": "1天", "tags": ["自然", "文化", "必去", "免费"], "tips": "建议骑行环湖，断桥残雪冬天最美" },
-      { "name": "灵隐寺", "description": "杭州最早的名刹，江南著名古寺", "ticket": 75, "duration": "2-3小时", "tags": ["文化", "宗教", "历史"], "tips": "门票含飞来峰景区" },
-      { "name": "千岛湖", "description": "世界上岛屿最多的湖", "ticket": 150, "duration": "1天", "tags": ["自然", "户外"], "tips": "建议坐游船，中心湖区最美" },
-      { "name": "宋城", "description": "大型宋文化主题公园", "ticket": 290, "duration": "半天", "tags": ["文化", "娱乐"], "tips": "《宋城千古情》演出值得一看" },
-      { "name": "龙井村", "description": "西湖龙井茶的故乡", "ticket": 0, "duration": "2小时", "tags": ["文化", "自然", "免费"], "tips": "春季采茶季节最热闹" },
-      { "name": "西溪湿地", "description": "城市中的天然湿地公园", "ticket": 80, "duration": "半天", "tags": ["自然", "户外"], "tips": "建议坐摇橹船，秋天芦花最美" },
-      { "name": "河坊街", "description": "杭州最有名的历史街区", "ticket": 0, "duration": "2小时", "tags": ["美食", "文化", "免费"], "tips": "各种杭州小吃集中地" },
-      { "name": "九溪烟树", "description": "西湖新十景之一，溪水潺潺", "ticket": 0, "duration": "2-3小时", "tags": ["自然", "徒步", "免费"], "tips": "秋天红叶很美，夏天可以玩水" },
-      { "name": "钱塘江大桥", "description": "中国自行设计建造的第一座公铁两用桥", "ticket": 0, "duration": "1小时", "tags": ["历史", "地标", "免费"], "tips": "农历八月十八观潮最佳" },
-      { "name": "雷峰塔", "description": "西湖标志性建筑，白蛇传传说发生地", "ticket": 40, "duration": "1-2小时", "tags": ["历史", "文化", "地标"], "tips": "傍晚登塔看西湖落日最美" }
+      {
+        "name": "西湖",
+        "description": "人间天堂，世界文化遗产",
+        "ticket": 0,
+        "duration": "1天",
+        "tags": [
+          "自然",
+          "文化",
+          "必去",
+          "免费"
+        ],
+        "tips": "建议骑行环湖，断桥残雪冬天最美",
+        "indoor": false
+      },
+      {
+        "name": "灵隐寺",
+        "description": "杭州最早的名刹，江南著名古寺",
+        "ticket": 75,
+        "duration": "2-3小时",
+        "tags": [
+          "文化",
+          "宗教",
+          "历史"
+        ],
+        "tips": "门票含飞来峰景区",
+        "indoor": true
+      },
+      {
+        "name": "千岛湖",
+        "description": "世界上岛屿最多的湖",
+        "ticket": 150,
+        "duration": "1天",
+        "tags": [
+          "自然",
+          "户外"
+        ],
+        "tips": "建议坐游船，中心湖区最美",
+        "indoor": false
+      },
+      {
+        "name": "宋城",
+        "description": "大型宋文化主题公园",
+        "ticket": 290,
+        "duration": "半天",
+        "tags": [
+          "文化",
+          "娱乐"
+        ],
+        "tips": "《宋城千古情》演出值得一看",
+        "indoor": true
+      },
+      {
+        "name": "龙井村",
+        "description": "西湖龙井茶的故乡",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "文化",
+          "自然",
+          "免费"
+        ],
+        "tips": "春季采茶季节最热闹",
+        "indoor": false
+      },
+      {
+        "name": "西溪湿地",
+        "description": "城市中的天然湿地公园",
+        "ticket": 80,
+        "duration": "半天",
+        "tags": [
+          "自然",
+          "户外"
+        ],
+        "tips": "建议坐摇橹船，秋天芦花最美",
+        "indoor": false
+      },
+      {
+        "name": "河坊街",
+        "description": "杭州最有名的历史街区",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "美食",
+          "文化",
+          "免费"
+        ],
+        "tips": "各种杭州小吃集中地",
+        "indoor": false
+      },
+      {
+        "name": "九溪烟树",
+        "description": "西湖新十景之一，溪水潺潺",
+        "ticket": 0,
+        "duration": "2-3小时",
+        "tags": [
+          "自然",
+          "徒步",
+          "免费"
+        ],
+        "tips": "秋天红叶很美，夏天可以玩水",
+        "indoor": false
+      },
+      {
+        "name": "钱塘江大桥",
+        "description": "中国自行设计建造的第一座公铁两用桥",
+        "ticket": 0,
+        "duration": "1小时",
+        "tags": [
+          "历史",
+          "地标",
+          "免费"
+        ],
+        "tips": "农历八月十八观潮最佳",
+        "indoor": false
+      },
+      {
+        "name": "雷峰塔",
+        "description": "西湖标志性建筑，白蛇传传说发生地",
+        "ticket": 40,
+        "duration": "1-2小时",
+        "tags": [
+          "历史",
+          "文化",
+          "地标"
+        ],
+        "tips": "傍晚登塔看西湖落日最美",
+        "indoor": true
+      }
     ],
-    "food": ["西湖醋鱼", "东坡肉", "龙井虾仁", "叫化鸡", "片儿川", "定胜糕"],
+    "food": [
+      "西湖醋鱼",
+      "东坡肉",
+      "龙井虾仁",
+      "叫化鸡",
+      "片儿川",
+      "定胜糕"
+    ],
     "transport": "公交和地铁覆盖主要景区，西湖周边建议骑行",
-    "bestSeason": "春季（3-5月）和秋季（9-11月）"
+    "bestSeason": "春季（3-5月）和秋季（9-11月）",
+    "accommodation": [
+      {
+        "name": "西湖边/湖滨",
+        "type": "景观",
+        "priceRange": "¥400-1200",
+        "description": "步行可达西湖，景色优美"
+      },
+      {
+        "name": "武林广场",
+        "type": "商圈",
+        "priceRange": "¥300-600",
+        "description": "市中心，交通便利"
+      },
+      {
+        "name": "河坊街/吴山",
+        "type": "古风",
+        "priceRange": "¥200-500",
+        "description": "靠近河坊街，体验老杭州"
+      }
+    ],
+    "nightlife": [
+      {
+        "name": "河坊街",
+        "type": "步行街",
+        "description": "夜市小吃、古风表演"
+      },
+      {
+        "name": "南山路",
+        "type": "酒吧街",
+        "description": "西湖边的酒吧街"
+      },
+      {
+        "name": "武林路",
+        "type": "商圈",
+        "description": "夜市购物、美食"
+      }
+    ]
   },
   {
     "city": "成都",
     "attractions": [
-      { "name": "大熊猫繁育研究基地", "description": "世界最大的大熊猫人工繁育基地", "ticket": 55, "duration": "3-4小时", "tags": ["动物", "亲子", "必去"], "tips": "早上8点前到最容易看到活跃的熊猫" },
-      { "name": "宽窄巷子", "description": "成都遗留下来的清朝古街道", "ticket": 0, "duration": "2-3小时", "tags": ["文化", "美食", "免费"], "tips": "三大街区各有特色，都值得逛" },
-      { "name": "锦里", "description": "成都知名的步行商业街", "ticket": 0, "duration": "2小时", "tags": ["美食", "文化", "免费"], "tips": "晚上灯光很美，小吃众多" },
-      { "name": "武侯祠", "description": "中国唯一的君臣合祀祠庙", "ticket": 50, "duration": "2小时", "tags": ["历史", "文化"], "tips": "和锦里相邻，可以一起游览" },
-      { "name": "都江堰", "description": "世界文化遗产，古代水利工程奇迹", "ticket": 80, "duration": "半天", "tags": ["历史", "工程", "必去"], "tips": "建议请讲解员，了解水利原理" },
-      { "name": "青城山", "description": "道教名山，素有青城天下幽之美誉", "ticket": 80, "duration": "1天", "tags": ["自然", "宗教", "户外"], "tips": "前山道教文化，后山自然风光" },
-      { "name": "春熙路", "description": "成都最繁华的商业街", "ticket": 0, "duration": "2小时", "tags": ["购物", "美食", "免费"], "tips": "太古里就在旁边，适合逛街" },
-      { "name": "杜甫草堂", "description": "唐代诗人杜甫流寓成都时的故居", "ticket": 50, "duration": "2小时", "tags": ["历史", "文化", "文学"], "tips": "园内环境清幽，适合慢逛" },
-      { "name": "人民公园", "description": "成都人休闲喝茶的好去处", "ticket": 0, "duration": "2小时", "tags": ["文化", "休闲", "免费"], "tips": "鹤鸣茶社体验盖碗茶" },
-      { "name": "金沙遗址博物馆", "description": "展示古蜀文明的考古遗址博物馆", "ticket": 70, "duration": "2-3小时", "tags": ["历史", "文化", "博物馆"], "tips": "太阳神鸟金饰是镇馆之宝" }
+      {
+        "name": "大熊猫繁育研究基地",
+        "description": "世界最大的大熊猫人工繁育基地",
+        "ticket": 55,
+        "duration": "3-4小时",
+        "tags": [
+          "动物",
+          "亲子",
+          "必去"
+        ],
+        "tips": "早上8点前到最容易看到活跃的熊猫",
+        "indoor": true
+      },
+      {
+        "name": "宽窄巷子",
+        "description": "成都遗留下来的清朝古街道",
+        "ticket": 0,
+        "duration": "2-3小时",
+        "tags": [
+          "文化",
+          "美食",
+          "免费"
+        ],
+        "tips": "三大街区各有特色，都值得逛",
+        "indoor": false
+      },
+      {
+        "name": "锦里",
+        "description": "成都知名的步行商业街",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "美食",
+          "文化",
+          "免费"
+        ],
+        "tips": "晚上灯光很美，小吃众多",
+        "indoor": false
+      },
+      {
+        "name": "武侯祠",
+        "description": "中国唯一的君臣合祀祠庙",
+        "ticket": 50,
+        "duration": "2小时",
+        "tags": [
+          "历史",
+          "文化"
+        ],
+        "tips": "和锦里相邻，可以一起游览",
+        "indoor": true
+      },
+      {
+        "name": "都江堰",
+        "description": "世界文化遗产，古代水利工程奇迹",
+        "ticket": 80,
+        "duration": "半天",
+        "tags": [
+          "历史",
+          "工程",
+          "必去"
+        ],
+        "tips": "建议请讲解员，了解水利原理",
+        "indoor": false
+      },
+      {
+        "name": "青城山",
+        "description": "道教名山，素有青城天下幽之美誉",
+        "ticket": 80,
+        "duration": "1天",
+        "tags": [
+          "自然",
+          "宗教",
+          "户外"
+        ],
+        "tips": "前山道教文化，后山自然风光",
+        "indoor": false
+      },
+      {
+        "name": "春熙路",
+        "description": "成都最繁华的商业街",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "购物",
+          "美食",
+          "免费"
+        ],
+        "tips": "太古里就在旁边，适合逛街",
+        "indoor": false
+      },
+      {
+        "name": "杜甫草堂",
+        "description": "唐代诗人杜甫流寓成都时的故居",
+        "ticket": 50,
+        "duration": "2小时",
+        "tags": [
+          "历史",
+          "文化",
+          "文学"
+        ],
+        "tips": "园内环境清幽，适合慢逛",
+        "indoor": true
+      },
+      {
+        "name": "人民公园",
+        "description": "成都人休闲喝茶的好去处",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "文化",
+          "休闲",
+          "免费"
+        ],
+        "tips": "鹤鸣茶社体验盖碗茶",
+        "indoor": false
+      },
+      {
+        "name": "金沙遗址博物馆",
+        "description": "展示古蜀文明的考古遗址博物馆",
+        "ticket": 70,
+        "duration": "2-3小时",
+        "tags": [
+          "历史",
+          "文化",
+          "博物馆"
+        ],
+        "tips": "太阳神鸟金饰是镇馆之宝",
+        "indoor": true
+      }
     ],
-    "food": ["火锅", "串串香", "担担面", "钟水饺", "龙抄手", "兔头", "麻婆豆腐"],
+    "food": [
+      "火锅",
+      "串串香",
+      "担担面",
+      "钟水饺",
+      "龙抄手",
+      "兔头",
+      "麻婆豆腐"
+    ],
     "transport": "地铁覆盖主要景点，公交便利，打车便宜",
-    "bestSeason": "春季（3-5月）和秋季（9-11月）"
+    "bestSeason": "春季（3-5月）和秋季（9-11月）",
+    "accommodation": [
+      {
+        "name": "春熙路/太古里",
+        "type": "商圈",
+        "priceRange": "¥300-800",
+        "description": "市中心，购物美食集中"
+      },
+      {
+        "name": "宽窄巷子",
+        "type": "文化",
+        "priceRange": "¥250-600",
+        "description": "体验老成都风情"
+      },
+      {
+        "name": "锦里/武侯祠",
+        "type": "文化",
+        "priceRange": "¥200-500",
+        "description": "靠近锦里，夜生活丰富"
+      }
+    ],
+    "nightlife": [
+      {
+        "name": "九眼桥",
+        "type": "酒吧街",
+        "description": "成都最有名的酒吧一条街"
+      },
+      {
+        "name": "锦里",
+        "type": "步行街",
+        "description": "夜晚灯笼高挂，氛围绝佳"
+      },
+      {
+        "name": "春熙路",
+        "type": "商圈",
+        "description": "太古里夜景，潮流文化"
+      }
+    ]
   },
   {
     "city": "西安",
     "attractions": [
-      { "name": "秦始皇兵马俑", "description": "世界第八大奇迹，秦代雕塑艺术宝库", "ticket": 120, "duration": "半天", "tags": ["历史", "文化", "必去"], "tips": "建议请讲解员，三个俑坑都值得看" },
-      { "name": "西安城墙", "description": "中国现存最完整的古代城墙", "ticket": 54, "duration": "2-3小时", "tags": ["历史", "建筑", "必去"], "tips": "建议租自行车骑行，全程约14公里" },
-      { "name": "大雁塔", "description": "唐代佛教建筑，西安标志性古迹", "ticket": 40, "duration": "2小时", "tags": ["历史", "文化", "地标"], "tips": "北广场音乐喷泉晚上有表演" },
-      { "name": "回民街", "description": "西安著名的美食文化街区", "ticket": 0, "duration": "2-3小时", "tags": ["美食", "文化", "免费"], "tips": "各种西安小吃必打卡" },
-      { "name": "华清宫", "description": "唐代皇家温泉行宫", "ticket": 120, "duration": "2-3小时", "tags": ["历史", "文化"], "tips": "《长恨歌》实景演出非常震撼" },
-      { "name": "陕西历史博物馆", "description": "中国第一座大型现代化国家级博物馆", "ticket": 0, "duration": "3-4小时", "tags": ["历史", "文化", "免费"], "tips": "需要提前预约，珍宝馆30元" },
-      { "name": "钟鼓楼", "description": "西安的标志性建筑，古代报时中心", "ticket": 50, "duration": "1-2小时", "tags": ["历史", "建筑", "地标"], "tips": "建议傍晚去看夜景" },
-      { "name": "大唐不夜城", "description": "以盛唐文化为主题的步行街", "ticket": 0, "duration": "2-3小时", "tags": ["文化", "夜景", "免费"], "tips": "晚上灯光璀璨，不倒翁小姐姐很火" },
-      { "name": "华山", "description": "五岳之一，以险峻著称", "ticket": 160, "duration": "1天", "tags": ["自然", "户外", "必去"], "tips": "建议西峰索道上北峰索道下" },
-      { "name": "大明宫国家遗址公园", "description": "唐代皇宫遗址，丝绸之路东方圣殿", "ticket": 60, "duration": "2-3小时", "tags": ["历史", "文化"], "tips": "含遗址博物馆和IMAX电影" }
+      {
+        "name": "秦始皇兵马俑",
+        "description": "世界第八大奇迹，秦代雕塑艺术宝库",
+        "ticket": 120,
+        "duration": "半天",
+        "tags": [
+          "历史",
+          "文化",
+          "必去"
+        ],
+        "tips": "建议请讲解员，三个俑坑都值得看",
+        "indoor": true
+      },
+      {
+        "name": "西安城墙",
+        "description": "中国现存最完整的古代城墙",
+        "ticket": 54,
+        "duration": "2-3小时",
+        "tags": [
+          "历史",
+          "建筑",
+          "必去"
+        ],
+        "tips": "建议租自行车骑行，全程约14公里",
+        "indoor": false
+      },
+      {
+        "name": "大雁塔",
+        "description": "唐代佛教建筑，西安标志性古迹",
+        "ticket": 40,
+        "duration": "2小时",
+        "tags": [
+          "历史",
+          "文化",
+          "地标"
+        ],
+        "tips": "北广场音乐喷泉晚上有表演",
+        "indoor": false
+      },
+      {
+        "name": "回民街",
+        "description": "西安著名的美食文化街区",
+        "ticket": 0,
+        "duration": "2-3小时",
+        "tags": [
+          "美食",
+          "文化",
+          "免费"
+        ],
+        "tips": "各种西安小吃必打卡",
+        "indoor": false
+      },
+      {
+        "name": "华清宫",
+        "description": "唐代皇家温泉行宫",
+        "ticket": 120,
+        "duration": "2-3小时",
+        "tags": [
+          "历史",
+          "文化"
+        ],
+        "tips": "《长恨歌》实景演出非常震撼",
+        "indoor": true
+      },
+      {
+        "name": "陕西历史博物馆",
+        "description": "中国第一座大型现代化国家级博物馆",
+        "ticket": 0,
+        "duration": "3-4小时",
+        "tags": [
+          "历史",
+          "文化",
+          "免费"
+        ],
+        "tips": "需要提前预约，珍宝馆30元",
+        "indoor": true
+      },
+      {
+        "name": "钟鼓楼",
+        "description": "西安的标志性建筑，古代报时中心",
+        "ticket": 50,
+        "duration": "1-2小时",
+        "tags": [
+          "历史",
+          "建筑",
+          "地标"
+        ],
+        "tips": "建议傍晚去看夜景",
+        "indoor": false
+      },
+      {
+        "name": "大唐不夜城",
+        "description": "以盛唐文化为主题的步行街",
+        "ticket": 0,
+        "duration": "2-3小时",
+        "tags": [
+          "文化",
+          "夜景",
+          "免费"
+        ],
+        "tips": "晚上灯光璀璨，不倒翁小姐姐很火",
+        "indoor": false
+      },
+      {
+        "name": "华山",
+        "description": "五岳之一，以险峻著称",
+        "ticket": 160,
+        "duration": "1天",
+        "tags": [
+          "自然",
+          "户外",
+          "必去"
+        ],
+        "tips": "建议西峰索道上北峰索道下",
+        "indoor": false
+      },
+      {
+        "name": "大明宫国家遗址公园",
+        "description": "唐代皇宫遗址，丝绸之路东方圣殿",
+        "ticket": 60,
+        "duration": "2-3小时",
+        "tags": [
+          "历史",
+          "文化"
+        ],
+        "tips": "含遗址博物馆和IMAX电影",
+        "indoor": true
+      }
     ],
-    "food": ["肉夹馍", "羊肉泡馍", "biangbiang面", "凉皮", "灌汤包", "胡辣汤"],
+    "food": [
+      "肉夹馍",
+      "羊肉泡馍",
+      "biangbiang面",
+      "凉皮",
+      "灌汤包",
+      "胡辣汤"
+    ],
     "transport": "地铁覆盖主要景点，去华山可坐高铁",
-    "bestSeason": "春季（3-5月）和秋季（9-11月）"
+    "bestSeason": "春季（3-5月）和秋季（9-11月）",
+    "accommodation": [
+      {
+        "name": "钟楼/回民街",
+        "type": "商圈",
+        "priceRange": "¥250-600",
+        "description": "市中心，美食集中"
+      },
+      {
+        "name": "大雁塔/曲江",
+        "type": "文化",
+        "priceRange": "¥300-800",
+        "description": "靠近大雁塔，环境优美"
+      },
+      {
+        "name": "城墙内",
+        "type": "古城",
+        "priceRange": "¥200-500",
+        "description": "体验古城氛围"
+      }
+    ],
+    "nightlife": [
+      {
+        "name": "大唐不夜城",
+        "type": "步行街",
+        "description": "盛唐主题灯光秀，不倒翁表演"
+      },
+      {
+        "name": "德福巷",
+        "type": "酒吧街",
+        "description": "古城墙下的酒吧街"
+      },
+      {
+        "name": "回民街",
+        "type": "美食街",
+        "description": "深夜美食，烟火气十足"
+      }
+    ]
   },
   {
     "city": "重庆",
     "attractions": [
-      { "name": "洪崖洞", "description": "依山而建的吊脚楼群，现实版千与千寻", "ticket": 0, "duration": "2小时", "tags": ["建筑", "夜景", "必去", "免费"], "tips": "晚上6点后灯光最美" },
-      { "name": "解放碑", "description": "重庆地标，西部第一条商业步行街", "ticket": 0, "duration": "1-2小时", "tags": ["地标", "购物", "免费"], "tips": "周边美食众多" },
-      { "name": "磁器口古镇", "description": "千年古镇，重庆缩影", "ticket": 0, "duration": "2-3小时", "tags": ["古镇", "美食", "免费"], "tips": "陈麻花和毛血旺必尝" },
-      { "name": "长江索道", "description": "重庆独有的交通方式，跨越长江", "ticket": 20, "duration": "30分钟", "tags": ["交通", "观光", "地标"], "tips": "建议从南岸坐到北岸，景色更好" },
-      { "name": "武隆天生三桥", "description": "世界最大的天生桥群", "ticket": 125, "duration": "半天", "tags": ["自然", "户外"], "tips": "《变形金刚4》取景地" },
-      { "name": "大足石刻", "description": "世界文化遗产，石刻艺术瑰宝", "ticket": 115, "duration": "半天", "tags": ["历史", "文化", "艺术"], "tips": "宝顶山和北山两个景区" },
-      { "name": "李子坝轻轨站", "description": "轻轨穿楼而过的网红打卡点", "ticket": 0, "duration": "30分钟", "tags": ["地标", "免费"], "tips": "在楼下观景台拍照最佳" },
-      { "name": "南山一棵树", "description": "俯瞰重庆夜景的最佳观景台", "ticket": 30, "duration": "1-2小时", "tags": ["夜景", "观光"], "tips": "傍晚到达可以同时看日落和夜景" },
-      { "name": "朝天门", "description": "两江交汇处，重庆的水上门户", "ticket": 0, "duration": "1小时", "tags": ["地标", "免费"], "tips": "可以坐两江游船看夜景" },
-      { "name": "鹅岭二厂", "description": "《从你的全世界路过》取景地", "ticket": 0, "duration": "1-2小时", "tags": ["文艺", "免费"], "tips": "天台可以俯瞰重庆两江" }
+      {
+        "name": "洪崖洞",
+        "description": "依山而建的吊脚楼群，现实版千与千寻",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "建筑",
+          "夜景",
+          "必去",
+          "免费"
+        ],
+        "tips": "晚上6点后灯光最美",
+        "indoor": false
+      },
+      {
+        "name": "解放碑",
+        "description": "重庆地标，西部第一条商业步行街",
+        "ticket": 0,
+        "duration": "1-2小时",
+        "tags": [
+          "地标",
+          "购物",
+          "免费"
+        ],
+        "tips": "周边美食众多",
+        "indoor": false
+      },
+      {
+        "name": "磁器口古镇",
+        "description": "千年古镇，重庆缩影",
+        "ticket": 0,
+        "duration": "2-3小时",
+        "tags": [
+          "古镇",
+          "美食",
+          "免费"
+        ],
+        "tips": "陈麻花和毛血旺必尝",
+        "indoor": true
+      },
+      {
+        "name": "长江索道",
+        "description": "重庆独有的交通方式，跨越长江",
+        "ticket": 20,
+        "duration": "30分钟",
+        "tags": [
+          "交通",
+          "观光",
+          "地标"
+        ],
+        "tips": "建议从南岸坐到北岸，景色更好",
+        "indoor": false
+      },
+      {
+        "name": "武隆天生三桥",
+        "description": "世界最大的天生桥群",
+        "ticket": 125,
+        "duration": "半天",
+        "tags": [
+          "自然",
+          "户外"
+        ],
+        "tips": "《变形金刚4》取景地",
+        "indoor": false
+      },
+      {
+        "name": "大足石刻",
+        "description": "世界文化遗产，石刻艺术瑰宝",
+        "ticket": 115,
+        "duration": "半天",
+        "tags": [
+          "历史",
+          "文化",
+          "艺术"
+        ],
+        "tips": "宝顶山和北山两个景区",
+        "indoor": false
+      },
+      {
+        "name": "李子坝轻轨站",
+        "description": "轻轨穿楼而过的网红打卡点",
+        "ticket": 0,
+        "duration": "30分钟",
+        "tags": [
+          "地标",
+          "免费"
+        ],
+        "tips": "在楼下观景台拍照最佳",
+        "indoor": false
+      },
+      {
+        "name": "南山一棵树",
+        "description": "俯瞰重庆夜景的最佳观景台",
+        "ticket": 30,
+        "duration": "1-2小时",
+        "tags": [
+          "夜景",
+          "观光"
+        ],
+        "tips": "傍晚到达可以同时看日落和夜景",
+        "indoor": false
+      },
+      {
+        "name": "朝天门",
+        "description": "两江交汇处，重庆的水上门户",
+        "ticket": 0,
+        "duration": "1小时",
+        "tags": [
+          "地标",
+          "免费"
+        ],
+        "tips": "可以坐两江游船看夜景",
+        "indoor": false
+      },
+      {
+        "name": "鹅岭二厂",
+        "description": "《从你的全世界路过》取景地",
+        "ticket": 0,
+        "duration": "1-2小时",
+        "tags": [
+          "文艺",
+          "免费"
+        ],
+        "tips": "天台可以俯瞰重庆两江",
+        "indoor": false
+      }
     ],
-    "food": ["重庆火锅", "小面", "酸辣粉", "毛血旺", "辣子鸡", "泉水鸡", "抄手"],
+    "food": [
+      "重庆火锅",
+      "小面",
+      "酸辣粉",
+      "毛血旺",
+      "辣子鸡",
+      "泉水鸡",
+      "抄手"
+    ],
     "transport": "轨道交通覆盖主要景点，地形复杂建议导航",
-    "bestSeason": "春季（3-5月）和秋季（9-11月）"
+    "bestSeason": "春季（3-5月）和秋季（9-11月）",
+    "accommodation": [
+      {
+        "name": "解放碑",
+        "type": "商圈",
+        "priceRange": "¥250-700",
+        "description": "市中心，交通便利"
+      },
+      {
+        "name": "洪崖洞/朝天门",
+        "type": "景观",
+        "priceRange": "¥300-800",
+        "description": "江景房，夜景壮观"
+      },
+      {
+        "name": "观音桥",
+        "type": "商圈",
+        "priceRange": "¥200-500",
+        "description": "新兴商圈，性价比高"
+      }
+    ],
+    "nightlife": [
+      {
+        "name": "洪崖洞",
+        "type": "观光",
+        "description": "夜景壮观，现实版千与千寻"
+      },
+      {
+        "name": "九街",
+        "type": "酒吧街",
+        "description": "重庆夜生活中心"
+      },
+      {
+        "name": "南滨路",
+        "type": "江景",
+        "description": "江边夜景，餐厅酒吧"
+      }
+    ]
   },
   {
     "city": "广州",
     "attractions": [
-      { "name": "广州塔", "description": "中国第一高塔，又称小蛮腰", "ticket": 150, "duration": "2-3小时", "tags": ["地标", "观光", "必去"], "tips": "建议傍晚去，可以同时看日落和夜景" },
-      { "name": "沙面", "description": "欧陆风情的历史文化街区", "ticket": 0, "duration": "2小时", "tags": ["建筑", "文化", "免费"], "tips": "适合拍照，有很多文艺咖啡馆" },
-      { "name": "陈家祠", "description": "广东现存规模最大最完整的清代祠堂", "ticket": 10, "duration": "1-2小时", "tags": ["历史", "建筑", "文化"], "tips": "木雕砖雕石雕工艺精湛" },
-      { "name": "白云山", "description": "广州的肺，城市中的天然氧吧", "ticket": 5, "duration": "半天", "tags": ["自然", "户外"], "tips": "摩星岭是最高点，可俯瞰全城" },
-      { "name": "珠江夜游", "description": "乘船游览珠江两岸夜景", "ticket": 80, "duration": "1-2小时", "tags": ["夜景", "观光"], "tips": "天字码头出发，经过广州塔" },
-      { "name": "越秀公园", "description": "广州最大的综合性公园", "ticket": 0, "duration": "2小时", "tags": ["自然", "文化", "免费"], "tips": "五羊雕像是广州标志" },
-      { "name": "北京路", "description": "广州最繁华的商业步行街", "ticket": 0, "duration": "2小时", "tags": ["购物", "美食", "免费"], "tips": "千年古道遗址在玻璃地面下" },
-      { "name": "长隆旅游度假区", "description": "综合性主题旅游度假区", "ticket": 300, "duration": "1天", "tags": ["娱乐", "亲子"], "tips": "长隆野生动物世界和欢乐世界都值得去" },
-      { "name": "中山纪念堂", "description": "广州人民和海外华侨为纪念孙中山而建", "ticket": 10, "duration": "1小时", "tags": ["历史", "建筑"], "tips": "八角形建筑不用一根柱子" },
-      { "name": "永庆坊", "description": "西关老城中的文创街区", "ticket": 0, "duration": "1-2小时", "tags": ["文化", "文艺", "免费"], "tips": "李小龙祖居就在旁边" }
+      {
+        "name": "广州塔",
+        "description": "中国第一高塔，又称小蛮腰",
+        "ticket": 150,
+        "duration": "2-3小时",
+        "tags": [
+          "地标",
+          "观光",
+          "必去"
+        ],
+        "tips": "建议傍晚去，可以同时看日落和夜景",
+        "indoor": false
+      },
+      {
+        "name": "沙面",
+        "description": "欧陆风情的历史文化街区",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "建筑",
+          "文化",
+          "免费"
+        ],
+        "tips": "适合拍照，有很多文艺咖啡馆",
+        "indoor": true
+      },
+      {
+        "name": "陈家祠",
+        "description": "广东现存规模最大最完整的清代祠堂",
+        "ticket": 10,
+        "duration": "1-2小时",
+        "tags": [
+          "历史",
+          "建筑",
+          "文化"
+        ],
+        "tips": "木雕砖雕石雕工艺精湛",
+        "indoor": true
+      },
+      {
+        "name": "白云山",
+        "description": "广州的肺，城市中的天然氧吧",
+        "ticket": 5,
+        "duration": "半天",
+        "tags": [
+          "自然",
+          "户外"
+        ],
+        "tips": "摩星岭是最高点，可俯瞰全城",
+        "indoor": false
+      },
+      {
+        "name": "珠江夜游",
+        "description": "乘船游览珠江两岸夜景",
+        "ticket": 80,
+        "duration": "1-2小时",
+        "tags": [
+          "夜景",
+          "观光"
+        ],
+        "tips": "天字码头出发，经过广州塔",
+        "indoor": false
+      },
+      {
+        "name": "越秀公园",
+        "description": "广州最大的综合性公园",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "自然",
+          "文化",
+          "免费"
+        ],
+        "tips": "五羊雕像是广州标志",
+        "indoor": false
+      },
+      {
+        "name": "北京路",
+        "description": "广州最繁华的商业步行街",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "购物",
+          "美食",
+          "免费"
+        ],
+        "tips": "千年古道遗址在玻璃地面下",
+        "indoor": false
+      },
+      {
+        "name": "长隆旅游度假区",
+        "description": "综合性主题旅游度假区",
+        "ticket": 300,
+        "duration": "1天",
+        "tags": [
+          "娱乐",
+          "亲子"
+        ],
+        "tips": "长隆野生动物世界和欢乐世界都值得去",
+        "indoor": false
+      },
+      {
+        "name": "中山纪念堂",
+        "description": "广州人民和海外华侨为纪念孙中山而建",
+        "ticket": 10,
+        "duration": "1小时",
+        "tags": [
+          "历史",
+          "建筑"
+        ],
+        "tips": "八角形建筑不用一根柱子",
+        "indoor": false
+      },
+      {
+        "name": "永庆坊",
+        "description": "西关老城中的文创街区",
+        "ticket": 0,
+        "duration": "1-2小时",
+        "tags": [
+          "文化",
+          "文艺",
+          "免费"
+        ],
+        "tips": "李小龙祖居就在旁边",
+        "indoor": false
+      }
     ],
-    "food": ["早茶", "肠粉", "白切鸡", "煲仔饭", "艇仔粥", "双皮奶", "叉烧"],
+    "food": [
+      "早茶",
+      "肠粉",
+      "白切鸡",
+      "煲仔饭",
+      "艇仔粥",
+      "双皮奶",
+      "叉烧"
+    ],
     "transport": "地铁发达，覆盖全市主要景点",
-    "bestSeason": "秋季（10-12月）"
+    "bestSeason": "秋季（10-12月）",
+    "accommodation": [
+      {
+        "name": "天河城/珠江新城",
+        "type": "商圈",
+        "priceRange": "¥300-800",
+        "description": "CBD 区域，交通便利"
+      },
+      {
+        "name": "北京路/越秀",
+        "type": "老城",
+        "priceRange": "¥200-500",
+        "description": "靠近北京路步行街"
+      },
+      {
+        "name": "沙面/荔湾",
+        "type": "文化",
+        "priceRange": "¥250-600",
+        "description": "欧式建筑群，环境优雅"
+      }
+    ],
+    "nightlife": [
+      {
+        "name": "珠江夜游",
+        "type": "观光",
+        "description": "乘船欣赏珠江两岸夜景"
+      },
+      {
+        "name": "北京路",
+        "type": "步行街",
+        "description": "千年古道，夜市热闹"
+      },
+      {
+        "name": "天河南",
+        "type": "美食街",
+        "description": "宵夜一条街"
+      }
+    ]
   },
   {
     "city": "深圳",
     "attractions": [
-      { "name": "世界之窗", "description": "汇聚世界奇观的历史文化旅游景区", "ticket": 200, "duration": "1天", "tags": ["娱乐", "文化"], "tips": "夜场票更便宜，灯光秀好看" },
-      { "name": "东部华侨城", "description": "大型生态旅游示范区", "ticket": 200, "duration": "1天", "tags": ["自然", "娱乐"], "tips": "大峡谷和茶溪谷两个园区" },
-      { "name": "大梅沙海滨公园", "description": "深圳最长的海滨公园", "ticket": 0, "duration": "半天", "tags": ["海滩", "自然", "免费"], "tips": "需要提前预约，旺季人很多" },
-      { "name": "深圳湾公园", "description": "沿海而建的带状公园", "ticket": 0, "duration": "2小时", "tags": ["自然", "免费"], "tips": "日落时分景色最美" },
-      { "name": "华强北", "description": "中国电子第一街", "ticket": 0, "duration": "2小时", "tags": ["购物", "科技", "免费"], "tips": "各种电子产品应有尽有" },
-      { "name": "莲花山公园", "description": "深圳的城市地标公园", "ticket": 0, "duration": "1-2小时", "tags": ["自然", "免费"], "tips": "山顶广场有邓小平铜像" },
-      { "name": "甘坑客家小镇", "description": "深圳原住民客家文化村落", "ticket": 0, "duration": "2-3小时", "tags": ["文化", "古镇", "免费"], "tips": "小凉帽农场适合亲子" },
-      { "name": "仙湖植物园", "description": "集植物科研和观赏于一体的植物园", "ticket": 15, "duration": "半天", "tags": ["自然", "植物"], "tips": "弘法寺在园内，可以一起游览" },
-      { "name": "大鹏古城", "description": "深圳又称鹏城的由来", "ticket": 0, "duration": "2小时", "tags": ["历史", "古镇", "免费"], "tips": "古城不大，可以和较场尾一起玩" },
-      { "name": "欢乐港湾", "description": "深圳新的滨海文化公园", "ticket": 0, "duration": "2小时", "tags": ["休闲", "夜景", "免费"], "tips": "湾区之光摩天轮值得体验" }
+      {
+        "name": "世界之窗",
+        "description": "汇聚世界奇观的历史文化旅游景区",
+        "ticket": 200,
+        "duration": "1天",
+        "tags": [
+          "娱乐",
+          "文化"
+        ],
+        "tips": "夜场票更便宜，灯光秀好看",
+        "indoor": true
+      },
+      {
+        "name": "东部华侨城",
+        "description": "大型生态旅游示范区",
+        "ticket": 200,
+        "duration": "1天",
+        "tags": [
+          "自然",
+          "娱乐"
+        ],
+        "tips": "大峡谷和茶溪谷两个园区",
+        "indoor": false
+      },
+      {
+        "name": "大梅沙海滨公园",
+        "description": "深圳最长的海滨公园",
+        "ticket": 0,
+        "duration": "半天",
+        "tags": [
+          "海滩",
+          "自然",
+          "免费"
+        ],
+        "tips": "需要提前预约，旺季人很多",
+        "indoor": false
+      },
+      {
+        "name": "深圳湾公园",
+        "description": "沿海而建的带状公园",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "自然",
+          "免费"
+        ],
+        "tips": "日落时分景色最美",
+        "indoor": false
+      },
+      {
+        "name": "华强北",
+        "description": "中国电子第一街",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "购物",
+          "科技",
+          "免费"
+        ],
+        "tips": "各种电子产品应有尽有",
+        "indoor": false
+      },
+      {
+        "name": "莲花山公园",
+        "description": "深圳的城市地标公园",
+        "ticket": 0,
+        "duration": "1-2小时",
+        "tags": [
+          "自然",
+          "免费"
+        ],
+        "tips": "山顶广场有邓小平铜像",
+        "indoor": false
+      },
+      {
+        "name": "甘坑客家小镇",
+        "description": "深圳原住民客家文化村落",
+        "ticket": 0,
+        "duration": "2-3小时",
+        "tags": [
+          "文化",
+          "古镇",
+          "免费"
+        ],
+        "tips": "小凉帽农场适合亲子",
+        "indoor": false
+      },
+      {
+        "name": "仙湖植物园",
+        "description": "集植物科研和观赏于一体的植物园",
+        "ticket": 15,
+        "duration": "半天",
+        "tags": [
+          "自然",
+          "植物"
+        ],
+        "tips": "弘法寺在园内，可以一起游览",
+        "indoor": false
+      },
+      {
+        "name": "大鹏古城",
+        "description": "深圳又称鹏城的由来",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "历史",
+          "古镇",
+          "免费"
+        ],
+        "tips": "古城不大，可以和较场尾一起玩",
+        "indoor": false
+      },
+      {
+        "name": "欢乐港湾",
+        "description": "深圳新的滨海文化公园",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "休闲",
+          "夜景",
+          "免费"
+        ],
+        "tips": "湾区之光摩天轮值得体验",
+        "indoor": false
+      }
     ],
-    "food": ["椰子鸡", "潮汕牛肉火锅", "肠粉", "烧鹅", "猪肚鸡", "广式早茶"],
+    "food": [
+      "椰子鸡",
+      "潮汕牛肉火锅",
+      "肠粉",
+      "烧鹅",
+      "猪肚鸡",
+      "广式早茶"
+    ],
     "transport": "地铁网络发达，公交便利",
-    "bestSeason": "秋冬季（10-2月）"
+    "bestSeason": "秋冬季（10-2月）",
+    "accommodation": [
+      {
+        "name": "福田/华强北",
+        "type": "商圈",
+        "priceRange": "¥300-800",
+        "description": "市中心，交通便利"
+      },
+      {
+        "name": "南山/科技园",
+        "type": "科技",
+        "priceRange": "¥350-900",
+        "description": "靠近世界之窗"
+      },
+      {
+        "name": "大梅沙/盐田",
+        "type": "海滨",
+        "priceRange": "¥300-700",
+        "description": "靠近海滩，适合度假"
+      }
+    ],
+    "nightlife": [
+      {
+        "name": "海岸城",
+        "type": "商圈",
+        "description": "购物中心，餐饮丰富"
+      },
+      {
+        "name": "蛇口海上世界",
+        "type": "酒吧街",
+        "description": "海边酒吧，异国风情"
+      },
+      {
+        "name": "华强北",
+        "type": "电子街",
+        "description": "电子产品天堂，夜间也热闹"
+      }
+    ]
   },
   {
     "city": "南京",
     "attractions": [
-      { "name": "中山陵", "description": "孙中山先生的陵寝，南京标志性景点", "ticket": 0, "duration": "2-3小时", "tags": ["历史", "文化", "必去", "免费"], "tips": "需要提前预约，392级台阶" },
-      { "name": "夫子庙", "description": "供奉祭祀孔子的庙宇，秦淮河风光带", "ticket": 0, "duration": "2-3小时", "tags": ["文化", "美食", "免费"], "tips": "夜游秦淮河很美" },
-      { "name": "总统府", "description": "中国近代建筑遗存中规模最大的建筑群", "ticket": 35, "duration": "2小时", "tags": ["历史", "建筑"], "tips": "建议请讲解员" },
-      { "name": "明孝陵", "description": "明太祖朱元璋与马皇后的陵墓", "ticket": 70, "duration": "2-3小时", "tags": ["历史", "文化"], "tips": "神道石象路秋天最美" },
-      { "name": "玄武湖", "description": "中国最大的皇家园林湖泊", "ticket": 0, "duration": "2-3小时", "tags": ["自然", "免费"], "tips": "环湖一圈约10公里" },
-      { "name": "南京博物院", "description": "中国三大博物馆之一", "ticket": 0, "duration": "3-4小时", "tags": ["历史", "文化", "免费"], "tips": "民国馆很有特色，需要预约" },
-      { "name": "鸡鸣寺", "description": "南京最古老的梵刹之一", "ticket": 10, "duration": "1小时", "tags": ["文化", "宗教"], "tips": "春天樱花大道很美" },
-      { "name": "老门东", "description": "南京老城南地区的古街巷", "ticket": 0, "duration": "2小时", "tags": ["文化", "美食", "免费"], "tips": "各种南京小吃和文创店" },
-      { "name": "栖霞山", "description": "中国四大赏枫胜地之一", "ticket": 25, "duration": "半天", "tags": ["自然", "户外"], "tips": "秋天红叶最佳观赏期在11月中旬" },
-      { "name": "侵华日军南京大屠杀遇难同胞纪念馆", "description": "铭记历史的重要场所", "ticket": 0, "duration": "2小时", "tags": ["历史", "免费"], "tips": "周一闭馆，保持肃穆" }
+      {
+        "name": "中山陵",
+        "description": "孙中山先生的陵寝，南京标志性景点",
+        "ticket": 0,
+        "duration": "2-3小时",
+        "tags": [
+          "历史",
+          "文化",
+          "必去",
+          "免费"
+        ],
+        "tips": "需要提前预约，392级台阶",
+        "indoor": false
+      },
+      {
+        "name": "夫子庙",
+        "description": "供奉祭祀孔子的庙宇，秦淮河风光带",
+        "ticket": 0,
+        "duration": "2-3小时",
+        "tags": [
+          "文化",
+          "美食",
+          "免费"
+        ],
+        "tips": "夜游秦淮河很美",
+        "indoor": false
+      },
+      {
+        "name": "总统府",
+        "description": "中国近代建筑遗存中规模最大的建筑群",
+        "ticket": 35,
+        "duration": "2小时",
+        "tags": [
+          "历史",
+          "建筑"
+        ],
+        "tips": "建议请讲解员",
+        "indoor": true
+      },
+      {
+        "name": "明孝陵",
+        "description": "明太祖朱元璋与马皇后的陵墓",
+        "ticket": 70,
+        "duration": "2-3小时",
+        "tags": [
+          "历史",
+          "文化"
+        ],
+        "tips": "神道石象路秋天最美",
+        "indoor": false
+      },
+      {
+        "name": "玄武湖",
+        "description": "中国最大的皇家园林湖泊",
+        "ticket": 0,
+        "duration": "2-3小时",
+        "tags": [
+          "自然",
+          "免费"
+        ],
+        "tips": "环湖一圈约10公里",
+        "indoor": false
+      },
+      {
+        "name": "南京博物院",
+        "description": "中国三大博物馆之一",
+        "ticket": 0,
+        "duration": "3-4小时",
+        "tags": [
+          "历史",
+          "文化",
+          "免费"
+        ],
+        "tips": "民国馆很有特色，需要预约",
+        "indoor": true
+      },
+      {
+        "name": "鸡鸣寺",
+        "description": "南京最古老的梵刹之一",
+        "ticket": 10,
+        "duration": "1小时",
+        "tags": [
+          "文化",
+          "宗教"
+        ],
+        "tips": "春天樱花大道很美",
+        "indoor": false
+      },
+      {
+        "name": "老门东",
+        "description": "南京老城南地区的古街巷",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "文化",
+          "美食",
+          "免费"
+        ],
+        "tips": "各种南京小吃和文创店",
+        "indoor": false
+      },
+      {
+        "name": "栖霞山",
+        "description": "中国四大赏枫胜地之一",
+        "ticket": 25,
+        "duration": "半天",
+        "tags": [
+          "自然",
+          "户外"
+        ],
+        "tips": "秋天红叶最佳观赏期在11月中旬",
+        "indoor": false
+      },
+      {
+        "name": "侵华日军南京大屠杀遇难同胞纪念馆",
+        "description": "铭记历史的重要场所",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "历史",
+          "免费"
+        ],
+        "tips": "周一闭馆，保持肃穆",
+        "indoor": true
+      }
     ],
-    "food": ["鸭血粉丝汤", "盐水鸭", "小笼包", "牛肉锅贴", "赤豆元宵", "桂花糕"],
+    "food": [
+      "鸭血粉丝汤",
+      "盐水鸭",
+      "小笼包",
+      "牛肉锅贴",
+      "赤豆元宵",
+      "桂花糕"
+    ],
     "transport": "地铁覆盖主要景点，公交便利",
-    "bestSeason": "秋季（9-11月）"
+    "bestSeason": "秋季（9-11月）",
+    "accommodation": [
+      {
+        "name": "新街口",
+        "type": "商圈",
+        "priceRange": "¥300-700",
+        "description": "市中心，交通枢纽"
+      },
+      {
+        "name": "夫子庙/秦淮河",
+        "type": "文化",
+        "priceRange": "¥250-600",
+        "description": "夜景优美，小吃集中"
+      },
+      {
+        "name": "鼓楼/玄武湖",
+        "type": "景观",
+        "priceRange": "¥250-500",
+        "description": "靠近玄武湖，环境好"
+      }
+    ],
+    "nightlife": [
+      {
+        "name": "夫子庙/秦淮河",
+        "type": "观光",
+        "description": "夜游秦淮河，灯火辉煌"
+      },
+      {
+        "name": "1912街区",
+        "type": "酒吧街",
+        "description": "民国建筑群里的酒吧街"
+      },
+      {
+        "name": "老门东",
+        "type": "步行街",
+        "description": "古风街区，文创小店"
+      }
+    ]
   },
   {
     "city": "苏州",
     "attractions": [
-      { "name": "拙政园", "description": "中国四大名园之一，江南古典园林代表", "ticket": 70, "duration": "2-3小时", "tags": ["园林", "文化", "必去"], "tips": "建议早上开门就去，避开人流" },
-      { "name": "虎丘", "description": "苏东坡说来苏州不游虎丘乃憾事也", "ticket": 60, "duration": "2小时", "tags": ["历史", "文化"], "tips": "斜塔是中国的比萨斜塔" },
-      { "name": "周庄", "description": "中国第一水乡", "ticket": 100, "duration": "半天", "tags": ["古镇", "水乡", "必去"], "tips": "万三蹄和阿婆茶必尝" },
-      { "name": "平江路", "description": "苏州最有味道的历史街区", "ticket": 0, "duration": "2小时", "tags": ["文化", "美食", "免费"], "tips": "沿河漫步，小店很多" },
-      { "name": "狮子林", "description": "以假山著称的古典园林", "ticket": 40, "duration": "1-2小时", "tags": ["园林", "文化"], "tips": "迷宫一样的假山很有趣" },
-      { "name": "寒山寺", "description": "姑苏城外寒山寺，夜半钟声到客船", "ticket": 20, "duration": "1小时", "tags": ["文化", "宗教"], "tips": "跨年敲钟活动很有名" },
-      { "name": "苏州博物馆", "description": "贝聿铭设计的现代建筑杰作", "ticket": 0, "duration": "2-3小时", "tags": ["建筑", "文化", "免费"], "tips": "需要提前预约，建筑本身值得欣赏" },
-      { "name": "同里古镇", "description": "江南六大古镇之一", "ticket": 100, "duration": "半天", "tags": ["古镇", "水乡"], "tips": "退思园是世界文化遗产" },
-      { "name": "金鸡湖", "description": "苏州工业园区的城市湖泊", "ticket": 0, "duration": "2小时", "tags": ["自然", "免费"], "tips": "周五和周六晚上有音乐喷泉" },
-      { "name": "留园", "description": "中国四大名园之一", "ticket": 55, "duration": "1-2小时", "tags": ["园林", "文化"], "tips": "建筑空间处理很精妙" }
+      {
+        "name": "拙政园",
+        "description": "中国四大名园之一，江南古典园林代表",
+        "ticket": 70,
+        "duration": "2-3小时",
+        "tags": [
+          "园林",
+          "文化",
+          "必去"
+        ],
+        "tips": "建议早上开门就去，避开人流",
+        "indoor": true
+      },
+      {
+        "name": "虎丘",
+        "description": "苏东坡说来苏州不游虎丘乃憾事也",
+        "ticket": 60,
+        "duration": "2小时",
+        "tags": [
+          "历史",
+          "文化"
+        ],
+        "tips": "斜塔是中国的比萨斜塔",
+        "indoor": false
+      },
+      {
+        "name": "周庄",
+        "description": "中国第一水乡",
+        "ticket": 100,
+        "duration": "半天",
+        "tags": [
+          "古镇",
+          "水乡",
+          "必去"
+        ],
+        "tips": "万三蹄和阿婆茶必尝",
+        "indoor": false
+      },
+      {
+        "name": "平江路",
+        "description": "苏州最有味道的历史街区",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "文化",
+          "美食",
+          "免费"
+        ],
+        "tips": "沿河漫步，小店很多",
+        "indoor": false
+      },
+      {
+        "name": "狮子林",
+        "description": "以假山著称的古典园林",
+        "ticket": 40,
+        "duration": "1-2小时",
+        "tags": [
+          "园林",
+          "文化"
+        ],
+        "tips": "迷宫一样的假山很有趣",
+        "indoor": true
+      },
+      {
+        "name": "寒山寺",
+        "description": "姑苏城外寒山寺，夜半钟声到客船",
+        "ticket": 20,
+        "duration": "1小时",
+        "tags": [
+          "文化",
+          "宗教"
+        ],
+        "tips": "跨年敲钟活动很有名",
+        "indoor": false
+      },
+      {
+        "name": "苏州博物馆",
+        "description": "贝聿铭设计的现代建筑杰作",
+        "ticket": 0,
+        "duration": "2-3小时",
+        "tags": [
+          "建筑",
+          "文化",
+          "免费"
+        ],
+        "tips": "需要提前预约，建筑本身值得欣赏",
+        "indoor": true
+      },
+      {
+        "name": "同里古镇",
+        "description": "江南六大古镇之一",
+        "ticket": 100,
+        "duration": "半天",
+        "tags": [
+          "古镇",
+          "水乡"
+        ],
+        "tips": "退思园是世界文化遗产",
+        "indoor": false
+      },
+      {
+        "name": "金鸡湖",
+        "description": "苏州工业园区的城市湖泊",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "自然",
+          "免费"
+        ],
+        "tips": "周五和周六晚上有音乐喷泉",
+        "indoor": false
+      },
+      {
+        "name": "留园",
+        "description": "中国四大名园之一",
+        "ticket": 55,
+        "duration": "1-2小时",
+        "tags": [
+          "园林",
+          "文化"
+        ],
+        "tips": "建筑空间处理很精妙",
+        "indoor": true
+      }
     ],
-    "food": ["松鼠桂鱼", "响油鳝糊", "苏式汤面", "蟹壳黄", "苏式月饼", "鸡头米"],
+    "food": [
+      "松鼠桂鱼",
+      "响油鳝糊",
+      "苏式汤面",
+      "蟹壳黄",
+      "苏式月饼",
+      "鸡头米"
+    ],
     "transport": "公交覆盖主要景点，古镇可坐大巴",
-    "bestSeason": "春季（3-5月）和秋季（9-11月）"
+    "bestSeason": "春季（3-5月）和秋季（9-11月）",
+    "accommodation": [
+      {
+        "name": "观前街",
+        "type": "商圈",
+        "priceRange": "¥250-600",
+        "description": "市中心，购物便利"
+      },
+      {
+        "name": "平江路",
+        "type": "古风",
+        "priceRange": "¥300-800",
+        "description": "古运河边，体验苏式生活"
+      },
+      {
+        "name": "金鸡湖/园区",
+        "type": "现代",
+        "priceRange": "¥300-700",
+        "description": "现代商圈，设施新"
+      }
+    ],
+    "nightlife": [
+      {
+        "name": "平江路",
+        "type": "步行街",
+        "description": "古运河边漫步，评弹声声"
+      },
+      {
+        "name": "山塘街",
+        "type": "步行街",
+        "description": "七里山塘，夜景如画"
+      },
+      {
+        "name": "金鸡湖",
+        "type": "观光",
+        "description": "音乐喷泉，现代夜景"
+      }
+    ]
   },
   {
     "city": "厦门",
     "attractions": [
-      { "name": "鼓浪屿", "description": "万国建筑博览馆，世界文化遗产", "ticket": 0, "duration": "1天", "tags": ["文化", "建筑", "必去", "免费"], "tips": "需要提前预约船票，岛上日光岩收费60元" },
-      { "name": "南普陀寺", "description": "闽南佛教胜地", "ticket": 0, "duration": "1-2小时", "tags": ["文化", "宗教", "免费"], "tips": "素饼很有名" },
-      { "name": "厦门大学", "description": "中国最美大学之一", "ticket": 0, "duration": "2小时", "tags": ["文化", "建筑", "免费"], "tips": "需要预约入校，芙蓉隧道涂鸦墙必看" },
-      { "name": "曾厝垵", "description": "中国最文艺的渔村", "ticket": 0, "duration": "2-3小时", "tags": ["文化", "美食", "免费"], "tips": "各种小吃和手工艺品" },
-      { "name": "环岛路", "description": "厦门最美的海滨公路", "ticket": 0, "duration": "2-3小时", "tags": ["自然", "免费"], "tips": "建议租自行车骑行" },
-      { "name": "胡里山炮台", "description": "保存完好的清代炮台", "ticket": 25, "duration": "1小时", "tags": ["历史", "军事"], "tips": "每天有红夷大炮表演" },
-      { "name": "集美学村", "description": "陈嘉庚先生创办的学校群", "ticket": 0, "duration": "2小时", "tags": ["文化", "建筑", "免费"], "tips": "嘉庚建筑中西合璧很有特色" },
-      { "name": "中山路步行街", "description": "厦门最老牌的商业街", "ticket": 0, "duration": "2小时", "tags": ["购物", "美食", "免费"], "tips": "骑楼建筑很有南洋风情" },
-      { "name": "植物园", "description": "厦门园林植物园", "ticket": 30, "duration": "半天", "tags": ["自然", "植物"], "tips": "雨林世界和沙生植物区最值得去" },
-      { "name": "沙坡尾", "description": "厦门港的源起之地，文艺街区", "ticket": 0, "duration": "2小时", "tags": ["文化", "文艺", "免费"], "tips": "各种创意小店和咖啡馆" }
+      {
+        "name": "鼓浪屿",
+        "description": "万国建筑博览馆，世界文化遗产",
+        "ticket": 0,
+        "duration": "1天",
+        "tags": [
+          "文化",
+          "建筑",
+          "必去",
+          "免费"
+        ],
+        "tips": "需要提前预约船票，岛上日光岩收费60元",
+        "indoor": false
+      },
+      {
+        "name": "南普陀寺",
+        "description": "闽南佛教胜地",
+        "ticket": 0,
+        "duration": "1-2小时",
+        "tags": [
+          "文化",
+          "宗教",
+          "免费"
+        ],
+        "tips": "素饼很有名",
+        "indoor": true
+      },
+      {
+        "name": "厦门大学",
+        "description": "中国最美大学之一",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "文化",
+          "建筑",
+          "免费"
+        ],
+        "tips": "需要预约入校，芙蓉隧道涂鸦墙必看",
+        "indoor": false
+      },
+      {
+        "name": "曾厝垵",
+        "description": "中国最文艺的渔村",
+        "ticket": 0,
+        "duration": "2-3小时",
+        "tags": [
+          "文化",
+          "美食",
+          "免费"
+        ],
+        "tips": "各种小吃和手工艺品",
+        "indoor": false
+      },
+      {
+        "name": "环岛路",
+        "description": "厦门最美的海滨公路",
+        "ticket": 0,
+        "duration": "2-3小时",
+        "tags": [
+          "自然",
+          "免费"
+        ],
+        "tips": "建议租自行车骑行",
+        "indoor": false
+      },
+      {
+        "name": "胡里山炮台",
+        "description": "保存完好的清代炮台",
+        "ticket": 25,
+        "duration": "1小时",
+        "tags": [
+          "历史",
+          "军事"
+        ],
+        "tips": "每天有红夷大炮表演",
+        "indoor": true
+      },
+      {
+        "name": "集美学村",
+        "description": "陈嘉庚先生创办的学校群",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "文化",
+          "建筑",
+          "免费"
+        ],
+        "tips": "嘉庚建筑中西合璧很有特色",
+        "indoor": false
+      },
+      {
+        "name": "中山路步行街",
+        "description": "厦门最老牌的商业街",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "购物",
+          "美食",
+          "免费"
+        ],
+        "tips": "骑楼建筑很有南洋风情",
+        "indoor": false
+      },
+      {
+        "name": "植物园",
+        "description": "厦门园林植物园",
+        "ticket": 30,
+        "duration": "半天",
+        "tags": [
+          "自然",
+          "植物"
+        ],
+        "tips": "雨林世界和沙生植物区最值得去",
+        "indoor": false
+      },
+      {
+        "name": "沙坡尾",
+        "description": "厦门港的源起之地，文艺街区",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "文化",
+          "文艺",
+          "免费"
+        ],
+        "tips": "各种创意小店和咖啡馆",
+        "indoor": false
+      }
     ],
-    "food": ["沙茶面", "海蛎煎", "土笋冻", "花生汤", "烧肉粽", "姜母鸭"],
+    "food": [
+      "沙茶面",
+      "海蛎煎",
+      "土笋冻",
+      "花生汤",
+      "烧肉粽",
+      "姜母鸭"
+    ],
     "transport": "公交和BRT覆盖主要景点，鼓浪屿需坐船",
-    "bestSeason": "春季（3-5月）和秋季（10-12月）"
+    "bestSeason": "春季（3-5月）和秋季（10-12月）",
+    "accommodation": [
+      {
+        "name": "中山路/轮渡",
+        "type": "商圈",
+        "priceRange": "¥250-600",
+        "description": "靠近鼓浪屿码头"
+      },
+      {
+        "name": "曾厝垵",
+        "type": "文艺",
+        "priceRange": "¥200-500",
+        "description": "文艺渔村，民宿集中"
+      },
+      {
+        "name": "环岛路/厦大",
+        "type": "海滨",
+        "priceRange": "¥300-700",
+        "description": "海景优美，靠近厦大"
+      }
+    ],
+    "nightlife": [
+      {
+        "name": "中山路",
+        "type": "步行街",
+        "description": "骑楼建筑，夜市小吃"
+      },
+      {
+        "name": "曾厝垵",
+        "type": "文创街",
+        "description": "文艺夜市，手作小店"
+      },
+      {
+        "name": "环岛路",
+        "type": "海滨",
+        "description": "海边骑行，夜风习习"
+      }
+    ]
   },
   {
     "city": "大理",
     "attractions": [
-      { "name": "洱海", "description": "大理的灵魂，高原明珠", "ticket": 0, "duration": "1天", "tags": ["自然", "必去", "免费"], "tips": "环洱海骑行约130公里，建议分两天" },
-      { "name": "大理古城", "description": "南诏国和大理国的都城", "ticket": 0, "duration": "半天", "tags": ["文化", "古镇", "免费"], "tips": "人民路和洋人街最热闹" },
-      { "name": "崇圣寺三塔", "description": "大理的标志性景观", "ticket": 75, "duration": "2小时", "tags": ["历史", "文化", "地标"], "tips": "倒影池拍照最美" },
-      { "name": "苍山", "description": "大理的靠山，十九峰十八溪", "ticket": 35, "duration": "半天", "tags": ["自然", "户外"], "tips": "坐索道上山，洗马潭是最高点" },
-      { "name": "双廊古镇", "description": "洱海边最美的小镇", "ticket": 0, "duration": "半天", "tags": ["古镇", "自然", "免费"], "tips": "南诏风情岛门票50元" },
-      { "name": "喜洲古镇", "description": "白族民居建筑群", "ticket": 0, "duration": "2-3小时", "tags": ["古镇", "文化", "免费"], "tips": "喜洲粑粑必尝" },
-      { "name": "沙溪古镇", "description": "茶马古道上保存最完整的古集市", "ticket": 0, "duration": "半天", "tags": ["古镇", "文化", "免费"], "tips": "比大理古城更安静原始" },
-      { "name": "蝴蝶泉", "description": "大理著名的爱情圣地", "ticket": 40, "duration": "1小时", "tags": ["自然", "文化"], "tips": "农历四月十五蝴蝶会最热闹" },
-      { "name": "天龙八部影视城", "description": "以金庸小说为背景的影视城", "ticket": 52, "duration": "2小时", "tags": ["文化", "娱乐"], "tips": "可以穿古装拍照" },
-      { "name": "鸡足山", "description": "中国五大佛教名山之一", "ticket": 80, "duration": "1天", "tags": ["宗教", "自然", "户外"], "tips": "建议住一晚看日出" }
+      {
+        "name": "洱海",
+        "description": "大理的灵魂，高原明珠",
+        "ticket": 0,
+        "duration": "1天",
+        "tags": [
+          "自然",
+          "必去",
+          "免费"
+        ],
+        "tips": "环洱海骑行约130公里，建议分两天",
+        "indoor": false
+      },
+      {
+        "name": "大理古城",
+        "description": "南诏国和大理国的都城",
+        "ticket": 0,
+        "duration": "半天",
+        "tags": [
+          "文化",
+          "古镇",
+          "免费"
+        ],
+        "tips": "人民路和洋人街最热闹",
+        "indoor": true
+      },
+      {
+        "name": "崇圣寺三塔",
+        "description": "大理的标志性景观",
+        "ticket": 75,
+        "duration": "2小时",
+        "tags": [
+          "历史",
+          "文化",
+          "地标"
+        ],
+        "tips": "倒影池拍照最美",
+        "indoor": true
+      },
+      {
+        "name": "苍山",
+        "description": "大理的靠山，十九峰十八溪",
+        "ticket": 35,
+        "duration": "半天",
+        "tags": [
+          "自然",
+          "户外"
+        ],
+        "tips": "坐索道上山，洗马潭是最高点",
+        "indoor": false
+      },
+      {
+        "name": "双廊古镇",
+        "description": "洱海边最美的小镇",
+        "ticket": 0,
+        "duration": "半天",
+        "tags": [
+          "古镇",
+          "自然",
+          "免费"
+        ],
+        "tips": "南诏风情岛门票50元",
+        "indoor": false
+      },
+      {
+        "name": "喜洲古镇",
+        "description": "白族民居建筑群",
+        "ticket": 0,
+        "duration": "2-3小时",
+        "tags": [
+          "古镇",
+          "文化",
+          "免费"
+        ],
+        "tips": "喜洲粑粑必尝",
+        "indoor": true
+      },
+      {
+        "name": "沙溪古镇",
+        "description": "茶马古道上保存最完整的古集市",
+        "ticket": 0,
+        "duration": "半天",
+        "tags": [
+          "古镇",
+          "文化",
+          "免费"
+        ],
+        "tips": "比大理古城更安静原始",
+        "indoor": false
+      },
+      {
+        "name": "蝴蝶泉",
+        "description": "大理著名的爱情圣地",
+        "ticket": 40,
+        "duration": "1小时",
+        "tags": [
+          "自然",
+          "文化"
+        ],
+        "tips": "农历四月十五蝴蝶会最热闹",
+        "indoor": false
+      },
+      {
+        "name": "天龙八部影视城",
+        "description": "以金庸小说为背景的影视城",
+        "ticket": 52,
+        "duration": "2小时",
+        "tags": [
+          "文化",
+          "娱乐"
+        ],
+        "tips": "可以穿古装拍照",
+        "indoor": false
+      },
+      {
+        "name": "鸡足山",
+        "description": "中国五大佛教名山之一",
+        "ticket": 80,
+        "duration": "1天",
+        "tags": [
+          "宗教",
+          "自然",
+          "户外"
+        ],
+        "tips": "建议住一晚看日出",
+        "indoor": false
+      }
     ],
-    "food": ["白族三道茶", "饵丝", "乳扇", "喜洲粑粑", "酸辣鱼", "凉鸡米线"],
+    "food": [
+      "白族三道茶",
+      "饵丝",
+      "乳扇",
+      "喜洲粑粑",
+      "酸辣鱼",
+      "凉鸡米线"
+    ],
     "transport": "古城内步行，环洱海建议租车或骑行",
-    "bestSeason": "春季（3-5月）"
+    "bestSeason": "春季（3-5月）",
+    "accommodation": [
+      {
+        "name": "大理古城",
+        "type": "古城",
+        "priceRange": "¥150-400",
+        "description": "古城内民宿众多"
+      },
+      {
+        "name": "双廊/洱海东",
+        "type": "景观",
+        "priceRange": "¥200-600",
+        "description": "洱海最佳观景点"
+      },
+      {
+        "name": "才村/龙龛",
+        "type": "田园",
+        "priceRange": "¥100-300",
+        "description": "靠近洱海，安静惬意"
+      }
+    ],
+    "nightlife": [
+      {
+        "name": "人民路",
+        "type": "步行街",
+        "description": "文艺酒吧、街头艺人"
+      },
+      {
+        "name": "洋人街",
+        "type": "酒吧街",
+        "description": "咖啡馆、酒吧集中"
+      },
+      {
+        "name": "才村码头",
+        "type": "海滨",
+        "description": "洱海边看星空"
+      }
+    ]
   },
   {
     "city": "丽江",
     "attractions": [
-      { "name": "丽江古城", "description": "世界文化遗产，纳西族聚居地", "ticket": 0, "duration": "1天", "tags": ["文化", "古镇", "必去", "免费"], "tips": "四方街是中心，酒吧街很热闹" },
-      { "name": "玉龙雪山", "description": "北半球最南端的大雪山", "ticket": 100, "duration": "1天", "tags": ["自然", "户外", "必去"], "tips": "大索道到冰川公园另收120元" },
-      { "name": "泸沽湖", "description": "高原明珠，摩梭人母系社会", "ticket": 70, "duration": "1-2天", "tags": ["自然", "文化", "必去"], "tips": "建议住一晚，环湖约70公里" },
-      { "name": "束河古镇", "description": "比丽江古城更安静的古镇", "ticket": 0, "duration": "半天", "tags": ["古镇", "文化", "免费"], "tips": "茶马古道博物馆值得一看" },
-      { "name": "蓝月谷", "description": "玉龙雪山脚下的蓝色湖泊", "ticket": 0, "duration": "2小时", "tags": ["自然", "免费"], "tips": "含在玉龙雪山景区内" },
-      { "name": "拉市海", "description": "云南第一个以湿地命名的自然保护区", "ticket": 30, "duration": "半天", "tags": ["自然", "户外"], "tips": "骑马和划船是主要活动" },
-      { "name": "黑龙潭公园", "description": "丽江古城的水源地", "ticket": 0, "duration": "1-2小时", "tags": ["自然", "文化", "免费"], "tips": "可以远眺玉龙雪山倒影" },
-      { "name": "木府", "description": "纳西族土司的宫殿", "ticket": 40, "duration": "1-2小时", "tags": ["历史", "文化"], "tips": "北有故宫，南有木府" },
-      { "name": "虎跳峡", "description": "世界上最深的峡谷之一", "ticket": 45, "duration": "半天", "tags": ["自然", "户外"], "tips": "上虎跳最容易到达" },
-      { "name": "白沙古镇", "description": "纳西族最早的政治中心", "ticket": 0, "duration": "2小时", "tags": ["古镇", "文化", "免费"], "tips": "白沙壁画很有历史价值" }
+      {
+        "name": "丽江古城",
+        "description": "世界文化遗产，纳西族聚居地",
+        "ticket": 0,
+        "duration": "1天",
+        "tags": [
+          "文化",
+          "古镇",
+          "必去",
+          "免费"
+        ],
+        "tips": "四方街是中心，酒吧街很热闹",
+        "indoor": false
+      },
+      {
+        "name": "玉龙雪山",
+        "description": "北半球最南端的大雪山",
+        "ticket": 100,
+        "duration": "1天",
+        "tags": [
+          "自然",
+          "户外",
+          "必去"
+        ],
+        "tips": "大索道到冰川公园另收120元",
+        "indoor": false
+      },
+      {
+        "name": "泸沽湖",
+        "description": "高原明珠，摩梭人母系社会",
+        "ticket": 70,
+        "duration": "1-2天",
+        "tags": [
+          "自然",
+          "文化",
+          "必去"
+        ],
+        "tips": "建议住一晚，环湖约70公里",
+        "indoor": false
+      },
+      {
+        "name": "束河古镇",
+        "description": "比丽江古城更安静的古镇",
+        "ticket": 0,
+        "duration": "半天",
+        "tags": [
+          "古镇",
+          "文化",
+          "免费"
+        ],
+        "tips": "茶马古道博物馆值得一看",
+        "indoor": true
+      },
+      {
+        "name": "蓝月谷",
+        "description": "玉龙雪山脚下的蓝色湖泊",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "自然",
+          "免费"
+        ],
+        "tips": "含在玉龙雪山景区内",
+        "indoor": false
+      },
+      {
+        "name": "拉市海",
+        "description": "云南第一个以湿地命名的自然保护区",
+        "ticket": 30,
+        "duration": "半天",
+        "tags": [
+          "自然",
+          "户外"
+        ],
+        "tips": "骑马和划船是主要活动",
+        "indoor": false
+      },
+      {
+        "name": "黑龙潭公园",
+        "description": "丽江古城的水源地",
+        "ticket": 0,
+        "duration": "1-2小时",
+        "tags": [
+          "自然",
+          "文化",
+          "免费"
+        ],
+        "tips": "可以远眺玉龙雪山倒影",
+        "indoor": false
+      },
+      {
+        "name": "木府",
+        "description": "纳西族土司的宫殿",
+        "ticket": 40,
+        "duration": "1-2小时",
+        "tags": [
+          "历史",
+          "文化"
+        ],
+        "tips": "北有故宫，南有木府",
+        "indoor": true
+      },
+      {
+        "name": "虎跳峡",
+        "description": "世界上最深的峡谷之一",
+        "ticket": 45,
+        "duration": "半天",
+        "tags": [
+          "自然",
+          "户外"
+        ],
+        "tips": "上虎跳最容易到达",
+        "indoor": false
+      },
+      {
+        "name": "白沙古镇",
+        "description": "纳西族最早的政治中心",
+        "ticket": 0,
+        "duration": "2小时",
+        "tags": [
+          "古镇",
+          "文化",
+          "免费"
+        ],
+        "tips": "白沙壁画很有历史价值",
+        "indoor": false
+      }
     ],
-    "food": ["腊排骨", "鸡豆凉粉", "纳西烤鱼", "丽江粑粑", "三文鱼", "酥油茶"],
+    "food": [
+      "腊排骨",
+      "鸡豆凉粉",
+      "纳西烤鱼",
+      "丽江粑粑",
+      "三文鱼",
+      "酥油茶"
+    ],
     "transport": "古城内步行，远景点建议包车或拼车",
-    "bestSeason": "春季（4-5月）和秋季（9-11月）"
+    "bestSeason": "春季（4-5月）和秋季（9-11月）",
+    "accommodation": [
+      {
+        "name": "古城内",
+        "type": "古城",
+        "priceRange": "¥150-500",
+        "description": "纳西族古城，氛围好"
+      },
+      {
+        "name": "束河古镇",
+        "type": "古镇",
+        "priceRange": "¥100-300",
+        "description": "比大研古城安静"
+      },
+      {
+        "name": "玉龙雪山脚下",
+        "type": "景观",
+        "priceRange": "¥200-600",
+        "description": "靠近雪山景区"
+      }
+    ],
+    "nightlife": [
+      {
+        "name": "四方街",
+        "type": "步行街",
+        "description": "古城中心，篝火晚会"
+      },
+      {
+        "name": "酒吧一条街",
+        "type": "酒吧街",
+        "description": "民谣酒吧、气氛热烈"
+      },
+      {
+        "name": "狮子山",
+        "type": "观景",
+        "description": "登高看古城全景夜景"
+      }
+    ]
   },
   {
     "city": "青岛",
     "attractions": [
-      { "name": "栈桥", "description": "青岛的标志性建筑", "ticket": 0, "duration": "1小时", "tags": ["地标", "免费"], "tips": "回澜阁是最佳拍照点" },
-      { "name": "八大关", "description": "万国建筑博览会", "ticket": 0, "duration": "2-3小时", "tags": ["建筑", "文化", "免费"], "tips": "秋天落叶最美" },
-      { "name": "崂山", "description": "海上第一名山", "ticket": 90, "duration": "1天", "tags": ["自然", "户外", "宗教"], "tips": "南线太清宫线最经典" },
-      { "name": "青岛啤酒博物馆", "description": "了解青岛啤酒百年历史", "ticket": 60, "duration": "1-2小时", "tags": ["文化", "美食"], "tips": "门票含两杯啤酒品鉴" },
-      { "name": "五四广场", "description": "青岛市标五月的风所在地", "ticket": 0, "duration": "1小时", "tags": ["地标", "免费"], "tips": "灯光秀在奥帆中心看效果更好" },
-      { "name": "金沙滩", "description": "亚洲第一滩", "ticket": 0, "duration": "半天", "tags": ["海滩", "自然", "免费"], "tips": "夏天可以游泳和沙滩排球" },
-      { "name": "信号山公园", "description": "俯瞰青岛红瓦绿树的最佳地点", "ticket": 15, "duration": "1小时", "tags": ["自然", "观光"], "tips": "旋转观景台可以看到360度全景" },
-      { "name": "小鱼山公园", "description": "青岛最佳观景台之一", "ticket": 15, "duration": "1小时", "tags": ["自然", "观光"], "tips": "可以看到栈桥和小青岛" },
-      { "name": "天主教堂", "description": "中国唯一的祝圣教堂", "ticket": 10, "duration": "30分钟", "tags": ["建筑", "文化"], "tips": "哥特式建筑，拍照很出片" },
-      { "name": "即墨古城", "description": "千年古城的文化街区", "ticket": 0, "duration": "2-3小时", "tags": ["古镇", "文化", "免费"], "tips": "晚上灯光很美" }
+      {
+        "name": "栈桥",
+        "description": "青岛的标志性建筑",
+        "ticket": 0,
+        "duration": "1小时",
+        "tags": [
+          "地标",
+          "免费"
+        ],
+        "tips": "回澜阁是最佳拍照点",
+        "indoor": false
+      },
+      {
+        "name": "八大关",
+        "description": "万国建筑博览会",
+        "ticket": 0,
+        "duration": "2-3小时",
+        "tags": [
+          "建筑",
+          "文化",
+          "免费"
+        ],
+        "tips": "秋天落叶最美",
+        "indoor": false
+      },
+      {
+        "name": "崂山",
+        "description": "海上第一名山",
+        "ticket": 90,
+        "duration": "1天",
+        "tags": [
+          "自然",
+          "户外",
+          "宗教"
+        ],
+        "tips": "南线太清宫线最经典",
+        "indoor": false
+      },
+      {
+        "name": "青岛啤酒博物馆",
+        "description": "了解青岛啤酒百年历史",
+        "ticket": 60,
+        "duration": "1-2小时",
+        "tags": [
+          "文化",
+          "美食"
+        ],
+        "tips": "门票含两杯啤酒品鉴",
+        "indoor": true
+      },
+      {
+        "name": "五四广场",
+        "description": "青岛市标五月的风所在地",
+        "ticket": 0,
+        "duration": "1小时",
+        "tags": [
+          "地标",
+          "免费"
+        ],
+        "tips": "灯光秀在奥帆中心看效果更好",
+        "indoor": false
+      },
+      {
+        "name": "金沙滩",
+        "description": "亚洲第一滩",
+        "ticket": 0,
+        "duration": "半天",
+        "tags": [
+          "海滩",
+          "自然",
+          "免费"
+        ],
+        "tips": "夏天可以游泳和沙滩排球",
+        "indoor": false
+      },
+      {
+        "name": "信号山公园",
+        "description": "俯瞰青岛红瓦绿树的最佳地点",
+        "ticket": 15,
+        "duration": "1小时",
+        "tags": [
+          "自然",
+          "观光"
+        ],
+        "tips": "旋转观景台可以看到360度全景",
+        "indoor": false
+      },
+      {
+        "name": "小鱼山公园",
+        "description": "青岛最佳观景台之一",
+        "ticket": 15,
+        "duration": "1小时",
+        "tags": [
+          "自然",
+          "观光"
+        ],
+        "tips": "可以看到栈桥和小青岛",
+        "indoor": false
+      },
+      {
+        "name": "天主教堂",
+        "description": "中国唯一的祝圣教堂",
+        "ticket": 10,
+        "duration": "30分钟",
+        "tags": [
+          "建筑",
+          "文化"
+        ],
+        "tips": "哥特式建筑，拍照很出片",
+        "indoor": false
+      },
+      {
+        "name": "即墨古城",
+        "description": "千年古城的文化街区",
+        "ticket": 0,
+        "duration": "2-3小时",
+        "tags": [
+          "古镇",
+          "文化",
+          "免费"
+        ],
+        "tips": "晚上灯光很美",
+        "indoor": false
+      }
     ],
-    "food": ["海鲜", "啤酒", "辣炒蛤蜊", "鲅鱼水饺", "海菜凉粉", "烤鱿鱼"],
+    "food": [
+      "海鲜",
+      "啤酒",
+      "辣炒蛤蜊",
+      "鲅鱼水饺",
+      "海菜凉粉",
+      "烤鱿鱼"
+    ],
     "transport": "公交和地铁覆盖主要景点",
-    "bestSeason": "夏季（6-9月）"
+    "bestSeason": "夏季（6-9月）",
+    "accommodation": [
+      {
+        "name": "栈桥/中山路",
+        "type": "海滨",
+        "priceRange": "¥200-500",
+        "description": "老城区，靠近海边"
+      },
+      {
+        "name": "五四广场/奥帆中心",
+        "type": "现代",
+        "priceRange": "¥300-700",
+        "description": "新城区，海景优美"
+      },
+      {
+        "name": "八大关/太平角",
+        "type": "别墅",
+        "priceRange": "¥300-800",
+        "description": "欧式别墅区，环境优雅"
+      }
+    ],
+    "nightlife": [
+      {
+        "name": "台东步行街",
+        "type": "步行街",
+        "description": "青岛最热闹的夜市"
+      },
+      {
+        "name": "啤酒街",
+        "type": "美食街",
+        "description": "新鲜啤酒配海鲜"
+      },
+      {
+        "name": "奥帆中心",
+        "type": "观光",
+        "description": "灯光秀，帆船夜景"
+      }
+    ]
   },
   {
     "city": "张家界",
     "attractions": [
-      { "name": "张家界国家森林公园", "description": "世界自然遗产，阿凡达取景地", "ticket": 225, "duration": "2-3天", "tags": ["自然", "户外", "必去"], "tips": "门票4天有效，建议至少安排2天" },
-      { "name": "天门山", "description": "天门洞开云气通，江东峨眉皆下风", "ticket": 258, "duration": "1天", "tags": ["自然", "户外", "必去"], "tips": "玻璃栈道和天门洞是精华" },
-      { "name": "大峡谷玻璃桥", "description": "世界最高最长的玻璃桥", "ticket": 228, "duration": "半天", "tags": ["户外", "刺激"], "tips": "恐高者慎行，需要提前预约" },
-      { "name": "黄龙洞", "description": "世界溶洞奇观", "ticket": 100, "duration": "2-3小时", "tags": ["自然", "溶洞"], "tips": "定海神针是镇洞之宝" },
-      { "name": "宝峰湖", "description": "人间瑶池", "ticket": 96, "duration": "2小时", "tags": ["自然", "湖泊"], "tips": "可以坐船游湖" },
-      { "name": "天子山", "description": "峰林之王", "ticket": 0, "duration": "半天", "tags": ["自然", "户外"], "tips": "含在森林公园门票内" },
-      { "name": "袁家界", "description": "阿凡达悬浮山原型", "ticket": 0, "duration": "半天", "tags": ["自然", "户外"], "tips": "含在森林公园门票内，百龙天梯另收费" },
-      { "name": "金鞭溪", "description": "世界最美峡谷之一", "ticket": 0, "duration": "2-3小时", "tags": ["自然", "徒步"], "tips": "含在森林公园门票内，全程7.5公里" },
-      { "name": "十里画廊", "description": "十里峡谷两岸奇峰林立", "ticket": 0, "duration": "1-2小时", "tags": ["自然", "观光"], "tips": "可以坐小火车游览" },
-      { "name": "凤凰古城", "description": "沈从文笔下的边城（距张家界约4小时车程）", "ticket": 0, "duration": "1天", "tags": ["古镇", "文化", "免费"], "tips": "夜景最美，沱江泛舟值得体验" }
+      {
+        "name": "张家界国家森林公园",
+        "description": "世界自然遗产，阿凡达取景地",
+        "ticket": 225,
+        "duration": "2-3天",
+        "tags": [
+          "自然",
+          "户外",
+          "必去"
+        ],
+        "tips": "门票4天有效，建议至少安排2天",
+        "indoor": false
+      },
+      {
+        "name": "天门山",
+        "description": "天门洞开云气通，江东峨眉皆下风",
+        "ticket": 258,
+        "duration": "1天",
+        "tags": [
+          "自然",
+          "户外",
+          "必去"
+        ],
+        "tips": "玻璃栈道和天门洞是精华",
+        "indoor": false
+      },
+      {
+        "name": "大峡谷玻璃桥",
+        "description": "世界最高最长的玻璃桥",
+        "ticket": 228,
+        "duration": "半天",
+        "tags": [
+          "户外",
+          "刺激"
+        ],
+        "tips": "恐高者慎行，需要提前预约",
+        "indoor": false
+      },
+      {
+        "name": "黄龙洞",
+        "description": "世界溶洞奇观",
+        "ticket": 100,
+        "duration": "2-3小时",
+        "tags": [
+          "自然",
+          "溶洞"
+        ],
+        "tips": "定海神针是镇洞之宝",
+        "indoor": true
+      },
+      {
+        "name": "宝峰湖",
+        "description": "人间瑶池",
+        "ticket": 96,
+        "duration": "2小时",
+        "tags": [
+          "自然",
+          "湖泊"
+        ],
+        "tips": "可以坐船游湖",
+        "indoor": true
+      },
+      {
+        "name": "天子山",
+        "description": "峰林之王",
+        "ticket": 0,
+        "duration": "半天",
+        "tags": [
+          "自然",
+          "户外"
+        ],
+        "tips": "含在森林公园门票内",
+        "indoor": false
+      },
+      {
+        "name": "袁家界",
+        "description": "阿凡达悬浮山原型",
+        "ticket": 0,
+        "duration": "半天",
+        "tags": [
+          "自然",
+          "户外"
+        ],
+        "tips": "含在森林公园门票内，百龙天梯另收费",
+        "indoor": false
+      },
+      {
+        "name": "金鞭溪",
+        "description": "世界最美峡谷之一",
+        "ticket": 0,
+        "duration": "2-3小时",
+        "tags": [
+          "自然",
+          "徒步"
+        ],
+        "tips": "含在森林公园门票内，全程7.5公里",
+        "indoor": false
+      },
+      {
+        "name": "十里画廊",
+        "description": "十里峡谷两岸奇峰林立",
+        "ticket": 0,
+        "duration": "1-2小时",
+        "tags": [
+          "自然",
+          "观光"
+        ],
+        "tips": "可以坐小火车游览",
+        "indoor": false
+      },
+      {
+        "name": "凤凰古城",
+        "description": "沈从文笔下的边城（距张家界约4小时车程）",
+        "ticket": 0,
+        "duration": "1天",
+        "tags": [
+          "古镇",
+          "文化",
+          "免费"
+        ],
+        "tips": "夜景最美，沱江泛舟值得体验",
+        "indoor": false
+      }
     ],
-    "food": ["三下锅", "土家腊肉", "葛根粉", "酸鱼肉", "血豆腐", "社饭"],
+    "food": [
+      "三下锅",
+      "土家腊肉",
+      "葛根粉",
+      "酸鱼肉",
+      "血豆腐",
+      "社饭"
+    ],
     "transport": "景区间有班车，建议包车或跟团",
-    "bestSeason": "春季（4-6月）和秋季（9-11月）"
+    "bestSeason": "春季（4-6月）和秋季（9-11月）",
+    "accommodation": [
+      {
+        "name": "武陵源",
+        "type": "景区",
+        "priceRange": "¥200-500",
+        "description": "靠近核心景区"
+      },
+      {
+        "name": "市区/天门山",
+        "type": "市区",
+        "priceRange": "¥150-400",
+        "description": "交通便利，靠近天门山"
+      },
+      {
+        "name": "森林公园门口",
+        "type": "景区",
+        "priceRange": "¥100-300",
+        "description": "方便早起入园"
+      }
+    ],
+    "nightlife": [
+      {
+        "name": "溪布街",
+        "type": "步行街",
+        "description": "土家族风情街，篝火晚会"
+      },
+      {
+        "name": "天门山脚下",
+        "type": "观光",
+        "description": "山脚夜景，安静惬意"
+      },
+      {
+        "name": "宝峰湖",
+        "type": "演出",
+        "description": "《梯玛神歌》实景演出"
+      }
+    ]
   }
 ]

@@ -30,6 +30,39 @@ export interface BudgetBreakdown {
   other: number // 其他费用
 }
 
+/** 天气信息 */
+export interface WeatherInfo {
+  city: string
+  temperature: number
+  feelsLike: number
+  humidity: number
+  weatherDesc: string
+  forecast: WeatherForecast[]
+}
+
+/** 天气预报 */
+export interface WeatherForecast {
+  date: string
+  maxTemp: number
+  minTemp: number
+  weatherDesc: string
+}
+
+/** 住宿推荐 */
+export interface AccommodationInfo {
+  name: string
+  type: string
+  priceRange: string
+  description: string
+}
+
+/** 夜生活推荐 */
+export interface NightlifeInfo {
+  name: string
+  type: string
+  description: string
+}
+
 /** AI 接口返回的完整行程结果 */
 export interface ItineraryResult {
   city: string // 目的地城市
@@ -38,6 +71,9 @@ export interface ItineraryResult {
   dailyItinerary: DayItinerary[] // 每日行程数组
   budgetBreakdown: BudgetBreakdown // 预算明细
   tips: string[] // 旅行提示/建议
+  weather?: WeatherInfo | null // 天气信息
+  accommodation?: AccommodationInfo[] // 住宿推荐
+  nightlife?: NightlifeInfo[] // 夜生活推荐
 }
 
 /** Agent 执行步骤 - 用于展示 AI 的多步骤推理过程 */
@@ -64,4 +100,7 @@ export interface HistoryRecord {
   itinerary: DayItinerary[] // 每日行程
   budgetBreakdown: BudgetBreakdown | null // 预算明细（可能为空）
   tips: string[] // 旅行提示
+  weather?: WeatherInfo | null // 天气信息
+  accommodation?: AccommodationInfo[] // 住宿推荐
+  nightlife?: NightlifeInfo[] // 夜生活推荐
 }

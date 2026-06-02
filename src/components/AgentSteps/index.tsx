@@ -3,15 +3,16 @@
  * 展示 AI Agent 的多步骤推理过程，包括解析意图、检索知识库、规划行程等
  */
 import type { AgentStep } from '@/types'
-import { CheckCircleOutline, LocationOutline, PayCircleOutline, RightOutline, SearchOutline, UnorderedListOutline, FlagOutline } from 'antd-mobile-icons'
+import { CheckCircleOutline, InformationCircleOutline, LocationOutline, PayCircleOutline, RightOutline, SearchOutline, UnorderedListOutline, FlagOutline } from 'antd-mobile-icons'
 
 /** 步骤配置 */
 const STEP_CONFIG = [
   { step: 1, name: '解析意图', Icon: SearchOutline },
   { step: 2, name: '知识库检索', Icon: UnorderedListOutline },
-  { step: 3, name: '行程规划', Icon: LocationOutline },
-  { step: 4, name: '预算计算', Icon: PayCircleOutline },
-  { step: 5, name: '生成建议', Icon: FlagOutline },
+  { step: 3, name: '查询天气', Icon: InformationCircleOutline },
+  { step: 4, name: '行程规划', Icon: LocationOutline },
+  { step: 5, name: '预算计算', Icon: PayCircleOutline },
+  { step: 6, name: '生成建议', Icon: FlagOutline },
 ]
 
 interface AgentStepsProps {

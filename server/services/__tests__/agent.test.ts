@@ -38,12 +38,12 @@ describe('Agent 服务（Mock 模式）', () => {
     return parseSSEEvents()
   }
 
-  it('应依次发送 5 个步骤的 SSE 事件', async () => {
+  it('应依次发送 6 个步骤的 SSE 事件', async () => {
     const events = await runAgent('杭州', 5000, 3)
     const startSteps = events
       .filter(e => e.type === 'step' && e.status === 'start')
       .map(e => e.step)
-    expect(startSteps).toEqual([1, 2, 3, 4, 5])
+    expect(startSteps).toEqual([1, 2, 3, 4, 5, 6])
   })
 
   it('应发送 complete 事件并包含行程数据', async () => {

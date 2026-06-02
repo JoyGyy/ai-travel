@@ -7,6 +7,7 @@
 const { retrieve } = require('./rag')
 const { sendSSE } = require('../utils/sse')
 const { callLLMWithTools, getLLMConfig } = require('./llm')
+const { getWeather, isGoodForOutdoor, getDressAdvice } = require('./weather')
 
 // ========== Agent System Prompt ==========
 
@@ -16,14 +17,18 @@ const AGENT_SYSTEM_PROMPT = `你是一个专业的旅行规划 Agent。你的任
 
 1. parse_intent — 分析用户的旅行需求，提取城市、天数、预算和偏好
 2. search_attractions — 根据城市和偏好检索景点知识库
-3. plan_itinerary — 根据检索到的景点数据规划每日行程（上午、下午、晚上各一个景点）
-4. calculate_budget — 根据总预算和行程计算费用明细
-5. generate_tips — 根据城市特点和行程生成个性化旅行建议
+3. check_weather — 查询目的地实时天气和未来预报
+4. plan_itinerary — 根据景点数据和天气情况规划每日行程（上午、下午、晚上各一个景点）
+5. calculate_budget — 根据总预算和行程计算费用明细
+6. generate_tips — 根据城市特点、天气和行程生成个性化旅行建议
 
 重要规则：
 - 每个工具恰好调用一次，不要跳过任何工具
+- check_weather 必须在 plan_itinerary 之前调用，天气影响景点选择
+- 雨天/极端天气优先推荐室内景点（indoor=true），晴天优先推荐户外景点
 - plan_itinerary 的输出必须是严格 JSON 格式的 DayItinerary 数组
 - 每个 SpotData 必须包含 spot、description、duration、ticket、transportation 字段
+- 每天 evening 字段应包含餐饮推荐信息
 - 最终用中文回答`
 
 // ========== Tool 定义 ==========
@@ -64,8 +69,23 @@ const AGENT_TOOLS = [
   {
     type: 'function',
     function: {
+      name: 'check_weather',
+      description: '查询目的地城市的实时天气和未来几天预报，用于规划行程时参考',
+      parameters: {
+        type: 'object',
+        properties: {
+          city: { type: 'string', description: '城市名称' },
+          days: { type: 'integer', description: '行程天数' },
+        },
+        required: ['city'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
       name: 'plan_itinerary',
-      description: '根据景点数据规划每日行程，输出 JSON 格式的 DayItinerary 数组',
+      description: '根据景点数据和天气情况规划每日行程，输出 JSON 格式的 DayItinerary 数组',
       parameters: {
         type: 'object',
         properties: {
@@ -139,7 +159,7 @@ const AGENT_TOOLS = [
     type: 'function',
     function: {
       name: 'generate_tips',
-      description: '根据城市和行程生成个性化旅行建议列表',
+      description: '根据城市、天气和行程生成个性化旅行建议列表',
       parameters: {
         type: 'object',
         properties: {
@@ -157,13 +177,6 @@ const AGENT_TOOLS = [
 
 // ========== Tool 执行函数 ==========
 
-/**
- * 执行工具并返回结果
- * @param {string} toolName - 工具名称
- * @param {object} args - 工具参数
- * @param {object} context - Agent 上下文（共享状态）
- * @returns {{ output: string, summary: object }}
- */
 function executeTool(toolName, args, context) {
   switch (toolName) {
     case 'parse_intent': {
@@ -198,12 +211,32 @@ function executeTool(toolName, args, context) {
           duration: a.duration,
           ticket: a.ticket,
           tags: a.tags,
+          indoor: a.indoor || false,
         })),
         food: ragResult.food,
         transport: ragResult.transport,
         bestSeason: ragResult.bestSeason,
       })
       return { output, summary: { count: ragResult.attractions.length, sources } }
+    }
+
+    case 'check_weather': {
+      // 天气查询是异步的，但 executeTool 是同步的
+      // 实际天气数据在 Mock 流程中通过 async 处理
+      // LLM 模式下，天气数据已经预先获取并存入 context
+      const weather = context.weather
+      if (!weather) {
+        return { output: JSON.stringify({ error: '天气数据暂不可用' }), summary: {} }
+      }
+      return {
+        output: JSON.stringify(weather),
+        summary: {
+          city: weather.city,
+          temperature: weather.temperature,
+          weatherDesc: weather.weatherDesc,
+          forecastCount: weather.forecast?.length || 0,
+        },
+      }
     }
 
     case 'plan_itinerary': {
@@ -231,12 +264,16 @@ function executeTool(toolName, args, context) {
 
     case 'generate_tips': {
       const tips = []
+      const weather = context.weather
+      if (weather) {
+        tips.push(`当前天气：${weather.weatherDesc}，${weather.temperature}°C`)
+        tips.push(...getDressAdvice(weather))
+      }
       if (args.bestSeason) tips.push(`最佳旅行季节：${args.bestSeason}`)
       if (args.transport) tips.push(`交通建议：${args.transport}`)
       if (args.food?.length) tips.push(`推荐美食：${args.food.slice(0, 5).join('、')}`)
       if (args.days >= 3) tips.push('行程较长，建议准备舒适的运动鞋')
       tips.push('建议提前在网上预约热门景点门票')
-      tips.push('出行前查看当地天气预报，合理安排行程')
       context.tips = tips
       return { output: JSON.stringify(tips), summary: { count: tips.length } }
     }
@@ -246,63 +283,58 @@ function executeTool(toolName, args, context) {
   }
 }
 
-// ========== LLM 调用（带 tools） ==========
-
-// ========== Agent 主流程 ==========
+// ========== Step 映射 ==========
 
 const STEP_MAP = {
   parse_intent: 1,
   search_attractions: 2,
-  plan_itinerary: 3,
-  calculate_budget: 4,
-  generate_tips: 5,
+  check_weather: 3,
+  plan_itinerary: 4,
+  calculate_budget: 5,
+  generate_tips: 6,
 }
 
 const STEP_NAMES = {
   1: '解析意图',
   2: '知识库检索',
-  3: '行程规划',
-  4: '预算计算',
-  5: '生成建议',
+  3: '查询天气',
+  4: '行程规划',
+  5: '预算计算',
+  6: '生成建议',
 }
 
-/**
- * 执行 Agent（ReAct 模式）
- * @param {import('express').Response} res - SSE 响应对象
- * @param {object} params - { city, budget, days }
- */
+// ========== Agent 主流程 ==========
+
 async function executeAgent(res, params) {
   const config = getLLMConfig()
 
-  // 无 API key 时使用 Mock 模式
   if (!config) {
     return executeAgentMock(res, params)
   }
 
-  const context = {}
+  // 预获取天气数据（供 LLM 和 fallback 使用）
+  const weather = await getWeather(params.city).catch(() => null)
+
+  const context = { weather }
   const messages = [
     { role: 'system', content: AGENT_SYSTEM_PROMPT },
     { role: 'user', content: `请为以下旅行需求规划行程：城市=${params.city}，天数=${params.days}，预算=${params.budget}元` },
   ]
 
   try {
-    // ReAct 循环：LLM 决定调用哪些工具
     for (let round = 0; round < 10; round++) {
       const assistantMsg = await callLLMWithTools(messages, AGENT_TOOLS)
 
       if (!assistantMsg) {
-        // LLM 无响应，降级到 Mock
         return executeAgentMock(res, params)
       }
 
       messages.push(assistantMsg)
 
-      // 没有 tool_calls → LLM 已生成最终答案
       if (!assistantMsg.tool_calls || assistantMsg.tool_calls.length === 0) {
         break
       }
 
-      // 执行所有 tool calls
       for (const toolCall of assistantMsg.tool_calls) {
         const { name, arguments: argsStr } = toolCall.function
         let args = {}
@@ -319,7 +351,6 @@ async function executeAgent(res, params) {
           sendSSE(res, { type: 'step', step: stepNum, name: STEP_NAMES[stepNum], status: 'complete', data: result.summary })
         }
 
-        // 将工具结果加入消息历史
         messages.push({
           role: 'tool',
           tool_call_id: toolCall.id,
@@ -328,7 +359,7 @@ async function executeAgent(res, params) {
       }
     }
 
-    // 如果关键步骤缺失，补执行
+    // 补执行缺失步骤
     if (!context.intent) {
       sendSSE(res, { type: 'step', step: 1, name: '解析意图', status: 'start' })
       const result = executeTool('parse_intent', params, context)
@@ -339,43 +370,31 @@ async function executeAgent(res, params) {
       const result = executeTool('search_attractions', { city: context.intent?.city || params.city }, context)
       sendSSE(res, { type: 'step', step: 2, name: '知识库检索', status: 'complete', data: result.summary })
     }
-
-    // 如果没有行程数据（LLM 未调用 plan_itinerary 或格式不对），用 RAG 数据生成
-    if (!context.itinerary || !context.itinerary.length) {
-      sendSSE(res, { type: 'step', step: 3, name: '行程规划', status: 'start' })
-      const days = context.intent?.days || params.days || 3
-      const attractions = context.ragResult?.attractions || []
-      const itinerary = []
-      for (let d = 1; d <= days; d++) {
-        const date = new Date()
-        date.setDate(date.getDate() + d - 1)
-        const dateStr = date.toISOString().split('T')[0]
-        itinerary.push({
-          day: d,
-          date: dateStr,
-          morning: formatSpot(attractions[(d - 1) * 3] || attractions[0]),
-          afternoon: formatSpot(attractions[(d - 1) * 3 + 1] || attractions[1] || attractions[0]),
-          evening: formatSpot(attractions[(d - 1) * 3 + 2] || attractions[2] || attractions[0]),
-        })
-      }
-      context.itinerary = itinerary
-      sendSSE(res, { type: 'step', step: 3, name: '行程规划', status: 'complete', data: { days, spotCount: days * 3 } })
+    if (!context.weather) {
+      sendSSE(res, { type: 'step', step: 3, name: '查询天气', status: 'start' })
+      context.weather = await getWeather(params.city).catch(() => null)
+      sendSSE(res, { type: 'step', step: 3, name: '查询天气', status: 'complete', data: context.weather ? { temperature: context.weather.temperature, weatherDesc: context.weather.weatherDesc } : {} })
     }
 
-    // 补预算
+    if (!context.itinerary || !context.itinerary.length) {
+      sendSSE(res, { type: 'step', step: 4, name: '行程规划', status: 'start' })
+      const itinerary = buildWeatherAwareItinerary(context)
+      context.itinerary = itinerary
+      sendSSE(res, { type: 'step', step: 4, name: '行程规划', status: 'complete', data: { days: itinerary.length, spotCount: itinerary.length * 3 } })
+    }
+
     if (!context.budgetBreakdown) {
-      sendSSE(res, { type: 'step', step: 4, name: '预算计算', status: 'start' })
+      sendSSE(res, { type: 'step', step: 5, name: '预算计算', status: 'start' })
       const result = executeTool('calculate_budget', {
         totalBudget: context.intent?.budget || params.budget,
         days: context.intent?.days || params.days,
         ticketCost: (context.ragResult?.attractions || []).slice(0, (context.intent?.days || params.days) * 3).reduce((s, a) => s + (a.ticket || 0), 0),
       }, context)
-      sendSSE(res, { type: 'step', step: 4, name: '预算计算', status: 'complete', data: result.summary })
+      sendSSE(res, { type: 'step', step: 5, name: '预算计算', status: 'complete', data: result.summary })
     }
 
-    // 补建议
     if (!context.tips) {
-      sendSSE(res, { type: 'step', step: 5, name: '生成建议', status: 'start' })
+      sendSSE(res, { type: 'step', step: 6, name: '生成建议', status: 'start' })
       const cityData = context.ragResult || {}
       const result = executeTool('generate_tips', {
         city: context.intent?.city || params.city,
@@ -384,10 +403,13 @@ async function executeAgent(res, params) {
         food: cityData.food || [],
         transport: cityData.transport || '公共交通',
       }, context)
-      sendSSE(res, { type: 'step', step: 5, name: '生成建议', status: 'complete', data: result.summary })
+      sendSSE(res, { type: 'step', step: 6, name: '生成建议', status: 'complete', data: result.summary })
     }
 
-    // 发送最终结果
+    // 获取住宿和夜生活数据
+    const attractionsDB = require('../knowledge/attractions.json')
+    const cityData = attractionsDB.find(c => c.city === (context.intent?.city || params.city))
+
     sendSSE(res, {
       type: 'complete',
       data: {
@@ -397,6 +419,9 @@ async function executeAgent(res, params) {
         dailyItinerary: context.itinerary,
         budgetBreakdown: context.budgetBreakdown,
         tips: context.tips || [],
+        weather: context.weather || null,
+        accommodation: cityData?.accommodation || [],
+        nightlife: cityData?.nightlife || [],
       },
     })
   }
@@ -404,6 +429,74 @@ async function executeAgent(res, params) {
     console.error('Agent 执行失败，降级到 Mock:', err.message)
     return executeAgentMock(res, params)
   }
+}
+
+// ========== 天气感知行程构建 ==========
+
+/**
+ * 根据天气智能规划行程
+ * 雨天/极端天气优先室内景点，晴天优先户外景点
+ * 晚间加入餐饮推荐
+ */
+function buildWeatherAwareItinerary(context) {
+  const days = context.intent?.days || 3
+  const ragResult = context.ragResult
+  const weather = context.weather
+
+  if (!ragResult || !ragResult.attractions.length) return []
+
+  const allSpots = ragResult.attractions
+  const goodOutdoor = isGoodForOutdoor(weather)
+
+  // 根据天气筛选景点排序
+  let sortedSpots
+  if (goodOutdoor) {
+    // 晴天：户外优先，室内穿插
+    const outdoor = allSpots.filter(a => !a.indoor)
+    const indoor = allSpots.filter(a => a.indoor)
+    sortedSpots = [...outdoor, ...indoor]
+  }
+  else {
+    // 雨天/极端天气：室内优先
+    const indoor = allSpots.filter(a => a.indoor)
+    const outdoor = allSpots.filter(a => !a.indoor)
+    sortedSpots = [...indoor, ...outdoor]
+  }
+
+  // 如果筛选后景点不足，回退到原始列表
+  if (sortedSpots.length < days * 2) {
+    sortedSpots = allSpots
+  }
+
+  const foodList = ragResult.food || []
+  const itinerary = []
+
+  for (let d = 1; d <= days; d++) {
+    const date = new Date()
+    date.setDate(date.getDate() + d - 1)
+    const dateStr = date.toISOString().split('T')[0]
+
+    const morningSpot = sortedSpots[(d - 1) * 3] || sortedSpots[0]
+    const afternoonSpot = sortedSpots[(d - 1) * 3 + 1] || sortedSpots[1] || sortedSpots[0]
+    const eveningSpot = sortedSpots[(d - 1) * 3 + 2] || sortedSpots[2] || sortedSpots[0]
+
+    // 晚间：景点 + 餐饮推荐
+    const foodRec = foodList[(d - 1) % foodList.length]
+    const eveningFormatted = formatSpot(eveningSpot)
+    if (foodRec) {
+      eveningFormatted.description += `。晚餐推荐品尝当地特色：${foodRec}`
+    }
+
+    itinerary.push({
+      day: d,
+      date: dateStr,
+      morning: formatSpot(morningSpot),
+      afternoon: formatSpot(afternoonSpot),
+      evening: eveningFormatted,
+    })
+  }
+
+  return itinerary
 }
 
 // ========== 辅助函数 ==========
@@ -421,7 +514,7 @@ function formatSpot(spot) {
 
 // ========== Mock 降级 ==========
 
-function executeAgentMock(res, params) {
+async function executeAgentMock(res, params) {
   // 步骤 1：解析意图
   sendSSE(res, { type: 'step', step: 1, name: '解析意图', status: 'start' })
   const tags = []
@@ -445,26 +538,49 @@ function executeAgentMock(res, params) {
   }
   sendSSE(res, { type: 'step', step: 2, name: '知识库检索', status: 'complete', data: { count: ragResult.attractions.length, sources: ragResult.attractions.slice(0, 5).map(a => a.name) } })
 
-  // 步骤 3：规划行程
-  sendSSE(res, { type: 'step', step: 3, name: '行程规划', status: 'start' })
+  // 步骤 3：查询天气
+  sendSSE(res, { type: 'step', step: 3, name: '查询天气', status: 'start' })
+  const weather = await getWeather(intent.city).catch(() => null)
+  sendSSE(res, { type: 'step', step: 3, name: '查询天气', status: 'complete', data: weather ? { temperature: weather.temperature, weatherDesc: weather.weatherDesc } : {} })
+
+  // 步骤 4：天气感知行程规划
+  sendSSE(res, { type: 'step', step: 4, name: '行程规划', status: 'start' })
+  const goodOutdoor = isGoodForOutdoor(weather)
+  let sortedSpots
+  if (goodOutdoor) {
+    const outdoor = ragResult.attractions.filter(a => !a.indoor)
+    const indoor = ragResult.attractions.filter(a => a.indoor)
+    sortedSpots = [...outdoor, ...indoor]
+  }
+  else {
+    const indoor = ragResult.attractions.filter(a => a.indoor)
+    const outdoor = ragResult.attractions.filter(a => !a.indoor)
+    sortedSpots = [...indoor, ...outdoor]
+  }
+  if (sortedSpots.length < intent.days * 2) sortedSpots = ragResult.attractions
+
+  const foodList = ragResult.food || []
   const itinerary = []
-  const spots = ragResult.attractions.slice(0, intent.days * 3)
   for (let d = 1; d <= intent.days; d++) {
     const date = new Date()
     date.setDate(date.getDate() + d - 1)
+    const eveningFormatted = formatSpot(sortedSpots[(d - 1) * 3 + 2] || sortedSpots[2] || sortedSpots[0])
+    const foodRec = foodList[(d - 1) % foodList.length]
+    if (foodRec) eveningFormatted.description += `。晚餐推荐品尝当地特色：${foodRec}`
+
     itinerary.push({
       day: d,
       date: date.toISOString().split('T')[0],
-      morning: formatSpot(spots[(d - 1) * 3]),
-      afternoon: formatSpot(spots[(d - 1) * 3 + 1]),
-      evening: formatSpot(spots[(d - 1) * 3 + 2]),
+      morning: formatSpot(sortedSpots[(d - 1) * 3] || sortedSpots[0]),
+      afternoon: formatSpot(sortedSpots[(d - 1) * 3 + 1] || sortedSpots[1] || sortedSpots[0]),
+      evening: eveningFormatted,
     })
   }
-  sendSSE(res, { type: 'step', step: 3, name: '行程规划', status: 'complete', data: { days: intent.days, spotCount: intent.days * 3 } })
+  sendSSE(res, { type: 'step', step: 4, name: '行程规划', status: 'complete', data: { days: intent.days, spotCount: intent.days * 3 } })
 
-  // 步骤 4：计算预算
-  sendSSE(res, { type: 'step', step: 4, name: '预算计算', status: 'start' })
-  const ticketCost = spots.reduce((sum, a) => sum + (a.ticket || 0), 0)
+  // 步骤 5：计算预算
+  sendSSE(res, { type: 'step', step: 5, name: '预算计算', status: 'start' })
+  const ticketCost = sortedSpots.slice(0, intent.days * 3).reduce((sum, a) => sum + (a.ticket || 0), 0)
   const budgetBreakdown = {
     accommodation: Math.round(intent.budget * 0.35),
     food: Math.round(intent.budget * 0.25),
@@ -472,18 +588,25 @@ function executeAgentMock(res, params) {
     tickets: Math.min(ticketCost, Math.round(intent.budget * 0.15)),
   }
   budgetBreakdown.other = intent.budget - budgetBreakdown.accommodation - budgetBreakdown.food - budgetBreakdown.transportation - budgetBreakdown.tickets
-  sendSSE(res, { type: 'step', step: 4, name: '预算计算', status: 'complete', data: budgetBreakdown })
+  sendSSE(res, { type: 'step', step: 5, name: '预算计算', status: 'complete', data: budgetBreakdown })
 
-  // 步骤 5：生成建议
-  sendSSE(res, { type: 'step', step: 5, name: '生成建议', status: 'start' })
+  // 步骤 6：生成建议（含天气建议）
+  sendSSE(res, { type: 'step', step: 6, name: '生成建议', status: 'start' })
   const tips = []
+  if (weather) {
+    tips.push(`当前天气：${weather.weatherDesc}，${weather.temperature}°C`)
+    tips.push(...getDressAdvice(weather))
+  }
   tips.push(`最佳旅行季节：${ragResult.bestSeason}`)
   tips.push(`交通建议：${ragResult.transport}`)
   if (ragResult.food?.length) tips.push(`推荐美食：${ragResult.food.slice(0, 5).join('、')}`)
   if (intent.days >= 3) tips.push('行程较长，建议准备舒适的运动鞋')
   tips.push('建议提前在网上预约热门景点门票')
-  tips.push('出行前查看当地天气预报，合理安排行程')
-  sendSSE(res, { type: 'step', step: 5, name: '生成建议', status: 'complete', data: { count: tips.length } })
+  sendSSE(res, { type: 'step', step: 6, name: '生成建议', status: 'complete', data: { count: tips.length } })
+
+  // 获取住宿和夜生活数据
+  const attractionsDB = require('../knowledge/attractions.json')
+  const cityData = attractionsDB.find(c => c.city === intent.city)
 
   // 发送最终结果
   sendSSE(res, {
@@ -495,6 +618,9 @@ function executeAgentMock(res, params) {
       dailyItinerary: itinerary,
       budgetBreakdown,
       tips,
+      weather: weather || null,
+      accommodation: cityData?.accommodation || [],
+      nightlife: cityData?.nightlife || [],
     },
   })
 }

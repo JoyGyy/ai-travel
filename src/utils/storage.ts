@@ -2,7 +2,7 @@
  * 本地存储工具模块
  * 使用 localStorage 持久化用户的行程历史和收藏数据
  */
-import type { HistoryRecord, ItineraryResult } from '@/types'
+import type { AccommodationInfo, HistoryRecord, ItineraryResult, NightlifeInfo, WeatherInfo } from '@/types'
 import { useHistoryStore } from '@/stores/history'
 
 // 存储键名常量
@@ -39,6 +39,9 @@ export function saveToHistory(result: ItineraryResult): void {
     itinerary: result.dailyItinerary || [],
     budgetBreakdown: result.budgetBreakdown || null,
     tips: result.tips || [],
+    weather: result.weather || null,
+    accommodation: result.accommodation || [],
+    nightlife: result.nightlife || [],
   }
   useHistoryStore.getState().addRecord(record)
 }
@@ -75,6 +78,9 @@ export function loadItineraryCache(city: string, budget: number, days: number): 
   itinerary: ItineraryResult['dailyItinerary']
   budgetBreakdown: ItineraryResult['budgetBreakdown'] | null
   tips: string[]
+  weather?: WeatherInfo | null
+  accommodation?: AccommodationInfo[]
+  nightlife?: NightlifeInfo[]
 } | null {
   const key = `detail_${city}_${budget}_${days}`
   const raw = localStorage.getItem(key)
@@ -99,6 +105,9 @@ export function saveItineraryCache(city: string, budget: number, days: number, d
   itinerary: ItineraryResult['dailyItinerary']
   budgetBreakdown: ItineraryResult['budgetBreakdown'] | null
   tips: string[]
+  weather?: WeatherInfo | null
+  accommodation?: AccommodationInfo[]
+  nightlife?: NightlifeInfo[]
 }): void {
   const key = `detail_${city}_${budget}_${days}`
   localStorage.setItem(key, JSON.stringify(data))

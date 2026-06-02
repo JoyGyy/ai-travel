@@ -13,10 +13,6 @@ const tabs = [
   { key: '/profile', title: '我的', icon: <UserOutline /> },
 ]
 
-/**
- * 底部导航栏组件
- * 固定在页面底部，显示四个导航标签
- */
 export function TabBar() {
   const location = useLocation()
   const navigate = useNavigate()
@@ -25,56 +21,64 @@ export function TabBar() {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-50 flex items-center"
+      className="fixed bottom-0 left-0 right-0 z-50"
       style={{
-        height: '56px',
-        background: 'rgba(255, 252, 248, 0.85)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        borderTop: '1px solid var(--c-paper-dark)',
+        background: 'rgba(255, 252, 248, 0.72)',
+        backdropFilter: 'blur(20px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+        borderTop: '1px solid rgba(240, 232, 221, 0.5)',
       }}
     >
-      {tabs.map(tab => {
-        const isActive = activeKey === tab.key
-        return (
-          <button
-            key={tab.key}
-            onClick={() => navigate(tab.key)}
-            className="flex flex-col items-center justify-center gap-1 border-none bg-transparent cursor-pointer relative"
-            style={{ flex: 1, height: '100%' }}
-          >
-            <span
-              className="text-[20px] transition-all duration-200"
-              style={{
-                color: isActive ? 'var(--c-terracotta)' : 'var(--c-ink-light)',
-                transform: isActive ? 'scale(1.1)' : 'scale(1)',
-              }}
+      <div className="flex items-center" style={{ height: '56px' }}>
+        {tabs.map(tab => {
+          const isActive = activeKey === tab.key
+          return (
+            <button
+              key={tab.key}
+              onClick={() => navigate(tab.key)}
+              className="flex flex-col items-center justify-center gap-0.5 border-none bg-transparent cursor-pointer relative"
+              style={{ flex: 1, height: '100%' }}
             >
-              {tab.icon}
-            </span>
-            <span
-              className="text-[10px] transition-all duration-200"
-              style={{
-                color: isActive ? 'var(--c-terracotta)' : 'var(--c-ink-light)',
-                fontWeight: isActive ? 600 : 400,
-              }}
-            >
-              {tab.title}
-            </span>
-            {/* 激活指示条 */}
-            {isActive && (
               <span
-                className="absolute bottom-0 left-1/2 -translate-x-1/2 rounded-full"
+                className="transition-all duration-300 ease-out"
                 style={{
-                  width: '16px',
-                  height: '3px',
-                  background: 'var(--c-terracotta)',
+                  fontSize: isActive ? '22px' : '20px',
+                  color: isActive ? 'var(--c-terracotta)' : 'var(--c-ink-light)',
+                  transform: isActive ? 'translateY(-1px)' : 'translateY(0)',
+                  opacity: isActive ? 1 : 0.65,
                 }}
-              />
-            )}
-          </button>
-        )
-      })}
+              >
+                {tab.icon}
+              </span>
+              <span
+                className="transition-all duration-300 ease-out"
+                style={{
+                  fontSize: '10px',
+                  letterSpacing: '0.5px',
+                  color: isActive ? 'var(--c-terracotta)' : 'var(--c-ink-light)',
+                  fontWeight: isActive ? 600 : 400,
+                  opacity: isActive ? 1 : 0.65,
+                }}
+              >
+                {tab.title}
+              </span>
+              {isActive && (
+                <span
+                  className="absolute bottom-1 left-1/2 -translate-x-1/2 rounded-full"
+                  style={{
+                    width: '18px',
+                    height: '2.5px',
+                    background: 'linear-gradient(90deg, var(--c-terracotta), var(--c-terracotta-light))',
+                    opacity: 0.9,
+                  }}
+                />
+              )}
+            </button>
+          )
+        })}
+      </div>
+      {/* iPhone 安全区域 */}
+      <div style={{ height: 'env(safe-area-inset-bottom, 0px)' }} />
     </div>
   )
 }

@@ -4,50 +4,58 @@
  */
 import { ChatAddOutline } from 'antd-mobile-icons'
 
-/** 组件属性接口 */
 interface ChatBubbleProps {
-  role: 'user' | 'assistant' // 消息角色：用户或 AI 助手
-  content: string            // 消息内容
+  role: 'user' | 'assistant'
+  content: string
 }
 
-/**
- * 聊天气泡组件
- * 用户消息右对齐，AI 消息左对齐并显示头像
- */
 export function ChatBubble({ role, content }: ChatBubbleProps) {
-  const isUser = role === 'user' // 判断是否为用户消息
+  const isUser = role === 'user'
 
   return (
     <div
-      className="flex items-start gap-2 mb-3.5"
+      className="flex items-start gap-2.5 mb-3"
       style={{
-        justifyContent: isUser ? 'flex-end' : 'flex-start', // 用户消息右对齐，AI 消息左对齐
-        animation: 'fadeUp 0.3s ease both', // 淡入上移动画
+        justifyContent: isUser ? 'flex-end' : 'flex-start',
+        animation: 'fadeUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both',
       }}
     >
-      {/* AI 头像 - 仅在 AI 消息时显示 */}
+      {/* AI 头像 */}
       {!isUser && (
         <div
           className="shrink-0 flex items-center justify-center"
-          style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--c-sand) 0%, var(--c-cream) 100%)' }}
+          style={{
+            width: '30px',
+            height: '30px',
+            borderRadius: '10px',
+            background: 'linear-gradient(135deg, var(--c-sand) 0%, var(--c-cream) 100%)',
+            boxShadow: '0 1px 3px rgba(194, 114, 75, 0.1)',
+          }}
         >
           <ChatAddOutline style={{ fontSize: '14px', color: 'var(--c-terracotta)' }} />
         </div>
       )}
+
       {/* 消息气泡 */}
       <div
-        className="max-w-[75%] px-4 py-3 text-sm leading-relaxed"
+        className={`max-w-[78%] text-sm ${isUser ? 'px-4 py-2.5' : 'px-4 py-3'}`}
         style={{
-          // 用户消息右下角圆角小，AI 消息左下角圆角小，形成对话气泡效果
-          borderRadius: isUser ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-          background: isUser ? 'linear-gradient(135deg, var(--c-terracotta) 0%, var(--c-terracotta-light) 100%)' : 'var(--c-white)',
+          borderRadius: isUser ? '18px 18px 4px 18px' : '4px 18px 18px 18px',
+          background: isUser
+            ? 'linear-gradient(135deg, var(--c-terracotta) 0%, var(--c-terracotta-light) 100%)'
+            : 'var(--c-white)',
           color: isUser ? '#fff' : 'var(--c-ink)',
-          whiteSpace: 'pre-wrap', // 保留换行符
-          wordBreak: 'break-word', // 长文本自动换行
-          ...(isUser ? {} : { boxShadow: 'var(--shadow-sm)' }),
+          whiteSpace: 'pre-wrap',
+          wordBreak: 'break-word',
+          lineHeight: '1.7',
+          ...(isUser
+            ? { boxShadow: '0 2px 8px rgba(194, 114, 75, 0.15)' }
+            : { boxShadow: '0 1px 4px rgba(45, 42, 38, 0.04), 0 0 0 1px rgba(240, 232, 221, 0.5)' }),
         }}
       >
-        {content}
+        {isUser
+          ? content
+          : <div className="markdown-body">{content}</div>}
       </div>
     </div>
   )

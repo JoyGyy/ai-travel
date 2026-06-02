@@ -51,9 +51,7 @@ export default function Detail() {
       onStep: (step: unknown) => {
         const agentStep = step as AgentStep
         setCurrentAgentStep(agentStep.step)
-        if (agentStep.status === 'complete') {
-          addAgentStep(agentStep)
-        }
+        if (agentStep.status === 'complete') addAgentStep(agentStep)
       },
       onComplete: (result: unknown) => {
         const data = result as ItineraryResult
@@ -74,162 +72,176 @@ export default function Detail() {
 
   function handleSaveToCollections() {
     try {
-      saveToCollections({
-        city,
-        days,
-        budget,
-        date: new Date().toLocaleDateString('zh-CN'),
-        itinerary,
-        budgetBreakdown,
-        tips,
-      })
+      saveToCollections({ city, days, budget, date: new Date().toLocaleDateString('zh-CN'), itinerary, budgetBreakdown, tips })
       Toast.show({ content: '已保存到我的收藏' })
     }
-    catch {
-      Toast.show({ content: '保存失败' })
-    }
+    catch { Toast.show({ content: '保存失败' }) }
   }
 
   async function cancelPlan() {
     const result = await Dialog.confirm({ content: '确定要取消本次行程推荐吗？' })
-    if (result)
-      navigate(-1)
+    if (result) navigate(-1)
   }
 
   return (
     <div className="flex-1 overflow-y-auto" style={{ background: 'var(--c-paper)', paddingBottom: '24px' }}>
+      {/* 头部 */}
       <div
-        className="relative px-6 pt-5 pb-9 md:pt-8 md:pb-14"
+        className="relative px-6 pt-5 pb-10 md:pt-8 md:pb-14"
         style={{ background: 'linear-gradient(160deg, var(--c-forest) 0%, #2d6a4f 100%)' }}
       >
+        <div className="absolute -top-10 -right-10 w-36 h-36 rounded-full" style={{ background: 'rgba(212, 165, 116, 0.06)', filter: 'blur(30px)' }} />
         <button
           onClick={() => navigate(-1)}
-          className="absolute top-3.5 left-4 w-9 h-9 rounded-full flex items-center justify-center border-none cursor-pointer transition-all duration-200 hover:scale-110"
-          style={{ background: 'rgba(255, 252, 248, 0.15)' }}
+          className="absolute top-3.5 left-4 w-9 h-9 rounded-xl flex items-center justify-center border-none cursor-pointer transition-all active:scale-90"
+          style={{ background: 'rgba(255, 252, 248, 0.12)' }}
         >
-          <LeftOutline style={{ color: 'var(--c-cream)', fontSize: '18px' }} />
+          <LeftOutline style={{ color: 'var(--c-cream)', fontSize: '17px' }} />
         </button>
-        <p className="mt-2 mb-2 text-[11px] font-semibold tracking-[4px]" style={{ fontFamily: 'var(--font-sans)', color: 'var(--c-gold-light)' }}>ITINERARY</p>
-        <h1 className="mb-2 text-[32px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-cream)', textShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>{city}</h1>
-        <p className="text-sm font-light" style={{ color: 'rgba(253, 246, 236, 0.7)' }}>
+        <p className="mt-2 mb-2 text-[10px] font-semibold tracking-[5px]" style={{ fontFamily: 'var(--font-sans)', color: 'var(--c-gold-light)', opacity: 0.75 }}>ITINERARY</p>
+        <h1 className="mb-2 text-[28px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-cream)', textShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+          {city}
+        </h1>
+        <p className="text-[12px] font-light" style={{ color: 'rgba(253, 246, 236, 0.5)' }}>
           {days} 天行程 &middot; 预算 ¥{budget}
         </p>
       </div>
 
       <div className="md:max-w-4xl md:mx-auto">
-      {isLoading && (
-        <div className="pt-5">
-          <AgentSteps steps={agentSteps} currentStep={currentAgentStep} />
-          <div className="flex flex-col items-center py-8 gap-4">
-            <div className="relative w-12 h-12 flex items-center justify-center">
-              <div className="absolute inset-0 rounded-full border-2 border-dotted" style={{ borderColor: 'var(--c-paper-dark)', borderTopColor: 'var(--c-terracotta)', animation: 'spin 1s linear infinite' }} />
-              <CompassOutline style={{ fontSize: '18px', color: 'var(--c-terracotta)' }} />
-            </div>
-            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', color: 'var(--c-ink-light)' }}>AI 正在为你规划行程...</p>
-          </div>
-        </div>
-      )}
-
-      {!isLoading && itinerary.length === 0 && (
-        <div className="flex flex-col items-center py-20 gap-4">
-          <div className="w-20 h-20 rounded-full flex items-center justify-center" style={{ background: 'var(--c-sand)' }}>
-            <LocationOutline style={{ fontSize: '48px', color: 'var(--c-gold)' }} />
-          </div>
-          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '15px', color: 'var(--c-ink-light)' }}>暂无行程数据</p>
-          <button onClick={() => navigate('/chat')} className="px-6 py-2.5 rounded-full border-none cursor-pointer text-sm font-medium" style={{ background: 'var(--c-terracotta)', color: '#fff' }}>
-            咨询 AI 生成行程
-          </button>
-        </div>
-      )}
-
-      {!isLoading && itinerary.length > 0 && (
-        <>
-          <div
-            className="flex items-center mx-4 -mt-5 px-5 py-4 relative z-10 rounded-2xl md:mx-auto md:px-8 md:py-5 md:max-w-4xl transition-shadow duration-200"
-            style={{ background: 'var(--c-white)', boxShadow: 'var(--shadow-md)' }}
-          >
-            <div className="flex-1 flex flex-col items-center gap-1">
-              <span className="text-[11px] font-medium" style={{ color: 'var(--c-ink-light)' }}>目的地</span>
-              <span className="text-base font-semibold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-ink)' }}>{city}</span>
-            </div>
-            <div className="w-px h-7" style={{ background: 'var(--c-paper-dark)' }} />
-            <div className="flex-1 flex flex-col items-center gap-1">
-              <span className="text-[11px] font-medium" style={{ color: 'var(--c-ink-light)' }}>天数</span>
-              <span className="text-base font-semibold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-ink)' }}>{days}天</span>
-            </div>
-            <div className="w-px h-7" style={{ background: 'var(--c-paper-dark)' }} />
-            <div className="flex-1 flex flex-col items-center gap-1">
-              <span className="text-[11px] font-medium" style={{ color: 'var(--c-ink-light)' }}>预算</span>
-              <span className="text-base font-semibold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-terracotta)' }}>¥{budget}</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 px-5 pt-6 pb-3" style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', fontWeight: 600, color: 'var(--c-ink)' }}>
-            <div className="w-2 h-2 rounded-full" style={{ background: 'var(--c-terracotta)' }} />
-            <span>每日行程</span>
-          </div>
-          <div className="mx-4 rounded-2xl overflow-hidden md:mx-auto md:max-w-4xl md:px-0" style={{ background: 'var(--c-white)' }}>
-            {itinerary.map(item => (
-              <div key={item.day} className="border-b last:border-b-0" style={{ borderColor: 'var(--c-paper-dark)' }}>
-                <button
-                  onClick={() => {
-                    setActiveKeys(prev =>
-                      prev.includes(String(item.day))
-                        ? prev.filter(k => k !== String(item.day))
-                        : [...prev, String(item.day)],
-                    )
-                  }}
-                  className="w-full flex items-center justify-between px-5 py-4 text-left border-none bg-transparent cursor-pointer"
-                  style={{ background: 'var(--c-white)' }}
-                >
-                  <span className="text-sm font-medium" style={{ color: 'var(--c-ink)' }}>{item.date}</span>
-                  <span className="text-xs transition-transform duration-200" style={{ color: '#999', transform: activeKeys.includes(String(item.day)) ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
-                </button>
-                {activeKeys.includes(String(item.day)) && (
-                  <div className="px-5 pb-4 md:grid md:grid-cols-2 md:gap-3">
-                    <SpotItem period="上午" data={item.morning} />
-                    <SpotItem period="下午" data={item.afternoon} />
-                    <SpotItem period="晚上" data={item.evening} />
-                  </div>
-                )}
+        {isLoading && (
+          <div className="pt-5">
+            <AgentSteps steps={agentSteps} currentStep={currentAgentStep} />
+            <div className="flex flex-col items-center py-10 gap-4">
+              <div className="relative w-12 h-12 flex items-center justify-center">
+                <div className="absolute inset-0 rounded-full border-2 border-dotted" style={{ borderColor: 'var(--c-paper-dark)', borderTopColor: 'var(--c-terracotta)', animation: 'spin 1s linear infinite' }} />
+                <CompassOutline style={{ fontSize: '18px', color: 'var(--c-terracotta)' }} />
               </div>
-            ))}
+              <p className="text-[13px]" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-ink-light)' }}>AI 正在为你规划行程...</p>
+            </div>
           </div>
+        )}
 
-          {budgetBreakdown && <BudgetTable data={budgetBreakdown} />}
-
-          {tips.length > 0 && (
-            <div className="pb-2">
-              <div className="flex items-center gap-2 px-5 pt-6 pb-3" style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', fontWeight: 600, color: 'var(--c-ink)' }}>
-                <div className="w-2 h-2 rounded-full" style={{ background: 'var(--c-terracotta)' }} />
-                <span>温馨提示</span>
-              </div>
-              <div className="mx-4 p-4 rounded-2xl md:mx-auto md:max-w-4xl md:p-6" style={{ background: 'var(--c-white)', boxShadow: 'var(--shadow-sm)' }}>
-                {tips.map((tip, i) => (
-                  <div key={i} className="flex items-start gap-2.5 text-[13px] leading-relaxed py-1.5" style={{ color: 'var(--c-ink-light)' }}>
-                    <span className="w-1.5 h-1.5 rounded-full mt-[7px] shrink-0" style={{ background: 'var(--c-gold)' }} />
-                    {tip}
-                  </div>
-                ))}
-              </div>
+        {!isLoading && itinerary.length === 0 && (
+          <div className="flex flex-col items-center py-24 gap-4">
+            <div className="w-20 h-20 rounded-2xl flex items-center justify-center" style={{ background: 'var(--c-sand)' }}>
+              <LocationOutline style={{ fontSize: '40px', color: 'var(--c-gold)' }} />
             </div>
-          )}
-
-          <div className="flex flex-col gap-2.5 px-4 pt-5 md:px-8 md:max-w-4xl md:mx-auto">
-            <div className="flex gap-2.5">
-              <button onClick={cancelPlan} className="flex-1 h-[46px] rounded-full text-[15px] font-semibold border-none cursor-pointer transition-all duration-200 active:scale-[0.98]" style={{ background: 'var(--c-paper-dark)', color: 'var(--c-ink-light)', boxShadow: 'var(--shadow-sm)' }}>
-                取消推荐
-              </button>
-              <button onClick={handleSaveToCollections} className="flex-1 h-[46px] rounded-full text-[15px] font-semibold border-none cursor-pointer text-white transition-all duration-200 active:scale-[0.98]" style={{ background: 'linear-gradient(135deg, var(--c-terracotta) 0%, var(--c-terracotta-light) 100%)' }}>
-                保存行程
-              </button>
-            </div>
-            <button onClick={() => navigate('/chat')} className="w-full h-[42px] rounded-full text-sm font-medium cursor-pointer transition-all duration-200 active:scale-[0.98]" style={{ background: 'transparent', border: '1px solid var(--c-paper-dark)', color: 'var(--c-ink-light)' }}>
-              咨询 AI
+            <p className="text-[14px]" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-ink-light)' }}>暂无行程数据</p>
+            <button
+              onClick={() => navigate('/chat')}
+              className="px-6 py-2.5 rounded-xl border-none cursor-pointer text-sm font-medium transition-all active:scale-95"
+              style={{ background: 'linear-gradient(135deg, var(--c-terracotta) 0%, var(--c-terracotta-light) 100%)', color: '#fff', boxShadow: '0 2px 8px rgba(194, 114, 75, 0.2)' }}
+            >
+              咨询 AI 生成行程
             </button>
           </div>
-        </>
-      )}
+        )}
+
+        {!isLoading && itinerary.length > 0 && (
+          <>
+            {/* 摘要卡片 */}
+            <div
+              className="flex items-center mx-4 -mt-6 px-5 py-4 relative z-10 rounded-2xl md:mx-auto md:px-8 md:py-5"
+              style={{ background: 'var(--c-white)', boxShadow: 'var(--shadow-lg)', border: '1px solid rgba(240, 232, 221, 0.3)' }}
+            >
+              <div className="flex-1 flex flex-col items-center gap-1">
+                <span className="text-[10px] font-medium tracking-wider" style={{ color: 'var(--c-ink-light)', textTransform: 'uppercase' }}>目的地</span>
+                <span className="text-[15px] font-semibold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-ink)' }}>{city}</span>
+              </div>
+              <div className="w-px h-8" style={{ background: 'var(--c-paper-dark)' }} />
+              <div className="flex-1 flex flex-col items-center gap-1">
+                <span className="text-[10px] font-medium tracking-wider" style={{ color: 'var(--c-ink-light)', textTransform: 'uppercase' }}>天数</span>
+                <span className="text-[15px] font-semibold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-ink)' }}>{days}天</span>
+              </div>
+              <div className="w-px h-8" style={{ background: 'var(--c-paper-dark)' }} />
+              <div className="flex-1 flex flex-col items-center gap-1">
+                <span className="text-[10px] font-medium tracking-wider" style={{ color: 'var(--c-ink-light)', textTransform: 'uppercase' }}>预算</span>
+                <span className="text-[15px] font-semibold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-terracotta)' }}>¥{budget}</span>
+              </div>
+            </div>
+
+            {/* 每日行程 */}
+            <div className="flex items-center gap-2.5 px-5 pt-7 pb-3" style={{ fontFamily: 'var(--font-serif)', fontSize: '15px', fontWeight: 600, color: 'var(--c-ink)' }}>
+              <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--c-terracotta)' }} />
+              <span>每日行程</span>
+            </div>
+            <div
+              className="mx-4 rounded-2xl overflow-hidden md:mx-auto md:max-w-4xl"
+              style={{ background: 'var(--c-white)', boxShadow: 'var(--shadow-sm)', border: '1px solid rgba(240, 232, 221, 0.4)' }}
+            >
+              {itinerary.map(item => (
+                <div key={item.day} className="border-b last:border-b-0" style={{ borderColor: 'rgba(240, 232, 221, 0.5)' }}>
+                  <button
+                    onClick={() => setActiveKeys(prev => prev.includes(String(item.day)) ? prev.filter(k => k !== String(item.day)) : [...prev, String(item.day)])}
+                    className="w-full flex items-center justify-between px-5 py-3.5 text-left border-none bg-transparent cursor-pointer transition-colors"
+                    style={{ background: 'var(--c-white)' }}
+                  >
+                    <span className="text-sm font-medium" style={{ color: 'var(--c-ink)' }}>{item.date}</span>
+                    <span className="text-[10px] transition-transform duration-200" style={{ color: 'var(--c-ink-light)', transform: activeKeys.includes(String(item.day)) ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                      ▼
+                    </span>
+                  </button>
+                  {activeKeys.includes(String(item.day)) && (
+                    <div className="px-4 pb-4 md:grid md:grid-cols-2 md:gap-3">
+                      <SpotItem period="上午" data={item.morning} />
+                      <SpotItem period="下午" data={item.afternoon} />
+                      <SpotItem period="晚上" data={item.evening} />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {budgetBreakdown && <BudgetTable data={budgetBreakdown} />}
+
+            {tips.length > 0 && (
+              <div className="pb-2">
+                <div className="flex items-center gap-2.5 px-5 pt-6 pb-3" style={{ fontFamily: 'var(--font-serif)', fontSize: '15px', fontWeight: 600, color: 'var(--c-ink)' }}>
+                  <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--c-terracotta)' }} />
+                  <span>温馨提示</span>
+                </div>
+                <div
+                  className="mx-4 p-4 rounded-2xl md:mx-auto md:max-w-4xl md:p-5"
+                  style={{ background: 'var(--c-white)', boxShadow: 'var(--shadow-sm)', border: '1px solid rgba(240, 232, 221, 0.4)' }}
+                >
+                  {tips.map((tip, i) => (
+                    <div key={i} className="flex items-start gap-2.5 text-[13px] leading-relaxed py-1.5" style={{ color: 'var(--c-ink-light)' }}>
+                      <span className="w-1.5 h-1.5 rounded-full mt-[7px] shrink-0" style={{ background: 'var(--c-gold)' }} />
+                      {tip}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 操作按钮 */}
+            <div className="flex flex-col gap-2 px-4 pt-5 pb-4 md:px-8 md:max-w-4xl md:mx-auto">
+              <div className="flex gap-2">
+                <button
+                  onClick={cancelPlan}
+                  className="flex-1 h-11 rounded-xl text-[14px] font-semibold border-none cursor-pointer transition-all active:scale-[0.98]"
+                  style={{ background: 'var(--c-paper-dark)', color: 'var(--c-ink-light)', boxShadow: 'var(--shadow-xs)' }}
+                >
+                  取消推荐
+                </button>
+                <button
+                  onClick={handleSaveToCollections}
+                  className="flex-1 h-11 rounded-xl text-[14px] font-semibold border-none cursor-pointer text-white transition-all active:scale-[0.98]"
+                  style={{ background: 'linear-gradient(135deg, var(--c-terracotta) 0%, var(--c-terracotta-light) 100%)', boxShadow: '0 2px 8px rgba(194, 114, 75, 0.2)' }}
+                >
+                  保存行程
+                </button>
+              </div>
+              <button
+                onClick={() => navigate('/chat')}
+                className="w-full h-10 rounded-xl text-[13px] font-medium cursor-pointer transition-all active:scale-[0.98]"
+                style={{ background: 'transparent', border: '1px solid rgba(240, 232, 221, 0.6)', color: 'var(--c-ink-light)' }}
+              >
+                咨询 AI
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )

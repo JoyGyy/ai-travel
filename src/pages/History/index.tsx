@@ -27,6 +27,18 @@ export default function History() {
     return sorted
   }, [records, sortOrder])
 
+  // 按时间正序排列后的序号映射（最早的记录为 1）
+  const recordNumberMap = useMemo(() => {
+    const indexed = records.map((r, i) => ({
+      index: i,
+      timestamp: r.timestamp || new Date(r.date).getTime() || 0,
+    }))
+    indexed.sort((a, b) => a.timestamp - b.timestamp)
+    const map = new Map<number, number>()
+    indexed.forEach((item, rank) => map.set(item.index, rank + 1))
+    return map
+  }, [records])
+
   function toggleCard(index: number) {
     setExpandedCard(expandedCard === index ? null : index)
   }
@@ -94,7 +106,10 @@ export default function History() {
       {/* 记录列表 */}
       {sortedRecords.length > 0 && (
         <div className="flex flex-col gap-3 p-4 md:p-6 md:grid md:grid-cols-2 md:gap-4 md:max-w-4xl md:mx-auto md:items-start">
-          {sortedRecords.map((record, i) => (
+          {sortedRecords.map((record, i) => {
+            const originalIndex = records.indexOf(record)
+            const seqNum = recordNumberMap.get(originalIndex) ?? (i + 1)
+            return (
             <div
               key={i}
               className="rounded-2xl overflow-hidden transition-all duration-200 md:hover:-translate-y-0.5"
@@ -113,7 +128,7 @@ export default function History() {
                   className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-[12px] font-semibold"
                   style={{ background: 'var(--c-sand)', color: 'var(--c-terracotta)' }}
                 >
-                  {i + 1}
+                  {seqNum}
                 </span>
                 <div className="flex-1 min-w-0">
                   <h3 className="mb-1.5 text-[16px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-ink)' }}>
@@ -191,7 +206,8 @@ export default function History() {
                 </div>
               )}
             </div>
-          ))}
+          )
+          })}
         </div>
       )}
     </div>

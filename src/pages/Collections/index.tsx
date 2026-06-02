@@ -2,7 +2,7 @@
  * 我的收藏页面
  * 展示用户收藏的行程，支持查看详情和删除
  */
-import { Dialog, Toast } from 'antd-mobile'
+import { Toast } from 'antd-mobile'
 import { LeftOutline, StarOutline } from 'antd-mobile-icons'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -68,9 +68,15 @@ export default function Collections() {
               {/* 卡片头部 */}
               <div
                 onClick={() => setExpandedIndex(expandedIndex === i ? null : i)}
-                className="flex items-center px-5 py-4 cursor-pointer transition-colors active:bg-[var(--c-paper)]"
+                className="flex items-center gap-3 px-5 py-4 cursor-pointer transition-colors active:bg-[var(--c-paper)]"
               >
-                <div className="flex-1">
+                <span
+                  className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-[12px] font-semibold"
+                  style={{ background: 'var(--c-sand)', color: 'var(--c-terracotta)' }}
+                >
+                  {i + 1}
+                </span>
+                <div className="flex-1 min-w-0">
                   <h3 className="mb-1.5 text-[16px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-ink)' }}>
                     {record.city}
                   </h3>

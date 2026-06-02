@@ -107,9 +107,15 @@ export default function History() {
               {/* 卡片头部 */}
               <div
                 onClick={() => toggleCard(i)}
-                className="flex items-center px-5 py-4 cursor-pointer transition-colors active:bg-[var(--c-paper)]"
+                className="flex items-center gap-3 px-5 py-4 cursor-pointer transition-colors active:bg-[var(--c-paper)]"
               >
-                <div className="flex-1">
+                <span
+                  className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-[12px] font-semibold"
+                  style={{ background: 'var(--c-sand)', color: 'var(--c-terracotta)' }}
+                >
+                  {i + 1}
+                </span>
+                <div className="flex-1 min-w-0">
                   <h3 className="mb-1.5 text-[16px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-ink)' }}>
                     {record.city}
                   </h3>

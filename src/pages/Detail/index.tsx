@@ -3,7 +3,7 @@
  * 展示 AI 生成的旅行行程，包括每日安排、预算明细和旅行提示
  */
 import type { AgentStep, ItineraryResult } from '@/types'
-import { Dialog, Toast } from 'antd-mobile'
+import { Toast } from 'antd-mobile'
 import { CompassOutline, LeftOutline, LocationOutline } from 'antd-mobile-icons'
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
@@ -95,9 +95,8 @@ export default function Detail() {
     catch { Toast.show({ content: '保存失败', position: 'center' }) }
   }
 
-  async function cancelPlan() {
-    const result = await Dialog.confirm({ content: '确定要取消本次行程推荐吗？' })
-    if (result) navigate(-1)
+  function cancelPlan() {
+    if (window.confirm('确定要取消本次行程推荐吗？')) navigate(-1)
   }
 
   return (

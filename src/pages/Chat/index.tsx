@@ -37,6 +37,12 @@ export default function Chat() {
     return () => abort()
   }, [abort])
 
+  // 进入页面时清空旧消息，每次都是全新对话
+  useEffect(() => {
+    clearMessages()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   useEffect(() => {
     if (messagesRef.current) {
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight

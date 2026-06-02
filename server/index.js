@@ -10,6 +10,7 @@ const cors = require('cors')
 
 const travelRoutes = require('./routes/travel')
 const chatRoutes = require('./routes/chat')
+const weatherRoutes = require('./routes/weather')
 
 const app = express()
 const PORT = process.env.PORT || 3030
@@ -32,6 +33,7 @@ app.use((req, res, next) => {
 // 挂载路由
 app.use('/api/travel', travelRoutes)
 app.use('/api/travel', chatRoutes)
+app.use('/api', weatherRoutes)
 
 // 健康检查接口
 app.get('/api/health', (req, res) => {

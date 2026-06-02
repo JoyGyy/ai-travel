@@ -1,12 +1,14 @@
 /**
  * 首页组件
- * 应用的主入口页面，提供行程规划表单和热门城市推荐
+ * 应用的主入口页面，提供行程规划表单、热门城市推荐和实时天气
  */
 import { Toast } from 'antd-mobile'
 import { CalendarOutline, EnvironmentOutline, PayCircleOutline, TagOutline } from 'antd-mobile-icons'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { allCities, hotCities } from '@/constants/cities'
+import { HomeWeather } from '@/components/HomeWeather'
+import { useWeather } from '@/hooks/useWeather'
 
 export default function Home() {
   const navigate = useNavigate()
@@ -14,6 +16,8 @@ export default function Home() {
   const [budget, setBudget] = useState('')
   const [days, setDays] = useState(1)
   const [showDropdown, setShowDropdown] = useState(false)
+  const { weather, loading: weatherLoading, fetchWeather } = useWeather()
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const filteredCities = useMemo(() => {
     const keyword = city.trim()
@@ -24,7 +28,20 @@ export default function Home() {
   function selectCity(name: string) {
     setCity(name)
     setShowDropdown(false)
+    fetchWeather(name)
   }
+
+  // 输入城市时防抖查询天气
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    const trimmed = city.trim()
+    if (!trimmed || trimmed.length < 2) return
+    debounceRef.current = setTimeout(() => {
+      // 只在城市名在已知列表中时才查询
+      if (allCities.includes(trimmed)) fetchWeather(trimmed)
+    }, 800)
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
+  }, [city, fetchWeather])
 
   function onStart() {
     if (!city) return Toast.show('请选择目的地')
@@ -184,6 +201,26 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* 天气展示 */}
+      {city.trim() && allCities.includes(city.trim()) && (weather || weatherLoading) && (
+        <div className="px-4 pt-4 md:max-w-3xl md:mx-auto md:px-6">
+          {weather
+            ? <HomeWeather weather={weather} loading={weatherLoading} />
+            : (
+                <div
+                  className="rounded-2xl px-5 py-4 flex items-center gap-3"
+                  style={{ background: 'var(--c-white)', boxShadow: 'var(--shadow-sm)', border: '1px solid rgba(240, 232, 221, 0.4)' }}
+                >
+                  <div
+                    className="w-8 h-8 rounded-full border-2 border-dotted animate-spin"
+                    style={{ borderColor: 'var(--c-paper-dark)', borderTopColor: 'var(--c-terracotta)' }}
+                  />
+                  <span className="text-[13px]" style={{ color: 'var(--c-ink-light)' }}>正在查询天气...</span>
+                </div>
+              )}
+        </div>
+      )}
 
       {/* 热门城市 */}
       <div className="px-4 pt-8 pb-10 md:max-w-3xl md:mx-auto md:px-6 md:py-12">

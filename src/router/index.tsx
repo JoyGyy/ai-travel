@@ -12,6 +12,16 @@ const Detail = React.lazy(() => import('@/pages/Detail'))
 const Chat = React.lazy(() => import('@/pages/Chat'))
 const History = React.lazy(() => import('@/pages/History'))
 const Profile = React.lazy(() => import('@/pages/Profile'))
+const Weather = React.lazy(() => import('@/pages/Weather'))
+
+/** 天气图标（antd-mobile-icons 没有合适的天气图标） */
+function WeatherIcon() {
+  return (
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+    </svg>
+  )
+}
 
 /** PC 端顶部水平导航 */
 function DesktopNav() {
@@ -22,6 +32,7 @@ function DesktopNav() {
 
   const tabs = [
     { key: '/', title: '首页', icon: <AppOutline /> },
+    { key: '/weather', title: '天气', icon: <WeatherIcon /> },
     { key: '/history', title: '历史', icon: <UnorderedListOutline /> },
     { key: '/chat', title: 'AI咨询', icon: <ChatAddOutline /> },
     { key: '/profile', title: '我的', icon: <UserOutline /> },
@@ -63,7 +74,7 @@ function DesktopNav() {
 function Layout() {
   const location = useLocation()
 
-  const tabRoutes = ['/', '/history', '/chat', '/profile']
+  const tabRoutes = ['/', '/weather', '/history', '/chat', '/profile']
   const showTabbar = tabRoutes.includes(location.pathname)
 
   return (
@@ -125,6 +136,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: 'detail', element: <Detail /> },
+      { path: 'weather', element: <Weather /> },
       { path: 'chat', element: <Chat /> },
       { path: 'history', element: <History /> },
       { path: 'profile', element: <Profile /> },

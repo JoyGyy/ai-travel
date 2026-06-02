@@ -32,6 +32,7 @@ export default function Detail() {
   } = useItineraryStore()
 
   const [activeKeys, setActiveKeys] = useState<string[]>([])
+  const [saved, setSaved] = useState(false)
   const { sendRequest, abort } = useSSE()
 
   useEffect(() => {
@@ -85,11 +86,13 @@ export default function Detail() {
   }, [city, budget, days, sendRequest, abort, setItinerary, setBudgetBreakdown, setTips, addAgentStep, setCurrentAgentStep, setLoading])
 
   function handleSaveToCollections() {
+    if (saved) return
     try {
       saveToCollections({ city, days, budget, date: new Date().toLocaleDateString('zh-CN'), itinerary, budgetBreakdown, tips, weather, accommodation, nightlife })
-      Toast.show({ content: '已保存到我的收藏' })
+      setSaved(true)
+      Toast.show({ content: '已保存到我的收藏', position: 'center' })
     }
-    catch { Toast.show({ content: '保存失败' }) }
+    catch { Toast.show({ content: '保存失败', position: 'center' }) }
   }
 
   async function cancelPlan() {
@@ -258,10 +261,15 @@ export default function Detail() {
                 </button>
                 <button
                   onClick={handleSaveToCollections}
-                  className="flex-1 h-11 rounded-xl text-[14px] font-semibold border-none cursor-pointer text-white transition-all active:scale-[0.98]"
-                  style={{ background: 'linear-gradient(135deg, var(--c-terracotta) 0%, var(--c-terracotta-light) 100%)', boxShadow: '0 2px 8px rgba(99, 102, 241, 0.2)' }}
+                  className="flex-1 h-11 rounded-xl text-[14px] font-semibold border-none cursor-pointer transition-all active:scale-[0.98]"
+                  style={{
+                    background: saved ? 'var(--c-paper)' : 'linear-gradient(135deg, var(--c-terracotta) 0%, var(--c-terracotta-light) 100%)',
+                    color: saved ? 'var(--c-forest)' : '#fff',
+                    boxShadow: saved ? 'none' : '0 2px 8px rgba(99, 102, 241, 0.2)',
+                    border: saved ? '1px solid var(--c-forest)' : 'none',
+                  }}
                 >
-                  保存行程
+                  {saved ? '✓ 已收藏' : '保存行程'}
                 </button>
               </div>
               <button

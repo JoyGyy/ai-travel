@@ -21,7 +21,14 @@ function initSSE(res) {
  * @param {object} data - 要发送的数据对象
  */
 function sendSSE(res, data) {
-  res.write(`data: ${JSON.stringify(data)}\n\n`)
+  // BUG FIX: 检查流是否仍可写，防止客户端断开后写入导致进程崩溃
+  if (res.destroyed || !res.writable) return
+  try {
+    res.write(`data: ${JSON.stringify(data)}\n\n`)
+  }
+  catch {
+    // 写入失败（客户端已断开），忽略
+  }
 }
 
 /**

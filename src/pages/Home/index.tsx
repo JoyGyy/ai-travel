@@ -29,7 +29,9 @@ export default function Home() {
   function onStart() {
     if (!city) return Toast.show('请选择目的地')
     if (!budget) return Toast.show('请输入预算')
-    navigate(`/detail?city=${encodeURIComponent(city)}&budget=${budget}&days=${days}`)
+    const budgetNum = Number(budget)
+    if (Number.isNaN(budgetNum) || budgetNum <= 0) return Toast.show('请输入有效的预算金额')
+    navigate(`/detail?city=${encodeURIComponent(city)}&budget=${budgetNum}&days=${days}`)
   }
 
   return (

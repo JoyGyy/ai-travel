@@ -31,53 +31,66 @@ export function useSSE() {
    */
   const sendRequest = useCallback(async (
     url: string,
-    body: Record<string, unknown>, // 使用 unknown 替代 any，更类型安全
+    body: Record<string, unknown>,
     callbacks: SSECallbacks,
   ) => {
     // 创建新的 AbortController 用于中止请求
-    abortControllerRef.current = new AbortController()
+    const controller = new AbortController()
+    abortControllerRef.current = controller
 
     try {
-      // 发送 POST 请求
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
-        signal: abortControllerRef.current.signal, // 绑定中止信号
+        signal: controller.signal,
       })
 
-      // 获取响应流的读取器
-      const reader = res.body!.getReader()
-      const decoder = new TextDecoder() // 用于将二进制数据解码为文本
-      let full = '' // 累积的完整内容
+      // BUG FIX: 检查 HTTP 状态码，非 2xx 时抛错
+      if (!res.ok) {
+        throw new Error(`请求失败: HTTP ${res.status}`)
+      }
 
-      // 循环读取流数据
+      // BUG FIX: 检查 response body 是否存在
+      if (!res.body) {
+        throw new Error('响应体为空')
+      }
+
+      const reader = res.body.getReader()
+      // BUG FIX: 使用 stream 模式防止多字节 UTF-8 字符（如中文）在 chunk 边界被截断损坏
+      const decoder = new TextDecoder('utf-8')
+      let full = ''
+      let remainder = '' // 缓冲不完整的行
+
       while (true) {
         const { done, value } = await reader.read()
-        if (done) break // 流结束
+        if (done) {
+          // 流结束时，用 stream: false 解码剩余字节
+          remainder += decoder.decode()
+          break
+        }
 
-        // 将二进制数据解码为文本
-        const chunk = decoder.decode(value)
-        // 按行分割（SSE 协议以换行分隔消息）
+        // 拼接上次剩余的不完整数据
+        const chunk = remainder + decoder.decode(value, { stream: true })
         const lines = chunk.split('\n')
 
+        // 最后一个元素可能是不完整的行，保留到下次处理
+        remainder = lines.pop() || ''
+
         for (const line of lines) {
-          // SSE 数据以 "data: " 开头
           if (line.startsWith('data: ')) {
             try {
-              // 解析 JSON 数据
               const data = JSON.parse(line.slice(6))
 
-              // 处理不同类型的消息
               if (data.type === 'chunk' && callbacks.onChunk) {
-                full += data.content // 累积内容
-                callbacks.onChunk(full) // 传递累积的完整内容
+                full += data.content
+                callbacks.onChunk(full)
               }
               if (data.type === 'step' && callbacks.onStep) {
-                callbacks.onStep(data) // 传递 Agent 步骤更新
+                callbacks.onStep(data)
               }
               if (data.type === 'complete' && callbacks.onComplete) {
-                callbacks.onComplete(data.data) // 传递最终结果
+                callbacks.onComplete(data.data)
               }
             }
             catch {
@@ -94,14 +107,12 @@ export function useSSE() {
       }
     }
     finally {
-      // 无论成功失败都调用 onFinally 回调
       callbacks.onFinally?.()
     }
-  }, []) // 空依赖数组，函数引用保持稳定
+  }, [])
 
   /**
    * 中止当前请求
-   * 调用 AbortController 的 abort 方法取消正在进行的请求
    */
   const abort = useCallback(() => {
     abortControllerRef.current?.abort()

@@ -55,7 +55,7 @@ export const useChatStore = create<ChatState>()(
           return { messages }
         }),
 
-      clearMessages: () => set({ messages: [] }),
+      clearMessages: () => set({ messages: [], isLoading: false, currentAgentStep: 0 }),
       setLoading: isLoading => set({ isLoading }),
       setCurrentAgentStep: currentAgentStep => set({ currentAgentStep }),
     }),

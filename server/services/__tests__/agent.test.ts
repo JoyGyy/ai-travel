@@ -9,6 +9,8 @@ function createMockRes() {
       writtenData.push(data)
     }),
     flush: vi.fn(),
+    writable: true,
+    destroyed: false,
   } as any
 }
 

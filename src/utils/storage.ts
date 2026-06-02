@@ -3,11 +3,10 @@
  * 使用 localStorage 持久化用户的行程历史和收藏数据
  */
 import type { HistoryRecord, ItineraryResult } from '@/types'
+import { useHistoryStore } from '@/stores/history'
 
 // 存储键名常量
-const HISTORY_KEY = 'travel_history' // 历史记录的存储键
 const COLLECTIONS_KEY = 'travel_collections' // 收藏的存储键
-const MAX_HISTORY = 20 // 历史记录最大保存数量
 const MAX_COLLECTIONS = 50 // 收藏最大保存数量
 
 /**
@@ -27,45 +26,21 @@ function safeJsonParse<T>(key: string, fallback: T): T {
 }
 
 /**
- * 加载历史记录列表
- * @returns 历史记录数组，如果没有数据则返回空数组
- */
-export function loadHistory(): HistoryRecord[] {
-  return safeJsonParse<HistoryRecord[]>(HISTORY_KEY, [])
-}
-
-/**
  * 保存行程结果到历史记录
- * 将新记录插入到数组开头（最新的在前面），并限制最大数量
+ * 通过 Zustand store 写入，避免与 persist 中间件的双写冲突
  * @param result - AI 生成的行程结果
  */
 export function saveToHistory(result: ItineraryResult): void {
-  const history = loadHistory()
-  // 将行程结果转换为历史记录格式并插入到数组开头
-  history.unshift({
+  const record: HistoryRecord = {
     city: result.city,
     days: result.days,
     budget: result.totalBudget,
-    date: new Date().toLocaleDateString('zh-CN'), // 使用中文日期格式
+    date: new Date().toLocaleDateString('zh-CN'),
     itinerary: result.dailyItinerary || [],
     budgetBreakdown: result.budgetBreakdown || null,
     tips: result.tips || [],
-  })
-  // 限制历史记录数量，超过上限时删除最早的记录
-  if (history.length > MAX_HISTORY) {
-    history.length = MAX_HISTORY
   }
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(history))
-}
-
-/**
- * 删除指定索引的历史记录
- * @param index - 要删除的记录在数组中的索引
- */
-export function deleteHistoryRecord(index: number): void {
-  const history = loadHistory()
-  history.splice(index, 1) // 删除指定位置的记录
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(history))
+  useHistoryStore.getState().addRecord(record)
 }
 
 /**
@@ -82,8 +57,7 @@ export function loadCollections(): HistoryRecord[] {
  */
 export function saveToCollections(record: HistoryRecord): void {
   const collections = loadCollections()
-  collections.unshift(record) // 新收藏插入到开头
-  // 限制收藏数量
+  collections.unshift(record)
   if (collections.length > MAX_COLLECTIONS) {
     collections.length = MAX_COLLECTIONS
   }
@@ -92,7 +66,6 @@ export function saveToCollections(record: HistoryRecord): void {
 
 /**
  * 加载行程缓存
- * 用于避免重复请求相同参数的行程数据
  * @param city - 城市名
  * @param budget - 预算
  * @param days - 天数
@@ -103,7 +76,6 @@ export function loadItineraryCache(city: string, budget: number, days: number): 
   budgetBreakdown: ItineraryResult['budgetBreakdown'] | null
   tips: string[]
 } | null {
-  // 使用城市、预算、天数组合作为缓存键
   const key = `detail_${city}_${budget}_${days}`
   const raw = localStorage.getItem(key)
   if (!raw)
@@ -112,7 +84,7 @@ export function loadItineraryCache(city: string, budget: number, days: number): 
     return JSON.parse(raw)
   }
   catch {
-    return null // 解析失败时返回 null
+    return null
   }
 }
 

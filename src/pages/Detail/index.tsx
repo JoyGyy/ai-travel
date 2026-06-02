@@ -44,6 +44,9 @@ export default function Detail() {
       return
     }
 
+    // BUG FIX: 先中止上一次请求，防止竞态条件（新 effect 先于旧 cleanup 执行）
+    abort()
+
     setLoading(true)
     useItineraryStore.setState({ agentSteps: [], currentAgentStep: 0 })
 

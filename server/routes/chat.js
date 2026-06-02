@@ -256,7 +256,7 @@ function buildMessagesWithMemory(historyMessages, currentMessage) {
   const topics = []
 
   for (const msg of oldMessages) {
-    if (msg.role === 'user') {
+    if (msg.role === 'user' && msg.content) {
       for (const city of cities) {
         if (msg.content.includes(city)) mentionedCities.add(city)
       }
@@ -373,7 +373,6 @@ router.post('/chat', async (req, res) => {
           }
 
           sendSSE(res, { type: 'complete', data: { content: finalContent, sources: ragSources } })
-          res.end()
           return
         }
       }
@@ -446,7 +445,7 @@ router.post('/chat', async (req, res) => {
 
 function getMockResponse(message, ragResult) {
   if (ragResult) {
-    const { attractions, food, bestSeason, transportation } = ragResult
+    const { attractions, food, bestSeason, transport } = ragResult
     const city = ragResult.city || '该城市'
     const isFood = /美食|吃|餐厅|小吃/.test(message)
     const isTransport = /交通|怎么去|怎么走|机场|高铁|火车站/.test(message)
@@ -461,7 +460,7 @@ function getMockResponse(message, ragResult) {
       return `${city}特色美食推荐：\n\n${food.map((f, i) => `${i + 1}. ${f}`).join('\n')}\n\n建议去当地人常去的老店品尝，味道更正宗。`
     }
     if (isTransport) {
-      return `${city}交通指南：\n\n${transportation || '建议乘坐公共交通，方便快捷。景区之间可乘坐地铁或公交。'}\n\n最佳旅行季节：${bestSeason || '春秋两季'}。`
+      return `${city}交通指南：\n\n${transport || '建议乘坐公共交通，方便快捷。景区之间可乘坐地铁或公交。'}\n\n最佳旅行季节：${bestSeason || '春秋两季'}。`
     }
     if (isPlan) {
       const days = message.match(/(\d)\s*[天日]/)?.[1]

@@ -28,9 +28,14 @@ export default function Chat() {
   const [inputMsg, setInputMsg] = useState('')
   const [ragSources, setRagSources] = useState<string[]>([])
   const messagesRef = useRef<HTMLDivElement>(null)
-  const { sendRequest } = useSSE()
+  const { sendRequest, abort } = useSSE()
 
   const lastMessage = messages[messages.length - 1]
+
+  // BUG FIX: 组件卸载时中止进行中的请求，防止内存泄漏和状态残留
+  useEffect(() => {
+    return () => abort()
+  }, [abort])
 
   useEffect(() => {
     if (messagesRef.current) {
@@ -111,27 +116,27 @@ export default function Chat() {
 
       {/* 消息列表 */}
       <div ref={messagesRef} className="flex-1 overflow-y-auto px-4 pt-5 -mt-3 relative z-10 md:max-w-3xl md:mx-auto md:px-6">
-        {messages.map((msg, i) => (
-          <div key={i}>
-            {msg.role === 'assistant' && msg.steps && msg.steps.length > 0 && (
-              <ChatAgentSteps steps={msg.steps} isLoading={false} />
-            )}
-            <ChatBubble role={msg.role} content={msg.content} />
-          </div>
-        ))}
+        {messages.map((msg, i) => {
+          // BUG FIX: 加载中不渲染空气泡，由下方加载指示器处理
+          const isEmptyAssistant = msg.role === 'assistant' && !msg.content && isLoading && i === messages.length - 1
+          return (
+            <div key={i}>
+              {msg.role === 'assistant' && msg.steps && msg.steps.length > 0 && (
+                <ChatAgentSteps steps={msg.steps} isLoading={false} />
+              )}
+              {!isEmptyAssistant && <ChatBubble role={msg.role} content={msg.content} />}
+            </div>
+          )
+        })}
 
         {ragSources.length > 0 && !isLoading && <RAGSource sources={ragSources} />}
 
         {/* 加载状态 */}
         {isLoading && (
           <>
-            {(() => {
-              const msgs = useChatStore.getState().messages
-              const last = msgs[msgs.length - 1]
-              return last?.steps && last.steps.length > 0
-                ? <ChatAgentSteps steps={last.steps} currentStep={currentAgentStep} isLoading />
-                : null
-            })()}
+            {lastMessage?.steps && lastMessage.steps.length > 0 && (
+              <ChatAgentSteps steps={lastMessage.steps} currentStep={currentAgentStep} isLoading />
+            )}
             <div className="flex items-start gap-2.5 mb-3 pl-0.5">
               <div
                 className="shrink-0 flex items-center justify-center w-[30px] h-[30px] rounded-[10px]"

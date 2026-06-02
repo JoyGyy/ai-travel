@@ -234,7 +234,7 @@ function executeTool(toolName, args, context) {
       if (args.bestSeason) tips.push(`最佳旅行季节：${args.bestSeason}`)
       if (args.transport) tips.push(`交通建议：${args.transport}`)
       if (args.food?.length) tips.push(`推荐美食：${args.food.slice(0, 5).join('、')}`)
-      if (days >= 3) tips.push('行程较长，建议准备舒适的运动鞋')
+      if (args.days >= 3) tips.push('行程较长，建议准备舒适的运动鞋')
       tips.push('建议提前在网上预约热门景点门票')
       tips.push('出行前查看当地天气预报，合理安排行程')
       context.tips = tips

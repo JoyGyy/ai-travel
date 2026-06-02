@@ -40,7 +40,7 @@ export function AgentSteps({ steps, currentStep }: AgentStepsProps) {
       case 1: return `${d.city} · ${d.days}天 · ¥${d.budget}`
       case 2: return `找到 ${d.count} 个景点`
       case 3: return `${d.days}天 · ${d.spotCount} 个景点`
-      case 4: return `总预算 ¥${(d.accommodation as number) + (d.food as number) + (d.transportation as number) + (d.tickets as number) + (d.other as number)}`
+      case 4: return `总预算 ¥${Number(d.accommodation || 0) + Number(d.food || 0) + Number(d.transportation || 0) + Number(d.tickets || 0) + Number(d.other || 0)}`
       case 5: return `${d.count} 条建议`
       default: return ''
     }

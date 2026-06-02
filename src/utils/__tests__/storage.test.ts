@@ -1,13 +1,12 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
   loadCollections,
-  loadHistory,
   saveToCollections,
   saveToHistory,
-  deleteHistoryRecord,
   loadItineraryCache,
   saveItineraryCache,
 } from '../storage'
+import { useHistoryStore } from '@/stores/history'
 
 const mockResult = {
   city: '杭州',
@@ -21,36 +20,36 @@ const mockResult = {
 describe('Storage 工具函数', () => {
   beforeEach(() => {
     localStorage.clear()
+    useHistoryStore.setState({ records: [] })
   })
 
   describe('历史记录', () => {
     it('空存储应返回空数组', () => {
-      expect(loadHistory()).toEqual([])
+      expect(useHistoryStore.getState().records).toEqual([])
     })
 
     it('保存后应能读取', () => {
       saveToHistory(mockResult)
-      const history = loadHistory()
-      expect(history.length).toBe(1)
-      expect(history[0].city).toBe('杭州')
-      expect(history[0].budget).toBe(5000)
+      const records = useHistoryStore.getState().records
+      expect(records.length).toBe(1)
+      expect(records[0].city).toBe('杭州')
+      expect(records[0].budget).toBe(5000)
     })
 
     it('应限制最多 20 条记录', () => {
       for (let i = 0; i < 25; i++) {
         saveToHistory({ ...mockResult, city: `城市${i}` })
       }
-      expect(loadHistory().length).toBe(20)
+      expect(useHistoryStore.getState().records.length).toBe(20)
     })
 
     it('deleteRecord 应删除指定索引', () => {
       saveToHistory({ ...mockResult, city: 'A' })
       saveToHistory({ ...mockResult, city: 'B' })
-      // B 在索引 0（最新的在前），A 在索引 1
-      deleteHistoryRecord(1)
-      const history = loadHistory()
-      expect(history.length).toBe(1)
-      expect(history[0].city).toBe('B')
+      useHistoryStore.getState().deleteRecord(1)
+      const records = useHistoryStore.getState().records
+      expect(records.length).toBe(1)
+      expect(records[0].city).toBe('B')
     })
   })
 
@@ -90,7 +89,8 @@ describe('Storage 工具函数', () => {
   describe('损坏数据处理', () => {
     it('localStorage 中有非法 JSON 不应崩溃', () => {
       localStorage.setItem('travel_history', 'not-json!!!')
-      expect(loadHistory()).toEqual([])
+      // Zustand persist 会处理损坏数据，不应崩溃
+      expect(useHistoryStore.getState().records).toEqual([])
     })
   })
 })

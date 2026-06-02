@@ -126,14 +126,65 @@ export default function Detail() {
 
       <div className="md:max-w-4xl md:mx-auto">
         {isLoading && (
-          <div className="pt-5">
-            <AgentSteps steps={agentSteps} currentStep={currentAgentStep} />
-            <div className="flex flex-col items-center py-10 gap-4">
-              <div className="relative w-12 h-12 flex items-center justify-center">
-                <div className="absolute inset-0 rounded-full border-2 border-dotted" style={{ borderColor: 'var(--c-paper-dark)', borderTopColor: 'var(--c-terracotta)', animation: 'spin 1s linear infinite' }} />
-                <CompassOutline style={{ fontSize: '18px', color: 'var(--c-terracotta)' }} />
+          <div className="flex justify-center pt-6 px-4">
+            <div
+              className="w-full max-w-md rounded-2xl overflow-hidden"
+              style={{ background: 'var(--c-white)', boxShadow: 'var(--shadow-xl)', border: '1px solid rgba(240, 232, 221, 0.3)' }}
+            >
+              {/* 卡片头部 */}
+              <div className="flex items-center justify-between px-5 pt-4 pb-2">
+                <span className="text-[11px] font-semibold tracking-wider" style={{ color: 'var(--c-terracotta)' }}>
+                  AI 规划中
+                </span>
+                <button
+                  onClick={() => { abort(); navigate(-1) }}
+                  className="w-7 h-7 rounded-full flex items-center justify-center border-none cursor-pointer transition-colors"
+                  style={{ background: 'var(--c-paper)', color: 'var(--c-ink-light)', fontSize: '14px' }}
+                >
+                  ✕
+                </button>
               </div>
-              <p className="text-[13px]" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-ink-light)' }}>AI 正在为你规划行程...</p>
+
+              {/* Agent 步骤 */}
+              <div className="px-5 pb-3">
+                <AgentSteps steps={agentSteps} currentStep={currentAgentStep} />
+              </div>
+
+              {/* 加载动画 */}
+              <div className="flex flex-col items-center pb-5 gap-3">
+                <div className="relative w-10 h-10 flex items-center justify-center">
+                  <div
+                    className="absolute inset-0 rounded-full border-2 border-dotted"
+                    style={{ borderColor: 'var(--c-paper-dark)', borderTopColor: 'var(--c-terracotta)', animation: 'spin 1s linear infinite' }}
+                  />
+                  <CompassOutline style={{ fontSize: '16px', color: 'var(--c-terracotta)' }} />
+                </div>
+                <p className="text-[12px]" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-ink-light)' }}>
+                  正在为你规划行程...
+                </p>
+
+                {/* 进度点 */}
+                <div className="flex items-center gap-1.5 mt-1">
+                  {[0, 1, 2].map(i => (
+                    <div
+                      key={i}
+                      className="w-1 h-1 rounded-full"
+                      style={{
+                        background: 'var(--c-terracotta)',
+                        animation: 'pulseDot 1.4s ease-in-out infinite',
+                        animationDelay: `${i * 0.2}s`,
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <style>{`
+                @keyframes pulseDot {
+                  0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+                  40% { opacity: 1; transform: scale(1.2); }
+                }
+              `}</style>
             </div>
           </div>
         )}

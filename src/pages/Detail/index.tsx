@@ -40,14 +40,20 @@ export default function Detail() {
 
     const cached = loadItineraryCache(city, budget, days)
     if (cached) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setItinerary(cached.itinerary || [])
-      setBudgetBreakdown(cached.budgetBreakdown || null)
-      setTips(cached.tips || [])
-      setWeather(cached.weather || null)
-      setAccommodation(cached.accommodation || [])
-      setNightlife(cached.nightlife || [])
-      return
+      // 先展示加载动画，再加载缓存数据
+      setLoading(true)
+      useItineraryStore.setState({ agentSteps: [], currentAgentStep: 0 })
+      const timer = setTimeout(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setItinerary(cached.itinerary || [])
+        setBudgetBreakdown(cached.budgetBreakdown || null)
+        setTips(cached.tips || [])
+        setWeather(cached.weather || null)
+        setAccommodation(cached.accommodation || [])
+        setNightlife(cached.nightlife || [])
+        setLoading(false)
+      }, 1200)
+      return () => clearTimeout(timer)
     }
 
     // BUG FIX: 先中止上一次请求，防止竞态条件（新 effect 先于旧 cleanup 执行）

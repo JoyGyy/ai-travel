@@ -64,6 +64,7 @@ describe('Storage 工具函数', () => {
         days: 2,
         budget: 3000,
         date: '2026-05-27',
+        timestamp: Date.now(),
         itinerary: [],
         budgetBreakdown: null as any,
         tips: [],

@@ -20,8 +20,8 @@ export default function History() {
   const sortedRecords = useMemo(() => {
     const sorted = [...records]
     sorted.sort((a, b) => {
-      const da = new Date(a.date).getTime()
-      const db = new Date(b.date).getTime()
+      const da = a.timestamp || 0
+      const db = b.timestamp || 0
       return sortOrder === 'desc' ? db - da : da - db
     })
     return sorted

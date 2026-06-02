@@ -97,6 +97,7 @@ export interface HistoryRecord {
   days: number // 行程天数
   budget: number | string // 预算金额
   date: string // 生成日期
+  timestamp: number // 生成时间戳，用于排序
   itinerary: DayItinerary[] // 每日行程
   budgetBreakdown: BudgetBreakdown | null // 预算明细（可能为空）
   tips: string[] // 旅行提示

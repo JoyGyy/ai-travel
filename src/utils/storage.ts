@@ -31,11 +31,13 @@ function safeJsonParse<T>(key: string, fallback: T): T {
  * @param result - AI 生成的行程结果
  */
 export function saveToHistory(result: ItineraryResult): void {
+  const now = Date.now()
   const record: HistoryRecord = {
     city: result.city,
     days: result.days,
     budget: result.totalBudget,
-    date: new Date().toLocaleDateString('zh-CN'),
+    date: new Date(now).toLocaleDateString('zh-CN'),
+    timestamp: now,
     itinerary: result.dailyItinerary || [],
     budgetBreakdown: result.budgetBreakdown || null,
     tips: result.tips || [],

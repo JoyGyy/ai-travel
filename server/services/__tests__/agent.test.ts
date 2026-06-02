@@ -45,10 +45,12 @@ function parseSSEEvents(): any[] {
 }
 
 describe('Agent 服务（Mock 模式）', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     writtenData.length = 0
     delete process.env.DEEPSEEK_API_KEY
     delete process.env.SILICONFLOW_API_KEY
+    // 清除模块缓存，确保 mock 生效
+    vi.resetModules()
   })
 
   async function runAgent(city: string, budget: number, days: number) {

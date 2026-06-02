@@ -88,7 +88,7 @@ export default function Detail() {
   function handleSaveToCollections() {
     if (saved) return
     try {
-      saveToCollections({ city, days, budget, date: new Date().toLocaleDateString('zh-CN'), itinerary, budgetBreakdown, tips, weather, accommodation, nightlife })
+      saveToCollections({ city, days, budget, date: new Date().toLocaleDateString('zh-CN'), timestamp: Date.now(), itinerary, budgetBreakdown, tips, weather, accommodation, nightlife })
       setSaved(true)
       Toast.show({ content: '已保存到我的收藏', position: 'center' })
     }

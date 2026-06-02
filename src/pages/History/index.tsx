@@ -1,18 +1,31 @@
 /**
  * 历史记录页面
- * 展示用户之前生成的所有行程记录，支持查看详情和删除
+ * 展示用户之前生成的所有行程记录，支持查看详情、删除和排序
  */
-import { Dialog, Toast } from 'antd-mobile'
+import { Toast } from 'antd-mobile'
 import { UnorderedListOutline } from 'antd-mobile-icons'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { BudgetTable } from '@/components/BudgetTable'
 import { SpotItem } from '@/components/SpotItem'
 import { useHistoryStore } from '@/stores/history'
+
+type SortOrder = 'desc' | 'asc'
 
 export default function History() {
   const { records, deleteRecord } = useHistoryStore()
   const [expandedCard, setExpandedCard] = useState<number | null>(null)
   const [expandedDays, setExpandedDays] = useState<Record<number, string[]>>({})
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
+
+  const sortedRecords = useMemo(() => {
+    const sorted = [...records]
+    sorted.sort((a, b) => {
+      const da = new Date(a.date).getTime()
+      const db = new Date(b.date).getTime()
+      return sortOrder === 'desc' ? db - da : da - db
+    })
+    return sorted
+  }, [records, sortOrder])
 
   function toggleCard(index: number) {
     setExpandedCard(expandedCard === index ? null : index)
@@ -26,10 +39,12 @@ export default function History() {
     })
   }
 
-  async function handleDelete(index: number) {
-    const result = await Dialog.confirm({ content: '确定要删除这条历史记录吗？' })
-    if (result) {
-      deleteRecord(index)
+  function handleDelete(index: number) {
+    if (!window.confirm('确定要删除这条历史记录吗？')) return
+    const record = sortedRecords[index]
+    const realIndex = records.indexOf(record)
+    if (realIndex >= 0) {
+      deleteRecord(realIndex)
       Toast.show({ content: '已删除' })
     }
   }
@@ -47,6 +62,21 @@ export default function History() {
         <p className="text-[12px] font-light" style={{ color: 'rgba(253, 246, 236, 0.5)' }}>你的每一次旅程</p>
       </div>
 
+      {/* 排序切换 */}
+      {records.length > 0 && (
+        <div className="flex items-center justify-between px-4 pt-4 pb-1 md:px-6 md:max-w-4xl md:mx-auto">
+          <span className="text-[12px]" style={{ color: 'var(--c-ink-light)' }}>共 {records.length} 条记录</span>
+          <button
+            onClick={() => setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc')}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-medium border-none cursor-pointer transition-all active:scale-95"
+            style={{ background: 'var(--c-white)', color: 'var(--c-ink-light)', boxShadow: 'var(--shadow-xs)' }}
+          >
+            <span>{sortOrder === 'desc' ? '最新优先' : '最早优先'}</span>
+            <span style={{ fontSize: '10px' }}>{sortOrder === 'desc' ? '↓' : '↑'}</span>
+          </button>
+        </div>
+      )}
+
       {/* 空状态 */}
       {!records.length && (
         <div className="flex flex-col items-center py-24 gap-4">
@@ -62,9 +92,9 @@ export default function History() {
       )}
 
       {/* 记录列表 */}
-      {records.length > 0 && (
+      {sortedRecords.length > 0 && (
         <div className="flex flex-col gap-3 p-4 md:p-6 md:grid md:grid-cols-2 md:gap-4 md:max-w-4xl md:mx-auto md:items-start">
-          {records.map((record, i) => (
+          {sortedRecords.map((record, i) => (
             <div
               key={i}
               className="rounded-2xl overflow-hidden transition-all duration-200 md:hover:-translate-y-0.5"

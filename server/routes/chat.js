@@ -1,6 +1,6 @@
 /**
  * AI 对话路由（Agent 模式）
- * POST /api/travel/chat - LLM 通过 function calling 自主调用工具回答问题
+ * POST /api/travel/chat - 多工具 ReAct Agent + 对话历史 + Step 可视化
  */
 
 const { Router } = require('express')
@@ -18,7 +18,12 @@ const CHAT_SYSTEM_PROMPT = `你是一个专业的旅行顾问 AI 助手。你可
 3. 推荐当地美食
 4. 提供交通和旅行建议
 
-你有一个工具 search_travel_info 可以查询旅行知识库。当用户询问具体城市、景点、美食、交通等信息时，必须先调用工具获取准确数据，再基于数据回答。
+你有以下工具，根据用户问题选择合适的工具调用：
+- search_travel_info：查询城市、景点、美食、交通等详细信息。当用户询问具体城市或景点时必须调用。
+- get_city_list：获取知识库中所有可查询的城市列表。当用户问"有哪些城市""推荐去哪里"时调用。
+- compare_cities：对比两个城市的特点。当用户问"A和B哪个好""对比两个城市"时调用。
+- get_travel_tips：获取城市旅行贴士和注意事项。当用户问"注意事项""带什么""tips"时调用。
+
 回答要简洁实用，使用中文，适当使用 Markdown 格式。`
 
 // ========== Tool 定义 ==========
@@ -45,20 +50,84 @@ const CHAT_TOOLS = [
       },
     },
   },
+  {
+    type: 'function',
+    function: {
+      name: 'get_city_list',
+      description: '获取知识库中所有可查询的城市列表。当用户问"有哪些城市""推荐去哪里""你能查哪些地方"时调用。',
+      parameters: {
+        type: 'object',
+        properties: {},
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'compare_cities',
+      description: '对比两个城市的旅行信息（景点数量、美食、最佳季节、交通）。当用户问"A和B哪个好""对比两个城市""选哪个城市"时调用。',
+      parameters: {
+        type: 'object',
+        properties: {
+          city_a: { type: 'string', description: '第一个城市名称' },
+          city_b: { type: 'string', description: '第二个城市名称' },
+        },
+        required: ['city_a', 'city_b'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_travel_tips',
+      description: '获取城市旅行贴士、注意事项、最佳旅行季节等实用信息。当用户问"注意事项""带什么""tips""什么时候去"时调用。',
+      parameters: {
+        type: 'object',
+        properties: {
+          city: { type: 'string', description: '城市名称' },
+        },
+        required: ['city'],
+      },
+    },
+  },
 ]
 
-// ========== Tool 执行 ==========
+// ========== Step 事件映射 ==========
+
+const CHAT_STEP_MAP = {
+  search_travel_info: '查询知识库',
+  get_city_list: '获取城市列表',
+  compare_cities: '对比城市信息',
+  get_travel_tips: '获取旅行贴士',
+}
+
+// ========== 工具执行 ==========
 
 /**
- * 执行 search_travel_info 工具
- * @param {object} args - { city, query? }
- * @returns {string} JSON 格式的知识库检索结果
+ * 统一工具分发
+ * @param {string} toolName - 工具名
+ * @param {object} args - 工具参数
+ * @returns {string} JSON 格式的结果
  */
+function executeChatTool(toolName, args) {
+  switch (toolName) {
+    case 'search_travel_info':
+      return executeSearchTool(args)
+    case 'get_city_list':
+      return executeGetCityList()
+    case 'compare_cities':
+      return executeCompareCities(args)
+    case 'get_travel_tips':
+      return executeGetTravelTips(args)
+    default:
+      return JSON.stringify({ error: `未知工具: ${toolName}` })
+  }
+}
+
 function executeSearchTool(args) {
   const { city, query } = args
   const result = retrieve(city, [], query || city)
   if (!result) {
-    // 尝试在所有城市中搜索景点名
     const attractionsDB = require('../knowledge/attractions.json')
     for (const cityData of attractionsDB) {
       const found = cityData.attractions.find(a => (query || '').includes(a.name) || city.includes(a.name))
@@ -91,30 +160,151 @@ function executeSearchTool(args) {
   })
 }
 
+function executeGetCityList() {
+  const cities = getAllCities()
+  return JSON.stringify({
+    cities,
+    total: cities.length,
+    message: `知识库中共有 ${cities.length} 个城市可查询`,
+  })
+}
+
+function executeCompareCities(args) {
+  const { city_a, city_b } = args
+  const dataA = retrieve(city_a, [], city_a)
+  const dataB = retrieve(city_b, [], city_b)
+
+  if (!dataA && !dataB) {
+    return JSON.stringify({ error: `未找到"${city_a}"和"${city_b}"的旅行信息` })
+  }
+  if (!dataA) return JSON.stringify({ error: `未找到"${city_a}"的旅行信息` })
+  if (!dataB) return JSON.stringify({ error: `未找到"${city_b}"的旅行信息` })
+
+  return JSON.stringify({
+    city_a: {
+      city: dataA.city,
+      attractionCount: dataA.attractions.length,
+      topAttractions: dataA.attractions.slice(0, 3).map(a => a.name),
+      food: dataA.food.slice(0, 3),
+      bestSeason: dataA.bestSeason,
+      transport: dataA.transport,
+    },
+    city_b: {
+      city: dataB.city,
+      attractionCount: dataB.attractions.length,
+      topAttractions: dataB.attractions.slice(0, 3).map(a => a.name),
+      food: dataB.food.slice(0, 3),
+      bestSeason: dataB.bestSeason,
+      transport: dataB.transport,
+    },
+  })
+}
+
+function executeGetTravelTips(args) {
+  const { city } = args
+  const result = retrieve(city, [], city)
+  if (!result) {
+    return JSON.stringify({ error: `未找到"${city}"的旅行信息` })
+  }
+
+  const tips = []
+  if (result.bestSeason) tips.push(`最佳旅行季节：${result.bestSeason}`)
+  if (result.transport) tips.push(`交通：${result.transport}`)
+  if (result.food.length > 0) tips.push(`必吃美食：${result.food.slice(0, 5).join('、')}`)
+
+  const attractionsDB = require('../knowledge/attractions.json')
+  const cityData = attractionsDB.find(c => c.city === city)
+  if (cityData) {
+    for (const a of cityData.attractions.slice(0, 5)) {
+      if (a.tips) tips.push(`${a.name}：${a.tips}`)
+    }
+  }
+
+  return JSON.stringify({
+    city: result.city,
+    bestSeason: result.bestSeason,
+    transport: result.transport,
+    food: result.food,
+    tips,
+  })
+}
+
+// ========== 对话记忆 ==========
+
+/**
+ * 构建带记忆的消息列表（滑动窗口）
+ * @param {object[]} historyMessages - 前端传来的历史消息
+ * @param {string} currentMessage - 当前用户消息
+ * @returns {object[]} 用于 LLM 的消息数组
+ */
+function buildMessagesWithMemory(historyMessages, currentMessage) {
+  const systemMsg = { role: 'system', content: CHAT_SYSTEM_PROMPT }
+
+  // 无历史或历史很短，直接用
+  if (!historyMessages || historyMessages.length <= 6) {
+    return [
+      systemMsg,
+      ...(historyMessages || []),
+      { role: 'user', content: currentMessage },
+    ]
+  }
+
+  // 旧消息提取摘要
+  const oldMessages = historyMessages.slice(0, -6)
+  const cities = getAllCities()
+  const mentionedCities = new Set()
+  const topics = []
+
+  for (const msg of oldMessages) {
+    if (msg.role === 'user') {
+      for (const city of cities) {
+        if (msg.content.includes(city)) mentionedCities.add(city)
+      }
+    }
+  }
+
+  if (mentionedCities.size > 0) {
+    topics.push(`讨论了${[...mentionedCities].join('、')}等城市`)
+  }
+  if (oldMessages.length > 0) {
+    topics.push(`共 ${Math.floor(oldMessages.length / 2)} 轮对话`)
+  }
+
+  const summary = topics.length > 0
+    ? `对话上下文：用户${topics.join('，')}。`
+    : ''
+
+  const recentMessages = historyMessages.slice(-6)
+
+  return [
+    systemMsg,
+    ...(summary ? [{ role: 'system', content: summary }] : []),
+    ...recentMessages,
+    { role: 'user', content: currentMessage },
+  ]
+}
+
 // ========== Chat Agent 主流程 ==========
 
 router.post('/chat', async (req, res) => {
   try {
     initSSE(res)
 
-    const { message } = req.body
+    const { message, messages: historyMessages } = req.body
     if (!message) {
       sendError(res, '请输入你的问题')
       res.end()
       return
     }
 
-    // 收集 RAG 引用来源
     let ragSources = []
 
     // 尝试 Agent 模式（LLM + function calling）
     const config = getLLMConfig()
     if (config) {
       try {
-        const messages = [
-          { role: 'system', content: CHAT_SYSTEM_PROMPT },
-          { role: 'user', content: message },
-        ]
+        const messages = buildMessagesWithMemory(historyMessages, message)
+        let stepCounter = 0
 
         // ReAct 循环：LLM 自主决定是否调用工具
         for (let round = 0; round < 5; round++) {
@@ -131,18 +321,36 @@ router.post('/chat', async (req, res) => {
 
           // 执行所有 tool calls
           for (const toolCall of assistantMsg.tool_calls) {
+            const toolName = toolCall.function.name
             let args = {}
             try { args = JSON.parse(toolCall.function.arguments) } catch { /* 空 */ }
 
-            const toolResult = executeSearchTool(args)
+            stepCounter++
+            const stepName = CHAT_STEP_MAP[toolName] || toolName
 
-            // 提取 RAG 来源
+            // 发送 step start 事件
+            sendSSE(res, { type: 'step', step: stepCounter, name: stepName, status: 'start' })
+
+            const toolResult = executeChatTool(toolName, args)
+
+            // 提取结果摘要
+            let summary = {}
             try {
               const parsed = JSON.parse(toolResult)
               if (parsed.attractions) {
                 ragSources = parsed.attractions.map(a => a.name)
+                summary = { city: parsed.city, attractionCount: parsed.attractions.length }
+              } else if (parsed.cities) {
+                summary = { cityCount: parsed.total }
+              } else if (parsed.city_a) {
+                summary = { city_a: parsed.city_a.city, city_b: parsed.city_b.city }
+              } else if (parsed.tips) {
+                summary = { city: parsed.city, tipCount: parsed.tips.length }
               }
             } catch { /* 忽略 */ }
+
+            // 发送 step complete 事件
+            sendSSE(res, { type: 'step', step: stepCounter, name: stepName, status: 'complete', data: summary })
 
             messages.push({
               role: 'tool',
@@ -152,12 +360,11 @@ router.post('/chat', async (req, res) => {
           }
         }
 
-        // LLM 已在循环中生成了最终答案（最后一条 assistant 消息）
+        // 最终答案
         const finalMsg = messages.filter(m => m.role === 'assistant').pop()
         const finalContent = finalMsg?.content || ''
 
         if (finalContent) {
-          // 流式发送最终答案
           for (let i = 0; i < finalContent.length; i++) {
             sendSSE(res, { type: 'chunk', content: finalContent[i] })
             if (finalContent[i] === '\n' || i % 5 === 0) {
@@ -178,6 +385,7 @@ router.post('/chat', async (req, res) => {
     // ========== Mock 降级 ==========
     let ragResult = null
     const cities = getAllCities()
+    let stepCounter = 0
 
     // 城市名匹配
     for (const city of cities) {
@@ -203,6 +411,14 @@ router.post('/chat', async (req, res) => {
           break
         }
       }
+    }
+
+    // Mock 模式也发送 step 事件
+    if (ragResult) {
+      stepCounter++
+      sendSSE(res, { type: 'step', step: stepCounter, name: '查询知识库', status: 'start' })
+      await delay(100)
+      sendSSE(res, { type: 'step', step: stepCounter, name: '查询知识库', status: 'complete', data: { city: ragResult.city, attractionCount: ragResult.attractions.length } })
     }
 
     const mockReply = getMockResponse(message, ragResult)
@@ -256,6 +472,12 @@ function getMockResponse(message, ragResult) {
     }
     const topSpots = attractions.slice(0, 5)
     return `${city}热门景点推荐：\n\n${topSpots.map((a, i) => `${i + 1}. **${a.name}** — ${a.description || ''}${a.ticket && a.ticket !== 0 ? `（门票${a.ticket}元）` : '（免费）'}`).join('\n')}\n\n推荐美食：${food.slice(0, 3).join('、')}。\n最佳季节：${bestSeason || '春秋两季'}。\n\n需要更详细的行程规划吗？`
+  }
+
+  // 无 RAG 结果的通用回复
+  if (/有哪些城市|城市列表|能查/.test(message)) {
+    const cities = getAllCities()
+    return `知识库中可查询的城市：\n\n${cities.map((c, i) => `${i + 1}. ${c}`).join('\n')}\n\n共 ${cities.length} 个城市，告诉我你想了解哪个城市吧！`
   }
 
   if (message.includes('保险')) {

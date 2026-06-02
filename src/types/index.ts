@@ -52,6 +52,7 @@ export interface AgentStep {
 export interface ChatMessage {
   role: 'user' | 'assistant' // 消息发送者：用户或 AI 助手
   content: string // 消息内容
+  steps?: AgentStep[] // Agent 思考步骤，仅 assistant 消息有
 }
 
 /** 历史记录 - 保存用户之前生成的行程 */

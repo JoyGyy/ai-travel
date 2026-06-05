@@ -14,15 +14,16 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const navigate = useNavigate()
   const user = useAuthStore(state => state.user)
+  const hasHydrated = useAuthStore(state => state._hasHydrated)
 
   useEffect(() => {
-    if (!user) {
+    if (hasHydrated && !user) {
       Toast.show({ content: '请先登录', position: 'center' })
       navigate('/login', { replace: true })
     }
-  }, [user, navigate])
+  }, [user, hasHydrated, navigate])
 
-  if (!user) return null
+  if (!hasHydrated || !user) return null
 
   return <>{children}</>
 }

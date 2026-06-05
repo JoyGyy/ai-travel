@@ -14,6 +14,7 @@ import { useAuthStore } from '@/stores/auth'
 export default function Home() {
   const navigate = useNavigate()
   const user = useAuthStore(state => state.user)
+  const hasHydrated = useAuthStore(state => state._hasHydrated)
   const [city, setCity] = useState('')
   const [budget, setBudget] = useState('')
   const [days, setDays] = useState(1)
@@ -46,6 +47,7 @@ export default function Home() {
   }, [city, fetchWeather])
 
   function onStart() {
+    if (!hasHydrated) return Toast.show('加载中，请稍候…')
     if (!user) return navigate('/login')
     if (!city) return Toast.show('请选择目的地')
     if (!budget) return Toast.show('请输入预算')

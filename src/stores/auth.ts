@@ -10,6 +10,8 @@ import { useHistoryStore } from './history'
 interface AuthState {
   user: User | null
   token: string | null
+  _hasHydrated: boolean
+  setHasHydrated: (v: boolean) => void
   login: (username: string, password: string) => Promise<void>
   register: (username: string, password: string) => Promise<void>
   logout: () => void
@@ -20,6 +22,8 @@ export const useAuthStore = create<AuthState>()(
     set => ({
       user: null,
       token: null,
+      _hasHydrated: false,
+      setHasHydrated: (v) => set({ _hasHydrated: v }),
 
       async login(username, password) {
         const res = await fetch('/api/auth/login', {
@@ -50,6 +54,11 @@ export const useAuthStore = create<AuthState>()(
         set({ user: null, token: null })
       },
     }),
-    { name: 'travel_auth' },
+    {
+      name: 'travel_auth',
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true)
+      },
+    },
   ),
 )

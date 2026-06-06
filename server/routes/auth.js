@@ -3,8 +3,8 @@
  * 提供注册、登录、获取当前用户信息的 API
  */
 
-const { Router } = require('express')
-const { register, login, verifyToken } = require('../services/auth')
+import { Router } from 'express'
+import { register, login, verifyToken } from '../services/auth.js'
 
 const router = Router()
 
@@ -48,4 +48,4 @@ router.get('/me', (req, res) => {
   }
 })
 
-module.exports = router
+export default router

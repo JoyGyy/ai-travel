@@ -3,6 +3,8 @@
  * 支持 DeepSeek / SiliconFlow API，含 function calling
  */
 
+import process from 'node:process'
+
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || ''
 const DEEPSEEK_BASE_URL = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com/v1'
 const DEEPSEEK_MODEL = process.env.DEEPSEEK_MODEL || 'deepseek-chat'
@@ -15,8 +17,10 @@ const SF_MODEL = process.env.SILICONFLOW_MODEL || 'Qwen/Qwen2.5-7B-Instruct'
 const LLM_TIMEOUT = 60_000
 
 function getLLMConfig() {
-  if (SF_API_KEY) return { baseUrl: SF_BASE_URL, apiKey: SF_API_KEY, model: SF_MODEL }
-  if (DEEPSEEK_API_KEY) return { baseUrl: DEEPSEEK_BASE_URL, apiKey: DEEPSEEK_API_KEY, model: DEEPSEEK_MODEL }
+  if (SF_API_KEY)
+    return { baseUrl: SF_BASE_URL, apiKey: SF_API_KEY, model: SF_MODEL }
+  if (DEEPSEEK_API_KEY)
+    return { baseUrl: DEEPSEEK_BASE_URL, apiKey: DEEPSEEK_API_KEY, model: DEEPSEEK_MODEL }
   return null
 }
 
@@ -25,7 +29,8 @@ function getLLMConfig() {
  */
 async function callLLM(systemPrompt, userPrompt) {
   const config = getLLMConfig()
-  if (!config) return ''
+  if (!config)
+    return ''
 
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), LLM_TIMEOUT)
@@ -49,7 +54,8 @@ async function callLLM(systemPrompt, userPrompt) {
       signal: controller.signal,
     })
 
-    if (!response.ok) throw new Error(`LLM API 调用失败: ${response.status}`)
+    if (!response.ok)
+      throw new Error(`LLM API 调用失败: ${response.status}`)
     const data = await response.json()
     return data.choices?.[0]?.message?.content || ''
   }
@@ -63,7 +69,8 @@ async function callLLM(systemPrompt, userPrompt) {
  */
 async function callLLMStream(systemPrompt, userPrompt, onChunk) {
   const config = getLLMConfig()
-  if (!config) return ''
+  if (!config)
+    return ''
 
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), LLM_TIMEOUT * 2) // 流式需要更长超时
@@ -88,7 +95,8 @@ async function callLLMStream(systemPrompt, userPrompt, onChunk) {
       signal: controller.signal,
     })
 
-    if (!response.ok) throw new Error(`LLM API 流式调用失败: ${response.status}`)
+    if (!response.ok)
+      throw new Error(`LLM API 流式调用失败: ${response.status}`)
 
     let fullContent = ''
     const reader = response.body.getReader()
@@ -134,7 +142,8 @@ async function callLLMStream(systemPrompt, userPrompt, onChunk) {
  */
 async function callLLMWithTools(messages, tools) {
   const config = getLLMConfig()
-  if (!config) return null
+  if (!config)
+    return null
 
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), LLM_TIMEOUT)
@@ -170,4 +179,4 @@ async function callLLMWithTools(messages, tools) {
   }
 }
 
-module.exports = { callLLM, callLLMStream, callLLMWithTools, getLLMConfig }
+export { callLLM, callLLMStream, callLLMWithTools, getLLMConfig }

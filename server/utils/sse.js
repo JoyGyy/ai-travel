@@ -40,4 +40,4 @@ function sendError(res, message) {
   sendSSE(res, { type: 'error', message })
 }
 
-module.exports = { initSSE, sendSSE, sendError }
+export { initSSE, sendSSE, sendError }

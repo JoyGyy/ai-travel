@@ -3,16 +3,18 @@
  * 提供旅行推荐和 AI 对话的 API 接口
  */
 
-require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') })
+import path from 'node:path'
+import { config } from 'dotenv'
+import express from 'express'
+import cors from 'cors'
 
-const express = require('express')
-const cors = require('cors')
+import travelRoutes from './routes/travel.js'
+import chatRoutes from './routes/chat.js'
+import weatherRoutes from './routes/weather.js'
+import authRoutes from './routes/auth.js'
+import { createRateLimit } from './middleware/rateLimit.js'
 
-const travelRoutes = require('./routes/travel')
-const chatRoutes = require('./routes/chat')
-const weatherRoutes = require('./routes/weather')
-const authRoutes = require('./routes/auth')
-const { createRateLimit } = require('./middleware/rateLimit')
+config({ path: path.resolve(import.meta.dirname, '../.env') })
 
 const app = express()
 const PORT = process.env.PORT || 3030

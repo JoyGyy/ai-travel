@@ -6,18 +6,17 @@ import { useCallback, useRef } from 'react'
 
 /** SSE 回调函数接口 */
 interface SSECallbacks {
-  onChunk?: (content: string) => void    // 收到新的数据块时触发，content 是累积的完整内容
-  onComplete?: (data: unknown) => void   // 流式传输完成时触发
-  onStep?: (step: unknown) => void       // 收到 Agent 步骤更新时触发
-  onError?: (error: Error) => void       // 发生错误时触发
-  onFinally?: () => void                 // 无论成功失败都会触发，用于清理状态
+  onChunk?: (content: string) => void // 收到新的数据块时触发，content 是累积的完整内容
+  onComplete?: (data: unknown) => void // 流式传输完成时触发
+  onStep?: (step: unknown) => void // 收到 Agent 步骤更新时触发
+  onError?: (error: Error) => void // 发生错误时触发
+  onFinally?: () => void // 无论成功失败都会触发，用于清理状态
 }
 
 /**
  * SSE Hook
  * 提供发送流式请求和中止请求的能力
- * @returns sendRequest - 发送 SSE 请求的函数
- * @returns abort - 中止当前请求的函数
+ * @returns 返回包含发送请求和中止请求函数的对象：{ sendRequest, abort }
  */
 export function useSSE() {
   // 使用 ref 保存 AbortController 实例，以便可以中止请求
@@ -51,7 +50,8 @@ export function useSSE() {
         let msg = `请求失败: HTTP ${res.status}`
         try {
           const errData = await res.json()
-          if (errData.message) msg = errData.message
+          if (errData.message)
+            msg = errData.message
         }
         catch {}
         throw new Error(msg)

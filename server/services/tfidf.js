@@ -144,4 +144,4 @@ class TFIDFIndex {
   }
 }
 
-module.exports = { TFIDFIndex, tokenize, computeTF }
+export { TFIDFIndex, tokenize, computeTF }

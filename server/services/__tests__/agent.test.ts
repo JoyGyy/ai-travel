@@ -37,14 +37,16 @@ function createMockRes() {
 function parseSSEEvents(): any[] {
   return writtenData
     .filter(d => d.startsWith('data: '))
-    .map(d => {
-      try { return JSON.parse(d.slice(6)) }
+    .map((d) => {
+      try {
+        return JSON.parse(d.slice(6))
+      }
       catch { return null }
     })
     .filter(Boolean)
 }
 
-describe('Agent 服务（Mock 模式）', () => {
+describe('agent 服务（Mock 模式）', () => {
   beforeEach(async () => {
     writtenData.length = 0
     delete process.env.DEEPSEEK_API_KEY

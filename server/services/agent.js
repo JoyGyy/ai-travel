@@ -4,10 +4,11 @@
  * 无 API key 时降级为 Mock 模式
  */
 
-const { retrieve } = require('./rag')
-const { sendSSE } = require('../utils/sse')
-const { callLLMWithTools, getLLMConfig } = require('./llm')
-const { getWeather, isGoodForOutdoor, getDressAdvice } = require('./weather')
+import { sendSSE } from '../utils/sse.js'
+import { callLLMWithTools, getLLMConfig } from './llm.js'
+import { retrieve } from './rag.js'
+import { getWeather, isGoodForOutdoor, getDressAdvice } from './weather.js'
+import attractionsDB from '../knowledge/attractions.json' with { type: 'json' }
 
 // ========== Agent System Prompt ==========
 
@@ -269,10 +270,14 @@ function executeTool(toolName, args, context) {
         tips.push(`当前天气：${weather.weatherDesc}，${weather.temperature}°C`)
         tips.push(...getDressAdvice(weather))
       }
-      if (args.bestSeason) tips.push(`最佳旅行季节：${args.bestSeason}`)
-      if (args.transport) tips.push(`交通建议：${args.transport}`)
-      if (args.food?.length) tips.push(`推荐美食：${args.food.slice(0, 5).join('、')}`)
-      if (args.days >= 3) tips.push('行程较长，建议准备舒适的运动鞋')
+      if (args.bestSeason)
+        tips.push(`最佳旅行季节：${args.bestSeason}`)
+      if (args.transport)
+        tips.push(`交通建议：${args.transport}`)
+      if (args.food?.length)
+        tips.push(`推荐美食：${args.food.slice(0, 5).join('、')}`)
+      if (args.days >= 3)
+        tips.push('行程较长，建议准备舒适的运动鞋')
       tips.push('建议提前在网上预约热门景点门票')
       context.tips = tips
       return { output: JSON.stringify(tips), summary: { count: tips.length } }
@@ -338,7 +343,10 @@ async function executeAgent(res, params) {
       for (const toolCall of assistantMsg.tool_calls) {
         const { name, arguments: argsStr } = toolCall.function
         let args = {}
-        try { args = JSON.parse(argsStr) } catch { /* 空参数 */ }
+        try {
+          args = JSON.parse(argsStr)
+        }
+        catch { /* 空参数 */ }
 
         const stepNum = STEP_MAP[name]
         if (stepNum) {
@@ -407,7 +415,6 @@ async function executeAgent(res, params) {
     }
 
     // 获取住宿和夜生活数据
-    const attractionsDB = require('../knowledge/attractions.json')
     const cityData = attractionsDB.find(c => c.city === (context.intent?.city || params.city))
 
     sendSSE(res, {
@@ -443,7 +450,8 @@ function buildWeatherAwareItinerary(context) {
   const ragResult = context.ragResult
   const weather = context.weather
 
-  if (!ragResult || !ragResult.attractions.length) return []
+  if (!ragResult || !ragResult.attractions.length)
+    return []
 
   const allSpots = ragResult.attractions
   const goodOutdoor = isGoodForOutdoor(weather)
@@ -502,7 +510,8 @@ function buildWeatherAwareItinerary(context) {
 // ========== 辅助函数 ==========
 
 function formatSpot(spot) {
-  if (!spot) return { spot: '自由活动', description: '可在周边闲逛休息', duration: '1-2小时', ticket: '免费', transportation: '步行' }
+  if (!spot)
+    return { spot: '自由活动', description: '可在周边闲逛休息', duration: '1-2小时', ticket: '免费', transportation: '步行' }
   return {
     spot: spot.name,
     description: spot.description,
@@ -518,8 +527,10 @@ async function executeAgentMock(res, params) {
   // 步骤 1：解析意图
   sendSSE(res, { type: 'step', step: 1, name: '解析意图', status: 'start' })
   const tags = []
-  if (params.budget <= 2000) tags.push('免费', '文化')
-  else if (params.budget <= 5000) tags.push('必去', '文化', '美食')
+  if (params.budget <= 2000)
+    tags.push('免费', '文化')
+  else if (params.budget <= 5000)
+    tags.push('必去', '文化', '美食')
   else tags.push('必去', '娱乐', '自然')
   const intent = {
     city: params.city || '北京',
@@ -557,7 +568,8 @@ async function executeAgentMock(res, params) {
     const outdoor = ragResult.attractions.filter(a => !a.indoor)
     sortedSpots = [...indoor, ...outdoor]
   }
-  if (sortedSpots.length < intent.days * 2) sortedSpots = ragResult.attractions
+  if (sortedSpots.length < intent.days * 2)
+    sortedSpots = ragResult.attractions
 
   const foodList = ragResult.food || []
   const itinerary = []
@@ -566,7 +578,8 @@ async function executeAgentMock(res, params) {
     date.setDate(date.getDate() + d - 1)
     const eveningFormatted = formatSpot(sortedSpots[(d - 1) * 3 + 2] || sortedSpots[2] || sortedSpots[0])
     const foodRec = foodList[(d - 1) % foodList.length]
-    if (foodRec) eveningFormatted.description += `。晚餐推荐品尝当地特色：${foodRec}`
+    if (foodRec)
+      eveningFormatted.description += `。晚餐推荐品尝当地特色：${foodRec}`
 
     itinerary.push({
       day: d,
@@ -599,13 +612,14 @@ async function executeAgentMock(res, params) {
   }
   tips.push(`最佳旅行季节：${ragResult.bestSeason}`)
   tips.push(`交通建议：${ragResult.transport}`)
-  if (ragResult.food?.length) tips.push(`推荐美食：${ragResult.food.slice(0, 5).join('、')}`)
-  if (intent.days >= 3) tips.push('行程较长，建议准备舒适的运动鞋')
+  if (ragResult.food?.length)
+    tips.push(`推荐美食：${ragResult.food.slice(0, 5).join('、')}`)
+  if (intent.days >= 3)
+    tips.push('行程较长，建议准备舒适的运动鞋')
   tips.push('建议提前在网上预约热门景点门票')
   sendSSE(res, { type: 'step', step: 6, name: '生成建议', status: 'complete', data: { count: tips.length } })
 
   // 获取住宿和夜生活数据
-  const attractionsDB = require('../knowledge/attractions.json')
   const cityData = attractionsDB.find(c => c.city === intent.city)
 
   // 发送最终结果
@@ -625,4 +639,4 @@ async function executeAgentMock(res, params) {
   })
 }
 
-module.exports = { executeAgent }
+export { executeAgent }

@@ -3,10 +3,11 @@
  * POST /api/travel/chat - 多工具 ReAct Agent + 对话历史 + Step 可视化
  */
 
-const { Router } = require('express')
-const { initSSE, sendSSE, sendError } = require('../utils/sse')
-const { retrieve, getAllCities } = require('../services/rag')
-const { callLLMWithTools, getLLMConfig } = require('../services/llm')
+import { Router } from 'express'
+import { initSSE, sendSSE, sendError } from '../utils/sse.js'
+import { retrieve, getAllCities } from '../services/rag.js'
+import { callLLMWithTools, getLLMConfig } from '../services/llm.js'
+import attractionsDB from '../knowledge/attractions.json' with { type: 'json' }
 
 const router = Router()
 
@@ -128,7 +129,6 @@ function executeSearchTool(args) {
   const { city, query } = args
   const result = retrieve(city, [], query || city)
   if (!result) {
-    const attractionsDB = require('../knowledge/attractions.json')
     for (const cityData of attractionsDB) {
       const found = cityData.attractions.find(a => (query || '').includes(a.name) || city.includes(a.name))
       if (found) {
@@ -212,7 +212,6 @@ function executeGetTravelTips(args) {
   if (result.transport) tips.push(`交通：${result.transport}`)
   if (result.food.length > 0) tips.push(`必吃美食：${result.food.slice(0, 5).join('、')}`)
 
-  const attractionsDB = require('../knowledge/attractions.json')
   const cityData = attractionsDB.find(c => c.city === city)
   if (cityData) {
     for (const a of cityData.attractions.slice(0, 5)) {
@@ -400,7 +399,6 @@ router.post('/chat', async (req, res) => {
 
     // 景点名匹配
     if (!ragResult) {
-      const attractionsDB = require('../knowledge/attractions.json')
       for (const cityData of attractionsDB) {
         const found = cityData.attractions.find(a => message.includes(a.name))
         if (found) {
@@ -450,7 +448,7 @@ function getMockResponse(message, ragResult) {
     const isFood = /美食|吃|餐厅|小吃/.test(message)
     const isTransport = /交通|怎么去|怎么走|机场|高铁|火车站/.test(message)
     const isPlan = /天|日|行程|预算|规划|攻略|玩/.test(message) || (/去/.test(message) && !/^去[^\s]{2,4}$/.test(message.trim()))
-    const allCitySpots = require('../knowledge/attractions.json').find(c => c.city === city)?.attractions || []
+    const allCitySpots = attractionsDB.find(c => c.city === city)?.attractions || []
     const isSpecificSpot = allCitySpots.find(a => message.includes(a.name))
 
     if (isSpecificSpot) {
@@ -490,4 +488,4 @@ function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-module.exports = router
+export default router

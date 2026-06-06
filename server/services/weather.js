@@ -125,4 +125,4 @@ function getDressAdvice(weather) {
   return tips
 }
 
-module.exports = { getWeather, isGoodForOutdoor, getDressAdvice }
+export { getWeather, isGoodForOutdoor, getDressAdvice }

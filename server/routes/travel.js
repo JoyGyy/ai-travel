@@ -3,9 +3,9 @@
  * POST /api/travel/recommend - 生成行程推荐
  */
 
-const { Router } = require('express')
-const { initSSE, sendError } = require('../utils/sse')
-const { executeAgent } = require('../services/agent')
+import { Router } from 'express'
+import { initSSE, sendError } from '../utils/sse.js'
+import { executeAgent } from '../services/agent.js'
 
 const router = Router()
 
@@ -39,4 +39,4 @@ router.post('/recommend', async (req, res) => {
   }
 })
 
-module.exports = router
+export default router

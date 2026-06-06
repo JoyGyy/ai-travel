@@ -2,8 +2,8 @@
  * 天气查询路由
  * 提供城市天气查询接口
  */
-const express = require('express')
-const { getWeather } = require('../services/weather')
+import express from 'express'
+import { getWeather } from '../services/weather.js'
 
 const router = express.Router()
 
@@ -30,4 +30,4 @@ router.get('/weather', async (req, res) => {
   }
 })
 
-module.exports = router
+export default router

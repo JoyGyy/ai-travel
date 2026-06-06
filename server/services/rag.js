@@ -8,8 +8,8 @@
  * - 本项目使用混合检索：精确关键词匹配 + TF-IDF 语义加权
  */
 
-const attractionsDB = require('../knowledge/attractions.json')
-const { TFIDFIndex } = require('./tfidf')
+import attractionsDB from '../knowledge/attractions.json' with { type: 'json' }
+import { TFIDFIndex } from './tfidf.js'
 
 // ========== 构建全局 TF-IDF 索引 ==========
 
@@ -146,4 +146,4 @@ function getAllCities() {
   return attractionsDB.map(c => c.city)
 }
 
-module.exports = { retrieve, getCityData, getAllCities }
+export { retrieve, getCityData, getAllCities }

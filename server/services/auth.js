@@ -4,17 +4,21 @@
  * 使用 SQLite 存储用户数据
  */
 
-const Database = require('better-sqlite3')
-const path = require('path')
-const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
+import Database from 'better-sqlite3'
+import path from 'node:path'
+import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 
-const JWT_SECRET = process.env.JWT_SECRET
-if (!JWT_SECRET) throw new Error('JWT_SECRET 环境变量未设置，请在 .env 中配置')
+/** 懒加载 JWT_SECRET，确保 dotenv 已经加载 */
+function getJwtSecret() {
+  const secret = process.env.JWT_SECRET
+  if (!secret) throw new Error('JWT_SECRET 环境变量未设置，请在 .env 中配置')
+  return secret
+}
 const SALT_ROUNDS = 10
 
 // 初始化 SQLite 数据库
-const DB_PATH = path.join(__dirname, '../data/users.db')
+const DB_PATH = path.join(import.meta.dirname, '../data/users.db')
 const db = new Database(DB_PATH)
 db.pragma('journal_mode = WAL')
 db.exec(`
@@ -49,7 +53,7 @@ async function register(username, password) {
 
   insertUser.run(id, username, hashed, createdAt)
 
-  const token = jwt.sign({ id, username }, JWT_SECRET, { expiresIn: '7d' })
+  const token = jwt.sign({ id, username }, getJwtSecret(), { expiresIn: '7d' })
   return { token, user: { id, username, createdAt } }
 }
 
@@ -68,7 +72,7 @@ async function login(username, password) {
   const match = await bcrypt.compare(password, user.password)
   if (!match) throw new Error('用户名或密码错误')
 
-  const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '7d' })
+  const token = jwt.sign({ id: user.id, username: user.username }, getJwtSecret(), { expiresIn: '7d' })
   return { token, user: { id: user.id, username: user.username, createdAt: user.created_at } }
 }
 
@@ -78,7 +82,7 @@ async function login(username, password) {
  * @returns {{ id: string, username: string }}
  */
 function verifyToken(token) {
-  return jwt.verify(token, JWT_SECRET)
+  return jwt.verify(token, getJwtSecret())
 }
 
-module.exports = { register, login, verifyToken }
+export { register, login, verifyToken }

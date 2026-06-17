@@ -248,6 +248,20 @@ export default function History() {
         days={shareRecord?.days ?? 1}
         budget={shareRecord?.budget ?? 0}
         itinerary={shareRecord ? toItineraryResult(shareRecord) : { city: '', days: 1, totalBudget: 0, dailyItinerary: [], budgetBreakdown: null as any, tips: [] }}
+        onShared={(shareId) => {
+          if (shareRecord) {
+            const idx = records.findIndex(r => r.timestamp === shareRecord.timestamp)
+            if (idx >= 0) {
+              const updated = { ...records[idx], shareId }
+              const newRecords = [...records]
+              newRecords[idx] = updated
+              useHistoryStore.setState({ records: newRecords })
+              // 持久化到 localStorage
+              const key = useHistoryStore.getState()._key
+              localStorage.setItem(key, JSON.stringify(newRecords))
+            }
+          }
+        }}
       />
     </div>
   )

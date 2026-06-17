@@ -342,6 +342,9 @@ export default function Detail() {
                 accommodation,
                 nightlife,
               }}
+              onShared={(shareId) => {
+                useItineraryStore.getState().setShareId(shareId)
+              }}
             />
           </>
         )}

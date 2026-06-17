@@ -15,12 +15,14 @@ interface SharePopupProps {
   days: number
   budget: number | string
   itinerary: ItineraryResult
+  /** 分享创建成功后的回调，返回 shareId */
+  onShared?: (shareId: string) => void
 }
 
 /** 预览缩放比例：750 * 0.42 ≈ 315 */
 const PREVIEW_SCALE = 0.42
 
-export function SharePopup({ visible, onClose, city, days, budget, itinerary }: SharePopupProps) {
+export function SharePopup({ visible, onClose, city, days, budget, itinerary, onShared }: SharePopupProps) {
   const cardRef = useRef<HTMLDivElement>(null)
   const [saving, setSaving] = useState(false)
   const [copying, setCopying] = useState(false)
@@ -85,8 +87,9 @@ export function SharePopup({ visible, onClose, city, days, budget, itinerary }: 
         throw new Error(`请求失败: ${res.status}`)
       }
 
-      const { shareUrl } = (await res.json()) as { shareId: string; shareUrl: string }
+      const { shareId, shareUrl } = (await res.json()) as { shareId: string; shareUrl: string }
       fullUrl = `${window.location.origin}${shareUrl}`
+      onShared?.(shareId)
 
       // 尝试写入剪贴板
       if (navigator.clipboard?.writeText) {

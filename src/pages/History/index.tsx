@@ -4,11 +4,12 @@
  */
 import { Toast } from 'antd-mobile'
 import { SendOutline, UnorderedListOutline } from 'antd-mobile-icons'
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { BudgetTable } from '@/components/BudgetTable'
 import { SharePopup } from '@/components/SharePopup'
 import { SpotItem } from '@/components/SpotItem'
 import { useHistoryStore } from '@/stores/history'
+import type { HistoryRecord, ItineraryResult } from '@/types'
 
 type SortOrder = 'desc' | 'asc'
 
@@ -17,7 +18,8 @@ export default function History() {
   const [expandedCard, setExpandedCard] = useState<number | null>(null)
   const [expandedDays, setExpandedDays] = useState<Record<number, string[]>>({})
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
-  const [shareRecord, setShareRecord] = useState<number | null>(null)
+  /** 当前分享记录的时间戳（用作稳定标识符，避免数组索引变化导致指向错误记录） */
+  const [shareRecordTs, setShareRecordTs] = useState<number | null>(null)
 
   const sortedRecords = useMemo(() => {
     const sorted = [...records]
@@ -40,6 +42,25 @@ export default function History() {
     indexed.forEach((item, rank) => map.set(item.index, rank + 1))
     return map
   }, [records])
+
+  /** 根据时间戳查找记录 */
+  const shareRecord = useMemo(
+    () => (shareRecordTs != null ? sortedRecords.find(r => r.timestamp === shareRecordTs) ?? null : null),
+    [shareRecordTs, sortedRecords],
+  )
+
+  /** 将 HistoryRecord 转换为 ItineraryResult 供 SharePopup 使用 */
+  const toItineraryResult = useCallback((r: HistoryRecord): ItineraryResult => ({
+    city: r.city,
+    days: r.days,
+    totalBudget: r.budget as number,
+    dailyItinerary: r.itinerary,
+    budgetBreakdown: r.budgetBreakdown!,
+    tips: r.tips,
+    weather: r.weather,
+    accommodation: r.accommodation,
+    nightlife: r.nightlife,
+  }), [])
 
   function toggleCard(index: number) {
     setExpandedCard(expandedCard === index ? null : index)
@@ -145,7 +166,7 @@ export default function History() {
                   </div>
                 </div>
                 <button
-                  onClick={(e) => { e.stopPropagation(); setShareRecord(i) }}
+                  onClick={(e) => { e.stopPropagation(); setShareRecordTs(record.timestamp) }}
                   className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center border-none cursor-pointer transition-colors active:scale-90"
                   style={{ background: 'var(--c-paper)', color: 'var(--c-ink-light)', fontSize: '15px' }}
                 >
@@ -222,11 +243,11 @@ export default function History() {
       {/* 分享弹窗 */}
       <SharePopup
         visible={shareRecord !== null}
-        onClose={() => setShareRecord(null)}
-        city={shareRecord !== null ? sortedRecords[shareRecord].city : ''}
-        days={shareRecord !== null ? sortedRecords[shareRecord].days : 1}
-        budget={shareRecord !== null ? sortedRecords[shareRecord].budget : 0}
-        itinerary={shareRecord !== null ? sortedRecords[shareRecord].itinerary : []}
+        onClose={() => setShareRecordTs(null)}
+        city={shareRecord?.city ?? ''}
+        days={shareRecord?.days ?? 1}
+        budget={shareRecord?.budget ?? 0}
+        itinerary={shareRecord ? toItineraryResult(shareRecord) : { city: '', days: 1, totalBudget: 0, dailyItinerary: [], budgetBreakdown: null as any, tips: [] }}
       />
     </div>
   )

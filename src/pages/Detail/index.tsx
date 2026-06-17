@@ -331,7 +331,17 @@ export default function Detail() {
               city={city}
               days={days}
               budget={budget}
-              itinerary={itinerary}
+              itinerary={{
+                city,
+                days,
+                totalBudget: budget,
+                dailyItinerary: itinerary,
+                budgetBreakdown: budgetBreakdown!,
+                tips,
+                weather,
+                accommodation,
+                nightlife,
+              }}
             />
           </>
         )}

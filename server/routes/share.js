@@ -6,11 +6,21 @@
 import { Router } from 'express'
 import { verifyToken } from '../services/auth.js'
 import { createShare, getShare } from '../services/share.js'
+import { createRateLimit } from '../middleware/rateLimit.js'
 
 const router = Router()
 
+/** 分享查询接口限流：每 IP 每分钟最多 30 次 */
+const shareGetLimiter = createRateLimit({ windowMs: 60_000, maxRequests: 30, message: '查询过于频繁，请稍后再试' })
+
+/** 分享创建接口限流：每用户每分钟最多 10 次 */
+const sharePostLimiter = createRateLimit({ windowMs: 60_000, maxRequests: 10, message: '创建分享过于频繁，请稍后再试' })
+
+/** 请求体大小上限（字节）：100KB */
+const MAX_BODY_SIZE = 100 * 1024
+
 /** 创建分享 — 需要 JWT 认证 */
-router.post('/share', (req, res) => {
+router.post('/share', sharePostLimiter, (req, res) => {
   try {
     const authHeader = req.headers.authorization
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -23,6 +33,12 @@ router.post('/share', (req, res) => {
     const { city, days, budget, itinerary } = req.body
     if (!city || !days || !budget || !itinerary) {
       return res.status(400).json({ success: false, message: '缺少必要参数' })
+    }
+
+    // 校验请求体大小，防止滥用
+    const bodySize = JSON.stringify(req.body).length
+    if (bodySize > MAX_BODY_SIZE) {
+      return res.status(413).json({ success: false, message: '请求数据过大' })
     }
 
     const shareId = createShare({ city, days, budget, itinerary })
@@ -38,7 +54,7 @@ router.post('/share', (req, res) => {
 })
 
 /** 获取分享数据 — 公开接口 */
-router.get('/share/:id', (req, res) => {
+router.get('/share/:id', shareGetLimiter, (req, res) => {
   const share = getShare(req.params.id)
   if (!share) {
     return res.status(404).json({ success: false, message: '分享不存在' })

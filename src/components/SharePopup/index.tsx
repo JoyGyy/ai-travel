@@ -6,7 +6,7 @@ import { useCallback, useRef, useState } from 'react'
 import { Popup, Toast } from 'antd-mobile'
 import { toPng } from 'html-to-image'
 import { ShareCard } from '@/components/ShareCard'
-import type { DayItinerary } from '@/types'
+import type { ItineraryResult } from '@/types'
 
 interface SharePopupProps {
   visible: boolean
@@ -14,7 +14,7 @@ interface SharePopupProps {
   city: string
   days: number
   budget: number | string
-  itinerary: DayItinerary[]
+  itinerary: ItineraryResult
 }
 
 /** 预览缩放比例：750 * 0.42 ≈ 315 */
@@ -148,7 +148,7 @@ export function SharePopup({ visible, onClose, city, days, budget, itinerary }: 
               city={city}
               days={days}
               budget={budget}
-              itinerary={itinerary}
+              itinerary={itinerary.dailyItinerary}
             />
           </div>
         </div>

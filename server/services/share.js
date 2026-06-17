@@ -4,6 +4,7 @@
  * 使用 JSON 文件存储分享数据
  */
 
+import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 import { nanoid } from 'nanoid'
@@ -28,17 +29,27 @@ function writeShares(shares) {
 }
 
 /**
+ * 计算行程内容的哈希值，用于幂等去重
+ * @param {any} itinerary
+ * @returns {string} 16 位十六进制哈希
+ */
+function hashItinerary(itinerary) {
+  return createHash('sha256').update(JSON.stringify(itinerary)).digest('hex').slice(0, 16)
+}
+
+/**
  * 创建分享链接
- * 幂等：同一 city+days+budget 组合返回已有的 shareId
+ * 幂等：同一 city+days+budget+itineraryHash 组合返回已有的 shareId
  * @param {{ city: string, days: number, budget: string, itinerary: any }} data
  * @returns {string} shareId
  */
 export function createShare({ city, days, budget, itinerary }) {
   const shares = readShares()
+  const contentHash = hashItinerary(itinerary)
 
-  // 幂等检查
+  // 幂等检查：城市+天数+预算+行程内容哈希
   const existing = shares.find(
-    s => s.city === city && s.days === days && s.budget === budget,
+    s => s.city === city && s.days === days && s.budget === budget && s.contentHash === contentHash,
   )
   if (existing) {
     return existing.id
@@ -51,6 +62,7 @@ export function createShare({ city, days, budget, itinerary }) {
     days,
     budget,
     itinerary,
+    contentHash,
     viewCount: 0,
     createdAt: new Date().toISOString(),
   }

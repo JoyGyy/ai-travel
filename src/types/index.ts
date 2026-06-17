@@ -119,7 +119,7 @@ export interface ShareData {
   id: string           // 短 ID（8 位）
   city: string
   days: number
-  budget: number
+  budget: number | string
   itinerary: ItineraryResult  // 完整行程数据
   createdAt: string    // ISO 时间戳
   viewCount: number

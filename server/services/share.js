@@ -10,10 +10,14 @@ import { nanoid } from 'nanoid'
 
 const DATA_PATH = path.join(import.meta.dirname, '../data/shared_itineraries.json')
 
-/** 读取所有分享数据 */
+/** 读取所有分享数据，文件不存在或解析失败时返回空数组 */
 function readShares() {
-  const raw = fs.readFileSync(DATA_PATH, 'utf-8')
-  return JSON.parse(raw)
+  try {
+    const raw = fs.readFileSync(DATA_PATH, 'utf-8')
+    return JSON.parse(raw)
+  } catch {
+    return []
+  }
 }
 
 /** 原子写入：先写临时文件再 rename */

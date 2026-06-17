@@ -63,10 +63,12 @@ export function SharePopup({ visible, onClose, city, days, budget, itinerary }: 
     setCopying(true)
     setFallbackUrl(null)
 
+    let fullUrl = ''
     try {
       const token = localStorage.getItem('token')
       if (!token) {
         Toast.show('请先登录')
+        setCopying(false)
         return
       }
 
@@ -84,19 +86,26 @@ export function SharePopup({ visible, onClose, city, days, budget, itinerary }: 
       }
 
       const { shareUrl } = (await res.json()) as { shareId: string; shareUrl: string }
-      const fullUrl = `${window.location.origin}${shareUrl}`
+      fullUrl = `${window.location.origin}${shareUrl}`
 
       // 尝试写入剪贴板
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(fullUrl)
         Toast.show('链接已复制')
       } else {
-        // 剪贴板 API 不可用时，降级显示链接文本供用户手动复制
+        // 剪贴板 API 不可用，降级显示链接
         setFallbackUrl(fullUrl)
         Toast.show('请手动复制下方链接')
       }
-    } catch {
-      Toast.show('分享失败，请重试')
+    } catch (err) {
+      console.error('分享失败:', err)
+      // 如果已拿到链接但剪贴板失败，降级显示链接
+      if (fullUrl) {
+        setFallbackUrl(fullUrl)
+        Toast.show('复制失败，请手动复制下方链接')
+      } else {
+        Toast.show('分享失败，请重试')
+      }
     } finally {
       setCopying(false)
     }

@@ -13,6 +13,7 @@ import { SpotItem } from '@/components/SpotItem'
 import { WeatherCard } from '@/components/WeatherCard'
 import { useSSE } from '@/hooks/useSSE'
 import { useItineraryStore } from '@/stores/itinerary'
+import { SharePopup } from '@/components/SharePopup'
 import { loadItineraryCache, saveItineraryCache, saveToHistory } from '@/utils/storage'
 
 export default function Detail() {
@@ -32,6 +33,7 @@ export default function Detail() {
 
   const [activeKeys, setActiveKeys] = useState<string[]>([])
   const [showLoading, setShowLoading] = useState(true)
+  const [shareVisible, setShareVisible] = useState(false)
   const { sendRequest, abort } = useSSE()
 
   // 每次参数变化时同步重置加载状态（在浏览器绘制前）
@@ -300,8 +302,19 @@ export default function Detail() {
               </div>
             )}
 
+            {/* 分享行程按钮 */}
+            <div className="px-4 pt-5 md:px-8 md:max-w-4xl md:mx-auto">
+              <button
+                onClick={() => setShareVisible(true)}
+                className="w-full h-10 rounded-xl text-[13px] font-medium cursor-pointer transition-all active:scale-[0.98]"
+                style={{ background: 'linear-gradient(135deg, var(--c-terracotta) 0%, var(--c-terracotta-light) 100%)', color: '#fff', border: 'none', boxShadow: '0 2px 8px rgba(99, 102, 241, 0.2)' }}
+              >
+                分享行程
+              </button>
+            </div>
+
             {/* 咨询 AI 按钮 */}
-            <div className="px-4 pt-5 pb-4 md:px-8 md:max-w-4xl md:mx-auto">
+            <div className="px-4 pt-3 pb-4 md:px-8 md:max-w-4xl md:mx-auto">
               <button
                 onClick={() => navigate('/chat')}
                 className="w-full h-10 rounded-xl text-[13px] font-medium cursor-pointer transition-all active:scale-[0.98]"
@@ -310,6 +323,26 @@ export default function Detail() {
                 咨询 AI
               </button>
             </div>
+
+            {/* 分享弹窗 */}
+            <SharePopup
+              visible={shareVisible}
+              onClose={() => setShareVisible(false)}
+              city={city}
+              days={days}
+              budget={budget}
+              itinerary={{
+                city,
+                days,
+                totalBudget: budget,
+                dailyItinerary: itinerary,
+                budgetBreakdown: budgetBreakdown!,
+                tips,
+                weather,
+                accommodation,
+                nightlife,
+              }}
+            />
           </>
         )}
       </div>

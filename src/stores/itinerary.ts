@@ -15,6 +15,7 @@ interface ItineraryState {
   agentSteps: AgentStep[]
   currentAgentStep: number
   isLoading: boolean
+  shareId: string | null
 
   setItinerary: (data: DayItinerary[]) => void
   setBudgetBreakdown: (data: BudgetBreakdown | null) => void
@@ -25,6 +26,7 @@ interface ItineraryState {
   addAgentStep: (step: AgentStep) => void
   setCurrentAgentStep: (step: number) => void
   setLoading: (loading: boolean) => void
+  setShareId: (id: string | null) => void
   reset: () => void
 }
 
@@ -38,6 +40,7 @@ const initialState = {
   agentSteps: [],
   currentAgentStep: 0,
   isLoading: false,
+  shareId: null,
 }
 
 export const useItineraryStore = create<ItineraryState>(set => ({
@@ -61,5 +64,6 @@ export const useItineraryStore = create<ItineraryState>(set => ({
 
   setCurrentAgentStep: step => set({ currentAgentStep: step }),
   setLoading: loading => set({ isLoading: loading }),
+  setShareId: id => set({ shareId: id }),
   reset: () => set(initialState),
 }))

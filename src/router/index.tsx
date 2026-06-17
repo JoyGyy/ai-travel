@@ -15,6 +15,7 @@ const History = React.lazy(() => import('@/pages/History'))
 const Profile = React.lazy(() => import('@/pages/Profile'))
 const Weather = React.lazy(() => import('@/pages/Weather'))
 const Login = React.lazy(() => import('@/pages/Login'))
+const Share = React.lazy(() => import('@/pages/Share'))
 
 /** 天气图标（antd-mobile-icons 没有合适的天气图标） */
 function WeatherIcon() {
@@ -149,6 +150,7 @@ const router = createBrowserRouter([
       { path: 'history', element: <ProtectedRoute><History /></ProtectedRoute> },
       { path: 'profile', element: <Profile /> },
       { path: 'login', element: <Login /> },
+      { path: 'share/:id', element: <Share /> },
     ],
   },
 ])

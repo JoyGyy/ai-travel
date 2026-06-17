@@ -104,6 +104,7 @@ export interface HistoryRecord {
   weather?: WeatherInfo | null // 天气信息
   accommodation?: AccommodationInfo[] // 住宿推荐
   nightlife?: NightlifeInfo[] // 夜生活推荐
+  shareId?: string // 分享链接 ID
 }
 
 /** 用户信息 */
@@ -111,4 +112,15 @@ export interface User {
   id: string
   username: string
   createdAt: string
+}
+
+/** 分享数据 - 存储在后端的公开行程 */
+export interface ShareData {
+  id: string           // 短 ID（8 位）
+  city: string
+  days: number
+  budget: number | string
+  itinerary: ItineraryResult  // 完整行程数据
+  createdAt: string    // ISO 时间戳
+  viewCount: number
 }

@@ -211,17 +211,6 @@ export default function Share() {
 
         {/* 社交证明 */}
         <div className="flex items-center justify-center gap-2 pt-5 pb-1">
-          <div className="flex -space-x-2">
-            {[0, 1, 2].map(i => (
-              <div
-                key={i}
-                className="w-6 h-6 rounded-full border-2 flex items-center justify-center text-[9px]"
-                style={{ borderColor: 'var(--c-white)', background: 'var(--c-sand)', color: 'var(--c-terracotta)' }}
-              >
-                {String.fromCharCode(65 + i)}
-              </div>
-            ))}
-          </div>
           <span className="text-[12px]" style={{ color: 'var(--c-ink-light)' }}>
             已有 {viewCount} 人查看过此行程
           </span>

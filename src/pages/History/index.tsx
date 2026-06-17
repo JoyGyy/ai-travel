@@ -3,9 +3,10 @@
  * 展示用户之前生成的所有行程记录，支持查看详情、删除和排序
  */
 import { Toast } from 'antd-mobile'
-import { UnorderedListOutline } from 'antd-mobile-icons'
+import { SendOutline, UnorderedListOutline } from 'antd-mobile-icons'
 import { useMemo, useState } from 'react'
 import { BudgetTable } from '@/components/BudgetTable'
+import { SharePopup } from '@/components/SharePopup'
 import { SpotItem } from '@/components/SpotItem'
 import { useHistoryStore } from '@/stores/history'
 
@@ -16,6 +17,7 @@ export default function History() {
   const [expandedCard, setExpandedCard] = useState<number | null>(null)
   const [expandedDays, setExpandedDays] = useState<Record<number, string[]>>({})
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
+  const [shareRecord, setShareRecord] = useState<number | null>(null)
 
   const sortedRecords = useMemo(() => {
     const sorted = [...records]
@@ -143,6 +145,13 @@ export default function History() {
                   </div>
                 </div>
                 <button
+                  onClick={(e) => { e.stopPropagation(); setShareRecord(i) }}
+                  className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center border-none cursor-pointer transition-colors active:scale-90"
+                  style={{ background: 'var(--c-paper)', color: 'var(--c-ink-light)', fontSize: '15px' }}
+                >
+                  <SendOutline />
+                </button>
+                <button
                   onClick={(e) => { e.stopPropagation(); handleDelete(i) }}
                   className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center border-none cursor-pointer transition-colors active:scale-90"
                   style={{ background: 'var(--c-paper)', color: 'var(--c-ink-light)', fontSize: '13px' }}
@@ -208,6 +217,18 @@ export default function History() {
           )
           })}
         </div>
+      )}
+
+      {/* 分享弹窗 */}
+      {shareRecord !== null && (
+        <SharePopup
+          visible
+          onClose={() => setShareRecord(null)}
+          city={sortedRecords[shareRecord].city}
+          days={sortedRecords[shareRecord].days}
+          budget={sortedRecords[shareRecord].budget}
+          itinerary={sortedRecords[shareRecord].itinerary}
+        />
       )}
     </div>
   )

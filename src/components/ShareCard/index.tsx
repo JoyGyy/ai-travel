@@ -1,7 +1,8 @@
 /**
  * 分享卡片组件
- * 用于生成可分享的行程卡片图片，设计为离屏渲染后通过 html-to-image 捕获
+ * 用于生成可分享的行程卡片图片，通过 html-to-image 捕获
  */
+import { forwardRef } from 'react'
 import type { DayItinerary } from '@/types'
 
 interface ShareCardProps {
@@ -24,17 +25,18 @@ function getSpotNames(day: DayItinerary): string {
   return display.join(' → ') + suffix
 }
 
-export function ShareCard({ city, days, budget, itinerary }: ShareCardProps) {
+export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
+  { city, days, budget, itinerary },
+  ref,
+) {
   const budgetText = typeof budget === 'number' ? `¥${budget.toLocaleString()}` : budget
 
   return (
     <div
+      ref={ref}
       style={{
         width: 750,
         height: 1334,
-        position: 'fixed',
-        left: -9999,
-        top: 0,
         background: 'var(--c-white)',
         borderRadius: 24,
         overflow: 'hidden',
@@ -192,4 +194,4 @@ export function ShareCard({ city, days, budget, itinerary }: ShareCardProps) {
       </div>
     </div>
   )
-}
+})

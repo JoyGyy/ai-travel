@@ -21,7 +21,7 @@ interface SharePopupProps {
 const PREVIEW_SCALE = 0.42
 
 export function SharePopup({ visible, onClose, city, days, budget, itinerary }: SharePopupProps) {
-  const captureRef = useRef<HTMLDivElement>(null)
+  const cardRef = useRef<HTMLDivElement>(null)
   const [saving, setSaving] = useState(false)
   const [copying, setCopying] = useState(false)
   /** 剪贴板不可用时，降级展示的链接文本 */
@@ -29,23 +29,13 @@ export function SharePopup({ visible, onClose, city, days, budget, itinerary }: 
 
   /** 保存卡片为图片并下载 */
   const handleSaveImage = useCallback(async () => {
-    const wrapper = captureRef.current
-    if (!wrapper || saving) return
+    const cardEl = cardRef.current
+    if (!cardEl || saving) return
     setSaving(true)
 
-    // 找到 ShareCard 的根元素，临时调整定位以便 toPng 正确捕获
-    const cardEl = wrapper.firstElementChild as HTMLElement | null
-    const originalCss = cardEl?.style.cssText
-
     try {
-      // 将卡片从 off-screen 移到捕获容器的可视区域
-      if (cardEl) {
-        cardEl.style.position = 'relative'
-        cardEl.style.left = '0'
-        cardEl.style.top = '0'
-      }
-
-      const dataUrl = await toPng(wrapper, {
+      // 直接对可见的 ShareCard 元素捕获全尺寸图片
+      const dataUrl = await toPng(cardEl, {
         width: 750,
         height: 1334,
         pixelRatio: 2,
@@ -63,10 +53,6 @@ export function SharePopup({ visible, onClose, city, days, budget, itinerary }: 
     } catch {
       Toast.show('图片保存失败，请重试')
     } finally {
-      // 恢复卡片原始定位样式
-      if (cardEl && originalCss !== undefined) {
-        cardEl.style.cssText = originalCss
-      }
       setSaving(false)
     }
   }, [city, saving])
@@ -109,7 +95,7 @@ export function SharePopup({ visible, onClose, city, days, budget, itinerary }: 
         setFallbackUrl(fullUrl)
         Toast.show('请手动复制下方链接')
       }
-    } catch (err) {
+    } catch {
       Toast.show('分享失败，请重试')
     } finally {
       setCopying(false)
@@ -120,27 +106,8 @@ export function SharePopup({ visible, onClose, city, days, budget, itinerary }: 
     <Popup
       visible={visible}
       onMaskClick={onClose}
-      bodyStyle={{
-        borderTopLeftRadius: 16,
-        borderTopRightRadius: 16,
-        maxHeight: '85vh',
-        overflow: 'auto',
-      }}
+      bodyClassName="share-popup-body"
     >
-      {/* 隐藏的全尺寸卡片，专用于 toPng 捕获 */}
-      <div
-        ref={captureRef}
-        style={{
-          position: 'absolute',
-          left: -9999,
-          top: 0,
-          width: 750,
-          height: 1334,
-        }}
-      >
-        <ShareCard city={city} days={days} budget={budget} itinerary={itinerary} />
-      </div>
-
       {/* 标题 */}
       <div style={{ padding: '20px 20px 0', textAlign: 'center' }}>
         <h3
@@ -156,7 +123,7 @@ export function SharePopup({ visible, onClose, city, days, budget, itinerary }: 
         </h3>
       </div>
 
-      {/* 卡片缩放预览 */}
+      {/* 卡片缩放预览 — 同时作为 toPng 的捕获源 */}
       <div style={{ display: 'flex', justifyContent: 'center', padding: '16px 0 24px' }}>
         <div
           style={{
@@ -176,10 +143,13 @@ export function SharePopup({ visible, onClose, city, days, budget, itinerary }: 
               height: 1334,
             }}
           >
-            {/* translateX 创建新的包含块，抵消 ShareCard 的 left: -9999 */}
-            <div style={{ transform: 'translateX(9999px)' }}>
-              <ShareCard city={city} days={days} budget={budget} itinerary={itinerary} />
-            </div>
+            <ShareCard
+              ref={cardRef}
+              city={city}
+              days={days}
+              budget={budget}
+              itinerary={itinerary}
+            />
           </div>
         </div>
       </div>
@@ -204,7 +174,7 @@ export function SharePopup({ visible, onClose, city, days, budget, itinerary }: 
             transition: 'opacity 0.2s',
           }}
         >
-          {saving ? '保存中…' : '保存图片'}
+          {saving ? '保存中...' : '保存图片'}
         </button>
         <button
           type="button"
@@ -224,7 +194,7 @@ export function SharePopup({ visible, onClose, city, days, budget, itinerary }: 
             transition: 'opacity 0.2s',
           }}
         >
-          {copying ? '复制中…' : '复制链接'}
+          {copying ? '复制中...' : '复制链接'}
         </button>
       </div>
 

@@ -12,6 +12,7 @@ import travelRoutes from './routes/travel.js'
 import chatRoutes from './routes/chat.js'
 import weatherRoutes from './routes/weather.js'
 import authRoutes from './routes/auth.js'
+import shareRoutes from './routes/share.js'
 import { createRateLimit } from './middleware/rateLimit.js'
 
 config({ path: path.resolve(import.meta.dirname, '../.env') })
@@ -44,6 +45,7 @@ app.use('/api/travel', aiLimiter, travelRoutes)
 app.use('/api/travel', aiLimiter, chatRoutes)
 app.use('/api', weatherRoutes)
 app.use('/api/auth', authLimiter, authRoutes)
+app.use('/api/travel', shareRoutes)
 
 // 健康检查接口
 app.get('/api/health', (req, res) => {

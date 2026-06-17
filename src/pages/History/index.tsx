@@ -220,16 +220,14 @@ export default function History() {
       )}
 
       {/* 分享弹窗 */}
-      {shareRecord !== null && (
-        <SharePopup
-          visible
-          onClose={() => setShareRecord(null)}
-          city={sortedRecords[shareRecord].city}
-          days={sortedRecords[shareRecord].days}
-          budget={sortedRecords[shareRecord].budget}
-          itinerary={sortedRecords[shareRecord].itinerary}
-        />
-      )}
+      <SharePopup
+        visible={shareRecord !== null}
+        onClose={() => setShareRecord(null)}
+        city={shareRecord !== null ? sortedRecords[shareRecord].city : ''}
+        days={shareRecord !== null ? sortedRecords[shareRecord].days : 1}
+        budget={shareRecord !== null ? sortedRecords[shareRecord].budget : 0}
+        itinerary={shareRecord !== null ? sortedRecords[shareRecord].itinerary : []}
+      />
     </div>
   )
 }

@@ -44,7 +44,13 @@ export default function Share() {
           setState({ status: 'error', message: json.message || '获取分享数据失败' })
           return
         }
-        setState({ status: 'success', data: json.data })
+        const shareData = json.data as ShareData
+        // 运行时校验关键字段
+        if (!shareData.city || !shareData.itinerary?.dailyItinerary) {
+          setState({ status: 'error', message: '分享数据格式异常' })
+          return
+        }
+        setState({ status: 'success', data: shareData })
       } catch (err: unknown) {
         if (err instanceof DOMException && err.name === 'AbortError') return
         setState({ status: 'error', message: '网络错误，请稍后重试' })
@@ -87,6 +93,10 @@ export default function Share() {
 
     return () => {
       document.title = '旅行助手'
+      // 清理 OG meta 标签
+      for (const prop of ['og:title', 'og:description', 'og:type', 'og:url', 'og:site_name']) {
+        document.querySelector(`meta[property="${prop}"]`)?.remove()
+      }
     }
   }, [state])
 

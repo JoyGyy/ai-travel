@@ -44,7 +44,8 @@ export const useChatStore = create<ChatState>()(set => ({
         const idx = steps.findIndex(s => s.step === step.step)
         if (idx >= 0) {
           steps[idx] = step
-        } else {
+        }
+        else {
           steps.push(step)
         }
         messages[messages.length - 1] = { ...last, steps }

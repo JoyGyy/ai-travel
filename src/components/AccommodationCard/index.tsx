@@ -10,7 +10,8 @@ interface AccommodationCardProps {
 }
 
 export function AccommodationCard({ accommodation, nightlife }: AccommodationCardProps) {
-  if (!accommodation.length && !nightlife.length) return null
+  if (!accommodation.length && !nightlife.length)
+    return null
 
   return (
     <div className="mx-4 md:mx-auto md:max-w-4xl">

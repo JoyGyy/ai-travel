@@ -1,9 +1,9 @@
+import type { DayItinerary } from '@/types'
 /**
  * 分享卡片组件
  * 用于生成可分享的行程卡片图片，通过 html-to-image 捕获
  */
 import { forwardRef } from 'react'
-import type { DayItinerary } from '@/types'
 
 interface ShareCardProps {
   city: string
@@ -25,10 +25,10 @@ function getSpotNames(day: DayItinerary): string {
   return display.join(' → ') + suffix
 }
 
-export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function ShareCard(
+export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>((
   { city, days, budget, itinerary },
   ref,
-) {
+) => {
   const budgetText = typeof budget === 'number' ? `¥${budget.toLocaleString()}` : budget
 
   return (
@@ -76,7 +76,9 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function Sha
               fontWeight: 600,
             }}
           >
-            {days} 天行程
+            {days}
+            {' '}
+            天行程
           </div>
           <div
             style={{
@@ -87,7 +89,9 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function Sha
               fontWeight: 600,
             }}
           >
-            预算 {budgetText}
+            预算
+            {' '}
+            {budgetText}
           </div>
         </div>
       </div>
@@ -120,7 +124,7 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function Sha
 
         {/* 每日行程列表 */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-          {itinerary.map((day) => (
+          {itinerary.map(day => (
             <div
               key={day.day}
               style={{
@@ -146,7 +150,8 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(function Sha
                   fontWeight: 700,
                 }}
               >
-                D{day.day}
+                D
+                {day.day}
               </div>
               {/* 行程内容 */}
               <div style={{ flex: 1, minWidth: 0, paddingTop: 4 }}>

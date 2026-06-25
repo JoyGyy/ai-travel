@@ -1,3 +1,4 @@
+import type { AgentStep } from '@/types'
 /**
  * AI 对话页面
  * 提供与 AI 旅行顾问的实时对话功能，支持多工具 Agent + 对话历史
@@ -10,7 +11,6 @@ import { ChatBubble } from '@/components/ChatBubble'
 import { RAGSource } from '@/components/RAGSource'
 import { useSSE } from '@/hooks/useSSE'
 import { useChatStore } from '@/stores/chat'
-import type { AgentStep } from '@/types'
 
 const quickQuestions = [
   '北京有哪些必去的景点？',
@@ -21,12 +21,19 @@ const quickQuestions = [
 
 export default function Chat() {
   const {
-    messages, isLoading, currentAgentStep,
-    addMessage, updateLastMessage, updateLastMessageSteps,
-    clearMessages, setLoading, setCurrentAgentStep,
+    messages,
+    isLoading,
+    currentAgentStep,
+    addMessage,
+    updateLastMessage,
+    updateLastMessageSteps,
+    clearMessages,
+    setLoading,
+    setCurrentAgentStep,
   } = useChatStore()
   const [inputMsg, setInputMsg] = useState('')
   const [ragSources, setRagSources] = useState<string[]>([])
+  const [notice, setNotice] = useState('')
   const messagesRef = useRef<HTMLDivElement>(null)
   const { sendRequest, abort } = useSSE()
 
@@ -51,12 +58,14 @@ export default function Chat() {
 
   async function clearChat() {
     const result = await Dialog.confirm({ content: '确定要清空所有对话记录吗？' })
-    if (result) clearMessages()
+    if (result)
+      clearMessages()
   }
 
   async function sendMessage(msg?: string) {
     const text = msg || inputMsg.trim()
-    if (!text) return
+    if (!text)
+      return
 
     addMessage({ role: 'user', content: text })
     setInputMsg('')
@@ -64,10 +73,9 @@ export default function Chat() {
     setLoading(true)
     setCurrentAgentStep(0)
     setRagSources([])
+    setNotice('')
 
-    const historyForBackend = useChatStore.getState().messages
-      .filter(m => m.content)
-      .map(m => ({ role: m.role, content: m.content }))
+    const historyForBackend = useChatStore.getState().messages.filter(m => m.content).map(m => ({ role: m.role, content: m.content }))
 
     try {
       await sendRequest('/api/travel/chat', { message: text, messages: historyForBackend }, {
@@ -77,9 +85,13 @@ export default function Chat() {
           setCurrentAgentStep(step.step)
           updateLastMessageSteps(step)
         },
+        onNotice: (message: string) => {
+          setNotice(message)
+        },
         onComplete: (data: unknown) => {
           const result = data as { sources?: string[] }
-          if (result?.sources?.length) setRagSources(result.sources)
+          if (result?.sources?.length)
+            setRagSources(result.sources)
         },
       })
     }
@@ -129,6 +141,15 @@ export default function Chat() {
             <div key={i}>
               {msg.role === 'assistant' && msg.steps && msg.steps.length > 0 && (
                 <ChatAgentSteps steps={msg.steps} isLoading={false} />
+              )}
+              {msg.role === 'assistant' && notice && i === messages.length - 1 && !isLoading && (
+                <div
+                  className="flex items-center gap-2 px-3.5 py-2 rounded-xl mb-2 text-[12px]"
+                  style={{ background: 'rgba(245, 158, 11, 0.08)', color: '#b45309', border: '1px solid rgba(245, 158, 11, 0.15)' }}
+                >
+                  <span className="shrink-0">⚠️</span>
+                  <span>{notice}</span>
+                </div>
               )}
               {!isEmptyAssistant && <ChatBubble role={msg.role} content={msg.content} />}
             </div>

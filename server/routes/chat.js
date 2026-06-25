@@ -377,6 +377,7 @@ router.post('/chat', async (req, res) => {
       }
       catch (err) {
         console.error('Chat Agent 失败，降级到 Mock:', err.message)
+        sendSSE(res, { type: 'notice', message: 'AI 模型暂不可用，已切换为知识库模式' })
       }
     }
 

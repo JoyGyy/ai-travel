@@ -5,7 +5,8 @@ interface RAGSourceProps {
 }
 
 export function RAGSource({ sources }: RAGSourceProps) {
-  if (!sources || sources.length === 0) return null
+  if (!sources || sources.length === 0)
+    return null
 
   return (
     <div

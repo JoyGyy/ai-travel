@@ -5,15 +5,26 @@
 import type { WeatherInfo } from '@/types'
 
 const weatherEmoji: Record<string, string> = {
-  '晴': '☀️', '多云': '⛅', '阴': '☁️', '阴天': '☁️',
-  '小雨': '🌦️', '中雨': '🌧️', '大雨': '⛈️', '暴雨': '⛈️',
-  '雷阵雨': '⛈️', '小雪': '❄️', '中雪': '❄️', '大雪': '❄️',
-  '暴风雪': '❄️', '雾': '🌫️',
+  晴: '☀️',
+  多云: '⛅',
+  阴: '☁️',
+  阴天: '☁️',
+  小雨: '🌦️',
+  中雨: '🌧️',
+  大雨: '⛈️',
+  暴雨: '⛈️',
+  雷阵雨: '⛈️',
+  小雪: '❄️',
+  中雪: '❄️',
+  大雪: '❄️',
+  暴风雪: '❄️',
+  雾: '🌫️',
 }
 
 function getWeatherEmoji(desc: string): string {
   for (const [key, emoji] of Object.entries(weatherEmoji)) {
-    if (desc.includes(key)) return emoji
+    if (desc.includes(key))
+      return emoji
   }
   return '🌤️'
 }
@@ -56,13 +67,21 @@ export function HomeWeather({ weather, loading }: HomeWeatherProps) {
               <span className="text-[13px]" style={{ color: 'var(--c-ink-light)' }}>°C</span>
             </div>
             <p className="text-[12px]" style={{ color: 'var(--c-ink-light)' }}>
-              {weather.weatherDesc} · 体感 {weather.feelsLike}°C
+              {weather.weatherDesc}
+              {' '}
+              · 体感
+              {weather.feelsLike}
+              °C
             </p>
           </div>
         </div>
         <div className="text-right">
           <p className="text-[13px] font-semibold" style={{ color: 'var(--c-ink)' }}>{weather.city}</p>
-          <p className="text-[11px]" style={{ color: 'var(--c-ink-light)' }}>湿度 {weather.humidity}%</p>
+          <p className="text-[11px]" style={{ color: 'var(--c-ink-light)' }}>
+            湿度
+            {weather.humidity}
+            %
+          </p>
         </div>
       </div>
 
@@ -76,7 +95,10 @@ export function HomeWeather({ weather, loading }: HomeWeatherProps) {
               </span>
               <span className="text-lg">{getWeatherEmoji(day.weatherDesc)}</span>
               <span className="text-[12px] font-medium" style={{ color: 'var(--c-ink)' }}>
-                {day.minTemp}~{day.maxTemp}°
+                {day.minTemp}
+                ~
+                {day.maxTemp}
+                °
               </span>
             </div>
           ))}

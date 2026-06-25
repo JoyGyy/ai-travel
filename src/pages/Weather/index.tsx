@@ -3,8 +3,8 @@
  * 提供城市搜索和实时天气展示
  */
 import { useMemo, useState } from 'react'
-import { allCities, hotCities } from '@/constants/cities'
 import { HomeWeather } from '@/components/HomeWeather'
+import { allCities, hotCities } from '@/constants/cities'
 import { useWeather } from '@/hooks/useWeather'
 
 export default function Weather() {
@@ -16,7 +16,8 @@ export default function Weather() {
 
   const filteredCities = useMemo(() => {
     const keyword = city.trim()
-    if (!keyword) return allCities
+    if (!keyword)
+      return allCities
     return allCities.filter(c => c.includes(keyword))
   }, [city])
 
@@ -63,7 +64,10 @@ export default function Weather() {
               type="text"
               placeholder="输入城市名称查询天气"
               value={city}
-              onChange={(e) => { setCity(e.target.value); setShowDropdown(true) }}
+              onChange={(e) => {
+                setCity(e.target.value)
+                setShowDropdown(true)
+              }}
               onFocus={() => setShowDropdown(true)}
               className="w-full py-1 px-0 text-sm border-0 outline-none"
               style={{ background: 'transparent', color: 'var(--c-ink)' }}

@@ -1,9 +1,9 @@
+import { AppOutline, ChatAddOutline, UnorderedListOutline, UserOutline } from 'antd-mobile-icons'
 /**
  * 底部导航栏组件
  * 提供主要页面的快速切换功能
  */
 import { useLocation, useNavigate } from 'react-router-dom'
-import { AppOutline, UnorderedListOutline, ChatAddOutline, UserOutline } from 'antd-mobile-icons'
 
 /** 天气图标 */
 function WeatherIcon() {
@@ -40,7 +40,7 @@ export function TabBar() {
       }}
     >
       <div className="flex items-center" style={{ height: '56px' }}>
-        {tabs.map(tab => {
+        {tabs.map((tab) => {
           const isActive = activeKey === tab.key
           return (
             <button

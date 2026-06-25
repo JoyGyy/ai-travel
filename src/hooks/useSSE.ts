@@ -9,6 +9,7 @@ interface SSECallbacks {
   onChunk?: (content: string) => void // 收到新的数据块时触发，content 是累积的完整内容
   onComplete?: (data: unknown) => void // 流式传输完成时触发
   onStep?: (step: unknown) => void // 收到 Agent 步骤更新时触发
+  onNotice?: (message: string) => void // 收到服务端提示信息时触发（如降级通知）
   onError?: (error: Error) => void // 发生错误时触发
   onFinally?: () => void // 无论成功失败都会触发，用于清理状态
 }
@@ -94,6 +95,9 @@ export function useSSE() {
               }
               if (data.type === 'step' && callbacks.onStep) {
                 callbacks.onStep(data)
+              }
+              if (data.type === 'notice' && callbacks.onNotice) {
+                callbacks.onNotice(data.message)
               }
               if (data.type === 'complete' && callbacks.onComplete) {
                 callbacks.onComplete(data.data)

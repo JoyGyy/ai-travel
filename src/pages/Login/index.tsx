@@ -24,9 +24,12 @@ export default function Login() {
   }
 
   async function handleSubmit() {
-    if (!username.trim()) return alert('请输入用户名')
-    if (!password) return alert('请输入密码')
-    if (tab === 'register' && password.length < 6) return alert('密码长度至少 6 位')
+    if (!username.trim())
+      return alert('请输入用户名')
+    if (!password)
+      return alert('请输入密码')
+    if (tab === 'register' && password.length < 6)
+      return alert('密码长度至少 6 位')
 
     setLoading(true)
     try {

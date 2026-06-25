@@ -3,7 +3,7 @@
  * 展示 AI Agent 的多步骤推理过程，包括解析意图、检索知识库、规划行程等
  */
 import type { AgentStep } from '@/types'
-import { CheckCircleOutline, InformationCircleOutline, LocationOutline, PayCircleOutline, RightOutline, SearchOutline, UnorderedListOutline, FlagOutline } from 'antd-mobile-icons'
+import { CheckCircleOutline, FlagOutline, InformationCircleOutline, LocationOutline, PayCircleOutline, RightOutline, SearchOutline, UnorderedListOutline } from 'antd-mobile-icons'
 
 /** 步骤配置 */
 const STEP_CONFIG = [
@@ -27,15 +27,18 @@ export function AgentSteps({ steps, currentStep }: AgentStepsProps) {
   /** 获取步骤状态 */
   function getStepStatus(stepNum: number): 'pending' | 'running' | 'done' {
     const step = stepMap.get(stepNum)
-    if (step?.status === 'complete') return 'done'
-    if (currentStep === stepNum) return 'running'
+    if (step?.status === 'complete')
+      return 'done'
+    if (currentStep === stepNum)
+      return 'running'
     return 'pending'
   }
 
   /** 获取步骤的简要结果描述 */
   function getResultSummary(stepNum: number): string {
     const step = stepMap.get(stepNum)
-    if (!step?.data) return ''
+    if (!step?.data)
+      return ''
     const d = step.data as Record<string, unknown>
     switch (stepNum) {
       case 1: return `${d.city} · ${d.days}天 · ¥${d.budget}`

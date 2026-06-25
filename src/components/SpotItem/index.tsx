@@ -1,14 +1,14 @@
+import type { SpotData } from '@/types'
 /**
  * 景点项目组件
  * 展示单个景点的详细信息，包括名称、描述、时长、门票和交通
  */
 import { ClockCircleOutline, CompassOutline } from 'antd-mobile-icons'
-import type { SpotData } from '@/types'
 
 /** 组件属性接口 */
 interface SpotItemProps {
-  period: string  // 时段名称，如 "上午"、"下午"、"晚上"
-  data: SpotData  // 景点数据
+  period: string // 时段名称，如 "上午"、"下午"、"晚上"
+  data: SpotData // 景点数据
 }
 
 /**

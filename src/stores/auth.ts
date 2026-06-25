@@ -1,10 +1,10 @@
+import type { User } from '@/types'
 /**
  * 认证状态管理
  * 使用 Zustand + persist 持久化用户登录状态
  */
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { User } from '@/types'
 import { useHistoryStore } from './history'
 
 interface AuthState {
@@ -23,7 +23,7 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       token: null,
       _hasHydrated: false,
-      setHasHydrated: (v) => set({ _hasHydrated: v }),
+      setHasHydrated: v => set({ _hasHydrated: v }),
 
       async login(username, password) {
         const res = await fetch('/api/auth/login', {
@@ -32,7 +32,8 @@ export const useAuthStore = create<AuthState>()(
           body: JSON.stringify({ username, password }),
         })
         const data = await res.json()
-        if (!data.success) throw new Error(data.message)
+        if (!data.success)
+          throw new Error(data.message)
         set({ user: data.user, token: data.token })
         useHistoryStore.getState().loadUserHistory(data.user.id)
       },
@@ -44,7 +45,8 @@ export const useAuthStore = create<AuthState>()(
           body: JSON.stringify({ username, password }),
         })
         const data = await res.json()
-        if (!data.success) throw new Error(data.message)
+        if (!data.success)
+          throw new Error(data.message)
         set({ user: data.user, token: data.token })
         useHistoryStore.getState().loadUserHistory(data.user.id)
       },

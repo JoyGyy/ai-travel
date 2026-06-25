@@ -1,9 +1,9 @@
+import type { WeatherInfo } from '@/types'
 /**
  * 天气查询 Hook
  * 根据城市名获取天气信息，支持防抖
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { WeatherInfo } from '@/types'
 
 interface UseWeatherReturn {
   weather: WeatherInfo | null
@@ -34,7 +34,8 @@ export function useWeather(): UseWeatherReturn {
 
     fetch(`/api/weather?city=${encodeURIComponent(city)}`, { signal: controller.signal })
       .then(async (res) => {
-        if (!res.ok) throw new Error('查询失败')
+        if (!res.ok)
+          throw new Error('查询失败')
         return res.json()
       })
       .then((data: WeatherInfo) => {

@@ -23,7 +23,8 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     }
   }, [user, hasHydrated, navigate])
 
-  if (!hasHydrated || !user) return null
+  if (!hasHydrated || !user)
+    return null
 
   return <>{children}</>
 }

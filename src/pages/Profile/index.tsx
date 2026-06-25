@@ -12,7 +12,8 @@ export default function Profile() {
   const { user, logout } = useAuthStore()
 
   function handleLogout() {
-    if (!window.confirm('确定要退出登录吗？')) return
+    if (!window.confirm('确定要退出登录吗？'))
+      return
     logout()
     Toast.show({ content: '已退出登录', position: 'center' })
   }

@@ -116,11 +116,11 @@ export interface User {
 
 /** 分享数据 - 存储在后端的公开行程 */
 export interface ShareData {
-  id: string           // 短 ID（8 位）
+  id: string // 短 ID（8 位）
   city: string
   days: number
   budget: number | string
-  itinerary: ItineraryResult  // 完整行程数据
-  createdAt: string    // ISO 时间戳
+  itinerary: ItineraryResult // 完整行程数据
+  createdAt: string // ISO 时间戳
   viewCount: number
 }

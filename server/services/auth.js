@@ -4,15 +4,16 @@
  * 使用 SQLite 存储用户数据
  */
 
-import Database from 'better-sqlite3'
 import path from 'node:path'
 import bcrypt from 'bcryptjs'
+import Database from 'better-sqlite3'
 import jwt from 'jsonwebtoken'
 
 /** 懒加载 JWT_SECRET，确保 dotenv 已经加载 */
 function getJwtSecret() {
   const secret = process.env.JWT_SECRET
-  if (!secret) throw new Error('JWT_SECRET 环境变量未设置，请在 .env 中配置')
+  if (!secret)
+    throw new Error('JWT_SECRET 环境变量未设置，请在 .env 中配置')
   return secret
 }
 const SALT_ROUNDS = 10
@@ -40,12 +41,16 @@ const findUserByName = db.prepare('SELECT * FROM users WHERE username = ?')
  * @returns {{ token: string, user: { id: string, username: string, createdAt: string } }}
  */
 async function register(username, password) {
-  if (!username || !password) throw new Error('用户名和密码不能为空')
-  if (username.length < 2 || username.length > 20) throw new Error('用户名长度为 2-20 个字符')
-  if (password.length < 6) throw new Error('密码长度至少 6 个字符')
+  if (!username || !password)
+    throw new Error('用户名和密码不能为空')
+  if (username.length < 2 || username.length > 20)
+    throw new Error('用户名长度为 2-20 个字符')
+  if (password.length < 6)
+    throw new Error('密码长度至少 6 个字符')
 
   const existing = findUserByName.get(username)
-  if (existing) throw new Error('用户名已存在')
+  if (existing)
+    throw new Error('用户名已存在')
 
   const hashed = await bcrypt.hash(password, SALT_ROUNDS)
   const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
@@ -64,13 +69,16 @@ async function register(username, password) {
  * @returns {{ token: string, user: { id: string, username: string, createdAt: string } }}
  */
 async function login(username, password) {
-  if (!username || !password) throw new Error('用户名和密码不能为空')
+  if (!username || !password)
+    throw new Error('用户名和密码不能为空')
 
   const user = findUserByName.get(username)
-  if (!user) throw new Error('用户名或密码错误')
+  if (!user)
+    throw new Error('用户名或密码错误')
 
   const match = await bcrypt.compare(password, user.password)
-  if (!match) throw new Error('用户名或密码错误')
+  if (!match)
+    throw new Error('用户名或密码错误')
 
   const token = jwt.sign({ id: user.id, username: user.username }, getJwtSecret(), { expiresIn: '7d' })
   return { token, user: { id: user.id, username: user.username, createdAt: user.created_at } }
@@ -85,4 +93,4 @@ function verifyToken(token) {
   return jwt.verify(token, getJwtSecret())
 }
 
-export { register, login, verifyToken }
+export { login, register, verifyToken }

@@ -1,12 +1,12 @@
+import type { ItineraryResult } from '@/types'
+import { Popup, Toast } from 'antd-mobile'
+import { toPng } from 'html-to-image'
 /**
  * 分享弹窗组件
  * 提供保存图片和复制分享链接两个操作
  */
 import { useCallback, useRef, useState } from 'react'
-import { Popup, Toast } from 'antd-mobile'
-import { toPng } from 'html-to-image'
 import { ShareCard } from '@/components/ShareCard'
-import type { ItineraryResult } from '@/types'
 
 interface SharePopupProps {
   visible: boolean
@@ -32,7 +32,8 @@ export function SharePopup({ visible, onClose, city, days, budget, itinerary, on
   /** 保存卡片为图片并下载 */
   const handleSaveImage = useCallback(async () => {
     const cardEl = cardRef.current
-    if (!cardEl || saving) return
+    if (!cardEl || saving)
+      return
     setSaving(true)
 
     try {
@@ -52,16 +53,19 @@ export function SharePopup({ visible, onClose, city, days, budget, itinerary, on
       document.body.removeChild(link)
 
       Toast.show('图片已保存')
-    } catch {
+    }
+    catch {
       Toast.show('图片保存失败，请重试')
-    } finally {
+    }
+    finally {
       setSaving(false)
     }
   }, [city, saving])
 
   /** 调用分享接口并复制链接到剪贴板 */
   const handleCopyLink = useCallback(async () => {
-    if (copying) return
+    if (copying)
+      return
     setCopying(true)
     setFallbackUrl(null)
 
@@ -78,7 +82,7 @@ export function SharePopup({ visible, onClose, city, days, budget, itinerary, on
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ city, days, budget, itinerary }),
       })
@@ -87,7 +91,7 @@ export function SharePopup({ visible, onClose, city, days, budget, itinerary, on
         throw new Error(`请求失败: ${res.status}`)
       }
 
-      const { shareId, shareUrl } = (await res.json()) as { shareId: string; shareUrl: string }
+      const { shareId, shareUrl } = (await res.json()) as { shareId: string, shareUrl: string }
       fullUrl = `${window.location.origin}${shareUrl}`
       onShared?.(shareId)
 
@@ -95,21 +99,25 @@ export function SharePopup({ visible, onClose, city, days, budget, itinerary, on
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(fullUrl)
         Toast.show('链接已复制')
-      } else {
+      }
+      else {
         // 剪贴板 API 不可用，降级显示链接
         setFallbackUrl(fullUrl)
         Toast.show('请手动复制下方链接')
       }
-    } catch (err) {
+    }
+    catch (err) {
       console.error('分享失败:', err)
       // 如果已拿到链接但剪贴板失败，降级显示链接
       if (fullUrl) {
         setFallbackUrl(fullUrl)
         Toast.show('复制失败，请手动复制下方链接')
-      } else {
+      }
+      else {
         Toast.show('分享失败，请重试')
       }
-    } finally {
+    }
+    finally {
       setCopying(false)
     }
   }, [city, days, budget, itinerary, copying])

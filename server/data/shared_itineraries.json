@@ -1,1 +1,70 @@
-[]
+[
+  {
+    "id": "IOtEX5rA",
+    "city": "南京",
+    "days": 3,
+    "budget": 3000,
+    "itinerary": {
+      "city": "南京",
+      "days": 3,
+      "totalBudget": 3000,
+      "dailyItinerary": [],
+      "budgetBreakdown": null,
+      "tips": []
+    },
+    "contentHash": "7b935ffeb78e65ca",
+    "viewCount": 0,
+    "createdAt": "2026-06-17T10:32:01.083Z"
+  },
+  {
+    "id": "sOltOhrI",
+    "city": "南京",
+    "days": 3,
+    "budget": 3000,
+    "itinerary": {
+      "city": "南京",
+      "days": 3,
+      "totalBudget": 3000,
+      "dailyItinerary": [
+        {
+          "day": 1,
+          "date": "2026-06-18",
+          "morning": {
+            "spot": "中山陵",
+            "description": "test",
+            "duration": "2小时",
+            "ticket": "免费",
+            "transportation": "地铁"
+          },
+          "afternoon": {
+            "spot": "明孝陵",
+            "description": "test",
+            "duration": "2小时",
+            "ticket": "70",
+            "transportation": "地铁"
+          },
+          "evening": {
+            "spot": "夫子庙",
+            "description": "test",
+            "duration": "2小时",
+            "ticket": "免费",
+            "transportation": "地铁"
+          }
+        }
+      ],
+      "budgetBreakdown": {
+        "accommodation": 1000,
+        "food": 800,
+        "transportation": 400,
+        "tickets": 300,
+        "other": 500
+      },
+      "tips": [
+        "带好防晒"
+      ]
+    },
+    "contentHash": "dbe2f2eb5e49aed4",
+    "viewCount": 0,
+    "createdAt": "2026-06-17T12:06:20.298Z"
+  }
+]

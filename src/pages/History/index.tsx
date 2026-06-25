@@ -1,3 +1,4 @@
+import type { HistoryRecord, ItineraryResult } from '@/types'
 /**
  * 历史记录页面
  * 展示用户之前生成的所有行程记录，支持查看详情、删除和排序
@@ -9,7 +10,6 @@ import { BudgetTable } from '@/components/BudgetTable'
 import { SharePopup } from '@/components/SharePopup'
 import { SpotItem } from '@/components/SpotItem'
 import { useHistoryStore } from '@/stores/history'
-import type { HistoryRecord, ItineraryResult } from '@/types'
 
 type SortOrder = 'desc' | 'asc'
 
@@ -67,7 +67,7 @@ export default function History() {
   }
 
   function toggleDay(cardIndex: number, day: string) {
-    setExpandedDays(prev => {
+    setExpandedDays((prev) => {
       const current = prev[cardIndex] || []
       const next = current.includes(day) ? current.filter(k => k !== day) : [...current, day]
       return { ...prev, [cardIndex]: next }
@@ -75,7 +75,8 @@ export default function History() {
   }
 
   function handleDelete(index: number) {
-    if (!window.confirm('确定要删除这条历史记录吗？')) return
+    if (!window.confirm('确定要删除这条历史记录吗？'))
+      return
     const record = sortedRecords[index]
     const realIndex = records.indexOf(record)
     if (realIndex >= 0) {
@@ -100,7 +101,12 @@ export default function History() {
       {/* 排序切换 */}
       {records.length > 0 && (
         <div className="flex items-center justify-between px-4 pt-4 pb-1 md:px-6 md:max-w-4xl md:mx-auto">
-          <span className="text-[12px]" style={{ color: 'var(--c-ink-light)' }}>共 {records.length} 条记录</span>
+          <span className="text-[12px]" style={{ color: 'var(--c-ink-light)' }}>
+            共
+            {records.length}
+            {' '}
+            条记录
+          </span>
           <button
             onClick={() => setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc')}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-medium border-none cursor-pointer transition-all active:scale-95"
@@ -133,109 +139,115 @@ export default function History() {
             const originalIndex = records.indexOf(record)
             const seqNum = recordNumberMap.get(originalIndex) ?? (i + 1)
             return (
-            <div
-              key={i}
-              className="rounded-2xl overflow-hidden transition-all duration-200 md:hover:-translate-y-0.5"
-              style={{
-                background: 'var(--c-white)',
-                boxShadow: 'var(--shadow-sm)',
-                border: '1px solid rgba(240, 232, 221, 0.4)',
-              }}
-            >
-              {/* 卡片头部 */}
-              <div className="flex items-center gap-3 px-5 py-4">
-                <span
-                  className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-[12px] font-semibold"
-                  style={{ background: 'var(--c-sand)', color: 'var(--c-terracotta)' }}
-                >
-                  {seqNum}
-                </span>
-                <div
-                  onClick={() => toggleCard(i)}
-                  className="flex-1 min-w-0 cursor-pointer transition-colors active:bg-[var(--c-paper)] -mx-2 px-2 py-1 rounded-lg"
-                >
-                  <h3 className="mb-1.5 text-[16px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-ink)' }}>
-                    {record.city}
-                  </h3>
-                  <div className="flex items-center gap-1.5 text-[11px]" style={{ color: 'var(--c-ink-light)' }}>
-                    <span>{record.days}天</span>
-                    <span className="w-[3px] h-[3px] rounded-full" style={{ background: 'var(--c-paper-dark)' }} />
-                    <span>¥{record.budget}</span>
-                    <span className="w-[3px] h-[3px] rounded-full" style={{ background: 'var(--c-paper-dark)' }} />
-                    <span>{record.date}</span>
-                  </div>
-                </div>
-                <button
-                  onClick={(e) => { e.stopPropagation(); setShareRecordTs(record.timestamp) }}
-                  className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center border-none cursor-pointer transition-colors active:scale-90"
-                  style={{ background: 'var(--c-paper)', color: 'var(--c-ink-light)', fontSize: '15px' }}
-                >
-                  <SendOutline />
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); handleDelete(i) }}
-                  className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center border-none cursor-pointer transition-colors active:scale-90"
-                  style={{ background: 'var(--c-paper)', color: 'var(--c-ink-light)', fontSize: '13px' }}
-                >
-                  ✕
-                </button>
-                <span
-                  onClick={() => toggleCard(i)}
-                  className="shrink-0 text-[10px] cursor-pointer transition-transform duration-200"
-                  style={{ color: 'var(--c-ink-light)', transform: expandedCard === i ? 'rotate(180deg)' : 'rotate(0deg)' }}
-                >
-                  ▼
-                </span>
-              </div>
-
-              {/* 展开内容 */}
-              {expandedCard === i && (
-                <div className="border-t px-4 pb-4 pt-3" style={{ borderColor: 'rgba(240, 232, 221, 0.5)' }}>
-                  {record.itinerary?.map(day => (
-                    <div key={day.day} className="mb-2">
-                      <button
-                        onClick={() => toggleDay(i, String(day.day))}
-                        className="w-full flex items-center justify-between px-3 py-2.5 text-left text-sm border-none rounded-xl cursor-pointer transition-colors"
-                        style={{ background: 'var(--c-paper)', color: 'var(--c-ink)', fontWeight: 500 }}
-                      >
-                        <span>{day.date}</span>
-                        <span className="text-[10px]" style={{ color: 'var(--c-ink-light)' }}>
-                          {(expandedDays[i] || []).includes(String(day.day)) ? '▲' : '▼'}
-                        </span>
-                      </button>
-                      {(expandedDays[i] || []).includes(String(day.day)) && (
-                        <div className="px-1 pt-2">
-                          <SpotItem period="上午" data={day.morning} />
-                          <SpotItem period="下午" data={day.afternoon} />
-                          <SpotItem period="晚上" data={day.evening} />
-                        </div>
-                      )}
+              <div
+                key={i}
+                className="rounded-2xl overflow-hidden transition-all duration-200 md:hover:-translate-y-0.5"
+                style={{
+                  background: 'var(--c-white)',
+                  boxShadow: 'var(--shadow-sm)',
+                  border: '1px solid rgba(240, 232, 221, 0.4)',
+                }}
+              >
+                {/* 卡片头部 */}
+                <div className="flex items-center gap-3 px-5 py-4">
+                  <span
+                    className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-[12px] font-semibold"
+                    style={{ background: 'var(--c-sand)', color: 'var(--c-terracotta)' }}
+                  >
+                    {seqNum}
+                  </span>
+                  <div
+                    onClick={() => toggleCard(i)}
+                    className="flex-1 min-w-0 cursor-pointer transition-colors active:bg-[var(--c-paper)] -mx-2 px-2 py-1 rounded-lg"
+                  >
+                    <h3 className="mb-1.5 text-[16px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-ink)' }}>
+                      {record.city}
+                    </h3>
+                    <div className="flex items-center gap-1.5 text-[11px]" style={{ color: 'var(--c-ink-light)' }}>
+                      <span>
+                        {record.days}
+                        天
+                      </span>
+                      <span className="w-[3px] h-[3px] rounded-full" style={{ background: 'var(--c-paper-dark)' }} />
+                      <span>
+                        ¥
+                        {record.budget}
+                      </span>
+                      <span className="w-[3px] h-[3px] rounded-full" style={{ background: 'var(--c-paper-dark)' }} />
+                      <span>{record.date}</span>
                     </div>
-                  ))}
-
-                  {record.budgetBreakdown && <BudgetTable data={record.budgetBreakdown as any} />}
-
-                  {record.tips && record.tips.length > 0 && (
-                    <>
-                      <div className="flex items-center gap-2 py-2 px-1" style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', fontWeight: 600, color: 'var(--c-ink)' }}>
-                        <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--c-terracotta)' }} />
-                        <span>温馨提示</span>
-                      </div>
-                      <div className="p-3 rounded-xl" style={{ background: 'var(--c-paper)' }}>
-                        {record.tips.map((tip, j) => (
-                          <div key={j} className="flex items-start gap-2 text-[12px] leading-relaxed py-1" style={{ color: 'var(--c-ink-light)' }}>
-                            <span className="w-1 h-1 rounded-full mt-1.5 shrink-0" style={{ background: 'var(--c-gold)' }} />
-                            {tip}
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  )}
-
+                  </div>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setShareRecordTs(record.timestamp) }}
+                    className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center border-none cursor-pointer transition-colors active:scale-90"
+                    style={{ background: 'var(--c-paper)', color: 'var(--c-ink-light)', fontSize: '15px' }}
+                  >
+                    <SendOutline />
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleDelete(i) }}
+                    className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center border-none cursor-pointer transition-colors active:scale-90"
+                    style={{ background: 'var(--c-paper)', color: 'var(--c-ink-light)', fontSize: '13px' }}
+                  >
+                    ✕
+                  </button>
+                  <span
+                    onClick={() => toggleCard(i)}
+                    className="shrink-0 text-[10px] cursor-pointer transition-transform duration-200"
+                    style={{ color: 'var(--c-ink-light)', transform: expandedCard === i ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                  >
+                    ▼
+                  </span>
                 </div>
-              )}
-            </div>
-          )
+
+                {/* 展开内容 */}
+                {expandedCard === i && (
+                  <div className="border-t px-4 pb-4 pt-3" style={{ borderColor: 'rgba(240, 232, 221, 0.5)' }}>
+                    {record.itinerary?.map(day => (
+                      <div key={day.day} className="mb-2">
+                        <button
+                          onClick={() => toggleDay(i, String(day.day))}
+                          className="w-full flex items-center justify-between px-3 py-2.5 text-left text-sm border-none rounded-xl cursor-pointer transition-colors"
+                          style={{ background: 'var(--c-paper)', color: 'var(--c-ink)', fontWeight: 500 }}
+                        >
+                          <span>{day.date}</span>
+                          <span className="text-[10px]" style={{ color: 'var(--c-ink-light)' }}>
+                            {(expandedDays[i] || []).includes(String(day.day)) ? '▲' : '▼'}
+                          </span>
+                        </button>
+                        {(expandedDays[i] || []).includes(String(day.day)) && (
+                          <div className="px-1 pt-2">
+                            <SpotItem period="上午" data={day.morning} />
+                            <SpotItem period="下午" data={day.afternoon} />
+                            <SpotItem period="晚上" data={day.evening} />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+
+                    {record.budgetBreakdown && <BudgetTable data={record.budgetBreakdown as any} />}
+
+                    {record.tips && record.tips.length > 0 && (
+                      <>
+                        <div className="flex items-center gap-2 py-2 px-1" style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', fontWeight: 600, color: 'var(--c-ink)' }}>
+                          <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--c-terracotta)' }} />
+                          <span>温馨提示</span>
+                        </div>
+                        <div className="p-3 rounded-xl" style={{ background: 'var(--c-paper)' }}>
+                          {record.tips.map((tip, j) => (
+                            <div key={j} className="flex items-start gap-2 text-[12px] leading-relaxed py-1" style={{ color: 'var(--c-ink-light)' }}>
+                              <span className="w-1 h-1 rounded-full mt-1.5 shrink-0" style={{ background: 'var(--c-gold)' }} />
+                              {tip}
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    )}
+
+                  </div>
+                )}
+              </div>
+            )
           })}
         </div>
       )}

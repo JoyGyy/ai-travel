@@ -10,25 +10,26 @@ interface WeatherCardProps {
 
 /** 天气描述对应的 emoji */
 const weatherEmoji: Record<string, string> = {
-  '晴': '☀️',
-  '多云': '⛅',
-  '阴': '☁️',
-  '阴天': '☁️',
-  '小雨': '🌦️',
-  '中雨': '🌧️',
-  '大雨': '⛈️',
-  '暴雨': '⛈️',
-  '雷阵雨': '⛈️',
-  '小雪': '❄️',
-  '中雪': '❄️',
-  '大雪': '❄️',
-  '暴风雪': '❄️',
-  '雾': '🌫️',
+  晴: '☀️',
+  多云: '⛅',
+  阴: '☁️',
+  阴天: '☁️',
+  小雨: '🌦️',
+  中雨: '🌧️',
+  大雨: '⛈️',
+  暴雨: '⛈️',
+  雷阵雨: '⛈️',
+  小雪: '❄️',
+  中雪: '❄️',
+  大雪: '❄️',
+  暴风雪: '❄️',
+  雾: '🌫️',
 }
 
 function getWeatherEmoji(desc: string): string {
   for (const [key, emoji] of Object.entries(weatherEmoji)) {
-    if (desc.includes(key)) return emoji
+    if (desc.includes(key))
+      return emoji
   }
   return '🌤️'
 }
@@ -49,19 +50,29 @@ export function WeatherCard({ weather }: WeatherCardProps) {
             <div className="flex items-center gap-2 mb-1">
               <span className="text-2xl">{getWeatherEmoji(weather.weatherDesc)}</span>
               <span className="text-[20px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-ink)' }}>
-                {weather.temperature}°C
+                {weather.temperature}
+                °C
               </span>
             </div>
             <p className="text-[13px]" style={{ color: 'var(--c-ink-light)' }}>
-              {weather.weatherDesc} &middot; 体感 {weather.feelsLike}°C
+              {weather.weatherDesc}
+              {' '}
+              &middot; 体感
+              {weather.feelsLike}
+              °C
             </p>
           </div>
           <div className="text-right">
             <p className="text-[11px] mb-1" style={{ color: 'var(--c-ink-light)' }}>
-              {weather.city} · 实时天气
+              {weather.city}
+              {' '}
+              · 实时天气
             </p>
             <p className="text-[11px]" style={{ color: 'var(--c-ink-light)' }}>
-              湿度 {weather.humidity}%
+              湿度
+              {' '}
+              {weather.humidity}
+              %
             </p>
           </div>
         </div>
@@ -78,7 +89,10 @@ export function WeatherCard({ weather }: WeatherCardProps) {
                 </p>
                 <p className="text-lg mb-0.5">{getWeatherEmoji(day.weatherDesc)}</p>
                 <p className="text-[12px] font-medium" style={{ color: 'var(--c-ink)' }}>
-                  {day.minTemp}~{day.maxTemp}°C
+                  {day.minTemp}
+                  ~
+                  {day.maxTemp}
+                  °C
                 </p>
                 <p className="text-[10px]" style={{ color: 'var(--c-ink-light)' }}>
                   {day.weatherDesc}

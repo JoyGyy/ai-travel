@@ -44,7 +44,8 @@ export function BudgetTable({ data }: BudgetTableProps) {
             <span className="text-sm font-medium whitespace-nowrap" style={{ color: 'var(--c-ink)' }}>{labels[key]}</span>
             <span className="flex-1 mx-3 h-0 border-b border-dotted" style={{ borderColor: 'var(--c-paper-dark)' }} />
             <span className="whitespace-nowrap tabular-nums" style={{ fontFamily: 'var(--font-serif)', fontSize: '15px', fontWeight: 600, color: 'var(--c-terracotta)' }}>
-              ¥{data[key] || 0}
+              ¥
+              {data[key] || 0}
             </span>
           </div>
         ))}
@@ -66,7 +67,8 @@ export function BudgetTable({ data }: BudgetTableProps) {
         <div className="flex items-center justify-between mt-3 pt-3 border-t" style={{ borderColor: 'var(--c-paper-dark)' }}>
           <span className="text-sm font-semibold" style={{ color: 'var(--c-ink)' }}>总计</span>
           <span className="tabular-nums" style={{ fontFamily: 'var(--font-serif)', fontSize: '18px', fontWeight: 700, color: 'var(--c-terracotta)' }}>
-            ¥{total}
+            ¥
+            {total}
           </span>
         </div>
       </div>

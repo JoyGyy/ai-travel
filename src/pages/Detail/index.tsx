@@ -9,11 +9,11 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { AccommodationCard } from '@/components/AccommodationCard'
 import { AgentSteps } from '@/components/AgentSteps'
 import { BudgetTable } from '@/components/BudgetTable'
+import { SharePopup } from '@/components/SharePopup'
 import { SpotItem } from '@/components/SpotItem'
 import { WeatherCard } from '@/components/WeatherCard'
 import { useSSE } from '@/hooks/useSSE'
 import { useItineraryStore } from '@/stores/itinerary'
-import { SharePopup } from '@/components/SharePopup'
 import { loadItineraryCache, saveItineraryCache, saveToHistory } from '@/utils/storage'
 
 export default function Detail() {
@@ -25,10 +25,22 @@ export default function Detail() {
   const days = Number(searchParams.get('days')) || 1
 
   const {
-    itinerary, budgetBreakdown, tips, weather, accommodation, nightlife,
-    agentSteps, currentAgentStep,
-    setItinerary, setBudgetBreakdown, setTips, setWeather, setAccommodation, setNightlife,
-    addAgentStep, setCurrentAgentStep,
+    itinerary,
+    budgetBreakdown,
+    tips,
+    weather,
+    accommodation,
+    nightlife,
+    agentSteps,
+    currentAgentStep,
+    setItinerary,
+    setBudgetBreakdown,
+    setTips,
+    setWeather,
+    setAccommodation,
+    setNightlife,
+    addAgentStep,
+    setCurrentAgentStep,
   } = useItineraryStore()
 
   const [activeKeys, setActiveKeys] = useState<string[]>([])
@@ -38,11 +50,13 @@ export default function Detail() {
 
   // 每次参数变化时同步重置加载状态（在浏览器绘制前）
   useLayoutEffect(() => {
-    if (city) setShowLoading(true)
+    if (city)
+      setShowLoading(true)
   }, [city, budget, days])
 
   useEffect(() => {
-    if (!city) return
+    if (!city)
+      return
 
     const cached = loadItineraryCache(city, budget, days)
     if (cached) {
@@ -71,7 +85,8 @@ export default function Detail() {
       onStep: (step: unknown) => {
         const agentStep = step as AgentStep
         setCurrentAgentStep(agentStep.step)
-        if (agentStep.status === 'complete') addAgentStep(agentStep)
+        if (agentStep.status === 'complete')
+          addAgentStep(agentStep)
       },
       onComplete: (result: unknown) => {
         dataReceived = true
@@ -91,11 +106,12 @@ export default function Detail() {
         saveToHistory(data)
         saveItineraryCache(city, budget, days, { itinerary: dailyItinerary, budgetBreakdown: bd, tips: t, weather: w, accommodation: a, nightlife: n })
         // 数据到达后等一下再关闭，让内容有渲染时间
-        setTimeout(() => setShowLoading(false), 800)
+        setTimeout(setShowLoading, 800, false)
       },
       onFinally: () => {
         // 请求失败时（onComplete 未触发）才立即关闭
-        if (!dataReceived) setShowLoading(false)
+        if (!dataReceived)
+          setShowLoading(false)
       },
     })
 
@@ -122,7 +138,10 @@ export default function Detail() {
           {city}
         </h1>
         <p className="text-[12px] font-light" style={{ color: 'rgba(253, 246, 236, 0.5)' }}>
-          {days} 天行程 &middot; 预算 ¥{budget}
+          {days}
+          {' '}
+          天行程 &middot; 预算 ¥
+          {budget}
         </p>
       </div>
 
@@ -181,12 +200,14 @@ export default function Detail() {
                 </div>
               </div>
 
-              <style>{`
+              <style>
+                {`
                 @keyframes pulseDot {
                   0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
                   40% { opacity: 1; transform: scale(1.2); }
                 }
-              `}</style>
+              `}
+              </style>
             </div>
           </div>
         )}
@@ -221,12 +242,18 @@ export default function Detail() {
               <div className="w-px h-8" style={{ background: 'var(--c-paper-dark)' }} />
               <div className="flex-1 flex flex-col items-center gap-1">
                 <span className="text-[10px] font-medium tracking-wider" style={{ color: 'var(--c-ink-light)', textTransform: 'uppercase' }}>天数</span>
-                <span className="text-[15px] font-semibold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-ink)' }}>{days}天</span>
+                <span className="text-[15px] font-semibold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-ink)' }}>
+                  {days}
+                  天
+                </span>
               </div>
               <div className="w-px h-8" style={{ background: 'var(--c-paper-dark)' }} />
               <div className="flex-1 flex flex-col items-center gap-1">
                 <span className="text-[10px] font-medium tracking-wider" style={{ color: 'var(--c-ink-light)', textTransform: 'uppercase' }}>预算</span>
-                <span className="text-[15px] font-semibold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-terracotta)' }}>¥{budget}</span>
+                <span className="text-[15px] font-semibold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-terracotta)' }}>
+                  ¥
+                  {budget}
+                </span>
               </div>
             </div>
 

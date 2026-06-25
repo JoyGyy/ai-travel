@@ -11,10 +11,10 @@ import { SpotItem } from '@/components/SpotItem'
 import { WeatherCard } from '@/components/WeatherCard'
 
 /** 页面状态 */
-type PageState =
-  | { status: 'loading' }
-  | { status: 'error'; message: string }
-  | { status: 'success'; data: ShareData }
+type PageState
+  = | { status: 'loading' }
+    | { status: 'error', message: string }
+    | { status: 'success', data: ShareData }
 
 export default function Share() {
   const { id } = useParams<{ id: string }>()
@@ -25,7 +25,8 @@ export default function Share() {
   const [activeKeys, setActiveKeys] = useState<string[]>([])
 
   useEffect(() => {
-    if (!id) return
+    if (!id)
+      return
 
     const controller = new AbortController()
 
@@ -51,8 +52,10 @@ export default function Share() {
           return
         }
         setState({ status: 'success', data: shareData })
-      } catch (err: unknown) {
-        if (err instanceof DOMException && err.name === 'AbortError') return
+      }
+      catch (err: unknown) {
+        if (err instanceof DOMException && err.name === 'AbortError')
+          return
         setState({ status: 'error', message: '网络错误，请稍后重试' })
       }
     }
@@ -63,7 +66,8 @@ export default function Share() {
 
   // 动态设置 document.title 和 OG meta 标签
   useEffect(() => {
-    if (state.status !== 'success') return
+    if (state.status !== 'success')
+      return
     const { city, days, itinerary } = state.data
     const title = `${city} ${days}天旅行计划`
 
@@ -180,10 +184,19 @@ export default function Share() {
         <div className="absolute -top-10 -right-10 w-36 h-36 rounded-full" style={{ background: 'rgba(99, 102, 241, 0.06)', filter: 'blur(30px)' }} />
         <p className="mt-2 mb-2 text-[10px] font-semibold tracking-[5px]" style={{ fontFamily: 'var(--font-sans)', color: 'var(--c-gold-light)', opacity: 0.75 }}>SHARED ITINERARY</p>
         <h1 className="mb-2 text-[28px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-cream)', textShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-          {city} 的 {days} 天旅行计划
+          {city}
+          {' '}
+          的
+          {days}
+          {' '}
+          天旅行计划
         </h1>
         <p className="text-[12px] font-light" style={{ color: 'rgba(253, 246, 236, 0.5)' }}>
-          由 AI 智能规划 &middot; 已有 {viewCount} 人查看过此行程
+          由 AI 智能规划 &middot; 已有
+          {' '}
+          {viewCount}
+          {' '}
+          人查看过此行程
         </p>
       </div>
 
@@ -200,19 +213,29 @@ export default function Share() {
           <div className="w-px h-8" style={{ background: 'var(--c-paper-dark)' }} />
           <div className="flex-1 flex flex-col items-center gap-1">
             <span className="text-[10px] font-medium tracking-wider" style={{ color: 'var(--c-ink-light)', textTransform: 'uppercase' }}>天数</span>
-            <span className="text-[15px] font-semibold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-ink)' }}>{days}天</span>
+            <span className="text-[15px] font-semibold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-ink)' }}>
+              {days}
+              天
+            </span>
           </div>
           <div className="w-px h-8" style={{ background: 'var(--c-paper-dark)' }} />
           <div className="flex-1 flex flex-col items-center gap-1">
             <span className="text-[10px] font-medium tracking-wider" style={{ color: 'var(--c-ink-light)', textTransform: 'uppercase' }}>预算</span>
-            <span className="text-[15px] font-semibold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-terracotta)' }}>¥{budget}</span>
+            <span className="text-[15px] font-semibold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--c-terracotta)' }}>
+              ¥
+              {budget}
+            </span>
           </div>
         </div>
 
         {/* 社交证明 */}
         <div className="flex items-center justify-center gap-2 pt-5 pb-1">
           <span className="text-[12px]" style={{ color: 'var(--c-ink-light)' }}>
-            已有 {viewCount} 人查看过此行程
+            已有
+            {' '}
+            {viewCount}
+            {' '}
+            人查看过此行程
           </span>
         </div>
 

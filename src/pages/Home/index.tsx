@@ -6,8 +6,8 @@ import { Toast } from 'antd-mobile'
 import { CalendarOutline, EnvironmentOutline, PayCircleOutline, TagOutline } from 'antd-mobile-icons'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { allCities, hotCities } from '@/constants/cities'
 import { HomeWeather } from '@/components/HomeWeather'
+import { allCities, hotCities } from '@/constants/cities'
 import { useWeather } from '@/hooks/useWeather'
 import { useAuthStore } from '@/stores/auth'
 
@@ -24,7 +24,8 @@ export default function Home() {
 
   const filteredCities = useMemo(() => {
     const keyword = city.trim()
-    if (!keyword) return allCities
+    if (!keyword)
+      return allCities
     return allCities.filter(c => c.includes(keyword))
   }, [city])
 
@@ -36,23 +37,34 @@ export default function Home() {
 
   // 输入城市时防抖查询天气
   useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current)
+    if (debounceRef.current)
+      clearTimeout(debounceRef.current)
     const trimmed = city.trim()
-    if (!trimmed || trimmed.length < 2) return
+    if (!trimmed || trimmed.length < 2)
+      return
     debounceRef.current = setTimeout(() => {
       // 只在城市名在已知列表中时才查询
-      if (allCities.includes(trimmed)) fetchWeather(trimmed)
+      if (allCities.includes(trimmed))
+        fetchWeather(trimmed)
     }, 800)
-    return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
+    return () => {
+      if (debounceRef.current)
+        clearTimeout(debounceRef.current)
+    }
   }, [city, fetchWeather])
 
   function onStart() {
-    if (!hasHydrated) return Toast.show('加载中，请稍候…')
-    if (!user) return navigate('/login')
-    if (!city) return Toast.show('请选择目的地')
-    if (!budget) return Toast.show('请输入预算')
+    if (!hasHydrated)
+      return Toast.show('加载中，请稍候…')
+    if (!user)
+      return navigate('/login')
+    if (!city)
+      return Toast.show('请选择目的地')
+    if (!budget)
+      return Toast.show('请输入预算')
     const budgetNum = Number(budget)
-    if (Number.isNaN(budgetNum) || budgetNum <= 0) return Toast.show('请输入有效的预算金额')
+    if (Number.isNaN(budgetNum) || budgetNum <= 0)
+      return Toast.show('请输入有效的预算金额')
     navigate(`/detail?city=${encodeURIComponent(city)}&budget=${budgetNum}&days=${days}`)
   }
 
@@ -114,7 +126,10 @@ export default function Home() {
                 type="text"
                 placeholder="输入搜索城市"
                 value={city}
-                onChange={(e) => { setCity(e.target.value); setShowDropdown(true) }}
+                onChange={(e) => {
+                  setCity(e.target.value)
+                  setShowDropdown(true)
+                }}
                 onFocus={() => setShowDropdown(true)}
                 className="w-full py-2 px-0 text-sm border-0 outline-none"
                 style={{ background: 'transparent', color: 'var(--c-ink)' }}

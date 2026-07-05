@@ -48,7 +48,7 @@ export default function Home() {
   }, [city, fetchWeather])
 
   function onStart() {
-    if (!hasHydrated) return message.loading('加载中，请稍候…')
+    if (!hasHydrated) { message.loading('加载中，请稍候…'); return }
     if (!user) return navigate('/login')
     if (!city) return message.warning('请选择目的地')
     if (!budget) return message.warning('请输入预算')

@@ -4,7 +4,7 @@
  */
 import { Suspense } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { HomeOutlined, CloudOutlined, HistoryOutlined, RobotOutlined, UserOutlined } from '@ant-design/icons'
+import { HomeOutlined, CloudOutlined, RobotOutlined, UserOutlined } from '@ant-design/icons'
 import { useAuthStore } from '@/stores/auth'
 import './style.css'
 

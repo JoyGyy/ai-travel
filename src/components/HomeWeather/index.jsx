@@ -19,7 +19,7 @@ function getWeatherEmoji(desc) {
 }
 
 export function HomeWeather({ weather, loading }) {
-  if (loading) {
+  if (loading || !weather) {
     return (
       <div className="home-weather home-weather--loading">
         <div className="home-weather__spinner" />

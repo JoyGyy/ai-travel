@@ -4,13 +4,15 @@
  */
 import { create } from 'zustand'
 
+let messageIdCounter = 0
+
 export const useChatStore = create(set => ({
   messages: [],
   isLoading: false,
   currentAgentStep: 0,
 
   addMessage: msg =>
-    set(state => ({ messages: [...state.messages, msg] })),
+    set(state => ({ messages: [...state.messages, { ...msg, _id: ++messageIdCounter }] })),
 
   updateLastMessage: content =>
     set((state) => {

@@ -12,7 +12,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.6.1",
     "antd": "^5.25.3",
-    "html-to-image": "^1.11.13",
+
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-markdown": "^10.1.0",

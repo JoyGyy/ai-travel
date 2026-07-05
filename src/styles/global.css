@@ -1,19 +1,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --c-terracotta: #6366f1;
-  --c-terracotta-light: #818cf8;
-  --c-sand: #f1f5f9;
-  --c-cream: #f8fafc;
-  --c-forest: #1e293b;
-  --c-forest-light: #334155;
-  --c-gold: #94a3b8;
-  --c-gold-light: #cbd5e1;
-  --c-ink: #0f172a;
-  --c-ink-light: #64748b;
-  --c-paper: #f8fafc;
-  --c-paper-dark: #e2e8f0;
-  --c-white: #ffffff;
+  /* 主色调 - indigo 色系 */
+  --c-terracotta: #6366f1;       /* 主色 indigo-500 */
+  --c-terracotta-light: #818cf8; /* 主色浅 indigo-400 */
+  /* 背景色 - slate 色系 */
+  --c-sand: #f1f5f9;             /* 浅灰背景 slate-100 */
+  --c-cream: #f8fafc;            /* 最浅背景 slate-50 */
+  /* 深色 - slate 色系 */
+  --c-forest: #1e293b;           /* 深色文字 slate-800 */
+  --c-forest-light: #334155;     /* 次深色 slate-700 */
+  /* 辅助色 - slate 色系 */
+  --c-gold: #94a3b8;             /* 中性灰 slate-400 */
+  --c-gold-light: #cbd5e1;       /* 浅灰 slate-300 */
+  /* 文字色 */
+  --c-ink: #0f172a;              /* 主文字 slate-900 */
+  --c-ink-light: #64748b;        /* 次文字 slate-500 */
+  /* 纸张/卡片色 */
+  --c-paper: #f8fafc;            /* 页面背景 */
+  --c-paper-dark: #e2e8f0;       /* 分割线/边框 */
+  --c-white: #ffffff;            /* 卡片背景 */
 
   --font-serif: 'Noto Serif SC', 'Songti SC', Georgia, serif;
   --font-sans: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;

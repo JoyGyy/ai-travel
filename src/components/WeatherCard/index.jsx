@@ -19,6 +19,8 @@ function getWeatherEmoji(desc) {
 }
 
 export function WeatherCard({ weather }) {
+  if (!weather) return null
+
   return (
     <div className="weather-card">
       <div className="weather-card__current">

@@ -34,9 +34,10 @@ export default function Detail() {
   const [showLoading, setShowLoading] = useState(true)
   const { sendRequest, abort } = useSSE()
 
+  // URL 参数变化时重置加载状态
   useLayoutEffect(() => {
     if (city) setShowLoading(true)
-  }, [city, budget, days])
+  }, [city, budget, days]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!city) return

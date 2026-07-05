@@ -102,7 +102,7 @@ export default function Chat() {
         {messages.map((msg, i) => {
           const isEmptyAssistant = msg.role === 'assistant' && !msg.content && isLoading && i === messages.length - 1
           return (
-            <div key={i}>
+            <div key={msg._id}>
               {msg.role === 'assistant' && msg.steps && msg.steps.length > 0 && (
                 <ChatAgentSteps steps={msg.steps} isLoading={false} />
               )}

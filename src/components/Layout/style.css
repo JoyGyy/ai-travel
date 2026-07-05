@@ -1,0 +1,153 @@
+/* 布局组件样式 */
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--c-paper);
+}
+
+.layout__content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* 顶部导航 */
+.layout-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 252, 248, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(240, 232, 221, 0.5);
+}
+
+.layout-nav__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 60px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+}
+
+.layout-nav__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 32px;
+  cursor: pointer;
+}
+
+.layout-nav__logo {
+  font-size: 20px;
+  color: var(--c-terracotta);
+}
+
+.layout-nav__title {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-family: var(--font-serif);
+  color: var(--c-ink);
+}
+
+.layout-nav__tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.layout-nav__tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--c-ink-light);
+  font-weight: 400;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.layout-nav__tab:hover {
+  background: var(--c-paper);
+}
+
+.layout-nav__tab--active {
+  background: var(--c-sand);
+  color: var(--c-terracotta);
+  font-weight: 600;
+}
+
+.layout-nav__tab-icon {
+  font-size: 16px;
+}
+
+.layout-nav__indicator {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 3px;
+  border-radius: 100px;
+  background: var(--c-terracotta);
+}
+
+.layout-nav__user {
+  margin-left: auto;
+}
+
+.layout-nav__username {
+  font-size: 14px;
+  color: var(--c-ink);
+  font-weight: 500;
+}
+
+.layout-nav__login-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border: 1px solid rgba(240, 232, 221, 0.6);
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--c-ink-light);
+  transition: all 0.2s;
+}
+
+.layout-nav__login-btn:hover {
+  border-color: var(--c-terracotta);
+  color: var(--c-terracotta);
+}
+
+/* 加载状态 */
+.layout-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: 12px;
+}
+
+.layout-loading__spinner {
+  width: 32px;
+  height: 32px;
+  border: 2px dotted var(--c-paper-dark);
+  border-top-color: var(--c-terracotta);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.layout-loading__text {
+  font-size: 12px;
+  color: var(--c-ink-light);
+}

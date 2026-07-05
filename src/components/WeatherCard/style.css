@@ -1,0 +1,90 @@
+/* 天气卡片样式 */
+.weather-card {
+  max-width: 900px;
+  margin: 0 auto;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--c-white);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(240, 232, 221, 0.4);
+}
+
+.weather-card__current {
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.06) 0%, rgba(129, 140, 248, 0.04) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.weather-card__temp-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.weather-card__emoji {
+  font-size: 24px;
+}
+
+.weather-card__temp {
+  font-size: 20px;
+  font-weight: 700;
+  font-family: var(--font-serif);
+  color: var(--c-ink);
+}
+
+.weather-card__desc {
+  font-size: 13px;
+  color: var(--c-ink-light);
+}
+
+.weather-card__info {
+  text-align: right;
+}
+
+.weather-card__city {
+  font-size: 11px;
+  color: var(--c-ink-light);
+  margin-bottom: 4px;
+}
+
+.weather-card__humidity {
+  font-size: 11px;
+  color: var(--c-ink-light);
+}
+
+.weather-card__forecast {
+  padding: 12px 20px;
+  border-top: 1px solid rgba(240, 232, 221, 0.5);
+  display: flex;
+  gap: 12px;
+}
+
+.weather-card__forecast-item {
+  flex: 1;
+  text-align: center;
+}
+
+.weather-card__forecast-label {
+  font-size: 11px;
+  color: var(--c-ink-light);
+  margin-bottom: 4px;
+}
+
+.weather-card__forecast-emoji {
+  font-size: 18px;
+  margin-bottom: 2px;
+}
+
+.weather-card__forecast-temp {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--c-ink);
+}
+
+.weather-card__forecast-desc {
+  font-size: 10px;
+  color: var(--c-ink-light);
+}

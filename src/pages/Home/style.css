@@ -1,0 +1,347 @@
+/* 首页样式 */
+.home-page {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--c-paper);
+}
+
+/* Hero */
+.home-page__hero {
+  position: relative;
+  overflow: hidden;
+  padding: 56px 24px 64px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+}
+
+.home-page__hero-deco1 {
+  position: absolute;
+  top: -48px;
+  right: -48px;
+  width: 192px;
+  height: 192px;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.08);
+  filter: blur(40px);
+}
+
+.home-page__hero-deco2 {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.05);
+  filter: blur(30px);
+}
+
+.home-page__hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.home-page__hero-label {
+  margin-bottom: 16px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 5px;
+  font-family: var(--font-sans);
+  color: var(--c-gold-light);
+  opacity: 0.8;
+}
+
+.home-page__hero-title {
+  margin-bottom: 16px;
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.15;
+  font-family: var(--font-serif);
+  color: var(--c-cream);
+  text-shadow: 0 2px 12px rgba(0,0,0,0.12);
+}
+
+.home-page__hero-title span {
+  color: rgba(253, 246, 236, 0.85);
+}
+
+.home-page__hero-subtitle {
+  font-size: 13px;
+  font-weight: 300;
+  letter-spacing: 1px;
+  color: rgba(253, 246, 236, 0.55);
+}
+
+/* 表单 */
+.home-page__form-wrapper {
+  padding: 0 16px;
+  margin-top: -32px;
+  position: relative;
+  z-index: 10;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.home-page__form {
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--c-white);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid rgba(240, 232, 221, 0.4);
+}
+
+.home-page__form-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 20px 4px;
+  color: var(--c-ink);
+}
+
+.home-page__form-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--c-sand);
+  color: var(--c-terracotta);
+  font-size: 15px;
+}
+
+.home-page__form-header span:last-child {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.home-page__field {
+  position: relative;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid rgba(240, 232, 221, 0.6);
+  transition: border-color 0.2s;
+}
+
+.home-page__field:focus-within {
+  border-bottom-color: var(--c-terracotta);
+}
+
+.home-page__label {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  color: var(--c-ink-light);
+}
+
+.home-page__input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.home-page__input-icon {
+  color: var(--c-ink-light);
+  font-size: 18px;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.home-page__input {
+  flex: 1;
+  padding: 8px 0;
+  font-size: 14px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--c-ink);
+}
+
+.home-page__dropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  max-height: 240px;
+  overflow-y: auto;
+  border-top: 1px solid var(--c-paper-dark);
+  background: var(--c-white);
+  box-shadow: var(--shadow-lg);
+}
+
+.home-page__dropdown-item {
+  padding: 12px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+  color: var(--c-ink);
+}
+
+.home-page__dropdown-item:hover {
+  background: var(--c-paper);
+}
+
+.home-page__dropdown-item--active {
+  color: var(--c-terracotta);
+  font-weight: 600;
+  background: var(--c-sand);
+}
+
+.home-page__dropdown-empty {
+  padding: 24px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--c-ink-light);
+}
+
+.home-page__days {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.home-page__days-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  background: var(--c-paper);
+  color: var(--c-ink-light);
+  transition: all 0.2s;
+}
+
+.home-page__days-btn:hover {
+  background: var(--c-paper-dark);
+}
+
+.home-page__days-value {
+  width: 40px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-ink);
+}
+
+.home-page__submit {
+  padding: 16px 20px 20px;
+}
+
+.home-page__start-btn {
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(135deg, var(--c-terracotta) 0%, var(--c-terracotta-light) 100%);
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.2);
+  transition: all 0.2s;
+}
+
+.home-page__start-btn:hover {
+  filter: brightness(1.05);
+}
+
+/* 天气 */
+.home-page__weather {
+  padding: 16px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.home-page__weather-loading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: 16px;
+  background: var(--c-white);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(240, 232, 221, 0.4);
+}
+
+.home-page__weather-spinner {
+  width: 32px;
+  height: 32px;
+  border: 2px dotted var(--c-paper-dark);
+  border-top-color: var(--c-terracotta);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.home-page__weather-loading span {
+  font-size: 13px;
+  color: var(--c-ink-light);
+}
+
+/* 热门城市 */
+.home-page__hot {
+  padding: 32px 16px 40px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.home-page__hot-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.home-page__hot-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--c-paper-dark), transparent);
+}
+
+.home-page__hot-header h3 {
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  font-family: var(--font-serif);
+  color: var(--c-ink-light);
+}
+
+.home-page__hot-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.home-page__hot-btn {
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid rgba(240, 232, 221, 0.6);
+  cursor: pointer;
+  background: var(--c-white);
+  color: var(--c-ink-light);
+  box-shadow: var(--shadow-xs);
+  transition: all 0.2s;
+}
+
+.home-page__hot-btn:hover {
+  transform: translateY(-2px);
+}
+
+.home-page__hot-btn--active {
+  background: var(--c-terracotta);
+  color: #fff;
+  border-color: var(--c-terracotta);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
+}

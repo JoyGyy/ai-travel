@@ -4,20 +4,41 @@
  */
 
 import { Router } from 'express'
+import { createRateLimit } from '../middleware/rateLimit.js'
 import { verifyToken } from '../services/auth.js'
 import { createShare, getShare } from '../services/share.js'
-import { createRateLimit } from '../middleware/rateLimit.js'
 
 const router = Router()
 
+/** 分享内容持久化上限（字节）：100KB */
+const MAX_SHARE_BODY_SIZE = 100 * 1024
+
 /** 分享查询接口限流：每 IP 每分钟最多 30 次 */
-const shareGetLimiter = createRateLimit({ windowMs: 60_000, maxRequests: 30, message: '查询过于频繁，请稍后再试' })
+const shareGetLimiter = createRateLimit({ name: 'share:get', windowMs: 60_000, maxRequests: 30, message: '查询过于频繁，请稍后再试' })
 
 /** 分享创建接口限流：每用户每分钟最多 10 次 */
-const sharePostLimiter = createRateLimit({ windowMs: 60_000, maxRequests: 10, message: '创建分享过于频繁，请稍后再试' })
+const sharePostLimiter = createRateLimit({ name: 'share:post', windowMs: 60_000, maxRequests: 10, message: '创建分享过于频繁，请稍后再试' })
 
-/** 请求体大小上限（字节）：100KB */
-const MAX_BODY_SIZE = 100 * 1024
+function validateSharePayload(payload) {
+  const { city, days, budget, itinerary } = payload
+
+  if (Buffer.byteLength(JSON.stringify(payload), 'utf8') > MAX_SHARE_BODY_SIZE) {
+    return '请求数据过大'
+  }
+  if (!city || !days || !budget || !itinerary) {
+    return '缺少必要参数'
+  }
+  if (typeof city !== 'string' || city.length > 50) {
+    return '城市名称不合法'
+  }
+  if (!Number.isInteger(Number(days)) || Number(days) < 1 || Number(days) > 30) {
+    return '行程天数不合法'
+  }
+  if (String(budget).length > 50) {
+    return '预算参数不合法'
+  }
+  return ''
+}
 
 /** 创建分享 — 需要 JWT 认证 */
 router.post('/share', sharePostLimiter, (req, res) => {
@@ -31,17 +52,12 @@ router.post('/share', sharePostLimiter, (req, res) => {
     verifyToken(token) // 仅验证令牌有效性，无需使用返回值
 
     const { city, days, budget, itinerary } = req.body
-    if (!city || !days || !budget || !itinerary) {
-      return res.status(400).json({ success: false, message: '缺少必要参数' })
+    const message = validateSharePayload(req.body)
+    if (message) {
+      return res.status(400).json({ success: false, message })
     }
 
-    // 校验请求体大小，防止滥用
-    const bodySize = JSON.stringify(req.body).length
-    if (bodySize > MAX_BODY_SIZE) {
-      return res.status(413).json({ success: false, message: '请求数据过大' })
-    }
-
-    const shareId = createShare({ city, days, budget, itinerary })
+    const shareId = createShare({ city, days: Number(days), budget, itinerary })
     res.json({ success: true, shareId, shareUrl: `/share/${shareId}` })
   }
   catch (err) {

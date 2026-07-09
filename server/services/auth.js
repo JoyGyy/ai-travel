@@ -8,14 +8,8 @@ import path from 'node:path'
 import bcrypt from 'bcryptjs'
 import Database from 'better-sqlite3'
 import jwt from 'jsonwebtoken'
+import { env } from '../config/env.js'
 
-/** 懒加载 JWT_SECRET，确保 dotenv 已经加载 */
-function getJwtSecret() {
-  const secret = process.env.JWT_SECRET
-  if (!secret)
-    throw new Error('JWT_SECRET 环境变量未设置，请在 .env 中配置')
-  return secret
-}
 const SALT_ROUNDS = 10
 
 // 初始化 SQLite 数据库
@@ -58,7 +52,7 @@ async function register(username, password) {
 
   insertUser.run(id, username, hashed, createdAt)
 
-  const token = jwt.sign({ id, username }, getJwtSecret(), { expiresIn: '7d' })
+  const token = jwt.sign({ id, username }, env.JWT_SECRET, { expiresIn: '7d' })
   return { token, user: { id, username, createdAt } }
 }
 
@@ -80,7 +74,7 @@ async function login(username, password) {
   if (!match)
     throw new Error('用户名或密码错误')
 
-  const token = jwt.sign({ id: user.id, username: user.username }, getJwtSecret(), { expiresIn: '7d' })
+  const token = jwt.sign({ id: user.id, username: user.username }, env.JWT_SECRET, { expiresIn: '7d' })
   return { token, user: { id: user.id, username: user.username, createdAt: user.created_at } }
 }
 
@@ -90,7 +84,7 @@ async function login(username, password) {
  * @returns {{ id: string, username: string }}
  */
 function verifyToken(token) {
-  return jwt.verify(token, getJwtSecret())
+  return jwt.verify(token, env.JWT_SECRET)
 }
 
 export { login, register, verifyToken }

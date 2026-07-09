@@ -10,11 +10,14 @@ export function ChatAgentSteps({ steps, currentStep, isLoading }) {
   const [isExpanded, setIsExpanded] = useState(true)
 
   useEffect(() => {
-    if (!isLoading && steps.length > 0) {
+    if (isLoading) {
+      const timer = setTimeout(setIsExpanded, 0, true)
+      return () => clearTimeout(timer)
+    }
+    if (steps.length > 0) {
       const timer = setTimeout(setIsExpanded, 800, false)
       return () => clearTimeout(timer)
     }
-    if (isLoading) setIsExpanded(true)
   }, [isLoading, steps.length])
 
   if (steps.length === 0) return null
@@ -55,7 +58,7 @@ export function ChatAgentSteps({ steps, currentStep, isLoading }) {
       {isExpanded && (
         <div className="chat-agent-steps__list">
           {steps.map((step, index) => {
-            const status = getStepStatus(step)
+            const status = getStepStatus(step.step)
             const summary = getSummary(step)
             return (
               <div key={step.step} className="chat-agent-steps__item">

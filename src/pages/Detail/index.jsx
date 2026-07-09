@@ -32,12 +32,18 @@ export default function Detail() {
 
   const [activeKeys, setActiveKeys] = useState([])
   const [showLoading, setShowLoading] = useState(true)
+  const [errorMessage, setErrorMessage] = useState('')
   const { sendRequest, abort } = useSSE()
 
   // URL 参数变化时重置加载状态
   useLayoutEffect(() => {
-    if (city) setShowLoading(true)
-  }, [city, budget, days]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (city) {
+      // 同步切换到加载态并清空旧错误，避免新参数首帧展示旧状态
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setShowLoading(true)
+      setErrorMessage('')
+    }
+  }, [city, budget, days])
 
   useEffect(() => {
     if (!city) return
@@ -84,9 +90,14 @@ export default function Detail() {
         saveItineraryCache(city, budget, days, { itinerary: dailyItinerary, budgetBreakdown: bd, tips: t, weather: w, accommodation: a, nightlife: n })
         setTimeout(setShowLoading, 800, false)
       },
+      onError: (err) => {
+        setErrorMessage(err.message || '生成行程失败，请稍后重试')
+      },
       onFinally: () => {
         if (!dataReceived) setShowLoading(false)
       },
+    }).catch((err) => {
+      setErrorMessage(err.message || '生成行程失败，请稍后重试')
     })
 
     return () => abort()
@@ -124,7 +135,15 @@ export default function Detail() {
           </div>
         )}
 
-        {!showLoading && itinerary.length === 0 && (
+        {!showLoading && errorMessage && (
+          <div className="detail-page__empty">
+            <div className="detail-page__empty-icon"><EnvironmentOutlined /></div>
+            <p>{errorMessage}</p>
+            <button onClick={() => navigate('/chat')}>咨询 AI 生成行程</button>
+          </div>
+        )}
+
+        {!showLoading && !errorMessage && itinerary.length === 0 && (
           <div className="detail-page__empty">
             <div className="detail-page__empty-icon"><EnvironmentOutlined /></div>
             <p>暂无行程数据</p>
@@ -132,7 +151,7 @@ export default function Detail() {
           </div>
         )}
 
-        {!showLoading && itinerary.length > 0 && (
+        {!showLoading && !errorMessage && itinerary.length > 0 && (
           <>
             {/* 摘要卡片 */}
             <div className="detail-page__summary">

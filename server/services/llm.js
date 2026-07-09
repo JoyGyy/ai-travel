@@ -3,25 +3,35 @@
  * 支持 DeepSeek / SiliconFlow API，含 function calling
  */
 
-import process from 'node:process'
-
-const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || ''
-const DEEPSEEK_BASE_URL = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com/v1'
-const DEEPSEEK_MODEL = process.env.DEEPSEEK_MODEL || 'deepseek-chat'
-
-const SF_API_KEY = process.env.SILICONFLOW_API_KEY || ''
-const SF_BASE_URL = process.env.SILICONFLOW_BASE_URL || 'https://api.siliconflow.cn/v1'
-const SF_MODEL = process.env.SILICONFLOW_MODEL || 'Qwen/Qwen2.5-7B-Instruct'
-
-/** LLM 请求超时时间（毫秒） */
-const LLM_TIMEOUT = 60_000
+import { env, getLLMProviders } from '../config/env.js'
 
 function getLLMConfig() {
-  if (SF_API_KEY)
-    return { baseUrl: SF_BASE_URL, apiKey: SF_API_KEY, model: SF_MODEL }
-  if (DEEPSEEK_API_KEY)
-    return { baseUrl: DEEPSEEK_BASE_URL, apiKey: DEEPSEEK_API_KEY, model: DEEPSEEK_MODEL }
-  return null
+  return getLLMProviders()[0] || null
+}
+
+function createTimeout(ms) {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), ms)
+  return { controller, timeout }
+}
+
+async function fetchChatCompletion(config, body, signal) {
+  const response = await fetch(`${config.baseUrl}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${config.apiKey}`,
+    },
+    body: JSON.stringify({ model: config.model, ...body }),
+    signal,
+  })
+
+  if (!response.ok) {
+    const errText = await response.text().catch(() => '')
+    throw new Error(`LLM API 调用失败: ${response.status} ${errText}`)
+  }
+
+  return response
 }
 
 /**
@@ -32,30 +42,18 @@ async function callLLM(systemPrompt, userPrompt) {
   if (!config)
     return ''
 
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), LLM_TIMEOUT)
+  const { controller, timeout } = createTimeout(env.LLM_TIMEOUT_MS)
 
   try {
-    const response = await fetch(`${config.baseUrl}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${config.apiKey}`,
-      },
-      body: JSON.stringify({
-        model: config.model,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
-        temperature: 0.7,
-        max_tokens: 2048,
-      }),
-      signal: controller.signal,
-    })
+    const response = await fetchChatCompletion(config, {
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
+      temperature: 0.7,
+      max_tokens: 2048,
+    }, controller.signal)
 
-    if (!response.ok)
-      throw new Error(`LLM API 调用失败: ${response.status}`)
     const data = await response.json()
     return data.choices?.[0]?.message?.content || ''
   }
@@ -72,31 +70,18 @@ async function callLLMStream(systemPrompt, userPrompt, onChunk) {
   if (!config)
     return ''
 
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), LLM_TIMEOUT * 2) // 流式需要更长超时
+  const { controller, timeout } = createTimeout(env.LLM_STREAM_TIMEOUT_MS)
 
   try {
-    const response = await fetch(`${config.baseUrl}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${config.apiKey}`,
-      },
-      body: JSON.stringify({
-        model: config.model,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
-        temperature: 0.7,
-        max_tokens: 2048,
-        stream: true,
-      }),
-      signal: controller.signal,
-    })
-
-    if (!response.ok)
-      throw new Error(`LLM API 流式调用失败: ${response.status}`)
+    const response = await fetchChatCompletion(config, {
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
+      temperature: 0.7,
+      max_tokens: 2048,
+      stream: true,
+    }, controller.signal)
 
     let fullContent = ''
     const reader = response.body.getReader()
@@ -145,31 +130,16 @@ async function callLLMWithTools(messages, tools) {
   if (!config)
     return null
 
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), LLM_TIMEOUT)
+  const { controller, timeout } = createTimeout(env.LLM_TIMEOUT_MS)
 
   try {
-    const response = await fetch(`${config.baseUrl}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${config.apiKey}`,
-      },
-      body: JSON.stringify({
-        model: config.model,
-        messages,
-        tools,
-        tool_choice: 'auto',
-        temperature: 0.7,
-        max_tokens: 4096,
-      }),
-      signal: controller.signal,
-    })
-
-    if (!response.ok) {
-      const errText = await response.text().catch(() => '')
-      throw new Error(`LLM API 调用失败: ${response.status} ${errText}`)
-    }
+    const response = await fetchChatCompletion(config, {
+      messages,
+      tools,
+      tool_choice: 'auto',
+      temperature: 0.7,
+      max_tokens: 4096,
+    }, controller.signal)
 
     const data = await response.json()
     return data.choices?.[0]?.message || null

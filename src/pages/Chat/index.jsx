@@ -1,7 +1,7 @@
 /**
  * AI 对话页面
  */
-import { Modal, message } from 'antd'
+import { Modal } from 'antd'
 import { RobotOutlined, CompassOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useEffect, useRef, useState } from 'react'
 import { ChatAgentSteps } from '@/components/ChatAgentSteps'

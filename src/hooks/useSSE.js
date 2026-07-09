@@ -24,7 +24,9 @@ export function useSSE() {
         try {
           const errData = await res.json()
           if (errData.message) msg = errData.message
-        } catch {}
+        } catch {
+          // 错误响应不是 JSON 时，保留默认 HTTP 错误信息
+        }
         throw new Error(msg)
       }
 
@@ -64,7 +66,10 @@ export function useSSE() {
         }
       }
     } catch (e) {
-      if (e.name !== 'AbortError' && callbacks.onError) callbacks.onError(e)
+      if (e.name !== 'AbortError') {
+        callbacks.onError?.(e)
+        throw e
+      }
     } finally {
       callbacks.onFinally?.()
     }

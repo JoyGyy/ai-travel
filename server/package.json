@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "node index.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "check": "node --check index.js && node --check services/llm.js && node --check services/auth.js && node --check middleware/rateLimit.js && node --check routes/share.js && node --check config/env.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -12,6 +13,7 @@
     "cors": "^2.8.5",
     "dotenv": "^17.4.2",
     "express": "^4.18.0",
+    "helmet": "^8.2.0",
     "jsonwebtoken": "^9.0.3",
     "nanoid": "^5.1.11"
   }

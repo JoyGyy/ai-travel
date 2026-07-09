@@ -2,7 +2,7 @@
  * 路由配置文件
  * 定义应用的所有路由规则和页面组件
  */
-import React, { Suspense } from 'react'
+import React from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import Layout from '@/components/Layout'

@@ -5,7 +5,8 @@ import { EnvironmentOutlined } from '@ant-design/icons'
 import './style.css'
 
 export function RAGSource({ sources }) {
-  if (!sources || sources.length === 0) return null
+  if (!sources || sources.length === 0)
+    return null
 
   return (
     <div className="rag-source">

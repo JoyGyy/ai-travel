@@ -2,7 +2,7 @@
  * 行程详情页面
  * 展示 AI 生成的旅行行程
  */
-import { ArrowLeftOutlined, EnvironmentOutlined, CompassOutlined } from '@ant-design/icons'
+import { ArrowLeftOutlined, CompassOutlined, EnvironmentOutlined } from '@ant-design/icons'
 import { useEffect, useLayoutEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { AccommodationCard } from '@/components/AccommodationCard'
@@ -24,10 +24,22 @@ export default function Detail() {
   const days = Number(searchParams.get('days')) || 1
 
   const {
-    itinerary, budgetBreakdown, tips, weather, accommodation, nightlife,
-    agentSteps, currentAgentStep,
-    setItinerary, setBudgetBreakdown, setTips, setWeather,
-    setAccommodation, setNightlife, addAgentStep, setCurrentAgentStep,
+    itinerary,
+    budgetBreakdown,
+    tips,
+    weather,
+    accommodation,
+    nightlife,
+    agentSteps,
+    currentAgentStep,
+    setItinerary,
+    setBudgetBreakdown,
+    setTips,
+    setWeather,
+    setAccommodation,
+    setNightlife,
+    addAgentStep,
+    setCurrentAgentStep,
   } = useItineraryStore()
 
   const [activeKeys, setActiveKeys] = useState([])
@@ -46,7 +58,8 @@ export default function Detail() {
   }, [city, budget, days])
 
   useEffect(() => {
-    if (!city) return
+    if (!city)
+      return
 
     const cached = loadItineraryCache(city, budget, days)
     if (cached) {
@@ -71,7 +84,8 @@ export default function Detail() {
     sendRequest('/api/travel/recommend', { city, budget, days }, {
       onStep: (step) => {
         setCurrentAgentStep(step.step)
-        if (step.status === 'complete') addAgentStep(step)
+        if (step.status === 'complete')
+          addAgentStep(step)
       },
       onComplete: (data) => {
         dataReceived = true
@@ -94,7 +108,8 @@ export default function Detail() {
         setErrorMessage(err.message || '生成行程失败，请稍后重试')
       },
       onFinally: () => {
-        if (!dataReceived) setShowLoading(false)
+        if (!dataReceived)
+          setShowLoading(false)
       },
     }).catch((err) => {
       setErrorMessage(err.message || '生成行程失败，请稍后重试')
@@ -112,7 +127,12 @@ export default function Detail() {
         </button>
         <p className="detail-page__label">ITINERARY</p>
         <h1 className="detail-page__title">{city}</h1>
-        <p className="detail-page__subtitle">{days} 天行程 · 预算 ¥{budget}</p>
+        <p className="detail-page__subtitle">
+          {days}
+          {' '}
+          天行程 · 预算 ¥
+          {budget}
+        </p>
       </div>
 
       <div className="detail-page__content">
@@ -162,19 +182,28 @@ export default function Detail() {
               <div className="detail-page__summary-divider" />
               <div className="detail-page__summary-item">
                 <span className="detail-page__summary-label">天数</span>
-                <span className="detail-page__summary-value">{days}天</span>
+                <span className="detail-page__summary-value">
+                  {days}
+                  天
+                </span>
               </div>
               <div className="detail-page__summary-divider" />
               <div className="detail-page__summary-item">
                 <span className="detail-page__summary-label">预算</span>
-                <span className="detail-page__summary-value detail-page__summary-value--accent">¥{budget}</span>
+                <span className="detail-page__summary-value detail-page__summary-value--accent">
+                  ¥
+                  {budget}
+                </span>
               </div>
             </div>
 
             {/* 天气 */}
             {weather && (
               <div className="detail-page__section">
-                <div className="detail-page__section-title"><div className="detail-page__dot" />实时天气</div>
+                <div className="detail-page__section-title">
+                  <div className="detail-page__dot" />
+                  实时天气
+                </div>
                 <WeatherCard weather={weather} />
               </div>
             )}
@@ -188,7 +217,10 @@ export default function Detail() {
 
             {/* 每日行程 */}
             <div className="detail-page__section">
-              <div className="detail-page__section-title"><div className="detail-page__dot" />每日行程</div>
+              <div className="detail-page__section-title">
+                <div className="detail-page__dot" />
+                每日行程
+              </div>
               <div className="detail-page__itinerary">
                 {itinerary.map(item => (
                   <div key={item.day} className="detail-page__day">
@@ -217,7 +249,10 @@ export default function Detail() {
             {/* 温馨提示 */}
             {tips.length > 0 && (
               <div className="detail-page__section">
-                <div className="detail-page__section-title"><div className="detail-page__dot" />温馨提示</div>
+                <div className="detail-page__section-title">
+                  <div className="detail-page__dot" />
+                  温馨提示
+                </div>
                 <div className="detail-page__tips">
                   {tips.map((tip, i) => (
                     <div key={i} className="detail-page__tip">

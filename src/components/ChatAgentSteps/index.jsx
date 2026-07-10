@@ -20,25 +20,33 @@ export function ChatAgentSteps({ steps, currentStep, isLoading }) {
     }
   }, [isLoading, steps.length])
 
-  if (steps.length === 0) return null
+  if (steps.length === 0)
+    return null
 
   const stepMap = new Map(steps.map(s => [s.step, s]))
   const completedCount = steps.filter(s => s.status === 'complete').length
 
   function getStepStatus(stepNum) {
     const step = stepMap.get(stepNum)
-    if (step?.status === 'complete') return 'done'
-    if (currentStep === stepNum) return 'running'
+    if (step?.status === 'complete')
+      return 'done'
+    if (currentStep === stepNum)
+      return 'running'
     return 'pending'
   }
 
   function getSummary(step) {
-    if (!step.data) return ''
+    if (!step.data)
+      return ''
     const d = step.data
-    if (d.city && d.attractionCount) return `${d.city} · ${d.attractionCount} 个景点`
-    if (d.cityCount) return `${d.cityCount} 个城市`
-    if (d.city_a && d.city_b) return `${d.city_a} vs ${d.city_b}`
-    if (d.city && d.tipCount) return `${d.city} · ${d.tipCount} 条贴士`
+    if (d.city && d.attractionCount)
+      return `${d.city} · ${d.attractionCount} 个景点`
+    if (d.cityCount)
+      return `${d.cityCount} 个城市`
+    if (d.city_a && d.city_b)
+      return `${d.city_a} vs ${d.city_b}`
+    if (d.city && d.tipCount)
+      return `${d.city} · ${d.tipCount} 条贴士`
     return ''
   }
 
@@ -50,7 +58,13 @@ export function ChatAgentSteps({ steps, currentStep, isLoading }) {
             {isLoading ? <div className="chat-agent-steps__dot" /> : <CheckCircleOutlined />}
           </div>
           <span className="chat-agent-steps__label">Agent 思考过程</span>
-          <span className="chat-agent-steps__count">({completedCount}/{steps.length})</span>
+          <span className="chat-agent-steps__count">
+            (
+            {completedCount}
+            /
+            {steps.length}
+            )
+          </span>
         </div>
         <span className={`chat-agent-steps__arrow ${isExpanded ? 'chat-agent-steps__arrow--expanded' : ''}`}>▶</span>
       </div>

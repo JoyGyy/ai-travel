@@ -1,8 +1,8 @@
+import { ArrowLeftOutlined } from '@ant-design/icons'
 /**
  * 登录注册页面
  */
 import { message } from 'antd'
-import { ArrowLeftOutlined } from '@ant-design/icons'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/stores/auth'
@@ -23,22 +23,28 @@ export default function Login() {
   }
 
   async function handleSubmit() {
-    if (!username.trim()) return message.warning('请输入用户名')
-    if (!password) return message.warning('请输入密码')
-    if (tab === 'register' && password.length < 6) return message.warning('密码长度至少 6 位')
+    if (!username.trim())
+      return message.warning('请输入用户名')
+    if (!password)
+      return message.warning('请输入密码')
+    if (tab === 'register' && password.length < 6)
+      return message.warning('密码长度至少 6 位')
 
     setLoading(true)
     try {
       if (tab === 'login') {
         await login(username.trim(), password)
-      } else {
+      }
+      else {
         await register(username.trim(), password)
       }
       message.success(tab === 'login' ? '登录成功' : '注册成功')
       navigate('/')
-    } catch (err) {
+    }
+    catch (err) {
       message.error(err.message || '操作失败，请重试')
-    } finally {
+    }
+    finally {
       setLoading(false)
     }
   }

@@ -13,7 +13,7 @@ export default function App() {
         token: {
           colorPrimary: '#6366f1',
           borderRadius: 8,
-          fontFamily: "'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif",
+          fontFamily: '\'Noto Sans SC\', -apple-system, BlinkMacSystemFont, sans-serif',
         },
       }}
     >

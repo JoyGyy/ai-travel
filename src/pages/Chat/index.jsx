@@ -1,8 +1,8 @@
+import { CompassOutlined, DeleteOutlined, RobotOutlined } from '@ant-design/icons'
 /**
  * AI 对话页面
  */
 import { Modal } from 'antd'
-import { RobotOutlined, CompassOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useEffect, useRef, useState } from 'react'
 import { ChatAgentSteps } from '@/components/ChatAgentSteps'
 import { ChatBubble } from '@/components/ChatBubble'
@@ -20,9 +20,15 @@ const quickQuestions = [
 
 export default function Chat() {
   const {
-    messages, isLoading, currentAgentStep,
-    addMessage, updateLastMessage, updateLastMessageSteps,
-    clearMessages, setLoading, setCurrentAgentStep,
+    messages,
+    isLoading,
+    currentAgentStep,
+    addMessage,
+    updateLastMessage,
+    updateLastMessageSteps,
+    clearMessages,
+    setLoading,
+    setCurrentAgentStep,
   } = useChatStore()
   const [inputMsg, setInputMsg] = useState('')
   const [ragSources, setRagSources] = useState([])
@@ -43,12 +49,14 @@ export default function Chat() {
 
   async function clearChat() {
     const confirmed = await Modal.confirm({ title: '确定要清空所有对话记录吗？', okText: '确定', cancelText: '取消' })
-    if (confirmed) clearMessages()
+    if (confirmed)
+      clearMessages()
   }
 
   async function sendMessage(msg) {
     const text = msg || inputMsg.trim()
-    if (!text) return
+    if (!text)
+      return
 
     addMessage({ role: 'user', content: text })
     setInputMsg('')
@@ -67,14 +75,17 @@ export default function Chat() {
           setCurrentAgentStep(data.step)
           updateLastMessageSteps(data)
         },
-        onNotice: (msg) => setNotice(msg),
+        onNotice: msg => setNotice(msg),
         onComplete: (data) => {
-          if (data?.sources?.length) setRagSources(data.sources)
+          if (data?.sources?.length)
+            setRagSources(data.sources)
         },
       })
-    } catch {
+    }
+    catch {
       updateLastMessage('请求失败，请稍后重试')
-    } finally {
+    }
+    finally {
       setLoading(false)
       setCurrentAgentStep(0)
     }
@@ -129,7 +140,9 @@ export default function Chat() {
                 <RobotOutlined />
               </div>
               <div className="chat-page__typing-dots">
-                <span /><span /><span />
+                <span />
+                <span />
+                <span />
               </div>
             </div>
           </>

@@ -25,7 +25,8 @@ export function useWeather() {
 
     fetch(`/api/weather?city=${encodeURIComponent(city)}`, { signal: controller.signal })
       .then(async (res) => {
-        if (!res.ok) throw new Error('查询失败')
+        if (!res.ok)
+          throw new Error('查询失败')
         return res.json()
       })
       .then((data) => {

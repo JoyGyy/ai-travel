@@ -4,10 +4,10 @@
  */
 
 import { Router } from 'express'
-import { initSSE, sendSSE, sendError } from '../utils/sse.js'
-import { retrieve, getAllCities } from '../services/rag.js'
-import { callLLMWithTools, getLLMConfig } from '../services/llm.js'
 import attractionsDB from '../knowledge/attractions.json' with { type: 'json' }
+import { callLLMWithTools, getLLMConfig } from '../services/llm.js'
+import { getAllCities, retrieve } from '../services/rag.js'
+import { initSSE, sendError, sendSSE } from '../utils/sse.js'
 
 const router = Router()
 
@@ -137,7 +137,10 @@ function executeSearchTool(args) {
           return JSON.stringify({
             city: cityData.city,
             attractions: cityResult.attractions.slice(0, 8).map(a => ({
-              name: a.name, description: a.description, ticket: a.ticket, duration: a.duration,
+              name: a.name,
+              description: a.description,
+              ticket: a.ticket,
+              duration: a.duration,
             })),
             food: cityResult.food,
             transport: cityResult.transport,
@@ -152,7 +155,10 @@ function executeSearchTool(args) {
   return JSON.stringify({
     city: result.city,
     attractions: result.attractions.slice(0, 8).map(a => ({
-      name: a.name, description: a.description, ticket: a.ticket, duration: a.duration,
+      name: a.name,
+      description: a.description,
+      ticket: a.ticket,
+      duration: a.duration,
     })),
     food: result.food,
     transport: result.transport,
@@ -177,8 +183,10 @@ function executeCompareCities(args) {
   if (!dataA && !dataB) {
     return JSON.stringify({ error: `未找到"${city_a}"和"${city_b}"的旅行信息` })
   }
-  if (!dataA) return JSON.stringify({ error: `未找到"${city_a}"的旅行信息` })
-  if (!dataB) return JSON.stringify({ error: `未找到"${city_b}"的旅行信息` })
+  if (!dataA)
+    return JSON.stringify({ error: `未找到"${city_a}"的旅行信息` })
+  if (!dataB)
+    return JSON.stringify({ error: `未找到"${city_b}"的旅行信息` })
 
   return JSON.stringify({
     city_a: {
@@ -208,14 +216,18 @@ function executeGetTravelTips(args) {
   }
 
   const tips = []
-  if (result.bestSeason) tips.push(`最佳旅行季节：${result.bestSeason}`)
-  if (result.transport) tips.push(`交通：${result.transport}`)
-  if (result.food.length > 0) tips.push(`必吃美食：${result.food.slice(0, 5).join('、')}`)
+  if (result.bestSeason)
+    tips.push(`最佳旅行季节：${result.bestSeason}`)
+  if (result.transport)
+    tips.push(`交通：${result.transport}`)
+  if (result.food.length > 0)
+    tips.push(`必吃美食：${result.food.slice(0, 5).join('、')}`)
 
   const cityData = attractionsDB.find(c => c.city === city)
   if (cityData) {
     for (const a of cityData.attractions.slice(0, 5)) {
-      if (a.tips) tips.push(`${a.name}：${a.tips}`)
+      if (a.tips)
+        tips.push(`${a.name}：${a.tips}`)
     }
   }
 
@@ -257,7 +269,8 @@ function buildMessagesWithMemory(historyMessages, currentMessage) {
   for (const msg of oldMessages) {
     if (msg.role === 'user' && msg.content) {
       for (const city of cities) {
-        if (msg.content.includes(city)) mentionedCities.add(city)
+        if (msg.content.includes(city))
+          mentionedCities.add(city)
       }
     }
   }
@@ -309,7 +322,8 @@ router.post('/chat', async (req, res) => {
         for (let round = 0; round < 5; round++) {
           const assistantMsg = await callLLMWithTools(messages, CHAT_TOOLS)
 
-          if (!assistantMsg) break
+          if (!assistantMsg)
+            break
 
           messages.push(assistantMsg)
 
@@ -322,7 +336,8 @@ router.post('/chat', async (req, res) => {
           for (const toolCall of assistantMsg.tool_calls) {
             const toolName = toolCall.function.name
             let args = {}
-            try { args = JSON.parse(toolCall.function.arguments) } catch { /* 空 */ }
+            try { args = JSON.parse(toolCall.function.arguments) }
+            catch { /* 空 */ }
 
             stepCounter++
             const stepName = CHAT_STEP_MAP[toolName] || toolName
@@ -339,14 +354,18 @@ router.post('/chat', async (req, res) => {
               if (parsed.attractions) {
                 ragSources = parsed.attractions.map(a => a.name)
                 summary = { city: parsed.city, attractionCount: parsed.attractions.length }
-              } else if (parsed.cities) {
+              }
+              else if (parsed.cities) {
                 summary = { cityCount: parsed.total }
-              } else if (parsed.city_a) {
+              }
+              else if (parsed.city_a) {
                 summary = { city_a: parsed.city_a.city, city_b: parsed.city_b.city }
-              } else if (parsed.tips) {
+              }
+              else if (parsed.tips) {
                 summary = { city: parsed.city, tipCount: parsed.tips.length }
               }
-            } catch { /* 忽略 */ }
+            }
+            catch { /* 忽略 */ }
 
             // 发送 step complete 事件
             sendSSE(res, { type: 'step', step: stepCounter, name: stepName, status: 'complete', data: summary })
@@ -448,12 +467,12 @@ function getMockResponse(message, ragResult) {
     const city = ragResult.city || '该城市'
     const isFood = /美食|吃|餐厅|小吃/.test(message)
     const isTransport = /交通|怎么去|怎么走|机场|高铁|火车站/.test(message)
-    const isPlan = /天|日|行程|预算|规划|攻略|玩/.test(message) || (/去/.test(message) && !/^去[^\s]{2,4}$/.test(message.trim()))
+    const isPlan = /[天日玩]|行程|预算|规划|攻略/.test(message) || (/去/.test(message) && !/^去\S{2,4}$/.test(message.trim()))
     const allCitySpots = attractionsDB.find(c => c.city === city)?.attractions || []
     const isSpecificSpot = allCitySpots.find(a => message.includes(a.name))
 
     if (isSpecificSpot) {
-      return `**${isSpecificSpot.name}**\n\n${isSpecificSpot.description || ''}\n\n门票：${isSpecificSpot.ticket ? isSpecificSpot.ticket + '元' : '免费'}\n开放时间：${isSpecificSpot.openTime || '全天'}\n建议游玩时长：${isSpecificSpot.duration || '2-3小时'}\n交通：${isSpecificSpot.transportation || '公共交通可达'}\n\n建议提前规划好行程，避免高峰期。`
+      return `**${isSpecificSpot.name}**\n\n${isSpecificSpot.description || ''}\n\n门票：${isSpecificSpot.ticket ? `${isSpecificSpot.ticket}元` : '免费'}\n开放时间：${isSpecificSpot.openTime || '全天'}\n建议游玩时长：${isSpecificSpot.duration || '2-3小时'}\n交通：${isSpecificSpot.transportation || '公共交通可达'}\n\n建议提前规划好行程，避免高峰期。`
     }
     if (isFood) {
       return `${city}特色美食推荐：\n\n${food.map((f, i) => `${i + 1}. ${f}`).join('\n')}\n\n建议去当地人常去的老店品尝，味道更正宗。`
@@ -463,7 +482,7 @@ function getMockResponse(message, ragResult) {
     }
     if (isPlan) {
       const days = message.match(/(\d)\s*[天日]/)?.[1]
-      const budget = message.match(/(\d+)\s*(元|块|¥|￥)/)?.[1]
+      const budget = message.match(/(\d+)\s*([元块¥￥])/)?.[1]
       const dayText = days ? `${days}天` : '3天'
       const spotList = attractions.slice(0, days ? Number(days) * 2 : 6)
       return `为您规划${city}${dayText}行程：\n\n${spotList.map((a, i) => `**第${Math.floor(i / 2) + 1}${i % 2 === 0 ? '上午' : '下午'}** — ${a.name}（${a.duration || '2-3小时'}）`).join('\n')}\n\n推荐美食：${food.slice(0, 3).join('、')}${budget ? `\n预算参考：${budget}元足够${dayText}深度游` : ''}\n最佳季节：${bestSeason || '春秋两季'}。\n\n想要更详细的行程安排，可以使用首页的「行程规划」功能！`

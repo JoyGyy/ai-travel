@@ -14,7 +14,8 @@ export default function Weather() {
 
   const filteredCities = useMemo(() => {
     const keyword = city.trim()
-    if (!keyword) return allCities
+    if (!keyword)
+      return allCities
     return allCities.filter(c => c.includes(keyword))
   }, [city])
 

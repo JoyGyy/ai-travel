@@ -8,15 +8,17 @@
  * @param {string} city
  * @param {number} budget
  * @param {number} days
- * @returns {object|null}
+ * @return {object|null}
  */
 export function loadItineraryCache(city, budget, days) {
   const key = `detail_${city}_${budget}_${days}`
   const raw = localStorage.getItem(key)
-  if (!raw) return null
+  if (!raw)
+    return null
   try {
     return JSON.parse(raw)
-  } catch {
+  }
+  catch {
     return null
   }
 }

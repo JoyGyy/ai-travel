@@ -18,14 +18,16 @@ setInterval(() => {
   const now = Date.now()
   for (const [key, timestamps] of requestLog) {
     const valid = timestamps.filter(t => now - t < MAX_RECORD_AGE)
-    if (valid.length === 0) requestLog.delete(key)
+    if (valid.length === 0)
+      requestLog.delete(key)
     else requestLog.set(key, valid)
   }
 }, CLEANUP_INTERVAL)
 
 function getVerifiedUserId(req) {
   const authHeader = req.headers.authorization
-  if (!authHeader?.startsWith('Bearer ')) return null
+  if (!authHeader?.startsWith('Bearer '))
+    return null
 
   try {
     return verifyToken(authHeader.slice(7))?.id || null

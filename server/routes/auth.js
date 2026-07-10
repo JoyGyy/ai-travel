@@ -4,7 +4,7 @@
  */
 
 import { Router } from 'express'
-import { register, login, verifyToken } from '../services/auth.js'
+import { login, register, verifyToken } from '../services/auth.js'
 
 const router = Router()
 

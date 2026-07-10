@@ -4,7 +4,8 @@
 import './style.css'
 
 export function AccommodationCard({ accommodation, nightlife }) {
-  if (!accommodation.length && !nightlife.length) return null
+  if (!accommodation.length && !nightlife.length)
+    return null
 
   return (
     <div className="accommodation-card">

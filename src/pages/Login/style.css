@@ -55,7 +55,7 @@
   font-weight: 700;
   font-family: var(--font-serif);
   color: var(--c-cream);
-  text-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .login-page__subtitle {

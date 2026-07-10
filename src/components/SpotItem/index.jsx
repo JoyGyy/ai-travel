@@ -29,11 +29,15 @@ export function SpotItem({ period, data }) {
         <p className="spot-item__desc">{data.description}</p>
         <div className="spot-item__tags">
           <span className="spot-item__tag">
-            <ClockCircleOutlined /> {data.duration}
+            <ClockCircleOutlined />
+            {' '}
+            {data.duration}
           </span>
           <span className="spot-item__tag spot-item__tag--price">{data.ticket}</span>
           <span className="spot-item__tag">
-            <CompassOutlined /> {data.transportation}
+            <CompassOutlined />
+            {' '}
+            {data.transportation}
           </span>
         </div>
       </div>

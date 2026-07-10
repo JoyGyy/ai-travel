@@ -23,5 +23,11 @@ dist-ssr
 *.sln
 *.sw?
 .env
+
+# 本地 AI 助手配置，不提交到仓库
+CLAUDE.md
+AGENTS.md
+.claude/
+
 server/data/*
 !server/data/shared_itineraries.json

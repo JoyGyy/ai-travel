@@ -1,9 +1,9 @@
+import { CalendarOutlined, DollarOutlined, EnvironmentOutlined, TagOutlined } from '@ant-design/icons'
 /**
  * 首页组件
  * 应用的主入口页面，提供行程规划表单、热门城市推荐和实时天气
  */
 import { message } from 'antd'
-import { TagOutlined, EnvironmentOutlined, DollarOutlined, CalendarOutlined } from '@ant-design/icons'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { HomeWeather } from '@/components/HomeWeather'
@@ -25,7 +25,8 @@ export default function Home() {
 
   const filteredCities = useMemo(() => {
     const keyword = city.trim()
-    if (!keyword) return allCities
+    if (!keyword)
+      return allCities
     return allCities.filter(c => c.includes(keyword))
   }, [city])
 
@@ -36,24 +37,32 @@ export default function Home() {
   }
 
   useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current)
+    if (debounceRef.current)
+      clearTimeout(debounceRef.current)
     const trimmed = city.trim()
-    if (!trimmed || trimmed.length < 2) return
+    if (!trimmed || trimmed.length < 2)
+      return
     debounceRef.current = setTimeout(() => {
-      if (allCities.includes(trimmed)) fetchWeather(trimmed)
+      if (allCities.includes(trimmed))
+        fetchWeather(trimmed)
     }, 800)
     return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current)
+      if (debounceRef.current)
+        clearTimeout(debounceRef.current)
     }
   }, [city, fetchWeather])
 
   function onStart() {
     if (!hasHydrated) { message.loading('加载中，请稍候…'); return }
-    if (!user) return navigate('/login')
-    if (!city) return message.warning('请选择目的地')
-    if (!budget) return message.warning('请输入预算')
+    if (!user)
+      return navigate('/login')
+    if (!city)
+      return message.warning('请选择目的地')
+    if (!budget)
+      return message.warning('请输入预算')
     const budgetNum = Number(budget)
-    if (Number.isNaN(budgetNum) || budgetNum <= 0) return message.warning('请输入有效的预算金额')
+    if (Number.isNaN(budgetNum) || budgetNum <= 0)
+      return message.warning('请输入有效的预算金额')
     navigate(`/detail?city=${encodeURIComponent(city)}&budget=${budgetNum}&days=${days}`)
   }
 
@@ -66,7 +75,9 @@ export default function Home() {
         <div className="home-page__hero-content">
           <p className="home-page__hero-label">AI-POWERED TRAVEL</p>
           <h1 className="home-page__hero-title">
-            智能旅游<br /><span>助手</span>
+            智能旅游
+            <br />
+            <span>助手</span>
           </h1>
           <p className="home-page__hero-subtitle">让 AI 为你规划一段完美旅程</p>
         </div>
@@ -151,11 +162,11 @@ export default function Home() {
           {weather
             ? <HomeWeather weather={weather} loading={weatherLoading} />
             : (
-              <div className="home-page__weather-loading">
-                <div className="home-page__weather-spinner" />
-                <span>正在查询天气...</span>
-              </div>
-            )}
+                <div className="home-page__weather-loading">
+                  <div className="home-page__weather-spinner" />
+                  <span>正在查询天气...</span>
+                </div>
+              )}
         </div>
       )}
 

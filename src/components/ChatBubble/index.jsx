@@ -17,11 +17,13 @@ export function ChatBubble({ role, content }) {
         </div>
       )}
       <div className={`chat-bubble__content ${isUser ? 'chat-bubble__content--user' : 'chat-bubble__content--ai'}`}>
-        {isUser ? content : (
-          <div className="markdown-body">
-            <Markdown>{content}</Markdown>
-          </div>
-        )}
+        {isUser
+          ? content
+          : (
+              <div className="markdown-body">
+                <Markdown>{content}</Markdown>
+              </div>
+            )}
       </div>
     </div>
   )

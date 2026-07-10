@@ -2,24 +2,37 @@
 
 :root {
   /* 主色调 - indigo 色系 */
-  --c-terracotta: #6366f1;       /* 主色 indigo-500 */
-  --c-terracotta-light: #818cf8; /* 主色浅 indigo-400 */
+  --c-terracotta: #6366f1;
+  /* 主色 indigo-500 */
+  --c-terracotta-light: #818cf8;
+  /* 主色浅 indigo-400 */
   /* 背景色 - slate 色系 */
-  --c-sand: #f1f5f9;             /* 浅灰背景 slate-100 */
-  --c-cream: #f8fafc;            /* 最浅背景 slate-50 */
+  --c-sand: #f1f5f9;
+  /* 浅灰背景 slate-100 */
+  --c-cream: #f8fafc;
+  /* 最浅背景 slate-50 */
   /* 深色 - slate 色系 */
-  --c-forest: #1e293b;           /* 深色文字 slate-800 */
-  --c-forest-light: #334155;     /* 次深色 slate-700 */
+  --c-forest: #1e293b;
+  /* 深色文字 slate-800 */
+  --c-forest-light: #334155;
+  /* 次深色 slate-700 */
   /* 辅助色 - slate 色系 */
-  --c-gold: #94a3b8;             /* 中性灰 slate-400 */
-  --c-gold-light: #cbd5e1;       /* 浅灰 slate-300 */
+  --c-gold: #94a3b8;
+  /* 中性灰 slate-400 */
+  --c-gold-light: #cbd5e1;
+  /* 浅灰 slate-300 */
   /* 文字色 */
-  --c-ink: #0f172a;              /* 主文字 slate-900 */
-  --c-ink-light: #64748b;        /* 次文字 slate-500 */
+  --c-ink: #0f172a;
+  /* 主文字 slate-900 */
+  --c-ink-light: #64748b;
+  /* 次文字 slate-500 */
   /* 纸张/卡片色 */
-  --c-paper: #f8fafc;            /* 页面背景 */
-  --c-paper-dark: #e2e8f0;       /* 分割线/边框 */
-  --c-white: #ffffff;            /* 卡片背景 */
+  --c-paper: #f8fafc;
+  /* 页面背景 */
+  --c-paper-dark: #e2e8f0;
+  /* 分割线/边框 */
+  --c-white: #ffffff;
+  /* 卡片背景 */
 
   --font-serif: 'Noto Serif SC', 'Songti SC', Georgia, serif;
   --font-sans: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -46,10 +59,23 @@ body {
   color: var(--c-ink);
 }
 
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(15, 23, 42, 0.1); border-radius: 100px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(15, 23, 42, 0.18); }
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.1);
+  border-radius: 100px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 23, 42, 0.18);
+}
 
 ::selection {
   background: rgba(99, 102, 241, 0.12);
@@ -58,32 +84,72 @@ body {
 
 /* 动画 */
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.2); }
-  50% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+  }
 }
 
 @keyframes dotBounce {
-  0%, 80%, 100% { transform: scale(0.5); opacity: 0.3; }
-  40% { transform: scale(1); opacity: 1; }
+
+  0%,
+  80%,
+  100% {
+    transform: scale(0.5);
+    opacity: 0.3;
+  }
+
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 /* Markdown 样式 */
@@ -98,9 +164,17 @@ body {
   line-height: 1.4;
 }
 
-.markdown-body h1 { font-size: 1.25rem; }
-.markdown-body h2 { font-size: 1.1rem; }
-.markdown-body h3 { font-size: 1rem; }
+.markdown-body h1 {
+  font-size: 1.25rem;
+}
+
+.markdown-body h2 {
+  font-size: 1.1rem;
+}
+
+.markdown-body h3 {
+  font-size: 1rem;
+}
 
 .markdown-body p {
   margin-bottom: 0.5em;
@@ -151,7 +225,9 @@ body {
   border-bottom: 1px solid rgba(226, 232, 240, 0.6);
 }
 
-.markdown-body tr:last-child td { border-bottom: none; }
+.markdown-body tr:last-child td {
+  border-bottom: none;
+}
 
 .markdown-body blockquote {
   border-left: 3px solid #818cf8;

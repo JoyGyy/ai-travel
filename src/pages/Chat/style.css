@@ -47,7 +47,7 @@
   font-weight: 700;
   font-family: var(--font-serif);
   color: var(--c-cream);
-  text-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .chat-page__hero-subtitle {
@@ -137,8 +137,13 @@
   animation: dotBounce 1.2s infinite;
 }
 
-.chat-page__typing-dots span:nth-child(2) { animation-delay: 0.15s; }
-.chat-page__typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+.chat-page__typing-dots span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.chat-page__typing-dots span:nth-child(3) {
+  animation-delay: 0.3s;
+}
 
 /* 空状态 */
 .chat-page__empty {

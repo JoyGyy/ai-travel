@@ -20,7 +20,8 @@ export const useAuthStore = create(
           body: JSON.stringify({ username, password }),
         })
         const data = await res.json()
-        if (!data.success) throw new Error(data.message)
+        if (!data.success)
+          throw new Error(data.message)
         set({ user: data.user, token: data.token })
       },
 
@@ -31,7 +32,8 @@ export const useAuthStore = create(
           body: JSON.stringify({ username, password }),
         })
         const data = await res.json()
-        if (!data.success) throw new Error(data.message)
+        if (!data.success)
+          throw new Error(data.message)
         set({ user: data.user, token: data.token })
       },
 

@@ -3,14 +3,14 @@
  * 展示 AI Agent 的多步骤推理过程
  */
 import {
+  CheckCircleOutlined,
+  DollarOutlined,
+  EnvironmentOutlined,
+  FlagOutlined,
+  InfoCircleOutlined,
+  RightOutlined,
   SearchOutlined,
   UnorderedListOutlined,
-  InfoCircleOutlined,
-  EnvironmentOutlined,
-  DollarOutlined,
-  FlagOutlined,
-  CheckCircleOutlined,
-  RightOutlined,
 } from '@ant-design/icons'
 import './style.css'
 
@@ -29,14 +29,17 @@ export function AgentSteps({ steps, currentStep }) {
 
   function getStepStatus(stepNum) {
     const step = stepMap.get(stepNum)
-    if (step?.status === 'complete') return 'done'
-    if (currentStep === stepNum) return 'running'
+    if (step?.status === 'complete')
+      return 'done'
+    if (currentStep === stepNum)
+      return 'running'
     return 'pending'
   }
 
   function getResultSummary(stepNum) {
     const step = stepMap.get(stepNum)
-    if (!step?.data) return ''
+    if (!step?.data)
+      return ''
     const d = step.data
     switch (stepNum) {
       case 1: return `${d.city} · ${d.days}天 · ¥${d.budget}`

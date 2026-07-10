@@ -35,7 +35,10 @@ export function BudgetTable({ data }) {
           <div key={key} className="budget-table__row">
             <span className="budget-table__label">{labels[key]}</span>
             <span className="budget-table__divider" />
-            <span className="budget-table__value">¥{data[key] || 0}</span>
+            <span className="budget-table__value">
+              ¥
+              {data[key] || 0}
+            </span>
           </div>
         ))}
         <div className="budget-table__bars">
@@ -53,7 +56,10 @@ export function BudgetTable({ data }) {
         </div>
         <div className="budget-table__total">
           <span>总计</span>
-          <span className="budget-table__total-value">¥{total}</span>
+          <span className="budget-table__total-value">
+            ¥
+            {total}
+          </span>
         </div>
       </div>
     </div>

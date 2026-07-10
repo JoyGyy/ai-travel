@@ -4,8 +4,8 @@
  */
 import React from 'react'
 import { createBrowserRouter } from 'react-router-dom'
-import { ProtectedRoute } from '@/components/ProtectedRoute'
 import Layout from '@/components/Layout'
+import { ProtectedRoute } from '@/components/ProtectedRoute'
 
 const Home = React.lazy(() => import('@/pages/Home'))
 const Detail = React.lazy(() => import('@/pages/Detail'))

@@ -57,7 +57,7 @@
   line-height: 1.15;
   font-family: var(--font-serif);
   color: var(--c-cream);
-  text-shadow: 0 2px 12px rgba(0,0,0,0.12);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
 }
 
 .home-page__hero-title span {

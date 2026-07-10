@@ -1,10 +1,10 @@
+import { CloudOutlined, HomeOutlined, RobotOutlined, UserOutlined } from '@ant-design/icons'
 /**
  * 布局组件
  * 包含顶部导航栏和内容区域
  */
 import { Suspense } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { HomeOutlined, CloudOutlined, RobotOutlined, UserOutlined } from '@ant-design/icons'
 import { useAuthStore } from '@/stores/auth'
 import './style.css'
 
@@ -30,7 +30,7 @@ function TopNav() {
           <span className="layout-nav__title">旅行助手</span>
         </div>
         <div className="layout-nav__tabs">
-          {tabs.map(tab => {
+          {tabs.map((tab) => {
             const isActive = activeKey === tab.key
             return (
               <button
@@ -46,13 +46,17 @@ function TopNav() {
           })}
         </div>
         <div className="layout-nav__user">
-          {user ? (
-            <span className="layout-nav__username">{user.username}</span>
-          ) : (
-            <button className="layout-nav__login-btn" onClick={() => navigate('/login')}>
-              <UserOutlined /> 登录
-            </button>
-          )}
+          {user
+            ? (
+                <span className="layout-nav__username">{user.username}</span>
+              )
+            : (
+                <button className="layout-nav__login-btn" onClick={() => navigate('/login')}>
+                  <UserOutlined />
+                  {' '}
+                  登录
+                </button>
+              )}
         </div>
       </div>
     </nav>

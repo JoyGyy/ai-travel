@@ -23,14 +23,17 @@ export function useSSE() {
         let msg = `请求失败: HTTP ${res.status}`
         try {
           const errData = await res.json()
-          if (errData.message) msg = errData.message
-        } catch {
+          if (errData.message)
+            msg = errData.message
+        }
+        catch {
           // 错误响应不是 JSON 时，保留默认 HTTP 错误信息
         }
         throw new Error(msg)
       }
 
-      if (!res.body) throw new Error('响应体为空')
+      if (!res.body)
+        throw new Error('响应体为空')
 
       const reader = res.body.getReader()
       const decoder = new TextDecoder('utf-8')
@@ -56,21 +59,27 @@ export function useSSE() {
                 full += data.content
                 callbacks.onChunk(full)
               }
-              if (data.type === 'step' && callbacks.onStep) callbacks.onStep(data)
-              if (data.type === 'notice' && callbacks.onNotice) callbacks.onNotice(data.message)
-              if (data.type === 'complete' && callbacks.onComplete) callbacks.onComplete(data.data)
-            } catch {
+              if (data.type === 'step' && callbacks.onStep)
+                callbacks.onStep(data)
+              if (data.type === 'notice' && callbacks.onNotice)
+                callbacks.onNotice(data.message)
+              if (data.type === 'complete' && callbacks.onComplete)
+                callbacks.onComplete(data.data)
+            }
+            catch {
               // SSE 解析错误，忽略
             }
           }
         }
       }
-    } catch (e) {
+    }
+    catch (e) {
       if (e.name !== 'AbortError') {
         callbacks.onError?.(e)
         throw e
       }
-    } finally {
+    }
+    finally {
       callbacks.onFinally?.()
     }
   }, [])

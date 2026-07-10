@@ -76,8 +76,8 @@ function LoadingFallback() {
 /** 布局组件 */
 export default function Layout() {
   const location = useLocation()
-  const tabRoutes = ['/', '/weather', '/chat']
-  const showNav = tabRoutes.includes(location.pathname) || location.pathname === '/login'
+  const navRoutes = ['/weather', '/chat', '/login']
+  const showNav = navRoutes.includes(location.pathname)
 
   return (
     <div className="layout">

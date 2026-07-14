@@ -5,41 +5,54 @@
 }
 
 .accommodation-card__section {
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+}
+
+.accommodation-card__section:last-child {
+  margin-bottom: 0;
 }
 
 .accommodation-card__title {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 4px;
-  font-family: var(--font-serif);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--c-ink);
+  gap: 10px;
+  padding: 0 4px 12px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--travel-ocean);
 }
 
 .accommodation-card__dot {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: var(--c-terracotta);
+  background: var(--color-primary);
+  box-shadow: 0 0 0 5px rgba(var(--travel-primary-rgb), 0.15);
 }
 
 .accommodation-card__list {
-  border-radius: 16px;
   overflow: hidden;
-  background: var(--c-white);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid rgba(240, 232, 221, 0.4);
+  border-radius: 24px;
+  background: var(--travel-surface);
+  box-shadow: var(--travel-shadow-card);
+  border: 1px solid var(--travel-frosted-border);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
 .accommodation-card__item {
+  position: relative;
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  padding: 12px 16px;
-  border-bottom: 1px solid rgba(240, 232, 221, 0.5);
+  gap: 14px;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(var(--travel-ocean-rgb), 0.08);
+  background: rgba(var(--travel-white-rgb), 0.18);
+}
+
+.accommodation-card__item:nth-child(2n) {
+  background: rgba(var(--travel-white-rgb), 0.3);
 }
 
 .accommodation-card__item:last-child {
@@ -48,22 +61,26 @@
 
 .accommodation-card__index {
   flex-shrink: 0;
-  margin-top: 2px;
-  width: 24px;
-  height: 24px;
-  border-radius: 8px;
+  margin-top: 1px;
+  width: 30px;
+  height: 30px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
-  font-weight: 600;
+  border: 1px solid rgba(var(--travel-white-rgb), 0.66);
   color: #fff;
-  background: linear-gradient(135deg, var(--c-terracotta) 0%, var(--c-terracotta-light) 100%);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  box-shadow: 0 10px 24px rgba(var(--travel-primary-rgb), 0.22);
+  font-size: 12px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
 }
 
 .accommodation-card__index--light {
-  background: var(--c-sand);
-  color: var(--c-ink-light);
+  color: var(--travel-ocean);
+  background: linear-gradient(135deg, rgba(var(--travel-white-rgb), 0.82), rgba(var(--travel-white-rgb), 0.42));
+  box-shadow: 0 10px 24px rgba(var(--travel-ocean-rgb), 0.08);
 }
 
 .accommodation-card__body {
@@ -74,38 +91,49 @@
 .accommodation-card__name-row {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 2px;
+  margin-bottom: 6px;
 }
 
 .accommodation-card__name {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--c-ink);
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--travel-ocean);
 }
 
 .accommodation-card__type {
-  padding: 2px 6px;
-  border-radius: 4px;
+  flex-shrink: 0;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(var(--travel-white-rgb), 0.66);
+  background: rgba(var(--travel-primary-rgb), 0.12);
+  color: var(--color-primary-strong);
   font-size: 10px;
-  font-weight: 500;
-  background: var(--c-sand);
-  color: var(--c-terracotta);
+  font-weight: 800;
 }
 
 .accommodation-card__type--light {
-  color: var(--c-ink-light);
+  background: rgba(var(--travel-ocean-rgb), 0.08);
+  color: rgba(var(--travel-ocean-rgb), 0.72);
 }
 
 .accommodation-card__desc {
+  overflow-wrap: anywhere;
   font-size: 12px;
-  line-height: 1.6;
-  color: var(--c-ink-light);
+  line-height: 1.7;
+  color: rgba(var(--travel-ink-rgb), 0.68);
 }
 
 .accommodation-card__price {
+  width: fit-content;
+  margin-top: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(var(--travel-sand-rgb), 0.18);
+  color: var(--color-primary-strong);
   font-size: 11px;
-  font-weight: 500;
-  color: var(--c-terracotta);
-  margin-top: 4px;
+  font-weight: 900;
 }

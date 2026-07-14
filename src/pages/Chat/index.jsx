@@ -1,4 +1,4 @@
-import { CompassOutlined, DeleteOutlined, RobotOutlined } from '@ant-design/icons'
+import { CompassOutlined, DeleteOutlined, ExclamationCircleOutlined, RobotOutlined } from '@ant-design/icons'
 /**
  * AI 对话页面
  */
@@ -33,31 +33,54 @@ export default function Chat() {
   const [inputMsg, setInputMsg] = useState('')
   const [ragSources, setRagSources] = useState([])
   const [notice, setNotice] = useState('')
+  const [chatError, setChatError] = useState('')
+  const [lastFailedText, setLastFailedText] = useState('')
   const messagesRef = useRef(null)
   const { sendRequest, abort } = useSSE()
 
   const lastMessage = messages[messages.length - 1]
 
-  useEffect(() => { return () => abort() }, [abort])
-  useEffect(() => { clearMessages() }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    return () => abort()
+  }, [abort])
 
   useEffect(() => {
-    if (messagesRef.current) {
-      messagesRef.current.scrollTop = messagesRef.current.scrollHeight
-    }
+    clearMessages()
+  }, [clearMessages])
+
+  useEffect(() => {
+    const el = messagesRef.current
+    if (!el)
+      return
+
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight
+    if (distanceFromBottom < 180)
+      el.scrollTop = el.scrollHeight
   }, [messages.length, lastMessage?.content, lastMessage?.steps?.length])
 
-  async function clearChat() {
-    const confirmed = await Modal.confirm({ title: '确定要清空所有对话记录吗？', okText: '确定', cancelText: '取消' })
-    if (confirmed)
-      clearMessages()
+  function clearChat() {
+    Modal.confirm({
+      title: '确定要清空所有对话记录吗？',
+      content: '清空后当前对话无法恢复。',
+      okText: '确定清空',
+      cancelText: '取消',
+      okButtonProps: { danger: true },
+      onOk: () => {
+        clearMessages()
+        setRagSources([])
+        setNotice('')
+        setChatError('')
+      },
+    })
   }
 
   async function sendMessage(msg) {
     const text = msg || inputMsg.trim()
-    if (!text)
+    if (!text || isLoading)
       return
 
+    setChatError('')
+    setLastFailedText('')
     addMessage({ role: 'user', content: text })
     setInputMsg('')
     addMessage({ role: 'assistant', content: '' })
@@ -83,7 +106,9 @@ export default function Chat() {
       })
     }
     catch {
-      updateLastMessage('请求失败，请稍后重试')
+      setLastFailedText(text)
+      setChatError('请求失败，请检查网络后重试。')
+      updateLastMessage('抱歉，刚刚没有连接成功。你可以点击下方按钮重试。')
     }
     finally {
       setLoading(false)
@@ -92,24 +117,29 @@ export default function Chat() {
   }
 
   return (
-    <div className="chat-page">
+    <main className="chat-page" aria-labelledby="chat-title">
       <div className="chat-page__hero">
-        <div className="chat-page__hero-deco" />
+        <div className="chat-page__hero-deco" aria-hidden="true" />
         <div className="chat-page__hero-header">
           <div>
             <p className="chat-page__hero-label">AI ASSISTANT</p>
-            <h1 className="chat-page__hero-title">旅行顾问</h1>
+            <h1 id="chat-title" className="chat-page__hero-title">旅行顾问</h1>
             <p className="chat-page__hero-subtitle">有什么旅行问题，尽管问我</p>
           </div>
           {messages.length > 0 && (
-            <button onClick={clearChat} className="chat-page__clear-btn">
-              <DeleteOutlined />
+            <button
+              type="button"
+              onClick={clearChat}
+              className="chat-page__clear-btn"
+              aria-label="清空对话记录"
+            >
+              <DeleteOutlined aria-hidden="true" />
             </button>
           )}
         </div>
       </div>
 
-      <div className="chat-page__messages" ref={messagesRef}>
+      <div className="chat-page__messages" ref={messagesRef} role="log" aria-live="polite" aria-relevant="additions text">
         {messages.map((msg, i) => {
           const isEmptyAssistant = msg.role === 'assistant' && !msg.content && isLoading && i === messages.length - 1
           return (
@@ -118,8 +148,8 @@ export default function Chat() {
                 <ChatAgentSteps steps={msg.steps} isLoading={false} />
               )}
               {msg.role === 'assistant' && notice && i === messages.length - 1 && !isLoading && (
-                <div className="chat-page__notice">
-                  <span>⚠️</span>
+                <div className="chat-page__notice" aria-live="polite">
+                  <ExclamationCircleOutlined aria-hidden="true" />
                   <span>{notice}</span>
                 </div>
               )}
@@ -128,6 +158,15 @@ export default function Chat() {
           )
         })}
 
+        {chatError && (
+          <div className="chat-page__error" role="alert">
+            <span>{chatError}</span>
+            {lastFailedText && (
+              <button type="button" onClick={() => sendMessage(lastFailedText)}>重试</button>
+            )}
+          </div>
+        )}
+
         {ragSources.length > 0 && !isLoading && <RAGSource sources={ragSources} />}
 
         {isLoading && (
@@ -135,11 +174,11 @@ export default function Chat() {
             {lastMessage?.steps && lastMessage.steps.length > 0 && (
               <ChatAgentSteps steps={lastMessage.steps} currentStep={currentAgentStep} isLoading />
             )}
-            <div className="chat-page__typing">
-              <div className="chat-page__typing-avatar">
+            <div className="chat-page__typing" aria-live="polite" aria-label="AI 正在输入">
+              <div className="chat-page__typing-avatar" aria-hidden="true">
                 <RobotOutlined />
               </div>
-              <div className="chat-page__typing-dots">
+              <div className="chat-page__typing-dots" aria-hidden="true">
                 <span />
                 <span />
                 <span />
@@ -151,7 +190,7 @@ export default function Chat() {
         {messages.length === 0 && (
           <div className="chat-page__empty">
             <div className="chat-page__empty-card">
-              <div className="chat-page__empty-icon">
+              <div className="chat-page__empty-icon" aria-hidden="true">
                 <CompassOutlined />
               </div>
               <h2>你好，旅行者</h2>
@@ -161,8 +200,14 @@ export default function Chat() {
             <p className="chat-page__quick-title">试试这样问</p>
             <div className="chat-page__quick-list">
               {quickQuestions.map((q, i) => (
-                <button key={q} onClick={() => sendMessage(q)} className="chat-page__quick-btn" style={{ animationDelay: `${i * 0.08}s` }}>
-                  <span className="chat-page__quick-num">{i + 1}</span>
+                <button
+                  key={q}
+                  type="button"
+                  onClick={() => sendMessage(q)}
+                  className="chat-page__quick-btn"
+                  style={{ animationDelay: `${i * 0.08}s` }}
+                >
+                  <span className="chat-page__quick-num" aria-hidden="true">{i + 1}</span>
                   <span>{q}</span>
                 </button>
               ))}
@@ -173,8 +218,12 @@ export default function Chat() {
 
       <div className="chat-page__input-bar">
         <div className="chat-page__input-inner">
+          <label className="sr-only" htmlFor="chat-question-input">输入旅行问题</label>
           <input
+            id="chat-question-input"
             type="text"
+            name="travel-question"
+            autoComplete="off"
             placeholder="输入你的问题..."
             value={inputMsg}
             onChange={e => setInputMsg(e.target.value)}
@@ -183,14 +232,16 @@ export default function Chat() {
             className="chat-page__input"
           />
           <button
+            type="button"
             onClick={() => sendMessage()}
             disabled={isLoading || !inputMsg.trim()}
             className="chat-page__send-btn"
+            aria-label="发送旅行问题"
           >
-            <CompassOutlined />
+            <CompassOutlined aria-hidden="true" />
           </button>
         </div>
       </div>
-    </div>
+    </main>
   )
 }

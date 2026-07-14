@@ -13,11 +13,11 @@ const labels = {
 }
 
 const barColors = {
-  accommodation: 'var(--c-terracotta)',
-  food: 'var(--c-gold)',
-  transportation: 'var(--c-forest-light)',
-  tickets: 'var(--c-forest)',
-  other: 'var(--c-ink-light)',
+  accommodation: 'var(--travel-budget-accommodation)',
+  food: 'var(--travel-budget-food)',
+  transportation: 'var(--travel-budget-transportation)',
+  tickets: 'var(--travel-budget-tickets)',
+  other: 'var(--travel-budget-other)',
 }
 
 export function BudgetTable({ data }) {
@@ -25,27 +25,35 @@ export function BudgetTable({ data }) {
   const max = Math.max(...Object.values(data).map(v => v || 0), 1)
 
   return (
-    <div className="budget-table">
-      <div className="budget-table__header">
-        <div className="budget-table__dot" />
+    <section className="budget-table" aria-labelledby="budget-table-title">
+      <h2 id="budget-table-title" className="budget-table__header">
+        <span className="budget-table__dot" aria-hidden="true" />
         <span>预算明细</span>
-      </div>
+      </h2>
       <div className="budget-table__card">
-        {Object.keys(labels).map(key => (
-          <div key={key} className="budget-table__row">
-            <span className="budget-table__label">{labels[key]}</span>
-            <span className="budget-table__divider" />
-            <span className="budget-table__value">
-              ¥
-              {data[key] || 0}
-            </span>
-          </div>
-        ))}
-        <div className="budget-table__bars">
+        <table className="budget-table__table">
+          <caption className="sr-only">旅行预算分类明细</caption>
+          <tbody>
+            {Object.keys(labels).map(key => (
+              <tr key={key} className="budget-table__row">
+                <th scope="row" className="budget-table__label">{labels[key]}</th>
+                <td className="budget-table__value">
+                  ¥
+                  {data[key] || 0}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div className="budget-table__bars" aria-label="预算占比可视化">
           {Object.keys(labels).map(key => (
             <div key={key} className="budget-table__bar-row">
               <span className="budget-table__bar-label">{labels[key]}</span>
-              <div className="budget-table__bar-track">
+              <div
+                className="budget-table__bar-track"
+                role="img"
+                aria-label={`${labels[key]}预算 ¥${data[key] || 0}`}
+              >
                 <div
                   className="budget-table__bar-fill"
                   style={{ width: `${((data[key] || 0) / max) * 100}%`, background: barColors[key] }}
@@ -62,6 +70,6 @@ export function BudgetTable({ data }) {
           </span>
         </div>
       </div>
-    </div>
+    </section>
   )
 }

@@ -4,46 +4,42 @@
  */
 import './style.css'
 
-const weatherEmoji = {
-  晴: '☀️',
-  多云: '⛅',
-  阴: '☁️',
-  阴天: '☁️',
-  小雨: '🌦️',
-  中雨: '🌧️',
-  大雨: '⛈️',
-  暴雨: '⛈️',
-  雷阵雨: '⛈️',
-  小雪: '❄️',
-  中雪: '❄️',
-  大雪: '❄️',
-  暴风雪: '❄️',
-  雾: '🌫️',
+function getWeatherIconType(desc = '') {
+  if (desc.includes('雷') || desc.includes('暴雨'))
+    return 'storm'
+  if (desc.includes('雨'))
+    return 'rain'
+  if (desc.includes('雪'))
+    return 'snow'
+  if (desc.includes('雾'))
+    return 'fog'
+  if (desc.includes('云') || desc.includes('阴'))
+    return 'cloudy'
+  if (desc.includes('晴'))
+    return 'sunny'
+  return 'default'
 }
 
-function getWeatherEmoji(desc) {
-  for (const [key, emoji] of Object.entries(weatherEmoji)) {
-    if (desc.includes(key))
-      return emoji
-  }
-  return '🌤️'
+function WeatherIcon({ desc, className = '' }) {
+  const type = getWeatherIconType(desc)
+  return <span className={`travel-weather-icon travel-weather-icon--${type} ${className}`} aria-hidden="true" />
 }
 
 export function HomeWeather({ weather, loading }) {
   if (loading || !weather) {
     return (
-      <div className="home-weather home-weather--loading">
-        <div className="home-weather__spinner" />
-        <span className="home-weather__loading-text">正在查询天气...</span>
+      <div className="home-weather home-weather--loading" role="status" aria-live="polite">
+        <div className="home-weather__spinner" aria-hidden="true" />
+        <span className="home-weather__loading-text">正在查询天气…</span>
       </div>
     )
   }
 
   return (
-    <div className="home-weather">
+    <section className="home-weather" aria-label={`${weather.city} 天气概览`}>
       <div className="home-weather__current">
         <div className="home-weather__main">
-          <span className="home-weather__emoji">{getWeatherEmoji(weather.weatherDesc)}</span>
+          <WeatherIcon desc={weather.weatherDesc} className="home-weather__icon" />
           <div>
             <div className="home-weather__temp-row">
               <span className="home-weather__temp">{weather.temperature}</span>
@@ -68,11 +64,11 @@ export function HomeWeather({ weather, loading }) {
         </div>
       </div>
       {weather.forecast && weather.forecast.length > 0 && (
-        <div className="home-weather__forecast">
+        <div className="home-weather__forecast" aria-label="未来三天天气预报">
           {weather.forecast.map((day, i) => (
             <div key={i} className="home-weather__forecast-item">
               <span className="home-weather__forecast-label">{i === 0 ? '今天' : i === 1 ? '明天' : '后天'}</span>
-              <span className="home-weather__forecast-emoji">{getWeatherEmoji(day.weatherDesc)}</span>
+              <WeatherIcon desc={day.weatherDesc} className="home-weather__forecast-icon" />
               <span className="home-weather__forecast-temp">
                 {day.minTemp}
                 ~
@@ -83,6 +79,6 @@ export function HomeWeather({ weather, loading }) {
           ))}
         </div>
       )}
-    </div>
+    </section>
   )
 }

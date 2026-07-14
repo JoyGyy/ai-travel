@@ -44,7 +44,9 @@ export function useWeather() {
   }, [])
 
   useEffect(() => {
-    return () => { abortRef.current?.abort() }
+    return () => {
+      abortRef.current?.abort()
+    }
   }, [])
 
   return { weather, loading, error, fetchWeather }

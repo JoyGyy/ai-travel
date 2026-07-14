@@ -52,11 +52,17 @@ export function ChatAgentSteps({ steps, currentStep, isLoading }) {
 
   return (
     <div className="chat-agent-steps">
-      <div className="chat-agent-steps__header" onClick={() => setIsExpanded(!isExpanded)}>
-        <div className="chat-agent-steps__header-left">
-          <div className={`chat-agent-steps__icon ${isLoading ? 'chat-agent-steps__icon--loading' : 'chat-agent-steps__icon--done'}`}>
-            {isLoading ? <div className="chat-agent-steps__dot" /> : <CheckCircleOutlined />}
-          </div>
+      <button
+        type="button"
+        className="chat-agent-steps__header"
+        onClick={() => setIsExpanded(!isExpanded)}
+        aria-expanded={isExpanded}
+        aria-controls="chat-agent-steps-list"
+      >
+        <span className="chat-agent-steps__header-left">
+          <span className={`chat-agent-steps__icon ${isLoading ? 'chat-agent-steps__icon--loading' : 'chat-agent-steps__icon--done'}`} aria-hidden="true">
+            {isLoading ? <span className="chat-agent-steps__dot" /> : <CheckCircleOutlined />}
+          </span>
           <span className="chat-agent-steps__label">Agent 思考过程</span>
           <span className="chat-agent-steps__count">
             (
@@ -65,12 +71,12 @@ export function ChatAgentSteps({ steps, currentStep, isLoading }) {
             {steps.length}
             )
           </span>
-        </div>
-        <span className={`chat-agent-steps__arrow ${isExpanded ? 'chat-agent-steps__arrow--expanded' : ''}`}>▶</span>
-      </div>
+        </span>
+        <span className={`chat-agent-steps__arrow ${isExpanded ? 'chat-agent-steps__arrow--expanded' : ''}`} aria-hidden="true">▶</span>
+      </button>
 
       {isExpanded && (
-        <div className="chat-agent-steps__list">
+        <div id="chat-agent-steps-list" className="chat-agent-steps__list" aria-live="polite">
           {steps.map((step, index) => {
             const status = getStepStatus(step.step)
             const summary = getSummary(step)

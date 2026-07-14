@@ -12,7 +12,7 @@ export function ChatBubble({ role, content }) {
   return (
     <div className={`chat-bubble ${isUser ? 'chat-bubble--user' : 'chat-bubble--ai'}`}>
       {!isUser && (
-        <div className="chat-bubble__avatar">
+        <div className="chat-bubble__avatar" aria-hidden="true">
           <RobotOutlined />
         </div>
       )}

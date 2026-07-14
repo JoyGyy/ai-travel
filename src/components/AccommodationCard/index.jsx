@@ -18,7 +18,7 @@ export function AccommodationCard({ accommodation, nightlife }) {
           <div className="accommodation-card__list">
             {accommodation.map((item, i) => (
               <div key={i} className="accommodation-card__item">
-                <div className="accommodation-card__index">{i + 1}</div>
+                <div className="accommodation-card__index" aria-hidden="true">{i + 1}</div>
                 <div className="accommodation-card__body">
                   <div className="accommodation-card__name-row">
                     <span className="accommodation-card__name">{item.name}</span>
@@ -42,7 +42,7 @@ export function AccommodationCard({ accommodation, nightlife }) {
           <div className="accommodation-card__list">
             {nightlife.map((item, i) => (
               <div key={i} className="accommodation-card__item">
-                <div className="accommodation-card__index accommodation-card__index--light">{i + 1}</div>
+                <div className="accommodation-card__index accommodation-card__index--light" aria-hidden="true">{i + 1}</div>
                 <div className="accommodation-card__body">
                   <div className="accommodation-card__name-row">
                     <span className="accommodation-card__name">{item.name}</span>

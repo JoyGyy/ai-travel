@@ -19,8 +19,23 @@ export function ProtectedRoute({ children }) {
     }
   }, [user, hasHydrated, navigate])
 
-  if (!hasHydrated || !user)
-    return null
+  if (!hasHydrated) {
+    return (
+      <div className="layout-loading" role="status" aria-live="polite">
+        <div className="layout-loading__spinner" aria-hidden="true" />
+        <span className="layout-loading__text">正在恢复登录状态...</span>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className="layout-loading" role="status" aria-live="polite">
+        <div className="layout-loading__spinner" aria-hidden="true" />
+        <span className="layout-loading__text">正在前往登录页...</span>
+      </div>
+    )
+  }
 
   return <>{children}</>
 }

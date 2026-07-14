@@ -1,10 +1,13 @@
 /* Agent 步骤样式 */
 .agent-steps {
   margin: 0 16px 16px;
-  border-radius: 16px;
   overflow: hidden;
-  background: var(--c-white);
-  box-shadow: var(--shadow-md);
+  border-radius: 20px;
+  background: rgba(var(--travel-white-rgb), 0.62);
+  border: 1px solid rgba(var(--travel-white-rgb), 0.76);
+  box-shadow: 0 14px 34px rgba(var(--travel-ocean-rgb), 0.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .agent-steps__header {
@@ -13,9 +16,9 @@
 
 .agent-steps__title {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 900;
   letter-spacing: 2px;
-  color: var(--c-terracotta);
+  color: var(--travel-ocean);
 }
 
 .agent-steps__list {
@@ -35,82 +38,98 @@
 }
 
 .agent-steps__dot {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
   flex-shrink: 0;
+  border: 1px solid rgba(var(--travel-white-rgb), 0.78);
+  box-shadow: inset 0 0 0 1px rgba(var(--travel-white-rgb), 0.28), 0 10px 22px rgba(var(--travel-ocean-rgb), 0.08);
+  font-size: 14px;
 }
 
 .agent-steps__dot--done {
-  background: linear-gradient(135deg, var(--c-forest) 0%, var(--c-forest-light) 100%);
+  background: linear-gradient(135deg, var(--travel-ocean) 0%, var(--travel-ocean-light) 100%);
   color: #fff;
 }
 
 .agent-steps__dot--running {
-  background: linear-gradient(135deg, var(--c-terracotta) 0%, var(--c-terracotta-light) 100%);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
   color: #fff;
   animation: pulseGlow 1.5s ease-in-out infinite;
 }
 
 .agent-steps__dot--pending {
-  background: var(--c-paper-dark);
-  color: var(--c-ink-light);
+  background: rgba(var(--travel-white-rgb), 0.62);
+  color: rgba(var(--travel-ocean-rgb), 0.42);
 }
 
 .agent-steps__connector {
   width: 1px;
-  height: 20px;
-  background: var(--c-paper-dark);
+  height: 22px;
+  background: rgba(var(--travel-ocean-rgb), 0.12);
 }
 
 .agent-steps__connector--done {
-  background: var(--c-forest);
+  background: linear-gradient(180deg, var(--travel-ocean), rgba(var(--travel-ocean-rgb), 0.16));
 }
 
 .agent-steps__body {
   flex: 1;
   min-width: 0;
-  padding-bottom: 8px;
+  padding-bottom: 10px;
 }
 
 .agent-steps__name-row {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-height: 34px;
 }
 
 .agent-steps__name {
   font-size: 14px;
-  font-weight: 500;
-  color: var(--c-ink);
+  font-weight: 800;
+  color: var(--travel-ocean);
 }
 
 .agent-steps__name--pending {
-  color: var(--c-ink-light);
+  color: rgba(var(--travel-ink-rgb), 0.5);
 }
 
 .agent-steps__running {
-  font-size: 12px;
-  color: var(--c-terracotta);
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(var(--travel-primary-rgb), 0.12);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--color-primary-strong);
 }
 
 .agent-steps__summary {
   display: flex;
   align-items: center;
-  gap: 4px;
-  margin-top: 2px;
+  gap: 5px;
+  margin-top: 1px;
 }
 
 .agent-steps__arrow {
+  flex-shrink: 0;
   font-size: 10px;
-  color: var(--c-ink-light);
+  color: rgba(var(--travel-ocean-rgb), 0.48);
 }
 
 .agent-steps__summary span {
+  min-width: 0;
+  overflow-wrap: anywhere;
   font-size: 12px;
-  color: var(--c-ink-light);
+  color: rgba(var(--travel-ink-rgb), 0.66);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .agent-steps__dot--running {
+    animation: none;
+  }
 }

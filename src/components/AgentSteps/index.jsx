@@ -53,17 +53,17 @@ export function AgentSteps({ steps, currentStep }) {
   }
 
   return (
-    <div className="agent-steps">
+    <div className="agent-steps" aria-live="polite">
       <div className="agent-steps__header">
         <span className="agent-steps__title">AGENT 执行过程</span>
       </div>
-      <div className="agent-steps__list">
+      <div className="agent-steps__list" role="list">
         {STEP_CONFIG.map((config, index) => {
           const status = getStepStatus(config.step)
           const summary = getResultSummary(config.step)
           return (
-            <div key={config.step} className="agent-steps__item">
-              <div className="agent-steps__line">
+            <div key={config.step} className="agent-steps__item" role="listitem" aria-label={`${config.name}：${status === 'done' ? '已完成' : status === 'running' ? '执行中' : '等待中'}`}>
+              <div className="agent-steps__line" aria-hidden="true">
                 <div className={`agent-steps__dot agent-steps__dot--${status}`}>
                   {status === 'done'
                     ? <CheckCircleOutlined />
@@ -82,7 +82,7 @@ export function AgentSteps({ steps, currentStep }) {
                 </div>
                 {summary && (
                   <div className="agent-steps__summary">
-                    <RightOutlined className="agent-steps__arrow" />
+                    <RightOutlined className="agent-steps__arrow" aria-hidden="true" />
                     <span>{summary}</span>
                   </div>
                 )}

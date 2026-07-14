@@ -7,17 +7,17 @@ import './style.css'
 
 export function SpotItem({ period, data }) {
   const periodColorMap = {
-    上午: 'var(--c-gold)',
-    下午: 'var(--c-terracotta)',
-    晚上: 'var(--c-forest)',
+    上午: 'var(--travel-period-morning)',
+    下午: 'var(--travel-period-afternoon)',
+    晚上: 'var(--travel-period-evening)',
   }
   const periodBgMap = {
-    上午: 'var(--c-sand)',
-    下午: 'rgba(99, 102, 241, 0.1)',
-    晚上: 'rgba(30, 41, 59, 0.1)',
+    上午: 'rgba(var(--travel-sand-rgb), 0.2)',
+    下午: 'rgba(var(--travel-accent-rgb), 0.18)',
+    晚上: 'rgba(var(--travel-ocean-rgb), 0.12)',
   }
-  const periodColor = periodColorMap[period] || 'var(--c-terracotta)'
-  const periodBg = periodBgMap[period] || 'var(--c-sand)'
+  const periodColor = periodColorMap[period] || 'var(--travel-accent)'
+  const periodBg = periodBgMap[period] || 'rgba(var(--travel-accent-rgb), 0.16)'
 
   return (
     <div className="spot-item" style={{ borderLeftColor: periodColor }}>

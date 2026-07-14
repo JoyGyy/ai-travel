@@ -1,40 +1,63 @@
 /* RAG 来源样式 */
 .rag-source {
-  margin: 0 16px 12px;
-  padding: 12px 16px;
-  border-radius: 12px;
-  background: rgba(99, 102, 241, 0.04);
-  border: 1px solid rgba(99, 102, 241, 0.08);
+  margin: 0 8px 14px;
+  padding: 13px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.68);
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(var(--travel-primary-rgb), 0.1), rgba(255, 255, 255, 0.68)),
+    rgba(255, 255, 255, 0.58);
+  box-shadow: 0 14px 34px rgba(var(--travel-ocean-rgb), 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.72);
   animation: fadeUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
 }
 
 .rag-source__header {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 8px;
+  gap: 7px;
+  margin-bottom: 9px;
+  color: var(--travel-ocean);
   font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  color: var(--c-ink);
-  opacity: 0.5;
+  font-weight: 800;
+  letter-spacing: 0.12em;
 }
 
 .rag-source__icon {
+  flex-shrink: 0;
+  color: var(--color-primary);
   font-size: 13px;
 }
 
 .rag-source__list {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 7px;
 }
 
 .rag-source__tag {
-  padding: 4px 10px;
-  border-radius: 8px;
+  max-width: 100%;
+  padding: 5px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: 999px;
+  color: var(--travel-ocean);
+  background: rgba(255, 255, 255, 0.58);
   font-size: 11px;
-  font-weight: 500;
-  background: rgba(99, 102, 241, 0.06);
-  color: var(--c-ink);
+  font-weight: 700;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .rag-source {
+    margin-right: 4px;
+    margin-left: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rag-source {
+    animation: none;
+  }
 }

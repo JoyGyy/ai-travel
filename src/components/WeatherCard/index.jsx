@@ -4,29 +4,25 @@
  */
 import './style.css'
 
-const weatherEmoji = {
-  晴: '☀️',
-  多云: '⛅',
-  阴: '☁️',
-  阴天: '☁️',
-  小雨: '🌦️',
-  中雨: '🌧️',
-  大雨: '⛈️',
-  暴雨: '⛈️',
-  雷阵雨: '⛈️',
-  小雪: '❄️',
-  中雪: '❄️',
-  大雪: '❄️',
-  暴风雪: '❄️',
-  雾: '🌫️',
+function getWeatherIconType(desc = '') {
+  if (desc.includes('雷') || desc.includes('暴雨'))
+    return 'storm'
+  if (desc.includes('雨'))
+    return 'rain'
+  if (desc.includes('雪'))
+    return 'snow'
+  if (desc.includes('雾'))
+    return 'fog'
+  if (desc.includes('云') || desc.includes('阴'))
+    return 'cloudy'
+  if (desc.includes('晴'))
+    return 'sunny'
+  return 'default'
 }
 
-function getWeatherEmoji(desc) {
-  for (const [key, emoji] of Object.entries(weatherEmoji)) {
-    if (desc.includes(key))
-      return emoji
-  }
-  return '🌤️'
+function WeatherIcon({ desc, className = '' }) {
+  const type = getWeatherIconType(desc)
+  return <span className={`travel-weather-icon travel-weather-icon--${type} ${className}`} aria-hidden="true" />
 }
 
 export function WeatherCard({ weather }) {
@@ -34,11 +30,11 @@ export function WeatherCard({ weather }) {
     return null
 
   return (
-    <div className="weather-card">
+    <section className="weather-card" aria-label={`${weather.city} 实时天气`}>
       <div className="weather-card__current">
         <div className="weather-card__main">
           <div className="weather-card__temp-row">
-            <span className="weather-card__emoji">{getWeatherEmoji(weather.weatherDesc)}</span>
+            <WeatherIcon desc={weather.weatherDesc} className="weather-card__icon" />
             <span className="weather-card__temp">
               {weather.temperature}
               °C
@@ -66,11 +62,11 @@ export function WeatherCard({ weather }) {
         </div>
       </div>
       {weather.forecast && weather.forecast.length > 0 && (
-        <div className="weather-card__forecast">
+        <div className="weather-card__forecast" aria-label="未来三天天气预报">
           {weather.forecast.map((day, i) => (
             <div key={i} className="weather-card__forecast-item">
               <p className="weather-card__forecast-label">{i === 0 ? '今天' : i === 1 ? '明天' : '后天'}</p>
-              <p className="weather-card__forecast-emoji">{getWeatherEmoji(day.weatherDesc)}</p>
+              <WeatherIcon desc={day.weatherDesc} className="weather-card__forecast-icon" />
               <p className="weather-card__forecast-temp">
                 {day.minTemp}
                 ~
@@ -82,6 +78,6 @@ export function WeatherCard({ weather }) {
           ))}
         </div>
       )}
-    </div>
+    </section>
   )
 }

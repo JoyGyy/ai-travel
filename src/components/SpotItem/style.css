@@ -1,25 +1,34 @@
 /* 景点项目样式 */
 .spot-item {
+  position: relative;
   display: flex;
-  gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px dashed var(--c-paper-dark);
-  border-left: 3px solid var(--c-terracotta);
+  gap: 14px;
+  margin: 10px 0;
+  padding: 14px;
+  border: 1px solid rgba(var(--travel-white-rgb), 0.66);
+  border-left: 4px solid var(--travel-accent);
+  border-radius: 18px;
+  background: rgba(var(--travel-white-rgb), 0.56);
+  box-shadow: 0 10px 26px rgba(var(--travel-ocean-rgb), 0.06);
 }
 
 .spot-item:last-child {
-  border-bottom: none;
+  margin-bottom: 0;
 }
 
 .spot-item__period {
   flex-shrink: 0;
-  font-family: var(--font-serif);
-  font-size: 12px;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 8px;
-  white-space: nowrap;
   align-self: flex-start;
+  min-width: 48px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(var(--travel-white-rgb), 0.6);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 900;
+  text-align: center;
+  white-space: nowrap;
+  box-shadow: inset 0 0 0 1px rgba(var(--travel-white-rgb), 0.24);
 }
 
 .spot-item__body {
@@ -28,22 +37,21 @@
 }
 
 .spot-item__name {
-  margin-bottom: 4px;
-  font-family: var(--font-serif);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--c-ink);
+  margin-bottom: 6px;
+  overflow-wrap: anywhere;
+  font-family: var(--font-display);
+  font-size: 15px;
+  line-height: 1.35;
+  font-weight: 800;
+  color: var(--travel-ocean);
 }
 
 .spot-item__desc {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  overflow-wrap: anywhere;
   font-size: 12px;
-  color: var(--c-ink-light);
-  line-height: 1.6;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  color: rgba(var(--travel-ink-rgb), 0.7);
+  line-height: 1.7;
 }
 
 .spot-item__tags {
@@ -56,15 +64,35 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 8px;
-  border-radius: 6px;
+  min-width: 0;
+  max-width: 100%;
+  padding: 4px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(var(--travel-white-rgb), 0.66);
+  background: rgba(var(--travel-white-rgb), 0.54);
+  color: rgba(var(--travel-ink-rgb), 0.66);
   font-size: 12px;
-  color: var(--c-ink-light);
-  background: var(--c-paper);
+  font-weight: 700;
+}
+
+.spot-item__tag svg {
+  flex-shrink: 0;
+  color: rgba(var(--travel-ocean-rgb), 0.64);
 }
 
 .spot-item__tag--price {
-  color: var(--c-terracotta);
-  background: var(--c-sand);
-  font-weight: 500;
+  color: var(--color-primary-strong);
+  background: rgba(var(--travel-primary-rgb), 0.12);
+  font-weight: 900;
+}
+
+@media (max-width: 560px) {
+  .spot-item {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .spot-item__period {
+    width: fit-content;
+  }
 }

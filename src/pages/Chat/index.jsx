@@ -103,11 +103,15 @@ export default function Chat() {
           if (data?.sources?.length)
             setRagSources(data.sources)
         },
+        onError: (err) => {
+          setLastFailedText(text)
+          setChatError(err.message || '请求失败，请检查网络后重试。')
+        },
       })
     }
     catch {
       setLastFailedText(text)
-      setChatError('请求失败，请检查网络后重试。')
+      setChatError(prev => prev || '请求失败，请检查网络后重试。')
       updateLastMessage('抱歉，刚刚没有连接成功。你可以点击下方按钮重试。')
     }
     finally {

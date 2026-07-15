@@ -2,19 +2,31 @@
  * SSE (Server-Sent Events) 自定义 Hook
  * 用于处理流式 HTTP 响应，实现 AI 回复的实时流式显示
  */
+import { getAuthHeader } from '@/api/client'
 import { useCallback, useRef } from 'react'
 
 export function useSSE() {
   const abortControllerRef = useRef(null)
+  const requestIdRef = useRef(0)
 
-  const sendRequest = useCallback(async (url, body, callbacks) => {
+  const sendRequest = useCallback(async (url, body, callbacks = {}) => {
+    abortControllerRef.current?.abort()
+
+    const requestId = requestIdRef.current + 1
+    requestIdRef.current = requestId
+
     const controller = new AbortController()
     abortControllerRef.current = controller
+
+    const isCurrentRequest = () => requestIdRef.current === requestId && !controller.signal.aborted
 
     try {
       const res = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeader(),
+        },
         body: JSON.stringify(body),
         signal: controller.signal,
       })
@@ -23,8 +35,7 @@ export function useSSE() {
         let msg = `请求失败: HTTP ${res.status}`
         try {
           const errData = await res.json()
-          if (errData.message)
-            msg = errData.message
+          msg = errData.message || errData.error || msg
         }
         catch {
           // 错误响应不是 JSON 时，保留默认 HTTP 错误信息
@@ -40,6 +51,32 @@ export function useSSE() {
       let full = ''
       let remainder = ''
 
+      async function handleLine(line) {
+        if (!line.startsWith('data: ') || !isCurrentRequest())
+          return
+
+        let data
+        try {
+          data = JSON.parse(line.slice(6))
+        }
+        catch {
+          throw new Error('服务端返回了无法解析的流式数据')
+        }
+
+        if (data.type === 'error')
+          throw new Error(data.message || '流式请求失败')
+        if (data.type === 'chunk' && callbacks.onChunk) {
+          full += data.content || ''
+          callbacks.onChunk(full)
+        }
+        if (data.type === 'step' && callbacks.onStep)
+          callbacks.onStep(data)
+        if (data.type === 'notice' && callbacks.onNotice)
+          callbacks.onNotice(data.message)
+        if (data.type === 'complete' && callbacks.onComplete)
+          callbacks.onComplete(data.data)
+      }
+
       while (true) {
         const { done, value } = await reader.read()
         if (done) {
@@ -52,40 +89,31 @@ export function useSSE() {
         remainder = lines.pop() || ''
 
         for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            try {
-              const data = JSON.parse(line.slice(6))
-              if (data.type === 'chunk' && callbacks.onChunk) {
-                full += data.content
-                callbacks.onChunk(full)
-              }
-              if (data.type === 'step' && callbacks.onStep)
-                callbacks.onStep(data)
-              if (data.type === 'notice' && callbacks.onNotice)
-                callbacks.onNotice(data.message)
-              if (data.type === 'complete' && callbacks.onComplete)
-                callbacks.onComplete(data.data)
-            }
-            catch {
-              // SSE 解析错误，忽略
-            }
-          }
+          await handleLine(line)
         }
       }
+
+      if (remainder.trim())
+        await handleLine(remainder)
     }
-    catch (e) {
-      if (e.name !== 'AbortError') {
-        callbacks.onError?.(e)
-        throw e
+    catch (err) {
+      if (err.name !== 'AbortError' && isCurrentRequest()) {
+        callbacks.onError?.(err)
+        throw err
       }
     }
     finally {
-      callbacks.onFinally?.()
+      if (isCurrentRequest()) {
+        abortControllerRef.current = null
+        callbacks.onFinally?.()
+      }
     }
   }, [])
 
   const abort = useCallback(() => {
     abortControllerRef.current?.abort()
+    abortControllerRef.current = null
+    requestIdRef.current += 1
   }, [])
 
   return { sendRequest, abort }

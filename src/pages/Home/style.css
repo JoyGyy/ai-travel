@@ -24,9 +24,11 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: #FFFDF9;
-  border-bottom: 1px solid rgba(28, 25, 23, 0.06);
-  box-shadow: 0 1px 8px rgba(28, 25, 23, 0.04);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--travel-frosted-border);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04);
 }
 
 .home__header-inner {
@@ -188,7 +190,7 @@
   inset: 0;
   background:
     var(--texture-dots) var(--texture-dots-size),
-    linear-gradient(135deg, #FFF8F0 0%, #FFF1E6 50%, #FFECD2 100%);
+    linear-gradient(170deg, var(--color-background) 0%, #F5F3EF 100%);
 }
 
 .home__hero-pattern {
@@ -250,7 +252,7 @@
 
 /* 搜索框 */
 .home__search {
-  background: #FFFDF9;
+  background: var(--travel-surface);
   border: 1px solid rgba(28, 25, 23, 0.06);
   border-radius: 16px;
   padding: 16px;
@@ -640,7 +642,7 @@
   border: 1px solid rgba(28, 25, 23, 0.05);
   border-radius: 14px;
   overflow: hidden;
-  background: #FFFDF9;
+  background: var(--travel-surface);
   box-shadow: var(--shadow-paper);
   text-align: left;
   transition: transform var(--motion-base) var(--ease-spring),
@@ -731,7 +733,7 @@
   border: 1px solid rgba(28, 25, 23, 0.05);
   border-radius: 14px;
   overflow: hidden;
-  background: #FFFDF9;
+  background: var(--travel-surface);
   box-shadow: var(--shadow-paper);
   text-align: left;
   transition: transform var(--motion-base) var(--ease-spring),
@@ -872,7 +874,7 @@
 .home__reviews-card {
   padding: 24px;
   border-radius: 16px;
-  background: #FFFDF9;
+  background: var(--travel-surface);
   border: 1px solid rgba(28, 25, 23, 0.05);
   box-shadow: var(--shadow-paper);
   animation: slideUp var(--motion-choreography) var(--ease-emphasized) both;

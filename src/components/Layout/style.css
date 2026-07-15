@@ -38,7 +38,7 @@
   position: sticky;
   top: 0;
   z-index: 50;
-  background: #FFFDF9;
+  background: var(--travel-surface);
   border-bottom: 1px solid rgba(28, 25, 23, 0.06);
   box-shadow: 0 12px 34px rgba(var(--travel-ocean-rgb), 0.08);
 }
@@ -170,7 +170,7 @@
 }
 
 .layout-nav__username {
-  background: #FFFDF9;
+  background: var(--travel-surface);
   color: var(--travel-ocean);
   border: 1px solid rgba(28, 25, 23, 0.06);
 }
@@ -178,7 +178,7 @@
 .layout-nav__login-btn {
   border: 1px solid rgba(var(--travel-primary-rgb), 0.24);
   color: var(--travel-ocean);
-  background: #FFFDF9;
+  background: var(--travel-surface);
   transition:
     transform var(--motion-fast) var(--ease-standard),
     background var(--motion-fast) var(--ease-standard),

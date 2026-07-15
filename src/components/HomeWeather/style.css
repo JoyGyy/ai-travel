@@ -13,7 +13,7 @@
   overflow: hidden;
   border: 1px solid rgba(28, 25, 23, 0.06);
   border-radius: var(--travel-radius-xl);
-  background: #FFFDF9;
+  background: var(--travel-surface);
   box-shadow: var(--shadow-paper);
 }
 

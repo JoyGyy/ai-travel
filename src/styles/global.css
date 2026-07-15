@@ -12,16 +12,21 @@
   --color-warning: #D97706;
   --color-success: #059669;
   --color-danger: #DC2626;
-  --color-background: #FFF8F0;
+  --color-background: #FAFAF8;
   --color-surface: #ffffff;
   --color-ink: #1C1917;
   --color-muted: rgba(28, 25, 23, 0.6);
 
+  /* 冷色对比：深石板蓝，打破全站纯暖 */
+  --travel-slate: #334155;
+  --travel-slate-rgb: 51, 65, 85;
+  --travel-slate-deep: #1e293b;
+
   --travel-mint: var(--color-background);
-  --travel-mint-light: #FFF1E6;
+  --travel-mint-light: #F5F3EF;
   --travel-sand: var(--color-sand);
   --travel-sand-light: #FFF0D6;
-  --travel-cream: #FFFAF5;
+  --travel-cream: #F8F7F4;
   --travel-accent: var(--color-accent);
   --travel-accent-strong: var(--color-accent-strong);
   --travel-ocean: #292524;
@@ -40,12 +45,12 @@
   --travel-ink-rgb: 28, 25, 23;
   --travel-white-rgb: 255, 255, 255;
 
-  --travel-surface: #FFFCF8;
-  --travel-surface-strong: #FFFDFB;
-  --travel-surface-muted: #FFF8F2;
-  --travel-frosted: #FFF6ED;
-  --travel-frosted-border: rgba(28, 25, 23, 0.06);
-  --travel-border: rgba(28, 25, 23, 0.07);
+  --travel-surface: #ffffff;
+  --travel-surface-strong: #ffffff;
+  --travel-surface-muted: #F5F3EF;
+  --travel-frosted: #F0EEEB;
+  --travel-frosted-border: rgba(28, 25, 23, 0.08);
+  --travel-border: rgba(28, 25, 23, 0.08);
 
   /* 纹理图案（纯 CSS，无图片） */
   --texture-linen: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(28, 25, 23, 0.015) 3px, rgba(28, 25, 23, 0.015) 4px);
@@ -62,16 +67,17 @@
   --travel-blur-sm: 14px;
   --travel-blur-md: 18px;
   --travel-blur-lg: 22px;
-  --travel-glass: #FFFAF5;
-  --travel-glass-strong: #FFFCF8;
-  --travel-glass-highlight: #FFF8F2;
-  --travel-glass-border: rgba(28, 25, 23, 0.06);
+  --travel-glass: rgba(255, 255, 255, 0.72);
+  --travel-glass-strong: rgba(255, 255, 255, 0.88);
+  --travel-glass-highlight: rgba(255, 255, 255, 0.95);
+  --travel-glass-border: rgba(28, 25, 23, 0.08);
   --travel-glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.9);
 
-  --travel-shadow-card: 0 4px 24px rgba(28, 25, 23, 0.08), 0 1px 4px rgba(28, 25, 23, 0.04);
-  --travel-shadow-floating: 0 12px 48px rgba(28, 25, 23, 0.12), 0 2px 8px rgba(28, 25, 23, 0.06);
-  --shadow-paper: 0 1px 3px rgba(28, 25, 23, 0.06), 0 0 0 1px rgba(28, 25, 23, 0.04);
-  --shadow-paper-hover: 0 4px 12px rgba(28, 25, 23, 0.08), 0 0 0 1px rgba(28, 25, 23, 0.06);
+  /* 阴影分层：不同层级用不同色调 */
+  --travel-shadow-card: 0 4px 24px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.03);
+  --travel-shadow-floating: 0 12px 48px rgba(28, 25, 23, 0.14), 0 2px 8px rgba(28, 25, 23, 0.06);
+  --shadow-paper: 0 1px 3px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.03);
+  --shadow-paper-hover: 0 4px 12px rgba(0, 0, 0, 0.07), 0 0 0 1px rgba(0, 0, 0, 0.05);
 
   --space-1: 4px;
   --space-2: 8px;
@@ -120,12 +126,12 @@
   --font-serif: 'Playfair Display', 'Noto Serif SC', Georgia, 'Times New Roman', serif;
   --font-sans: 'Plus Jakarta Sans', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
 
-  --shadow-xs: 0 1px 2px rgba(28, 25, 23, 0.05);
-  --shadow-sm: 0 2px 8px rgba(28, 25, 23, 0.06), 0 1px 2px rgba(28, 25, 23, 0.04);
-  --shadow-md: 0 4px 16px rgba(28, 25, 23, 0.08), 0 1px 4px rgba(28, 25, 23, 0.04);
-  --shadow-lg: 0 8px 28px rgba(28, 25, 23, 0.1), 0 2px 8px rgba(28, 25, 23, 0.04);
-  --shadow-xl: 0 16px 48px rgba(28, 25, 23, 0.14), 0 4px 12px rgba(28, 25, 23, 0.06);
-  --shadow-inset: inset 0 1px 3px rgba(28, 25, 23, 0.06), inset 0 0 0 1px rgba(28, 25, 23, 0.04);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.07), 0 1px 4px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 8px 28px rgba(0, 0, 0, 0.09), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 16px 48px rgba(15, 23, 42, 0.14), 0 4px 12px rgba(15, 23, 42, 0.06);
+  --shadow-inset: inset 0 1px 3px rgba(0, 0, 0, 0.05), inset 0 0 0 1px rgba(0, 0, 0, 0.03);
 }
 
 * {

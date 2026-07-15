@@ -34,7 +34,7 @@
   overflow: hidden;
   background:
     var(--texture-dots) 20px 20px,
-    linear-gradient(135deg, #FFF8F0, #FFF1E6);
+    #F5F3EF;
 }
 
 .weather-page__hero::before {
@@ -103,7 +103,7 @@
   padding: 16px;
   border: 1px solid rgba(28, 25, 23, 0.06);
   border-radius: 16px;
-  background: #FFFDF9;
+  background: var(--travel-surface);
   box-shadow: var(--shadow-paper);
   transition: box-shadow var(--motion-base) var(--ease-standard);
   animation: slideUp var(--motion-choreography) var(--ease-emphasized) 0.2s both;

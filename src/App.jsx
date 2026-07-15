@@ -13,7 +13,7 @@ export default function App() {
         token: {
           colorPrimary: '#FF6B35',
           colorInfo: '#3B82F6',
-          colorBgLayout: '#FFF8F0',
+          colorBgLayout: '#FAFAF8',
           colorBgElevated: 'rgba(255,255,255,0.92)',
           colorBgContainer: 'rgba(255,255,255,0.96)',
           colorText: '#1C1917',

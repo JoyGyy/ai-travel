@@ -8,7 +8,7 @@
   border: 1px solid rgba(28, 25, 23, 0.05);
   border-left: 4px solid var(--travel-accent);
   border-radius: 18px;
-  background: #FFFDF9;
+  background: var(--travel-surface);
   box-shadow: 0 10px 26px rgba(var(--travel-ocean-rgb), 0.06);
 }
 

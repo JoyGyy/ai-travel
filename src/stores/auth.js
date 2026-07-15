@@ -2,6 +2,7 @@
  * 认证状态管理
  * 使用 Zustand + persist 持久化用户登录状态
  */
+import { loginApi, registerApi } from '@/api/auth'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
@@ -14,26 +15,12 @@ export const useAuthStore = create(
       setHasHydrated: v => set({ _hasHydrated: v }),
 
       async login(username, password) {
-        const res = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password }),
-        })
-        const data = await res.json()
-        if (!data.success)
-          throw new Error(data.message)
+        const data = await loginApi(username, password)
         set({ user: data.user, token: data.token })
       },
 
       async register(username, password) {
-        const res = await fetch('/api/auth/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password }),
-        })
-        const data = await res.json()
-        if (!data.success)
-          throw new Error(data.message)
+        const data = await registerApi(username, password)
         set({ user: data.user, token: data.token })
       },
 

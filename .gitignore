@@ -31,5 +31,4 @@ AGENTS.md
 
 server/data/*
 !server/data/shared_itineraries.json
-docs
 .playwright-mcp

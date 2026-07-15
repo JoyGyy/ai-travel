@@ -2,12 +2,10 @@
 .chat-agent-steps {
   overflow: hidden;
   margin: 0 8px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.66);
+  border: 1px solid rgba(28, 25, 23, 0.06);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.68);
-  box-shadow: 0 14px 36px rgba(41, 37, 36, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.74);
-  backdrop-filter: blur(16px) saturate(150%);
-  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  background: #FFFDF9;
+  box-shadow: var(--shadow-paper);
 }
 
 .chat-agent-steps__header {

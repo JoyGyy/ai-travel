@@ -18,11 +18,10 @@
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.66);
+  border: 1px solid rgba(28, 25, 23, 0.06);
   border-radius: 12px;
   color: var(--travel-ocean);
-  background: linear-gradient(135deg, rgba(var(--travel-primary-rgb), 0.14), rgba(255, 255, 255, 0.78));
-  box-shadow: 0 8px 20px rgba(var(--travel-ocean-rgb), 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.68);
+  background: rgba(var(--travel-primary-rgb), 0.08);
   font-size: 15px;
 }
 
@@ -40,19 +39,17 @@
   padding: 11px 16px;
   border-radius: 20px 20px 6px;
   color: #fff;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  background: var(--color-primary);
   box-shadow: 0 14px 28px rgba(var(--travel-primary-rgb), 0.32);
 }
 
 .chat-bubble__content--ai {
   padding: 12px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.66);
+  border: 1px solid rgba(28, 25, 23, 0.06);
   border-radius: 6px 20px 20px;
   color: var(--travel-ocean);
-  background: rgba(255, 255, 255, 0.76);
-  box-shadow: 0 12px 30px rgba(var(--travel-ocean-rgb), 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(16px) saturate(150%);
-  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  background: #FFFDF9;
+  box-shadow: 0 12px 30px rgba(var(--travel-ocean-rgb), 0.08);
 }
 
 .chat-bubble__content--ai .markdown-body {

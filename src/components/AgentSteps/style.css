@@ -3,11 +3,9 @@
   margin: 0 16px 16px;
   overflow: hidden;
   border-radius: 20px;
-  background: rgba(var(--travel-white-rgb), 0.62);
-  border: 1px solid rgba(var(--travel-white-rgb), 0.76);
-  box-shadow: 0 14px 34px rgba(var(--travel-ocean-rgb), 0.1);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: #FFFDF9;
+  border: 1px solid rgba(28, 25, 23, 0.06);
+  box-shadow: var(--shadow-paper);
 }
 
 .agent-steps__header {

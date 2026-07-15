@@ -34,11 +34,9 @@
 .accommodation-card__list {
   overflow: hidden;
   border-radius: 24px;
-  background: var(--travel-surface);
-  box-shadow: var(--travel-shadow-card);
-  border: 1px solid var(--travel-frosted-border);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background: #FFFDF9;
+  box-shadow: var(--shadow-paper);
+  border: 1px solid rgba(28, 25, 23, 0.06);
 }
 
 .accommodation-card__item {
@@ -52,7 +50,7 @@
 }
 
 .accommodation-card__item:nth-child(2n) {
-  background: rgba(var(--travel-white-rgb), 0.3);
+  background: rgba(28, 25, 23, 0.015);
 }
 
 .accommodation-card__item:last-child {
@@ -68,9 +66,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(var(--travel-white-rgb), 0.66);
+  border: none;
   color: #fff;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  background: var(--color-primary);
   box-shadow: 0 10px 24px rgba(var(--travel-primary-rgb), 0.22);
   font-size: 12px;
   font-weight: 900;
@@ -79,7 +77,7 @@
 
 .accommodation-card__index--light {
   color: var(--travel-ocean);
-  background: linear-gradient(135deg, rgba(var(--travel-white-rgb), 0.82), rgba(var(--travel-white-rgb), 0.42));
+  background: rgba(28, 25, 23, 0.06);
   box-shadow: 0 10px 24px rgba(var(--travel-ocean-rgb), 0.08);
 }
 

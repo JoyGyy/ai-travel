@@ -24,12 +24,10 @@
 
 .budget-table__card {
   padding: 18px;
-  border: 1px solid var(--travel-frosted-border);
+  border: 1px solid rgba(28, 25, 23, 0.06);
   border-radius: 24px;
-  background: var(--travel-surface);
-  box-shadow: var(--travel-shadow-card);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background: #FFFDF9;
+  box-shadow: var(--shadow-paper);
 }
 
 .budget-table__table {
@@ -99,7 +97,7 @@
   height: 9px;
   overflow: hidden;
   border-radius: 100px;
-  background: rgba(var(--travel-white-rgb), 0.62);
+  background: rgba(28, 25, 23, 0.06);
   box-shadow: inset 0 0 0 1px rgba(var(--travel-ocean-rgb), 0.06);
 }
 
@@ -117,10 +115,10 @@
   gap: 14px;
   margin-top: 16px;
   padding: 15px 16px;
-  border: 1px solid rgba(var(--travel-white-rgb), 0.66);
+  border: 1px solid rgba(var(--travel-primary-rgb), 0.08);
   border-radius: 18px;
   color: var(--travel-ocean);
-  background: linear-gradient(135deg, rgba(var(--travel-white-rgb), 0.72), rgba(var(--travel-primary-rgb), 0.1));
+  background: rgba(var(--travel-primary-rgb), 0.04);
   font-size: 14px;
   font-weight: 900;
 }

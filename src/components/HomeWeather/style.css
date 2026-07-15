@@ -11,14 +11,10 @@
   width: 100%;
   min-width: 0;
   overflow: hidden;
-  border: 1px solid var(--travel-glass-border);
+  border: 1px solid rgba(28, 25, 23, 0.06);
   border-radius: var(--travel-radius-xl);
-  background:
-    linear-gradient(135deg, var(--travel-glass-strong), var(--travel-glass)),
-    radial-gradient(circle at 10% 0%, rgba(var(--travel-primary-rgb), 0.12), transparent 42%);
-  box-shadow: var(--travel-shadow-card), var(--travel-glass-inset);
-  backdrop-filter: blur(var(--travel-blur-md));
-  -webkit-backdrop-filter: blur(var(--travel-blur-md));
+  background: #FFFDF9;
+  box-shadow: var(--shadow-paper);
 }
 
 .home-weather--loading {
@@ -147,9 +143,9 @@
   align-items: center;
   justify-content: center;
   gap: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(28, 25, 23, 0.05);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.48);
+  background: rgba(28, 25, 23, 0.02);
   box-shadow: 0 10px 24px rgba(41, 37, 36, 0.08);
 }
 

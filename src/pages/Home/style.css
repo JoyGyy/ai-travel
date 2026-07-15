@@ -83,12 +83,38 @@
   color: rgba(28, 25, 23, 0.65);
   font-size: 14px;
   font-weight: 600;
-  transition: color 0.15s ease, background 0.15s ease;
+  position: relative;
+  transition: color var(--motion-fast) var(--ease-standard),
+              background var(--motion-fast) var(--ease-standard);
+}
+
+.home__nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--color-primary);
+  border-radius: 999px;
+  transition: width var(--motion-base) var(--ease-spring),
+              left var(--motion-base) var(--ease-spring);
 }
 
 .home__nav-link:hover {
   color: var(--color-primary);
   background: rgba(255, 107, 53, 0.06);
+}
+
+.home__nav-link:hover::after {
+  width: 20px;
+  left: calc(50% - 10px);
+}
+
+.home__nav-link--active::after,
+.home__nav-link[aria-current='page']::after {
+  width: 24px;
+  left: calc(50% - 12px);
 }
 
 .home__nav-link--active,
@@ -117,12 +143,19 @@
   box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
   font-size: 13px;
   font-weight: 700;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform var(--motion-fast) var(--ease-spring),
+              box-shadow var(--motion-fast) var(--ease-standard),
+              background var(--motion-fast) var(--ease-standard);
 }
 
 .home__login-btn:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px) scale(1.03);
   box-shadow: 0 4px 14px rgba(255, 107, 53, 0.4);
+}
+
+.home__login-btn:active {
+  transform: translateY(0) scale(0.97);
+  box-shadow: 0 1px 4px rgba(255, 107, 53, 0.25);
 }
 
 .home__user-badge {
@@ -167,6 +200,7 @@
     radial-gradient(circle at 80% 20%, var(--color-primary) 1px, transparent 1px),
     radial-gradient(circle at 60% 80%, var(--color-sand) 1.5px, transparent 1.5px);
   background-size: 60px 60px, 80px 80px, 100px 100px;
+  animation: float 6s ease-in-out infinite;
 }
 
 .home__hero-content {
@@ -184,11 +218,26 @@
   font-weight: 900;
   line-height: 1.2;
   letter-spacing: -0.02em;
+  animation: slideUp var(--motion-choreography) var(--ease-emphasized) both;
 }
 
 .home__hero-highlight {
   display: inline;
   color: var(--color-primary);
+  position: relative;
+}
+
+.home__hero-highlight::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 107, 53, 0.2);
+  border-radius: 4px;
+  z-index: -1;
+  animation: scaleIn var(--motion-choreography) var(--ease-spring) 0.2s both;
 }
 
 .home__hero-subtitle {
@@ -196,6 +245,7 @@
   color: var(--travel-muted);
   font-size: clamp(14px, 2vw, 16px);
   line-height: 1.6;
+  animation: slideUp var(--motion-choreography) var(--ease-emphasized) 0.1s both;
 }
 
 /* 搜索框 */
@@ -205,6 +255,12 @@
   border-radius: 16px;
   padding: 16px;
   box-shadow: var(--shadow-paper);
+  animation: slideUp var(--motion-choreography) var(--ease-emphasized) 0.2s both;
+  transition: box-shadow var(--motion-base) var(--ease-standard);
+}
+
+.home__search:hover {
+  box-shadow: var(--shadow-paper-hover);
 }
 
 .home__search-row {
@@ -289,12 +345,19 @@
   font-size: 15px;
   font-weight: 800;
   white-space: nowrap;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform var(--motion-fast) var(--ease-spring),
+              box-shadow var(--motion-fast) var(--ease-standard),
+              background var(--motion-fast) var(--ease-standard);
 }
 
 .home__search-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 22px rgba(255, 107, 53, 0.45);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(255, 107, 53, 0.45);
+}
+
+.home__search-btn:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
 }
 
 .home__days-picker {
@@ -315,12 +378,19 @@
   color: var(--color-primary);
   font-size: 16px;
   font-weight: 800;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition: background var(--motion-fast) var(--ease-standard),
+              border-color var(--motion-fast) var(--ease-standard),
+              transform var(--motion-fast) var(--ease-spring);
 }
 
 .home__days-btn:hover:not(:disabled) {
   border-color: var(--color-primary);
   background: rgba(255, 107, 53, 0.06);
+  transform: scale(1.1);
+}
+
+.home__days-btn:active:not(:disabled) {
+  transform: scale(0.95);
 }
 
 .home__days-btn:disabled {
@@ -388,13 +458,16 @@
   background: transparent;
   font-size: 14px;
   font-weight: 500;
-  transition: background 0.1s ease;
+  transition: background var(--motion-fast) var(--ease-standard),
+              color var(--motion-fast) var(--ease-standard),
+              transform var(--motion-fast) var(--ease-spring);
 }
 
 .home__dropdown-item:hover,
 .home__dropdown-item--active {
   background: rgba(255, 107, 53, 0.06);
   color: var(--color-primary);
+  transform: translateX(4px);
 }
 
 .home__dropdown-item .anticon {
@@ -416,6 +489,7 @@
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 16px;
+  animation: slideUp var(--motion-choreography) var(--ease-emphasized) 0.3s both;
 }
 
 .home__hot-tag-label {
@@ -435,12 +509,17 @@
   color: var(--travel-ink);
   font-size: 13px;
   font-weight: 600;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background var(--motion-fast) var(--ease-standard),
+              color var(--motion-fast) var(--ease-standard),
+              transform var(--motion-fast) var(--ease-spring),
+              box-shadow var(--motion-fast) var(--ease-standard);
 }
 
 .home__hot-tag:hover {
   background: rgba(255, 107, 53, 0.08);
   color: var(--color-primary);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.12);
 }
 
 /* ========== 快捷入口 ========== */
@@ -450,6 +529,7 @@
   padding: 0 24px;
   position: relative;
   z-index: 2;
+  animation: slideUp var(--motion-choreography) var(--ease-emphasized) 0.4s both;
 }
 
 .home__quick-grid {
@@ -471,12 +551,15 @@
   padding: 16px 8px;
   border-radius: 12px;
   text-decoration: none;
-  transition: background 0.15s ease, transform 0.15s ease;
+  transition: background var(--motion-fast) var(--ease-standard),
+              transform var(--motion-fast) var(--ease-spring),
+              box-shadow var(--motion-fast) var(--ease-standard);
 }
 
 .home__quick-item:hover {
-  background: rgba(28, 25, 23, 0.03);
-  transform: translateY(-2px);
+  background: rgba(255, 107, 53, 0.06);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(255, 107, 53, 0.12);
 }
 
 .home__quick-icon {
@@ -489,6 +572,13 @@
   color: #fff;
   font-size: 22px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transition: transform var(--motion-fast) var(--ease-spring),
+              box-shadow var(--motion-fast) var(--ease-standard);
+}
+
+.home__quick-item:hover .home__quick-icon {
+  transform: scale(1.1) rotate(-5deg);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
 }
 
 .home__quick-label {
@@ -530,11 +620,13 @@
   color: rgba(28, 25, 23, 0.45);
   font-weight: 600;
   cursor: pointer;
-  transition: color 0.15s ease;
+  transition: color var(--motion-fast) var(--ease-standard),
+              transform var(--motion-fast) var(--ease-spring);
 }
 
 .home__section-more:hover {
   color: var(--color-primary);
+  transform: translateX(4px);
 }
 
 /* ========== 热门目的地 ========== */
@@ -551,12 +643,21 @@
   background: #FFFDF9;
   box-shadow: var(--shadow-paper);
   text-align: left;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform var(--motion-base) var(--ease-spring),
+              box-shadow var(--motion-base) var(--ease-standard);
+  animation: popIn var(--motion-choreography) var(--ease-spring) both;
 }
 
+.home__dest-card:nth-child(1) { animation-delay: 0.1s; }
+.home__dest-card:nth-child(2) { animation-delay: 0.16s; }
+.home__dest-card:nth-child(3) { animation-delay: 0.22s; }
+.home__dest-card:nth-child(4) { animation-delay: 0.28s; }
+.home__dest-card:nth-child(5) { animation-delay: 0.34s; }
+.home__dest-card:nth-child(6) { animation-delay: 0.4s; }
+
 .home__dest-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 28px rgba(28, 25, 23, 0.12);
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 12px 32px rgba(28, 25, 23, 0.15);
 }
 
 .home__dest-img-wrap {
@@ -633,12 +734,18 @@
   background: #FFFDF9;
   box-shadow: var(--shadow-paper);
   text-align: left;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform var(--motion-base) var(--ease-spring),
+              box-shadow var(--motion-base) var(--ease-standard);
+  animation: popIn var(--motion-choreography) var(--ease-spring) both;
 }
 
+.home__featured-card:nth-child(1) { animation-delay: 0.1s; }
+.home__featured-card:nth-child(2) { animation-delay: 0.18s; }
+.home__featured-card:nth-child(3) { animation-delay: 0.26s; }
+
 .home__featured-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 28px rgba(28, 25, 23, 0.12);
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 12px 32px rgba(28, 25, 23, 0.15);
 }
 
 .home__featured-img-wrap {
@@ -768,6 +875,15 @@
   background: #FFFDF9;
   border: 1px solid rgba(28, 25, 23, 0.05);
   box-shadow: var(--shadow-paper);
+  animation: slideUp var(--motion-choreography) var(--ease-emphasized) both;
+}
+
+.home__ai-card {
+  animation-delay: 0.1s;
+}
+
+.home__reviews-card {
+  animation-delay: 0.2s;
 }
 
 .home__ai-card-header {
@@ -937,6 +1053,7 @@
 .home__cta-inner {
   max-width: 600px;
   margin: 0 auto;
+  animation: slideUp var(--motion-choreography) var(--ease-emphasized) both;
 }
 
 .home__cta-title {
@@ -966,12 +1083,19 @@
   box-shadow: 0 4px 20px rgba(255, 107, 53, 0.2);
   font-size: 16px;
   font-weight: 800;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform var(--motion-fast) var(--ease-spring),
+              box-shadow var(--motion-fast) var(--ease-standard),
+              background var(--motion-fast) var(--ease-standard);
 }
 
 .home__cta-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(255, 107, 53, 0.3);
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 10px 30px rgba(255, 107, 53, 0.35);
+}
+
+.home__cta-btn:active {
+  transform: translateY(-1px) scale(0.98);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.25);
 }
 
 /* ========== Focus ========== */

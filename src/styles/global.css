@@ -1,51 +1,51 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
-  /* 旅行 AI 视觉系统：智能紫 + 温暖旅行辅助色 */
-  --color-primary: #7c3aed;
-  --color-primary-strong: #5b21b6;
-  --color-secondary: #6366f1;
-  --color-accent: #be185d;
-  --color-accent-strong: #9f1239;
-  --color-sky: #0ea5e9;
-  --color-sand: #d6a96f;
-  --color-warning: #b45309;
-  --color-success: #047857;
-  --color-danger: #dc2626;
-  --color-background: #faf5ff;
+  /* 旅行平台暖色调：活力橙 + 珊瑚红 + 琥珀金 */
+  --color-primary: #FF6B35;
+  --color-primary-strong: #E85D2A;
+  --color-secondary: #F59E0B;
+  --color-accent: #E84057;
+  --color-accent-strong: #D63350;
+  --color-sky: #3B82F6;
+  --color-sand: #D4A76A;
+  --color-warning: #D97706;
+  --color-success: #059669;
+  --color-danger: #DC2626;
+  --color-background: #FFF8F0;
   --color-surface: #ffffff;
-  --color-ink: #0f172a;
-  --color-muted: rgba(15, 23, 42, 0.66);
+  --color-ink: #1C1917;
+  --color-muted: rgba(28, 25, 23, 0.6);
 
   --travel-mint: var(--color-background);
-  --travel-mint-light: #eef2ff;
+  --travel-mint-light: #FFF1E6;
   --travel-sand: var(--color-sand);
-  --travel-sand-light: #fff0d6;
-  --travel-cream: #fff7ed;
+  --travel-sand-light: #FFF0D6;
+  --travel-cream: #FFFAF5;
   --travel-accent: var(--color-accent);
   --travel-accent-strong: var(--color-accent-strong);
-  --travel-ocean: #312e81;
-  --travel-ocean-light: var(--color-secondary);
+  --travel-ocean: #292524;
+  --travel-ocean-light: #57534E;
   --travel-sky: var(--color-sky);
   --travel-ink: var(--color-ink);
   --travel-muted: var(--color-muted);
   --travel-white: #ffffff;
 
-  --travel-primary-rgb: 124, 58, 237;
-  --travel-secondary-rgb: 99, 102, 241;
-  --travel-ocean-rgb: 49, 46, 129;
-  --travel-sky-rgb: 14, 165, 233;
-  --travel-sand-rgb: 214, 169, 111;
-  --travel-accent-rgb: 190, 24, 93;
-  --travel-ink-rgb: 15, 23, 42;
+  --travel-primary-rgb: 255, 107, 53;
+  --travel-secondary-rgb: 245, 158, 11;
+  --travel-ocean-rgb: 41, 37, 36;
+  --travel-sky-rgb: 59, 130, 246;
+  --travel-sand-rgb: 212, 167, 106;
+  --travel-accent-rgb: 232, 64, 87;
+  --travel-ink-rgb: 28, 25, 23;
   --travel-white-rgb: 255, 255, 255;
 
-  --travel-surface: var(--travel-glass-strong);
-  --travel-surface-strong: rgba(255, 255, 255, 0.94);
-  --travel-surface-muted: var(--travel-glass);
-  --travel-frosted: var(--travel-glass);
-  --travel-frosted-border: var(--travel-glass-border);
-  --travel-border: rgba(var(--travel-ocean-rgb), 0.12);
+  --travel-surface: rgba(255, 255, 255, 0.92);
+  --travel-surface-strong: rgba(255, 255, 255, 0.96);
+  --travel-surface-muted: rgba(255, 255, 255, 0.78);
+  --travel-frosted: rgba(255, 255, 255, 0.72);
+  --travel-frosted-border: rgba(255, 255, 255, 0.8);
+  --travel-border: rgba(28, 25, 23, 0.08);
 
   --travel-radius-sm: 10px;
   --travel-radius-md: 14px;
@@ -57,13 +57,13 @@
   --travel-blur-md: 18px;
   --travel-blur-lg: 22px;
   --travel-glass: rgba(255, 255, 255, 0.58);
-  --travel-glass-strong: rgba(255, 255, 255, 0.78);
+  --travel-glass-strong: rgba(255, 255, 255, 0.82);
   --travel-glass-highlight: rgba(255, 255, 255, 0.72);
-  --travel-glass-border: rgba(255, 255, 255, 0.72);
+  --travel-glass-border: rgba(255, 255, 255, 0.8);
   --travel-glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.72);
 
-  --travel-shadow-card: 0 18px 42px rgba(49, 46, 129, 0.12), 0 2px 8px rgba(15, 23, 42, 0.04);
-  --travel-shadow-floating: 0 32px 90px rgba(49, 46, 129, 0.2);
+  --travel-shadow-card: 0 4px 24px rgba(28, 25, 23, 0.08), 0 1px 4px rgba(28, 25, 23, 0.04);
+  --travel-shadow-floating: 0 12px 48px rgba(28, 25, 23, 0.12), 0 2px 8px rgba(28, 25, 23, 0.06);
 
   --space-1: 4px;
   --space-2: 8px;
@@ -81,19 +81,19 @@
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
   --ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
 
-  --travel-period-morning: #d97706;
-  --travel-period-afternoon: var(--travel-sky);
-  --travel-period-evening: var(--travel-ocean);
+  --travel-period-morning: #F59E0B;
+  --travel-period-afternoon: #3B82F6;
+  --travel-period-evening: #7C3AED;
   --travel-budget-accommodation: var(--travel-accent);
-  --travel-budget-food: #d97706;
-  --travel-budget-transportation: var(--travel-sky);
+  --travel-budget-food: #D97706;
+  --travel-budget-transportation: #3B82F6;
   --travel-budget-tickets: var(--color-primary);
-  --travel-budget-other: rgba(var(--travel-ink-rgb), 0.55);
+  --travel-budget-other: rgba(28, 25, 23, 0.5);
 
-  /* 兼容旧变量名，逐步迁移到旅行视觉 */
+  /* 兼容旧变量名 */
   --c-terracotta: var(--travel-accent);
-  --c-terracotta-light: #f472b6;
-  --c-sand: rgba(var(--travel-accent-rgb), 0.1);
+  --c-terracotta-light: #FB7185;
+  --c-sand: rgba(245, 158, 11, 0.1);
   --c-cream: var(--travel-cream);
   --c-forest: var(--travel-ocean);
   --c-forest-light: var(--travel-ocean-light);
@@ -102,19 +102,19 @@
   --c-ink: var(--travel-ink);
   --c-ink-light: var(--travel-muted);
   --c-paper: var(--travel-mint-light);
-  --c-paper-dark: rgba(var(--travel-ocean-rgb), 0.12);
+  --c-paper-dark: rgba(28, 25, 23, 0.08);
   --c-white: var(--travel-white);
 
   --font-display: 'Plus Jakarta Sans', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-serif: 'Noto Sans SC', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-sans: 'Plus Jakarta Sans', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
 
-  --shadow-xs: 0 1px 2px rgba(49, 46, 129, 0.05);
-  --shadow-sm: 0 3px 12px rgba(49, 46, 129, 0.08), 0 1px 3px rgba(15, 23, 42, 0.04);
-  --shadow-md: 0 8px 24px rgba(49, 46, 129, 0.1), 0 2px 6px rgba(15, 23, 42, 0.04);
-  --shadow-lg: 0 16px 36px rgba(49, 46, 129, 0.12), 0 4px 12px rgba(15, 23, 42, 0.05);
-  --shadow-xl: 0 24px 64px rgba(49, 46, 129, 0.16), 0 8px 18px rgba(15, 23, 42, 0.06);
-  --shadow-inset: inset 0 1px 3px rgba(49, 46, 129, 0.05), inset 0 0 0 1px rgba(49, 46, 129, 0.06);
+  --shadow-xs: 0 1px 2px rgba(28, 25, 23, 0.05);
+  --shadow-sm: 0 2px 8px rgba(28, 25, 23, 0.06), 0 1px 2px rgba(28, 25, 23, 0.04);
+  --shadow-md: 0 4px 16px rgba(28, 25, 23, 0.08), 0 1px 4px rgba(28, 25, 23, 0.04);
+  --shadow-lg: 0 8px 28px rgba(28, 25, 23, 0.1), 0 2px 8px rgba(28, 25, 23, 0.04);
+  --shadow-xl: 0 16px 48px rgba(28, 25, 23, 0.14), 0 4px 12px rgba(28, 25, 23, 0.06);
+  --shadow-inset: inset 0 1px 3px rgba(28, 25, 23, 0.06), inset 0 0 0 1px rgba(28, 25, 23, 0.04);
 }
 
 * {

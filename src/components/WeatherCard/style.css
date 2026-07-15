@@ -21,7 +21,7 @@
   overflow: hidden;
   background:
     radial-gradient(circle at 12% 18%, rgba(var(--travel-white-rgb), 0.72), transparent 34%),
-    linear-gradient(135deg, rgba(94, 237, 234, 0.24) 0%, rgba(var(--travel-sand-rgb), 0.18) 100%);
+    linear-gradient(135deg, rgba(255, 140, 66, 0.24) 0%, rgba(var(--travel-sand-rgb), 0.18) 100%);
 }
 
 .weather-card__current::after {

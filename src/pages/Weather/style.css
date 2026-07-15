@@ -13,10 +13,7 @@
   min-height: 100dvh;
   overflow-x: hidden;
   overflow-y: auto;
-  background:
-    radial-gradient(circle at 12% 10%, rgba(255, 255, 255, 0.68), transparent 28%),
-    radial-gradient(circle at 88% 8%, rgba(var(--travel-primary-rgb), 0.18), transparent 30%),
-    linear-gradient(180deg, var(--weather-mint) 0%, #eef2ff 58%, #fff7ed 100%);
+  background: var(--color-background);
 }
 
 .weather-page button,
@@ -35,9 +32,7 @@
   min-height: 230px;
   padding: clamp(28px, 6vw, 56px) clamp(20px, 5vw, 72px) 70px;
   overflow: hidden;
-  background:
-    linear-gradient(110deg, rgba(var(--travel-primary-rgb), 0.92) 0%, rgba(var(--travel-secondary-rgb), 0.72) 45%, rgba(var(--travel-sky-rgb), 0.28) 100%),
-    radial-gradient(circle at 78% 28%, rgba(255, 255, 255, 0.42), transparent 30%);
+  background: linear-gradient(135deg, #FF6B35, #F59E0B);
 }
 
 .weather-page__hero::before {

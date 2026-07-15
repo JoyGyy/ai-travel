@@ -11,16 +11,16 @@ export default function App() {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: '#7C3AED',
-          colorInfo: '#6366F1',
-          colorBgLayout: '#F4F0FF',
-          colorBgElevated: 'rgba(255,255,255,0.78)',
-          colorBgContainer: 'rgba(255,255,255,0.72)',
-          colorText: '#0F172A',
+          colorPrimary: '#FF6B35',
+          colorInfo: '#3B82F6',
+          colorBgLayout: '#FFF8F0',
+          colorBgElevated: 'rgba(255,255,255,0.92)',
+          colorBgContainer: 'rgba(255,255,255,0.96)',
+          colorText: '#1C1917',
           colorError: '#DC2626',
-          colorWarning: '#B45309',
-          colorSuccess: '#047857',
-          borderRadius: 14,
+          colorWarning: '#D97706',
+          colorSuccess: '#059669',
+          borderRadius: 12,
           fontFamily: '\'Plus Jakarta Sans\', \'Noto Sans SC\', -apple-system, BlinkMacSystemFont, sans-serif',
         },
       }}

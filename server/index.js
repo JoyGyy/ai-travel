@@ -14,6 +14,7 @@ import authRoutes from './routes/auth.js'
 import shareRoutes from './routes/share.js'
 import { createRateLimit } from './middleware/rateLimit.js'
 import { env, getLLMProviders } from './config/env.js'
+import { errorHandler, notFoundHandler } from './utils/http.js'
 
 const app = express()
 const PORT = env.PORT
@@ -37,7 +38,7 @@ app.use(cors({
 app.use(express.json({ limit: env.REQUEST_BODY_LIMIT }))
 
 // 请求日志中间件
-app.use((req, res, next) => {
+app.use((req, _res, next) => {
   console.log(`[${new Date().toLocaleTimeString()}] ${req.method} ${req.url}`)
   next()
 })
@@ -55,40 +56,13 @@ app.use('/api/auth', authLimiter, authRoutes)
 app.use('/api/travel', shareRoutes)
 
 // 健康检查接口
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
 })
 
-// 404 处理
-app.use((req, res) => {
-  res.status(404).json({ error: '接口不存在' })
-})
-
-// 全局错误处理中间件
-app.use((err, req, res, next) => {
-  if (res.headersSent) {
-    next(err)
-    return
-  }
-
-  if (err.type === 'entity.too.large') {
-    res.status(413).json({ success: false, message: '请求数据过大' })
-    return
-  }
-
-  if (err.message === '不允许的跨域来源') {
-    res.status(403).json({ success: false, message: err.message })
-    return
-  }
-
-  if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
-    res.status(401).json({ success: false, message: '令牌无效或已过期' })
-    return
-  }
-
-  console.error('服务器错误:', err)
-  res.status(500).json({ error: '服务器内部错误' })
-})
+// 404 与全局错误处理
+app.use(notFoundHandler)
+app.use(errorHandler)
 
 // 启动服务
 app.listen(PORT, () => {

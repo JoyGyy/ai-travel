@@ -7,7 +7,9 @@ import { Router } from 'express'
 import attractionsDB from '../knowledge/attractions.json' with { type: 'json' }
 import { callLLMWithTools, getLLMConfig } from '../services/llm.js'
 import { getAllCities, retrieve } from '../services/rag.js'
+import { asyncHandler } from '../utils/http.js'
 import { initSSE, sendError, sendSSE } from '../utils/sse.js'
+import { ensureArray, readRequiredString } from '../utils/validation.js'
 
 const router = Router()
 
@@ -298,16 +300,16 @@ function buildMessagesWithMemory(historyMessages, currentMessage) {
 
 // ========== Chat Agent 主流程 ==========
 
-router.post('/chat', async (req, res) => {
+router.post('/chat', asyncHandler(async (req, res) => {
+  const message = readRequiredString(req.body.message, '问题', { min: 1, max: 2000 })
+  const historyMessages = ensureArray(req.body.messages, '历史消息', { max: 20 }).map((item) => {
+    const role = item?.role === 'assistant' ? 'assistant' : 'user'
+    const content = typeof item?.content === 'string' ? item.content.slice(0, 2000) : ''
+    return { role, content }
+  }).filter(item => item.content)
+
   try {
     initSSE(res)
-
-    const { message, messages: historyMessages } = req.body
-    if (!message) {
-      sendError(res, '请输入你的问题')
-      res.end()
-      return
-    }
 
     let ragSources = []
 
@@ -457,7 +459,7 @@ router.post('/chat', async (req, res) => {
   finally {
     res.end()
   }
-})
+}))
 
 // ========== Mock 回复 ==========
 

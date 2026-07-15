@@ -5,6 +5,8 @@
 
 import { Router } from 'express'
 import { executeAgent } from '../services/agent.js'
+import { asyncHandler } from '../utils/http.js'
+import { readPositiveInteger, readPositiveNumber, readRequiredString } from '../utils/validation.js'
 import { initSSE, sendError } from '../utils/sse.js'
 
 const router = Router()
@@ -14,18 +16,14 @@ const router = Router()
  * 请求体：{ city: string, budget: number, days: number }
  * 响应：SSE 流，最终返回 ItineraryResult
  */
-router.post('/recommend', async (req, res) => {
+router.post('/recommend', asyncHandler(async (req, res) => {
+  const city = readRequiredString(req.body.city, '目的地城市', { min: 1, max: 50 })
+  const budget = readPositiveNumber(req.body.budget, '预算', { min: 1, max: 1_000_000 })
+  const days = readPositiveInteger(req.body.days, '行程天数', { min: 1, max: 30 })
+
   try {
     // 初始化 SSE 连接
     initSSE(res)
-
-    const { city, budget, days } = req.body
-
-    if (!city) {
-      sendError(res, '请选择目的地城市')
-      res.end()
-      return
-    }
 
     // 执行 Agent 流程
     await executeAgent(res, { city, budget, days })
@@ -37,6 +35,6 @@ router.post('/recommend', async (req, res) => {
   finally {
     res.end()
   }
-})
+}))
 
 export default router

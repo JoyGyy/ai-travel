@@ -4,48 +4,42 @@
  */
 
 import { Router } from 'express'
-import { login, register, verifyToken } from '../services/auth.js'
+import { requireAuth } from '../middleware/auth.js'
+import { login, register } from '../services/auth.js'
+import { asyncHandler, httpError } from '../utils/http.js'
+import { readRequiredString } from '../utils/validation.js'
 
 const router = Router()
 
 /** 注册 */
-router.post('/register', async (req, res) => {
+router.post('/register', asyncHandler(async (req, res) => {
+  const username = readRequiredString(req.body.username, '用户名', { min: 2, max: 20 })
+  const password = readRequiredString(req.body.password, '密码', { min: 6, max: 72 })
   try {
-    const { username, password } = req.body
     const result = await register(username, password)
     res.json({ success: true, ...result })
   }
   catch (err) {
-    res.status(400).json({ success: false, message: err.message })
+    throw httpError(400, err.message)
   }
-})
+}))
 
 /** 登录 */
-router.post('/login', async (req, res) => {
+router.post('/login', asyncHandler(async (req, res) => {
+  const username = readRequiredString(req.body.username, '用户名', { min: 1, max: 20 })
+  const password = readRequiredString(req.body.password, '密码', { min: 1, max: 72 })
   try {
-    const { username, password } = req.body
     const result = await login(username, password)
     res.json({ success: true, ...result })
   }
   catch (err) {
-    res.status(400).json({ success: false, message: err.message })
+    throw httpError(400, err.message)
   }
-})
+}))
 
 /** 获取当前用户信息 */
-router.get('/me', (req, res) => {
-  try {
-    const authHeader = req.headers.authorization
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ success: false, message: '未登录' })
-    }
-    const token = authHeader.slice(7)
-    const payload = verifyToken(token)
-    res.json({ success: true, user: { id: payload.id, username: payload.username } })
-  }
-  catch {
-    res.status(401).json({ success: false, message: '令牌无效或已过期' })
-  }
+router.get('/me', requireAuth, (req, res) => {
+  res.json({ success: true, user: { id: req.user.id, username: req.user.username } })
 })
 
 export default router

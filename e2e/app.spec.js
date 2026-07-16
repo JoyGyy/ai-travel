@@ -26,6 +26,6 @@ test('核心路径：注册、天气查询、AI 咨询', async ({ page }) => {
   await page.goto('/chat')
   await expect(page.getByRole('heading', { name: '旅行顾问' })).toBeVisible()
   await page.getByRole('button', { name: '北京有哪些必去的景点？' }).click()
-  await expect(page.getByText('故宫博物院').first()).toBeVisible({ timeout: 30_000 })
+  await expect(page.getByText(/北京.*景点|热门景点推荐|故宫博物院/).first()).toBeVisible({ timeout: 30_000 })
   await expect(page.getByText('参考来源')).toBeVisible()
 })

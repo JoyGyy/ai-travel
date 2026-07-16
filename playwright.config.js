@@ -21,7 +21,7 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: 'pnpm --dir server dev',
+      command: 'SILICONFLOW_API_KEY= DEEPSEEK_API_KEY= pnpm --dir server dev',
       url: 'http://127.0.0.1:3030/api/health',
       reuseExistingServer: true,
       timeout: 30_000,

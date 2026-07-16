@@ -37,6 +37,7 @@ export default function Chat() {
   const [lastFailedText, setLastFailedText] = useState('')
   const messagesRef = useRef(null)
   const { sendRequest, abort } = useSSE()
+  const [modal, modalContextHolder] = Modal.useModal()
 
   const lastMessage = messages[messages.length - 1]
 
@@ -59,7 +60,7 @@ export default function Chat() {
   }, [messages.length, lastMessage?.content, lastMessage?.steps?.length])
 
   function clearChat() {
-    Modal.confirm({
+    modal.confirm({
       title: '确定要清空所有对话记录吗？',
       content: '清空后当前对话无法恢复。',
       okText: '确定清空',
@@ -122,6 +123,7 @@ export default function Chat() {
 
   return (
     <main className="chat-page" aria-labelledby="chat-title">
+      {modalContextHolder}
       <div className="chat-page__hero">
         <div className="chat-page__hero-deco" aria-hidden="true" />
         <div className="chat-page__hero-header">

@@ -2,7 +2,7 @@
  * 应用根组件
  * 使用 Ant Design ConfigProvider 配置主题，React Router 提供路由功能
  */
-import { ConfigProvider } from 'antd'
+import { App as AntdApp, ConfigProvider } from 'antd'
 import { RouterProvider } from 'react-router-dom'
 import router from '@/router'
 
@@ -25,7 +25,9 @@ export default function App() {
         },
       }}
     >
-      <RouterProvider router={router} />
+      <AntdApp>
+        <RouterProvider router={router} />
+      </AntdApp>
     </ConfigProvider>
   )
 }

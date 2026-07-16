@@ -2,9 +2,9 @@ import { ArrowLeftOutlined, CompassOutlined } from '@ant-design/icons'
 /**
  * 登录注册页面
  */
-import { message } from 'antd'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAppMessage } from '@/hooks/useAppMessage'
 import { useAuthStore } from '@/stores/auth'
 import './style.css'
 
@@ -29,6 +29,7 @@ const formCopy = {
 
 export default function Login() {
   const navigate = useNavigate()
+  const message = useAppMessage()
   const { login, register } = useAuthStore()
   const [tab, setTab] = useState('login')
   const [username, setUsername] = useState('')

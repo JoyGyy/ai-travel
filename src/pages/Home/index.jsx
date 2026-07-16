@@ -17,10 +17,10 @@ import {
  * 首页组件 - OTA 旅行平台风格
  * 丰富内容展示、暖色调、参考携程/飞猪布局
  */
-import { message } from 'antd'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { allCities } from '@/constants/cities'
+import { useAppMessage } from '@/hooks/useAppMessage'
 import { useWeather } from '@/hooks/useWeather'
 import { useAuthStore } from '@/stores/auth'
 import './style.css'
@@ -89,6 +89,7 @@ const userReviews = [
 
 export default function Home() {
   const navigate = useNavigate()
+  const message = useAppMessage()
   const user = useAuthStore(state => state.user)
   const hasHydrated = useAuthStore(state => state._hasHydrated)
   const [city, setCity] = useState('')

@@ -1,6 +1,7 @@
 /**
  * SSE (Server-Sent Events) 自定义 Hook
  * 用于处理流式 HTTP 响应，实现 AI 回复的实时流式显示
+ * @typedef {import('@/types/api').SSECallbacks} SSECallbacks
  */
 import { getAuthHeader } from '@/api/client'
 import { useCallback, useRef } from 'react'
@@ -9,6 +10,12 @@ export function useSSE() {
   const abortControllerRef = useRef(null)
   const requestIdRef = useRef(0)
 
+  /**
+   * @param {string} url
+   * @param {object} body
+   * @param {SSECallbacks} [callbacks]
+   * @returns {Promise<void>}
+   */
   const sendRequest = useCallback(async (url, body, callbacks = {}) => {
     abortControllerRef.current?.abort()
 

@@ -1,3 +1,5 @@
+/** @typedef {import('@/types/api').ApiSuccess} ApiSuccess */
+
 const AUTH_STORAGE_KEY = 'travel_auth'
 
 export class ApiError extends Error {
@@ -41,6 +43,12 @@ async function parseResponse(res) {
   }
 }
 
+/**
+ * 发起 JSON API 请求。
+ * @param {string} path
+ * @param {{ method?: string, body?: unknown, headers?: Record<string, string>, auth?: boolean, signal?: AbortSignal }} [options]
+ * @returns {Promise<ApiSuccess | null | object>}
+ */
 export async function request(path, options = {}) {
   const {
     method = 'GET',

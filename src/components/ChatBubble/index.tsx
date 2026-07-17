@@ -1,10 +1,13 @@
 /**
  * 聊天气泡组件
  * 根据消息角色（用户/AI）显示不同样式的气泡
+ * react-markdown 使用动态导入以减少初始包大小
  */
+import { Suspense, lazy } from 'react'
 import { RobotOutlined } from '@ant-design/icons'
-import Markdown from 'react-markdown'
 import './style.css'
+
+const Markdown = lazy(() => import('react-markdown'))
 
 interface ChatBubbleProps {
   role: 'user' | 'assistant'
@@ -26,7 +29,9 @@ export function ChatBubble({ role, content }: ChatBubbleProps) {
           ? content
           : (
               <div className="markdown-body">
-                <Markdown>{content}</Markdown>
+                <Suspense fallback={<span className="chat-bubble__loading">加载中...</span>}>
+                  <Markdown>{content}</Markdown>
+                </Suspense>
               </div>
             )}
       </div>

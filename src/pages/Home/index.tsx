@@ -312,9 +312,9 @@ export default function Home() {
                 <div className="home__search-label">
                   <span className="home__search-label-text">天数</span>
                   <div className="home__days-picker" aria-label="旅行天数">
-                    <button type="button" onClick={() => setDays(Math.max(1, days - 1))} className="home__days-btn" aria-label="减少天数" disabled={days <= 1}>-</button>
+                    <button type="button" onClick={() => setDays(prev => Math.max(1, prev - 1))} className="home__days-btn" aria-label="减少天数" disabled={days <= 1}>-</button>
                     <span className="home__days-value" aria-live="polite">{days}天</span>
-                    <button type="button" onClick={() => setDays(Math.min(30, days + 1))} className="home__days-btn" aria-label="增加天数" disabled={days >= 30}>+</button>
+                    <button type="button" onClick={() => setDays(prev => Math.min(30, prev + 1))} className="home__days-btn" aria-label="增加天数" disabled={days >= 30}>+</button>
                   </div>
                 </div>
               </div>

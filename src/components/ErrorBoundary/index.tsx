@@ -1,8 +1,9 @@
+import type { ReactNode } from 'react'
 /**
  * 错误边界组件
  * 捕获子组件的渲染错误，显示友好的错误页面
  */
-import { Component, type ReactNode } from 'react'
+import { Component } from 'react'
 import './style.css'
 
 interface ErrorBoundaryProps {

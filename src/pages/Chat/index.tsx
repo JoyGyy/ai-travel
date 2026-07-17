@@ -133,16 +133,18 @@ export default function Chat() {
             <h1 id="chat-title" className="chat-page__hero-title">旅行顾问</h1>
             <p className="chat-page__hero-subtitle">有什么旅行问题，尽管问我</p>
           </div>
-          {messages.length > 0 && (
-            <button
-              type="button"
-              onClick={clearChat}
-              className="chat-page__clear-btn"
-              aria-label="清空对话记录"
-            >
-              <DeleteOutlined aria-hidden="true" />
-            </button>
-          )}
+          {messages.length > 0
+            ? (
+                <button
+                  type="button"
+                  onClick={clearChat}
+                  className="chat-page__clear-btn"
+                  aria-label="清空对话记录"
+                >
+                  <DeleteOutlined aria-hidden="true" />
+                </button>
+              )
+            : null}
         </div>
       </div>
 
@@ -151,76 +153,86 @@ export default function Chat() {
           const isEmptyAssistant = msg.role === 'assistant' && !msg.content && isLoading && i === messages.length - 1
           return (
             <div key={msg._id}>
-              {msg.role === 'assistant' && msg.steps && msg.steps.length > 0 && (
-                <ChatAgentSteps steps={msg.steps} currentStep={0} isLoading={false} />
-              )}
-              {msg.role === 'assistant' && notice && i === messages.length - 1 && !isLoading && (
-                <div className="chat-page__notice" aria-live="polite">
-                  <ExclamationCircleOutlined aria-hidden="true" />
-                  <span>{notice}</span>
-                </div>
-              )}
-              {!isEmptyAssistant && <ChatBubble role={msg.role} content={msg.content} />}
+              {msg.role === 'assistant' && msg.steps && msg.steps.length > 0
+                ? <ChatAgentSteps steps={msg.steps} currentStep={0} isLoading={false} />
+                : null}
+              {msg.role === 'assistant' && notice && i === messages.length - 1 && !isLoading
+                ? (
+                    <div className="chat-page__notice" aria-live="polite">
+                      <ExclamationCircleOutlined aria-hidden="true" />
+                      <span>{notice}</span>
+                    </div>
+                  )
+                : null}
+              {isEmptyAssistant ? null : <ChatBubble role={msg.role} content={msg.content} />}
             </div>
           )
         })}
 
-        {chatError && (
-          <div className="chat-page__error" role="alert">
-            <span>{chatError}</span>
-            {lastFailedText && (
-              <button type="button" onClick={() => sendMessage(lastFailedText)}>重试</button>
-            )}
-          </div>
-        )}
-
-        {ragSources.length > 0 && !isLoading && <RAGSource sources={ragSources} />}
-
-        {isLoading && (
-          <>
-            {lastMessage?.steps && lastMessage.steps.length > 0 && (
-              <ChatAgentSteps steps={lastMessage.steps} currentStep={currentAgentStep} isLoading />
-            )}
-            <div className="chat-page__typing" aria-live="polite" aria-label="AI 正在输入">
-              <div className="chat-page__typing-avatar" aria-hidden="true">
-                <RobotOutlined />
+        {chatError
+          ? (
+              <div className="chat-page__error" role="alert">
+                <span>{chatError}</span>
+                {lastFailedText
+                  ? <button type="button" onClick={() => sendMessage(lastFailedText)}>重试</button>
+                  : null}
               </div>
-              <div className="chat-page__typing-dots" aria-hidden="true">
-                <span />
-                <span />
-                <span />
-              </div>
-            </div>
-          </>
-        )}
+            )
+          : null}
 
-        {messages.length === 0 && (
-          <div className="chat-page__empty">
-            <div className="chat-page__empty-card">
-              <div className="chat-page__empty-icon" aria-hidden="true">
-                <CompassOutlined />
+        {ragSources.length > 0 && !isLoading
+          ? <RAGSource sources={ragSources} />
+          : null}
+
+        {isLoading
+          ? (
+              <>
+                {lastMessage?.steps && lastMessage.steps.length > 0
+                  ? <ChatAgentSteps steps={lastMessage.steps} currentStep={currentAgentStep} isLoading />
+                  : null}
+                <div className="chat-page__typing" aria-live="polite" aria-label="AI 正在输入">
+                  <div className="chat-page__typing-avatar" aria-hidden="true">
+                    <RobotOutlined />
+                  </div>
+                  <div className="chat-page__typing-dots" aria-hidden="true">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+              </>
+            )
+          : null}
+
+        {messages.length === 0
+          ? (
+              <div className="chat-page__empty">
+                <div className="chat-page__empty-card">
+                  <div className="chat-page__empty-icon" aria-hidden="true">
+                    <CompassOutlined />
+                  </div>
+                  <h2>你好，旅行者</h2>
+                  <p>告诉我你的目的地，我来帮你规划</p>
+                  <p className="chat-page__empty-hint">基于 RAG + Agent 技术，提供精准旅行建议</p>
+                </div>
+                <p className="chat-page__quick-title">试试这样问</p>
+                <div className="chat-page__quick-list">
+                  {quickQuestions.map((q, i) => (
+                    <button
+                      key={q}
+                      type="button"
+                      onClick={() => sendMessage(q)}
+                      className="chat-page__quick-btn"
+                      style={{ animationDelay: `${i * 0.08}s` }}
+                    >
+                      <span className="chat-page__quick-num" aria-hidden="true">{i + 1}</span>
+                      <span>{q}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
-              <h2>你好，旅行者</h2>
-              <p>告诉我你的目的地，我来帮你规划</p>
-              <p className="chat-page__empty-hint">基于 RAG + Agent 技术，提供精准旅行建议</p>
-            </div>
-            <p className="chat-page__quick-title">试试这样问</p>
-            <div className="chat-page__quick-list">
-              {quickQuestions.map((q, i) => (
-                <button
-                  key={q}
-                  type="button"
-                  onClick={() => sendMessage(q)}
-                  className="chat-page__quick-btn"
-                  style={{ animationDelay: `${i * 0.08}s` }}
-                >
-                  <span className="chat-page__quick-num" aria-hidden="true">{i + 1}</span>
-                  <span>{q}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
+            )
+          : null}
       </div>
 
       <div className="chat-page__input-bar">

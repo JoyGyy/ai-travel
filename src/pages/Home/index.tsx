@@ -253,27 +253,33 @@ export default function Home() {
                     aria-invalid={Boolean(fieldErrors.city)}
                     aria-describedby={fieldErrors.city ? 'home-city-error' : undefined}
                   />
-                  {fieldErrors.city && <span id="home-city-error" className="home__search-error" role="alert">{fieldErrors.city}</span>}
+                  {fieldErrors.city
+                    ? <span id="home-city-error" className="home__search-error" role="alert">{fieldErrors.city}</span>
+                    : null}
                 </label>
-                {showDropdown && (
-                  <div id="home-city-dropdown" className="home__dropdown" role="listbox">
-                    {filteredCities.slice(0, 12).map((name, index) => (
-                      <button
-                        id={`home-city-option-${index}`}
-                        type="button"
-                        key={name}
-                        onClick={() => selectCity(name)}
-                        className={`home__dropdown-item ${city === name || activeCityIndex === index ? 'home__dropdown-item--active' : ''}`}
-                        role="option"
-                        aria-selected={city === name}
-                      >
-                        <EnvironmentOutlined aria-hidden="true" />
-                        {name}
-                      </button>
-                    ))}
-                    {!filteredCities.length && <div className="home__dropdown-empty">未找到匹配城市</div>}
-                  </div>
-                )}
+                {showDropdown
+                  ? (
+                      <div id="home-city-dropdown" className="home__dropdown" role="listbox">
+                        {filteredCities.slice(0, 12).map((name, index) => (
+                          <button
+                            id={`home-city-option-${index}`}
+                            type="button"
+                            key={name}
+                            onClick={() => selectCity(name)}
+                            className={`home__dropdown-item ${city === name || activeCityIndex === index ? 'home__dropdown-item--active' : ''}`}
+                            role="option"
+                            aria-selected={city === name}
+                          >
+                            <EnvironmentOutlined aria-hidden="true" />
+                            {name}
+                          </button>
+                        ))}
+                        {filteredCities.length === 0
+                          ? <div className="home__dropdown-empty">未找到匹配城市</div>
+                          : null}
+                      </div>
+                    )
+                  : null}
               </div>
 
               {/* 预算 */}
@@ -294,7 +300,9 @@ export default function Home() {
                     aria-invalid={Boolean(fieldErrors.budget)}
                     aria-describedby={fieldErrors.budget ? 'home-budget-error' : undefined}
                   />
-                  {fieldErrors.budget && <span id="home-budget-error" className="home__search-error" role="alert">{fieldErrors.budget}</span>}
+                  {fieldErrors.budget
+                    ? <span id="home-budget-error" className="home__search-error" role="alert">{fieldErrors.budget}</span>
+                    : null}
                 </label>
               </div>
 
@@ -319,15 +327,17 @@ export default function Home() {
             </div>
 
             {/* 天气提示 */}
-            {(weather || weatherLoading) && (
-              <div className="home__search-weather" aria-live="polite">
-                {weatherLoading
-                  ? <><span className="home__search-weather-spin" aria-hidden="true" /> 正在查询天气...</>
-                  : weather
-                    ? <><CloudOutlined aria-hidden="true" /> {weather.city} {weather.temperature}°C {weather.weatherDesc}</>
-                    : null}
-              </div>
-            )}
+            {weather || weatherLoading
+              ? (
+                  <div className="home__search-weather" aria-live="polite">
+                    {weatherLoading
+                      ? <><span className="home__search-weather-spin" aria-hidden="true" /> 正在查询天气...</>
+                      : weather
+                        ? <><CloudOutlined aria-hidden="true" /> {weather.city} {weather.temperature}°C {weather.weatherDesc}</>
+                        : null}
+                  </div>
+                )
+              : null}
           </form>
 
           {/* 热门搜索标签 */}

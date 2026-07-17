@@ -17,6 +17,7 @@ import {
  * 首页组件 - OTA 旅行平台风格
  * 丰富内容展示、暖色调、参考携程/飞猪布局
  */
+import type { ChangeEvent, FormEvent, KeyboardEvent } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { allCities } from '@/constants/cities'
@@ -111,25 +112,25 @@ export default function Home() {
     ? `home-city-option-${activeCityIndex}`
     : undefined
 
-  function clearFieldError(field) {
+  function clearFieldError(field: string) {
     setFieldErrors(prev => ({ ...prev, [field]: '' }))
   }
 
-  function selectCity(name) {
+  function selectCity(name: string) {
     setCity(name)
     clearFieldError('city')
     setShowDropdown(false)
     fetchWeather(name)
   }
 
-  function handleCityChange(event) {
+  function handleCityChange(event: ChangeEvent<HTMLInputElement>) {
     setCity(event.target.value)
     setActiveCityIndex(0)
     clearFieldError('city')
     setShowDropdown(true)
   }
 
-  function handleCityKeyDown(event) {
+  function handleCityKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (!showDropdown && ['ArrowDown', 'ArrowUp'].includes(event.key)) {
       setShowDropdown(true)
       return
@@ -185,7 +186,7 @@ export default function Home() {
     navigate(`/detail?city=${encodeURIComponent(city.trim())}&budget=${budgetNum}&days=${days}`)
   }
 
-  function submitPlanner(event) {
+  function submitPlanner(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     onStart()
   }

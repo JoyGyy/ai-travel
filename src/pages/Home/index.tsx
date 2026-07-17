@@ -17,7 +17,7 @@ import {
  * 首页组件 - OTA 旅行平台风格
  * 丰富内容展示、暖色调、参考携程/飞猪布局
  */
-import type { ChangeEvent, FormEvent, KeyboardEvent } from 'react'
+import type { ChangeEvent, KeyboardEvent, SubmitEvent } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { allCities } from '@/constants/cities'
@@ -186,7 +186,7 @@ export default function Home() {
     navigate(`/detail?city=${encodeURIComponent(city.trim())}&budget=${budgetNum}&days=${days}`)
   }
 
-  function submitPlanner(event: FormEvent<HTMLFormElement>) {
+  function submitPlanner(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
     onStart()
   }

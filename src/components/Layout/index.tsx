@@ -8,15 +8,15 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useAuthStore } from '@/stores/auth'
 import './style.css'
 
+const tabs = [
+  { key: '/', title: '首页', icon: <HomeOutlined aria-hidden="true" /> },
+  { key: '/weather', title: '天气', icon: <CloudOutlined aria-hidden="true" /> },
+  { key: '/chat', title: 'AI咨询', icon: <RobotOutlined aria-hidden="true" /> },
+] as const
+
 /** 顶部导航 */
 function TopNav() {
   const user = useAuthStore(state => state.user)
-
-  const tabs = [
-    { key: '/', title: '首页', icon: <HomeOutlined aria-hidden="true" /> },
-    { key: '/weather', title: '天气', icon: <CloudOutlined aria-hidden="true" /> },
-    { key: '/chat', title: 'AI咨询', icon: <RobotOutlined aria-hidden="true" /> },
-  ]
 
   return (
     <nav className="layout-nav" aria-label="主导航">

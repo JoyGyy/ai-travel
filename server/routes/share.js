@@ -4,9 +4,11 @@
  */
 
 import { Router } from 'express'
+import { requireAuth } from '../middleware/auth.js'
 import { createRateLimit } from '../middleware/rateLimit.js'
-import { verifyToken } from '../services/auth.js'
 import { createShare, getShare } from '../services/share.js'
+import { asyncHandler, httpError } from '../utils/http.js'
+import { readPositiveInteger, readRequiredString } from '../utils/validation.js'
 
 const router = Router()
 
@@ -20,62 +22,35 @@ const shareGetLimiter = createRateLimit({ name: 'share:get', windowMs: 60_000, m
 const sharePostLimiter = createRateLimit({ name: 'share:post', windowMs: 60_000, maxRequests: 10, message: '创建分享过于频繁，请稍后再试' })
 
 function validateSharePayload(payload) {
-  const { city, days, budget, itinerary } = payload
+  if (!payload || typeof payload !== 'object')
+    throw httpError(400, '缺少分享数据')
 
-  if (Buffer.byteLength(JSON.stringify(payload), 'utf8') > MAX_SHARE_BODY_SIZE) {
-    return '请求数据过大'
-  }
-  if (!city || !days || !budget || !itinerary) {
-    return '缺少必要参数'
-  }
-  if (typeof city !== 'string' || city.length > 50) {
-    return '城市名称不合法'
-  }
-  if (!Number.isInteger(Number(days)) || Number(days) < 1 || Number(days) > 30) {
-    return '行程天数不合法'
-  }
-  if (String(budget).length > 50) {
-    return '预算参数不合法'
-  }
-  return ''
+  if (Buffer.byteLength(JSON.stringify(payload), 'utf8') > MAX_SHARE_BODY_SIZE)
+    throw httpError(400, '请求数据过大')
+
+  const city = readRequiredString(payload.city, '城市名称', { min: 1, max: 50 })
+  const days = readPositiveInteger(payload.days, '行程天数', { min: 1, max: 30 })
+  const budget = readRequiredString(String(payload.budget ?? ''), '预算', { min: 1, max: 50 })
+
+  if (!payload.itinerary)
+    throw httpError(400, '缺少行程数据')
+
+  return { city, days, budget, itinerary: payload.itinerary }
 }
 
 /** 创建分享 — 需要 JWT 认证 */
-router.post('/share', sharePostLimiter, (req, res) => {
-  try {
-    const authHeader = req.headers.authorization
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ success: false, message: '未登录' })
-    }
-
-    const token = authHeader.slice(7)
-    verifyToken(token) // 仅验证令牌有效性，无需使用返回值
-
-    const { city, days, budget, itinerary } = req.body
-    const message = validateSharePayload(req.body)
-    if (message) {
-      return res.status(400).json({ success: false, message })
-    }
-
-    const shareId = createShare({ city, days: Number(days), budget, itinerary })
-    res.json({ success: true, shareId, shareUrl: `/share/${shareId}` })
-  }
-  catch (err) {
-    // verifyToken 抛出异常说明令牌无效
-    if (err.message?.includes('invalid') || err.message?.includes('expired') || err.name === 'JsonWebTokenError') {
-      return res.status(401).json({ success: false, message: '令牌无效或已过期' })
-    }
-    res.status(500).json({ success: false, message: '创建分享失败' })
-  }
-})
+router.post('/share', sharePostLimiter, requireAuth, asyncHandler(async (req, res) => {
+  const payload = validateSharePayload(req.body)
+  const shareId = createShare(payload)
+  res.json({ success: true, shareId, shareUrl: `/share/${shareId}` })
+}))
 
 /** 获取分享数据 — 公开接口 */
-router.get('/share/:id', shareGetLimiter, (req, res) => {
+router.get('/share/:id', shareGetLimiter, asyncHandler(async (req, res) => {
   const share = getShare(req.params.id)
-  if (!share) {
-    return res.status(404).json({ success: false, message: '分享不存在' })
-  }
+  if (!share)
+    throw httpError(404, '分享不存在')
   res.json({ success: true, data: share })
-})
+}))
 
 export default router

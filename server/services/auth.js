@@ -32,7 +32,7 @@ const findUserByName = db.prepare('SELECT * FROM users WHERE username = ?')
  * 注册新用户
  * @param {string} username - 用户名
  * @param {string} password - 密码
- * @returns {{ token: string, user: { id: string, username: string, createdAt: string } }}
+ * @returns {Promise<{ token: string, user: { id: string, username: string, createdAt: string } }>}
  */
 async function register(username, password) {
   if (!username || !password)
@@ -60,7 +60,7 @@ async function register(username, password) {
  * 用户登录
  * @param {string} username - 用户名
  * @param {string} password - 密码
- * @returns {{ token: string, user: { id: string, username: string, createdAt: string } }}
+ * @returns {Promise<{ token: string, user: { id: string, username: string, createdAt: string } }>}
  */
 async function login(username, password) {
   if (!username || !password)

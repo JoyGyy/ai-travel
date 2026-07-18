@@ -3,7 +3,7 @@ import { config } from 'dotenv'
 
 config({ path: path.resolve(import.meta.dirname, '../../.env') })
 
-const DEFAULT_CORS_ORIGINS = ['http://localhost:5181', 'http://localhost:3000']
+const DEFAULT_CORS_ORIGINS = ['http://localhost:5181', 'http://127.0.0.1:5181', 'http://localhost:3000', 'http://127.0.0.1:3000']
 const DEFAULT_SILICONFLOW_BASE_URL = 'https://api.siliconflow.cn/v1'
 const DEFAULT_SILICONFLOW_MODEL = 'Qwen/Qwen2.5-7B-Instruct'
 const DEFAULT_DEEPSEEK_BASE_URL = 'https://api.deepseek.com/v1'

@@ -123,7 +123,7 @@ async function callLLMStream(systemPrompt, userPrompt, onChunk) {
  * 调用 LLM（支持 function calling）
  * @param {object[]} messages - 对话历史
  * @param {object[]} tools - 工具定义
- * @returns {object|null} LLM 响应消息
+ * @returns {Promise<object|null>} LLM 响应消息
  */
 async function callLLMWithTools(messages, tools) {
   const config = getLLMConfig()

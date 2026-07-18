@@ -41,3 +41,5 @@ playwright-report/
 # SSL 证书
 *.pem
 *.key
+
+docs/

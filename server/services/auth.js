@@ -1,32 +1,52 @@
 /**
  * 认证服务
  * 提供用户注册、登录、JWT 验证功能
- * 使用 SQLite 存储用户数据
+ * 使用 SQLite (sql.js WASM) 存储用户数据
  */
 
+import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import path from 'node:path'
 import bcrypt from 'bcryptjs'
-import Database from 'better-sqlite3'
+import initSqlJs from 'sql.js'
 import jwt from 'jsonwebtoken'
 import { env } from '../config/env.js'
 
 const SALT_ROUNDS = 10
 
-// 初始化 SQLite 数据库
+// 初始化 SQLite 数据库（WASM，无需原生编译）
 const DB_PATH = path.join(import.meta.dirname, '../data/users.db')
-const db = new Database(DB_PATH)
-db.pragma('journal_mode = WAL')
-db.exec(`
-  CREATE TABLE IF NOT EXISTS users (
-    id TEXT PRIMARY KEY,
-    username TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL,
-    created_at TEXT NOT NULL DEFAULT (datetime('now'))
-  )
-`)
+const DB_DIR = path.dirname(DB_PATH)
 
-const insertUser = db.prepare('INSERT INTO users (id, username, password, created_at) VALUES (?, ?, ?, ?)')
-const findUserByName = db.prepare('SELECT * FROM users WHERE username = ?')
+let db = null
+let saveDb = null
+
+const ready = (async () => {
+  await mkdir(DB_DIR, { recursive: true })
+  const SQL = await initSqlJs()
+
+  try {
+    const buffer = await readFile(DB_PATH)
+    db = new SQL.Database(buffer)
+  }
+  catch {
+    db = new SQL.Database()
+  }
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS users (
+      id TEXT PRIMARY KEY,
+      username TEXT UNIQUE NOT NULL,
+      password TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    )
+  `)
+
+  saveDb = async () => {
+    const data = db.export()
+    await writeFile(DB_PATH, Buffer.from(data))
+  }
+  await saveDb()
+})()
 
 /**
  * 注册新用户
@@ -35,6 +55,8 @@ const findUserByName = db.prepare('SELECT * FROM users WHERE username = ?')
  * @returns {Promise<{ token: string, user: { id: string, username: string, createdAt: string } }>}
  */
 async function register(username, password) {
+  await ready
+
   if (!username || !password)
     throw new Error('用户名和密码不能为空')
   if (username.length < 2 || username.length > 20)
@@ -42,15 +64,16 @@ async function register(username, password) {
   if (password.length < 6)
     throw new Error('密码长度至少 6 个字符')
 
-  const existing = findUserByName.get(username)
-  if (existing)
+  const existing = db.exec('SELECT id FROM users WHERE username = ?', [username])
+  if (existing.length > 0 && existing[0].values.length > 0)
     throw new Error('用户名已存在')
 
   const hashed = await bcrypt.hash(password, SALT_ROUNDS)
   const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
   const createdAt = new Date().toISOString()
 
-  insertUser.run(id, username, hashed, createdAt)
+  db.run('INSERT INTO users (id, username, password, created_at) VALUES (?, ?, ?, ?)', [id, username, hashed, createdAt])
+  await saveDb()
 
   const token = jwt.sign({ id, username }, env.JWT_SECRET, { expiresIn: '7d' })
   return { token, user: { id, username, createdAt } }
@@ -63,19 +86,22 @@ async function register(username, password) {
  * @returns {Promise<{ token: string, user: { id: string, username: string, createdAt: string } }>}
  */
 async function login(username, password) {
+  await ready
+
   if (!username || !password)
     throw new Error('用户名和密码不能为空')
 
-  const user = findUserByName.get(username)
-  if (!user)
+  const result = db.exec('SELECT id, username, password, created_at FROM users WHERE username = ?', [username])
+  if (result.length === 0 || result[0].values.length === 0)
     throw new Error('用户名或密码错误')
 
-  const match = await bcrypt.compare(password, user.password)
+  const [id, uname, hashedPassword, createdAt] = result[0].values[0]
+  const match = await bcrypt.compare(password, hashedPassword)
   if (!match)
     throw new Error('用户名或密码错误')
 
-  const token = jwt.sign({ id: user.id, username: user.username }, env.JWT_SECRET, { expiresIn: '7d' })
-  return { token, user: { id: user.id, username: user.username, createdAt: user.created_at } }
+  const token = jwt.sign({ id, username: uname }, env.JWT_SECRET, { expiresIn: '7d' })
+  return { token, user: { id, username: uname, createdAt } }
 }
 
 /**

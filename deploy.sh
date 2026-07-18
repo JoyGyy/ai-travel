@@ -6,10 +6,10 @@ cd /Users/joygy/Documents/react/react-travel
 pnpm build
 
 echo "========== 2. 上传 dist 到服务器 =========="
-rsync -avz dist/ ecs:/opt/react-travel/dist/
+scp -r dist/* ecs:/opt/react-travel/dist/
 
 echo "========== 3. 上传 server 到服务器 =========="
-rsync -avz --exclude='node_modules' --exclude='data' server/ ecs:/opt/react-travel/server/
+tar -czf - --exclude='node_modules' --exclude='data' server/ | ssh ecs "cd /opt/react-travel && tar -xzf -"
 
 echo "========== 3.5 上传 PM2 配置 =========="
 scp ecosystem.config.cjs ecs:/opt/react-travel/

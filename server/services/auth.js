@@ -19,14 +19,19 @@ const DB_DIR = path.dirname(DB_PATH)
 
 let db = null
 let saveDb = null
+let initError = null
 
 const ready = (async () => {
   await mkdir(DB_DIR, { recursive: true })
-  const SQL = await initSqlJs()
+
+  // locateFile 确保 pnpm 软链接下能正确找到 WASM 文件
+  const SQL = await initSqlJs({
+    locateFile: file => path.join(import.meta.dirname, '../node_modules/sql.js/dist', file),
+  })
 
   try {
     const buffer = await readFile(DB_PATH)
-    db = new SQL.Database(buffer)
+    db = new SQL.Database(new Uint8Array(buffer))
   }
   catch {
     db = new SQL.Database()
@@ -46,7 +51,10 @@ const ready = (async () => {
     await writeFile(DB_PATH, Buffer.from(data))
   }
   await saveDb()
-})()
+})().catch((err) => {
+  console.error('[auth] 数据库初始化失败:', err.message)
+  initError = err
+})
 
 /**
  * 注册新用户
@@ -56,6 +64,7 @@ const ready = (async () => {
  */
 async function register(username, password) {
   await ready
+  if (initError) throw new Error('数据库初始化失败，请稍后重试')
 
   if (!username || !password)
     throw new Error('用户名和密码不能为空')
@@ -87,6 +96,7 @@ async function register(username, password) {
  */
 async function login(username, password) {
   await ready
+  if (initError) throw new Error('数据库初始化失败，请稍后重试')
 
   if (!username || !password)
     throw new Error('用户名和密码不能为空')

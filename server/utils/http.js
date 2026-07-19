@@ -46,8 +46,11 @@ export function errorHandler(err, _req, res, next) {
     return
   }
 
-  if (err instanceof HttpError) {
-    res.status(err.status).json({ success: false, message: err.message })
+  if (typeof err.status === 'number') {
+    const payload = { success: false, message: err.message }
+    if (err.quota)
+      payload.quota = err.quota
+    res.status(err.status).json(payload)
     return
   }
 

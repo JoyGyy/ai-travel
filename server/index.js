@@ -47,13 +47,18 @@ app.use((req, _res, next) => {
 const aiLimiter = createRateLimit({ name: 'ai', windowMs: 60_000, maxRequests: 15, message: 'AI 请求过于频繁，请稍后再试' })
 // 限流：认证接口每分钟最多 10 次（防暴力破解）
 const authLimiter = createRateLimit({ name: 'auth', windowMs: 60_000, maxRequests: 10, message: '登录请求过于频繁，请稍后再试' })
+// 限流：注册接口每小时最多 5 次（降低批量注册风险）
+const registerLimiter = createRateLimit({ name: 'register', windowMs: 60 * 60_000, maxRequests: 5, message: '注册过于频繁，请稍后再试' })
 
 // 挂载路由
-app.use('/api/travel', aiLimiter, travelRoutes)
-app.use('/api/travel', aiLimiter, chatRoutes)
-app.use('/api', weatherRoutes)
-app.use('/api/auth', authLimiter, authRoutes)
+app.use('/api/travel/recommend', aiLimiter)
+app.use('/api/travel/chat', aiLimiter)
+app.use('/api/travel', travelRoutes)
+app.use('/api/travel', chatRoutes)
 app.use('/api/travel', shareRoutes)
+app.use('/api', weatherRoutes)
+app.use('/api/auth/register', registerLimiter)
+app.use('/api/auth', authLimiter, authRoutes)
 
 // 健康检查接口
 app.get('/api/health', (_req, res) => {

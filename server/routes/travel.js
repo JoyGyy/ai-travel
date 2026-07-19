@@ -4,6 +4,8 @@
  */
 
 import { Router } from 'express'
+import { consumeAiQuotaForRequest } from '../middleware/aiQuota.js'
+import { requireAuthForRequest } from '../middleware/auth.js'
 import { executeAgent } from '../services/agent.js'
 import { asyncHandler } from '../utils/http.js'
 import { readPositiveInteger, readPositiveNumber, readRequiredString } from '../utils/validation.js'
@@ -20,6 +22,9 @@ router.post('/recommend', asyncHandler(async (req, res) => {
   const city = readRequiredString(req.body.city, '目的地城市', { min: 1, max: 50 })
   const budget = readPositiveNumber(req.body.budget, '预算', { min: 1, max: 1_000_000 })
   const days = readPositiveInteger(req.body.days, '行程天数', { min: 1, max: 30 })
+
+  requireAuthForRequest(req)
+  await consumeAiQuotaForRequest(req, res)
 
   try {
     // 初始化 SSE 连接

@@ -4,6 +4,8 @@
  */
 
 import { Router } from 'express'
+import { consumeAiQuotaForRequest } from '../middleware/aiQuota.js'
+import { requireAuthForRequest } from '../middleware/auth.js'
 import attractionsDB from '../knowledge/attractions.json' with { type: 'json' }
 import { callLLMWithTools, getLLMConfig } from '../services/llm.js'
 import { getAllCities, retrieve } from '../services/rag.js'
@@ -307,6 +309,9 @@ router.post('/chat', asyncHandler(async (req, res) => {
     const content = typeof item?.content === 'string' ? item.content.slice(0, 2000) : ''
     return { role, content }
   }).filter(item => item.content)
+
+  requireAuthForRequest(req)
+  await consumeAiQuotaForRequest(req, res)
 
   try {
     initSSE(res)

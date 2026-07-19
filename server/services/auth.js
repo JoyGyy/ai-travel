@@ -12,6 +12,16 @@ import jwt from 'jsonwebtoken'
 import { env } from '../config/env.js'
 
 const SALT_ROUNDS = 10
+const DAILY_AI_LIMIT = 10
+
+function getTodayKey() {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+
+  return `${year}-${month}-${day}`
+}
 
 // 初始化 SQLite 数据库（WASM，无需原生编译）
 const DB_PATH = path.join(import.meta.dirname, '../data/users.db')
@@ -43,7 +53,15 @@ const ready = (async () => {
       username TEXT UNIQUE NOT NULL,
       password TEXT NOT NULL,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
-    )
+    );
+
+    CREATE TABLE IF NOT EXISTS ai_usage (
+      user_id TEXT NOT NULL,
+      usage_date TEXT NOT NULL,
+      used_count INTEGER NOT NULL DEFAULT 0,
+      updated_at TEXT NOT NULL,
+      PRIMARY KEY (user_id, usage_date)
+    );
   `)
 
   saveDb = async () => {
@@ -123,4 +141,50 @@ function verifyToken(token) {
   return jwt.verify(token, env.JWT_SECRET)
 }
 
-export { login, register, verifyToken }
+async function getAiQuotaStatus(userId, date = getTodayKey()) {
+  await ready
+  if (initError) throw new Error('数据库初始化失败，请稍后重试')
+  if (!userId) throw new Error('用户信息无效')
+
+  const result = db.exec('SELECT used_count FROM ai_usage WHERE user_id = ? AND usage_date = ?', [userId, date])
+  const used = result.length > 0 && result[0].values.length > 0
+    ? Number(result[0].values[0][0])
+    : 0
+
+  return {
+    used,
+    limit: DAILY_AI_LIMIT,
+    remaining: Math.max(DAILY_AI_LIMIT - used, 0),
+  }
+}
+
+async function consumeAiQuota(userId, date = getTodayKey()) {
+  const currentQuota = await getAiQuotaStatus(userId, date)
+
+  if (currentQuota.remaining <= 0) {
+    const err = new Error('今日 AI 使用次数已达上限，请明天再试')
+    err.status = 429
+    err.quota = currentQuota
+    throw err
+  }
+
+  const next = currentQuota.used + 1
+  const updatedAt = new Date().toISOString()
+
+  db.run(
+    `INSERT INTO ai_usage (user_id, usage_date, used_count, updated_at)
+     VALUES (?, ?, ?, ?)
+     ON CONFLICT(user_id, usage_date)
+     DO UPDATE SET used_count = excluded.used_count, updated_at = excluded.updated_at`,
+    [userId, date, next, updatedAt],
+  )
+  await saveDb()
+
+  return {
+    used: next,
+    limit: DAILY_AI_LIMIT,
+    remaining: DAILY_AI_LIMIT - next,
+  }
+}
+
+export { consumeAiQuota, getAiQuotaStatus, login, register, verifyToken }

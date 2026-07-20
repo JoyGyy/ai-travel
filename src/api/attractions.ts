@@ -8,6 +8,8 @@ function buildQuery(filters: AttractionFilters = {}) {
   if (filters.ticketType) params.set('ticketType', filters.ticketType)
   if (filters.keyword) params.set('keyword', filters.keyword)
   if (filters.tag) params.set('tag', filters.tag)
+  if (filters.page) params.set('page', String(filters.page))
+  if (filters.pageSize) params.set('pageSize', String(filters.pageSize))
   const query = params.toString()
   return query ? `?${query}` : ''
 }

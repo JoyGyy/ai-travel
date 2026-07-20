@@ -1,5 +1,5 @@
 import { HeartFilled, HeartOutlined, SearchOutlined } from '@ant-design/icons'
-import { Button, Empty, Input, message, Select, Spin, Tag } from 'antd'
+import { Button, Empty, Input, message, Pagination, Select, Spin, Tag } from 'antd'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -11,6 +11,7 @@ import './style.css'
 
 export default function Attractions() {
   const [items, setItems] = useState<Attraction[]>([])
+  const [total, setTotal] = useState(0)
   const [cities, setCities] = useState<string[]>([])
   const [tags, setTags] = useState<string[]>([])
   const [filters, setFilters] = useState<AttractionFilters>({})
@@ -18,12 +19,15 @@ export default function Attractions() {
   const [error, setError] = useState('')
   const [msg, contextHolder] = message.useMessage()
 
+  const PAGE_SIZE = 12
+
   const load = useCallback(async (nextFilters: AttractionFilters) => {
     setLoading(true)
     setError('')
     try {
-      const data = await fetchAttractions(nextFilters)
+      const data = await fetchAttractions({ ...nextFilters, pageSize: PAGE_SIZE })
       setItems(data.items)
+      setTotal(data.total)
       setCities(data.cities)
       setTags(data.tags)
     }
@@ -42,9 +46,13 @@ export default function Attractions() {
   /* eslint-enable react-hooks/set-state-in-effect */
 
   function updateFilters(patch: AttractionFilters) {
-    const next = { ...filters, ...patch }
+    const next = { ...filters, ...patch, page: patch.page || 1 }
     setFilters(next)
     load(next)
+  }
+
+  function handlePageChange(page: number) {
+    updateFilters({ page })
   }
 
   async function toggleFavorite(item: Attraction) {
@@ -120,29 +128,43 @@ export default function Attractions() {
 
       {!loading && !error && items.length > 0
         ? (
-            <section className="attractions-page__grid" aria-label="景点列表">
-              {items.map(item => (
-                <article key={item.id} className="attractions-page__card">
-                  <img src={item.coverImage} alt="" className="attractions-page__cover" />
-                  <div className="attractions-page__card-body">
-                    <div className="attractions-page__card-title-row">
-                      <h2>{item.name}</h2>
-                      <button type="button" aria-label={`${item.isFavorite ? '取消收藏' : '收藏'}${item.name}`} onClick={() => toggleFavorite(item)} className="attractions-page__favorite">
-                        {item.isFavorite ? <HeartFilled /> : <HeartOutlined />}
-                      </button>
+            <>
+              <section className="attractions-page__grid" aria-label="景点列表">
+                {items.map(item => (
+                  <article key={item.id} className="attractions-page__card">
+                    <img src={item.coverImage} alt="" className="attractions-page__cover" />
+                    <div className="attractions-page__card-body">
+                      <div className="attractions-page__card-title-row">
+                        <h2>{item.name}</h2>
+                        <button type="button" aria-label={`${item.isFavorite ? '取消收藏' : '收藏'}${item.name}`} onClick={() => toggleFavorite(item)} className="attractions-page__favorite">
+                          {item.isFavorite ? <HeartFilled /> : <HeartOutlined />}
+                        </button>
+                      </div>
+                      <p>{item.summary}</p>
+                      <div className="attractions-page__meta">
+                        <Tag color={item.ticketType === 'free' ? 'green' : 'orange'}>{item.ticketType === 'free' ? '免费' : '收费'}</Tag>
+                        <span>{item.city}</span>
+                        <span>{item.priceText}</span>
+                      </div>
+                      <div className="attractions-page__tags">{item.tags.map(tag => <Tag key={tag}>{tag}</Tag>)}</div>
+                      <Link className="attractions-page__detail-link" to={`/attractions/${item.id}`}>查看详情</Link>
                     </div>
-                    <p>{item.summary}</p>
-                    <div className="attractions-page__meta">
-                      <Tag color={item.ticketType === 'free' ? 'green' : 'orange'}>{item.ticketType === 'free' ? '免费' : '收费'}</Tag>
-                      <span>{item.city}</span>
-                      <span>{item.priceText}</span>
-                    </div>
-                    <div className="attractions-page__tags">{item.tags.map(tag => <Tag key={tag}>{tag}</Tag>)}</div>
-                    <Link className="attractions-page__detail-link" to={`/attractions/${item.id}`}>查看详情</Link>
-                  </div>
-                </article>
-              ))}
-            </section>
+                  </article>
+                ))}
+              </section>
+              {total > PAGE_SIZE && (
+                <div className="attractions-page__pagination">
+                  <Pagination
+                    current={filters.page || 1}
+                    total={total}
+                    pageSize={PAGE_SIZE}
+                    showSizeChanger={false}
+                    showTotal={t => `共 ${t} 个景点`}
+                    onChange={handlePageChange}
+                  />
+                </div>
+              )}
+            </>
           )
         : null}
     </main>

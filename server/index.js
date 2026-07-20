@@ -13,6 +13,7 @@ import attractionRoutes from './routes/attractions.js'
 import weatherRoutes from './routes/weather.js'
 import authRoutes from './routes/auth.js'
 import shareRoutes from './routes/share.js'
+import adminAttractionRoutes from './routes/admin/attractions.js'
 import { createRateLimit } from './middleware/rateLimit.js'
 import { env, getLLMProviders } from './config/env.js'
 import { errorHandler, notFoundHandler } from './utils/http.js'
@@ -57,6 +58,7 @@ app.use('/api/travel/chat', aiLimiter)
 app.use('/api/travel', travelRoutes)
 app.use('/api/travel', chatRoutes)
 app.use('/api/attractions', attractionRoutes)
+app.use('/api/admin/attractions', adminAttractionRoutes)
 app.use('/api/travel', shareRoutes)
 app.use('/api', weatherRoutes)
 app.use('/api/auth/register', registerLimiter)

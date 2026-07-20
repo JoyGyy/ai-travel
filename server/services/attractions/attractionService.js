@@ -1,6 +1,7 @@
 /**
  * 景点领域服务
  * 组合景点数据 provider 和收藏数据库函数，提供统一的景点业务接口
+ * 已配置 DATABASE_URL 时使用 PostgreSQL，否则降级到本地 JSON
  */
 
 import {
@@ -8,13 +9,20 @@ import {
   listFavoriteAttractionIds,
   removeFavoriteAttraction,
 } from '../auth.js'
+import { isDbReady } from '../../db/index.js'
 import { httpError } from '../../utils/http.js'
-import {
-  getAttractionById as providerGetAttractionById,
+
+// 根据数据库配置选择 provider
+const providerModule = isDbReady()
+  ? await import('./providers/pgAttractionProvider.js')
+  : await import('./providers/localAttractionProvider.js')
+
+const {
+  getAttractionById: providerGetAttractionById,
   getAttractionMeta,
-  listAttractions as providerListAttractions,
-  searchAttractions as providerSearchAttractions,
-} from './providers/localAttractionProvider.js'
+  listAttractions: providerListAttractions,
+  searchAttractions: providerSearchAttractions,
+} = providerModule
 
 /**
  * 获取用户收藏的景点 ID 集合
@@ -48,12 +56,18 @@ function withFavorite(attraction, favoriteIds) {
  */
 async function listAttractions(filters = {}, userId) {
   const favoriteIds = await getFavoriteIdSet(userId)
-  const items = providerListAttractions(filters).map(item => withFavorite(item, favoriteIds))
-  const meta = getAttractionMeta()
+  const result = await providerListAttractions(filters)
+
+  // PG provider 返回 { items, total }，本地 provider 返回数组
+  const rawItems = Array.isArray(result) ? result : result.items
+  const total = Array.isArray(result) ? rawItems.length : result.total
+
+  const items = rawItems.map(item => withFavorite(item, favoriteIds))
+  const meta = await getAttractionMeta()
 
   return {
     items,
-    total: items.length,
+    total,
     cities: meta.cities,
     tags: meta.tags,
   }
@@ -66,7 +80,7 @@ async function listAttractions(filters = {}, userId) {
  * @returns {Promise<{ attraction: object, isFavorite: boolean } | null>}
  */
 async function getAttractionById(id, userId) {
-  const attraction = providerGetAttractionById(id)
+  const attraction = await providerGetAttractionById(id)
   if (!attraction)
     return null
 
@@ -84,8 +98,10 @@ async function getAttractionById(id, userId) {
  */
 async function listFavoriteAttractions(userId) {
   const favoriteIds = await getFavoriteIdSet(userId)
-  return [...favoriteIds]
-    .map(id => providerGetAttractionById(id))
+  const results = await Promise.all(
+    [...favoriteIds].map(id => providerGetAttractionById(id)),
+  )
+  return results
     .filter(Boolean)
     .map(item => withFavorite(item, favoriteIds))
 }
@@ -98,7 +114,7 @@ async function listFavoriteAttractions(userId) {
  * @throws {HttpError} 404 当景点不存在
  */
 async function favoriteAttraction(userId, attractionId) {
-  const attraction = providerGetAttractionById(attractionId)
+  const attraction = await providerGetAttractionById(attractionId)
   if (!attraction)
     throw httpError(404, '景点不存在')
 
@@ -122,7 +138,7 @@ async function unfavoriteAttraction(userId, attractionId) {
  * @param {object} filters - 筛选条件
  * @returns {Array}
  */
-function searchAttractions(filters = {}) {
+async function searchAttractions(filters = {}) {
   return providerSearchAttractions(filters)
 }
 

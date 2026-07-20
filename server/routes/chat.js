@@ -133,16 +133,16 @@ const CHAT_STEP_MAP = {
  * @param {object} args - 工具参数
  * @returns {string} JSON 格式的结果
  */
-function executeChatTool(toolName, args) {
+async function executeChatTool(toolName, args) {
   switch (toolName) {
     case 'search_travel_info':
-      return executeSearchTool(args)
+      return await executeSearchTool(args)
     case 'get_city_list':
-      return executeGetCityList()
+      return await executeGetCityList()
     case 'compare_cities':
-      return executeCompareCities(args)
+      return await executeCompareCities(args)
     case 'get_travel_tips':
-      return executeGetTravelTips(args)
+      return await executeGetTravelTips(args)
     case 'search_product_attractions':
       return executeProductAttractionsTool(args)
     default:
@@ -150,14 +150,14 @@ function executeChatTool(toolName, args) {
   }
 }
 
-function executeSearchTool(args) {
+async function executeSearchTool(args) {
   const { city, query } = args
-  const result = retrieve(city, [], query || city)
+  const result = await retrieve(city, [], query || city)
   if (!result) {
     for (const cityData of attractionsDB) {
       const found = cityData.attractions.find(a => (query || '').includes(a.name) || city.includes(a.name))
       if (found) {
-        const cityResult = retrieve(cityData.city, [], query || city)
+        const cityResult = await retrieve(cityData.city, [], query || city)
         if (cityResult) {
           return JSON.stringify({
             city: cityData.city,
@@ -191,8 +191,8 @@ function executeSearchTool(args) {
   })
 }
 
-function executeGetCityList() {
-  const cities = getAllCities()
+async function executeGetCityList() {
+  const cities = await getAllCities()
   return JSON.stringify({
     cities,
     total: cities.length,
@@ -200,10 +200,10 @@ function executeGetCityList() {
   })
 }
 
-function executeCompareCities(args) {
+async function executeCompareCities(args) {
   const { city_a, city_b } = args
-  const dataA = retrieve(city_a, [], city_a)
-  const dataB = retrieve(city_b, [], city_b)
+  const dataA = await retrieve(city_a, [], city_a)
+  const dataB = await retrieve(city_b, [], city_b)
 
   if (!dataA && !dataB) {
     return JSON.stringify({ error: `未找到"${city_a}"和"${city_b}"的旅行信息` })
@@ -233,9 +233,9 @@ function executeCompareCities(args) {
   })
 }
 
-function executeGetTravelTips(args) {
+async function executeGetTravelTips(args) {
   const { city } = args
-  const result = retrieve(city, [], city)
+  const result = await retrieve(city, [], city)
   if (!result) {
     return JSON.stringify({ error: `未找到"${city}"的旅行信息` })
   }
@@ -313,7 +313,7 @@ function buildMessagesWithMemory(historyMessages, currentMessage) {
 
   // 旧消息提取摘要
   const oldMessages = historyMessages.slice(0, -6)
-  const cities = getAllCities()
+  const cities = await getAllCities()
   const mentionedCities = new Set()
   const topics = []
 
@@ -399,7 +399,7 @@ router.post('/chat', asyncHandler(async (req, res) => {
             // 发送 step start 事件
             sendSSE(res, { type: 'step', step: stepCounter, name: stepName, status: 'start' })
 
-            const toolResult = executeChatTool(toolName, args)
+            const toolResult = await executeChatTool(toolName, args)
 
             // 提取结果摘要
             let summary = {}
@@ -456,13 +456,13 @@ router.post('/chat', asyncHandler(async (req, res) => {
 
     // ========== Mock 降级 ==========
     let ragResult = null
-    const cities = getAllCities()
+    const cities = await getAllCities()
     let stepCounter = 0
 
     // 城市名匹配
     for (const city of cities) {
       if (message.includes(city)) {
-        const result = retrieve(city, [], city)
+        const result = await retrieve(city, [], city)
         if (result) {
           ragResult = { ...result, city }
           ragSources = result.attractions.slice(0, 5).map(a => a.name)
@@ -476,7 +476,7 @@ router.post('/chat', asyncHandler(async (req, res) => {
       for (const cityData of attractionsDB) {
         const found = cityData.attractions.find(a => message.includes(a.name))
         if (found) {
-          const result = retrieve(cityData.city, [], message)
+          const result = await retrieve(cityData.city, [], message)
           ragResult = { ...result, city: cityData.city }
           ragSources = [found.name, ...result.attractions.filter(a => a.name !== found.name).slice(0, 4).map(a => a.name)]
           break
@@ -547,7 +547,7 @@ function getMockResponse(message, ragResult) {
 
   // 无 RAG 结果的通用回复
   if (/有哪些城市|城市列表|能查/.test(message)) {
-    const cities = getAllCities()
+    const cities = await getAllCities()
     return `知识库中可查询的城市：\n\n${cities.map((c, i) => `${i + 1}. ${c}`).join('\n')}\n\n共 ${cities.length} 个城市，告诉我你想了解哪个城市吧！`
   }
 

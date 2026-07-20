@@ -32,11 +32,14 @@ export interface AttractionFilters {
   keyword?: string
   ticketType?: AttractionTicketType | ''
   tag?: string
+  page?: number
+  pageSize?: number
 }
 
 export interface AttractionListData {
   items: Attraction[]
   total: number
+  page?: number
   cities: string[]
   tags: string[]
 }

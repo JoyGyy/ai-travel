@@ -14,4 +14,5 @@
 .attractions-page__favorite { border: 0; background: transparent; color: var(--travel-primary); cursor: pointer; font-size: 20px; }
 .attractions-page__meta, .attractions-page__tags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 10px 0; color: rgba(var(--travel-ink-rgb), 0.72); font-size: 12px; }
 .attractions-page__detail-link { display: inline-flex; margin-top: 8px; color: var(--travel-primary); font-weight: 800; }
+.attractions-page__pagination { display: flex; justify-content: center; padding: 24px 0 8px; }
 @media (max-width: 640px) { .attractions-page { padding: 16px; } }

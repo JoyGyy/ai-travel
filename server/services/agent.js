@@ -198,7 +198,7 @@ function executeTool(toolName, args, context) {
     case 'search_attractions': {
       const city = args.city || context.intent?.city || '北京'
       const tags = args.tags || context.intent?.tags || []
-      const ragResult = retrieve(city, tags, city)
+      const ragResult = await retrieve(city, tags, city)
       if (!ragResult) {
         context.ragResult = null
         return { output: `未找到城市"${city}"的景点数据`, summary: { count: 0, sources: [] } }
@@ -545,7 +545,7 @@ async function executeAgentMock(res, params) {
 
   // 步骤 2：检索景点
   sendSSE(res, { type: 'step', step: 2, name: '知识库检索', status: 'start' })
-  const ragResult = retrieve(intent.city, intent.tags, intent.city)
+  const ragResult = await retrieve(intent.city, intent.tags, intent.city)
   if (!ragResult) {
     sendSSE(res, { type: 'complete', data: { dailyItinerary: [], budgetBreakdown: null, tips: ['暂不支持该城市的行程规划'] } })
     return

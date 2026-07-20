@@ -19,6 +19,8 @@ function readFilters(query) {
     keyword: typeof query.keyword === 'string' ? query.keyword.trim() : '',
     ticketType: ['free', 'paid'].includes(query.ticketType) ? query.ticketType : '',
     tag: typeof query.tag === 'string' ? query.tag.trim() : '',
+    page: Number(query.page) || 1,
+    pageSize: Number(query.pageSize) || 20,
   }
 }
 

@@ -13,7 +13,9 @@ import { env } from '../config/env.js'
 const SALT_ROUNDS = 10
 
 // 初始化 SQLite 数据库
-const DB_PATH = path.join(import.meta.dirname, '../data/users.db')
+const DB_PATH = process.env.USERS_DB_PATH
+  ? path.resolve(process.env.USERS_DB_PATH)
+  : path.join(import.meta.dirname, '../data/users.db')
 const db = new Database(DB_PATH)
 db.pragma('journal_mode = WAL')
 db.exec(`
@@ -22,7 +24,16 @@ db.exec(`
     username TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
-  )
+  );
+
+  CREATE TABLE IF NOT EXISTS user_favorite_attractions (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    attraction_id TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    UNIQUE(user_id, attraction_id),
+    FOREIGN KEY(user_id) REFERENCES users(id)
+  );
 `)
 
 const insertUser = db.prepare('INSERT INTO users (id, username, password, created_at) VALUES (?, ?, ?, ?)')
@@ -87,4 +98,59 @@ function verifyToken(token) {
   return jwt.verify(token, env.JWT_SECRET)
 }
 
-export { login, register, verifyToken }
+/**
+ * 列出用户收藏的景点 ID 列表
+ * @param {string} userId - 用户 ID
+ * @returns {Promise<string[]>} 收藏的景点 ID 数组，按收藏时间倒序
+ */
+async function listFavoriteAttractionIds(userId) {
+  if (!userId) throw new Error('用户信息无效')
+
+  const rows = db.prepare(
+    'SELECT attraction_id FROM user_favorite_attractions WHERE user_id = ? ORDER BY created_at DESC',
+  ).all(userId)
+
+  return rows.map(row => row.attraction_id)
+}
+
+/**
+ * 添加用户收藏景点（幂等，重复添加不报错）
+ * @param {string} userId - 用户 ID
+ * @param {string} attractionId - 景点 ID
+ * @returns {Promise<void>}
+ */
+async function addFavoriteAttraction(userId, attractionId) {
+  if (!userId) throw new Error('用户信息无效')
+  if (!attractionId) throw new Error('景点信息无效')
+
+  const id = `${userId}:${attractionId}`
+  const createdAt = new Date().toISOString()
+  db.prepare(
+    `INSERT OR IGNORE INTO user_favorite_attractions (id, user_id, attraction_id, created_at)
+     VALUES (?, ?, ?, ?)`,
+  ).run(id, userId, attractionId, createdAt)
+}
+
+/**
+ * 移除用户收藏景点（幂等，重复移除不报错）
+ * @param {string} userId - 用户 ID
+ * @param {string} attractionId - 景点 ID
+ * @returns {Promise<void>}
+ */
+async function removeFavoriteAttraction(userId, attractionId) {
+  if (!userId) throw new Error('用户信息无效')
+  if (!attractionId) throw new Error('景点信息无效')
+
+  db.prepare(
+    'DELETE FROM user_favorite_attractions WHERE user_id = ? AND attraction_id = ?',
+  ).run(userId, attractionId)
+}
+
+export {
+  addFavoriteAttraction,
+  listFavoriteAttractionIds,
+  login,
+  register,
+  removeFavoriteAttraction,
+  verifyToken,
+}

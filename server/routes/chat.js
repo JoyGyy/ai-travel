@@ -5,6 +5,7 @@
 
 import { Router } from 'express'
 import attractionsDB from '../knowledge/attractions.json' with { type: 'json' }
+import { searchAttractions as searchProductAttractions } from '../services/attractions/attractionService.js'
 import { callLLMWithTools, getLLMConfig } from '../services/llm.js'
 import { getAllCities, retrieve } from '../services/rag.js'
 import { asyncHandler } from '../utils/http.js'
@@ -25,6 +26,7 @@ const CHAT_SYSTEM_PROMPT = `你是一个专业的旅行顾问 AI 助手。你可
 - search_travel_info：查询城市、景点、美食、交通等详细信息。当用户询问具体城市或景点时必须调用。
 - get_city_list：获取知识库中所有可查询的城市列表。当用户问"有哪些城市""推荐去哪里"时调用。
 - compare_cities：对比两个城市的特点。当用户问"A和B哪个好""对比两个城市"时调用。
+- search_product_attractions：查询产品景点库，返回可进入详情页、收藏和购票的景点。当用户询问免费景点、收费景点、亲子景点、夜游景点或购票信息时优先调用。
 - get_travel_tips：获取城市旅行贴士和注意事项。当用户问"注意事项""带什么""tips"时调用。
 
 回答要简洁实用，使用中文，适当使用 Markdown 格式。`
@@ -93,6 +95,22 @@ const CHAT_TOOLS = [
       },
     },
   },
+  {
+    type: 'function',
+    function: {
+      name: 'search_product_attractions',
+      description: '查询产品景点库，支持城市、关键词、免费/收费和标签筛选，返回景点详情页入口。',
+      parameters: {
+        type: 'object',
+        properties: {
+          city: { type: 'string', description: '城市名称，如北京、上海、杭州、成都、西安' },
+          keyword: { type: 'string', description: '关键词，如景点名、熊猫、博物馆' },
+          ticketType: { type: 'string', enum: ['free', 'paid'], description: 'free 表示免费，paid 表示收费' },
+          tag: { type: 'string', description: '标签，如亲子、历史、夜游、自然' },
+        },
+      },
+    },
+  },
 ]
 
 // ========== Step 事件映射 ==========
@@ -102,6 +120,7 @@ const CHAT_STEP_MAP = {
   get_city_list: '获取城市列表',
   compare_cities: '对比城市信息',
   get_travel_tips: '获取旅行贴士',
+  search_product_attractions: '查询精选景点',
 }
 
 // ========== 工具执行 ==========
@@ -122,6 +141,8 @@ function executeChatTool(toolName, args) {
       return executeCompareCities(args)
     case 'get_travel_tips':
       return executeGetTravelTips(args)
+    case 'search_product_attractions':
+      return executeProductAttractionsTool(args)
     default:
       return JSON.stringify({ error: `未知工具: ${toolName}` })
   }
@@ -239,6 +260,32 @@ function executeGetTravelTips(args) {
     transport: result.transport,
     food: result.food,
     tips,
+  })
+}
+
+function executeProductAttractionsTool(args) {
+  const filters = {
+    city: typeof args.city === 'string' ? args.city : '',
+    keyword: typeof args.keyword === 'string' ? args.keyword : '',
+    ticketType: ['free', 'paid'].includes(args.ticketType) ? args.ticketType : '',
+    tag: typeof args.tag === 'string' ? args.tag : '',
+  }
+  const attractions = searchProductAttractions(filters).slice(0, 8).map(item => ({
+    id: item.id,
+    name: item.name,
+    city: item.city,
+    ticketType: item.ticketType,
+    priceText: item.priceText,
+    summary: item.summary,
+    tags: item.tags,
+    detailPath: `/attractions/${item.id}`,
+  }))
+
+  return JSON.stringify({
+    city: filters.city || attractions[0]?.city || '',
+    total: attractions.length,
+    attractions,
+    message: attractions.length ? '已找到精选景点' : '暂无符合条件的精选景点',
   })
 }
 
@@ -511,3 +558,5 @@ function delay(ms) {
 }
 
 export default router
+
+export { executeChatTool as executeChatToolForTest }

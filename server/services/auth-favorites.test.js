@@ -3,7 +3,6 @@ import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { test } from 'node:test'
-import { pathToFileURL } from 'node:url'
 
 async function importAuthWithTempDb() {
   const dir = await mkdtemp(path.join(tmpdir(), 'travel-auth-favorites-'))

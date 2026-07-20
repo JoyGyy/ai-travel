@@ -13,6 +13,8 @@ const Detail = React.lazy(() => import('@/pages/Detail'))
 const Chat = React.lazy(() => import('@/pages/Chat'))
 const Weather = React.lazy(() => import('@/pages/Weather'))
 const Login = React.lazy(() => import('@/pages/Login'))
+const Attractions = React.lazy(() => import('@/pages/Attractions'))
+const AttractionDetail = React.lazy(() => import('@/pages/AttractionDetail'))
 
 const router = createBrowserRouter([
   {
@@ -24,6 +26,8 @@ const router = createBrowserRouter([
       { path: 'weather', element: <ErrorBoundary><Weather /></ErrorBoundary> },
       { path: 'chat', element: <ErrorBoundary><ProtectedRoute><Chat /></ProtectedRoute></ErrorBoundary> },
       { path: 'login', element: <ErrorBoundary><Login /></ErrorBoundary> },
+      { path: 'attractions', element: <ErrorBoundary><ProtectedRoute><Attractions /></ProtectedRoute></ErrorBoundary> },
+      { path: 'attractions/:id', element: <ErrorBoundary><ProtectedRoute><AttractionDetail /></ProtectedRoute></ErrorBoundary> },
     ],
   },
 ])

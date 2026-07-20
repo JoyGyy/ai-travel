@@ -4,6 +4,7 @@
  * 无 API key 时降级为 Mock 模式
  */
 
+import { matchAttractionRefsFromItinerary } from './attractions/attractionMatcher.js'
 import attractionsDB from '../knowledge/attractions.json' with { type: 'json' }
 import { sendSSE } from '../utils/sse.js'
 import { callLLMWithTools, getLLMConfig } from './llm.js'
@@ -416,6 +417,7 @@ async function executeAgent(res, params) {
 
     // 获取住宿和夜生活数据
     const cityData = attractionsDB.find(c => c.city === (context.intent?.city || params.city))
+    const attractionRefs = matchAttractionRefsFromItinerary(context.itinerary)
 
     sendSSE(res, {
       type: 'complete',
@@ -429,6 +431,7 @@ async function executeAgent(res, params) {
         weather: context.weather || null,
         accommodation: cityData?.accommodation || [],
         nightlife: cityData?.nightlife || [],
+        attractionRefs,
       },
     })
   }
@@ -622,6 +625,9 @@ async function executeAgentMock(res, params) {
   // 获取住宿和夜生活数据
   const cityData = attractionsDB.find(c => c.city === intent.city)
 
+  // 匹配景点引用
+  const attractionRefs = matchAttractionRefsFromItinerary(itinerary)
+
   // 发送最终结果
   sendSSE(res, {
     type: 'complete',
@@ -635,6 +641,7 @@ async function executeAgentMock(res, params) {
       weather: weather || null,
       accommodation: cityData?.accommodation || [],
       nightlife: cityData?.nightlife || [],
+      attractionRefs,
     },
   })
 }

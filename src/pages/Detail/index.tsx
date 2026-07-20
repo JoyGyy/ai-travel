@@ -3,7 +3,7 @@
  * 展示 AI 生成的旅行行程
  */
 import type { WeatherResponse } from '@/types/api'
-import type { ItineraryDay, BudgetBreakdown, Accommodation } from '@/stores/itinerary'
+import type { ItineraryDay, BudgetBreakdown, Accommodation, AttractionRef } from '@/stores/itinerary'
 import { ArrowLeftOutlined, CloseOutlined, CompassOutlined, EnvironmentOutlined } from '@ant-design/icons'
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
@@ -24,6 +24,7 @@ interface ItineraryData {
   weather?: WeatherResponse | null
   accommodation?: Accommodation[]
   nightlife?: string[]
+  attractionRefs?: AttractionRef[]
 }
 
 export default function Detail() {
@@ -41,6 +42,7 @@ export default function Detail() {
     weather,
     accommodation,
     nightlife,
+    attractionRefs,
     agentSteps,
     currentAgentStep,
     setItinerary,
@@ -49,6 +51,7 @@ export default function Detail() {
     setWeather,
     setAccommodation,
     setNightlife,
+    setAttractionRefs,
     addAgentStep,
     setCurrentAgentStep,
   } = useItineraryStore()
@@ -58,6 +61,10 @@ export default function Detail() {
   const [errorMessage, setErrorMessage] = useState('')
   const { sendRequest, abort } = useSSE()
   const hasValidParams = Boolean(city && budget > 0 && days > 0)
+
+  function findAttractionRef(spot?: string) {
+    return attractionRefs.find(ref => ref.name === spot)
+  }
 
   useEffect(() => {
     let resetTimer: ReturnType<typeof setTimeout>
@@ -85,6 +92,7 @@ export default function Detail() {
       setWeather((cached.weather as WeatherResponse) || null)
       setAccommodation((cached.accommodation as Accommodation[]) || [])
       setNightlife((cached.nightlife as string[]) || [])
+      setAttractionRefs((cached.attractionRefs as AttractionRef[]) || [])
       cacheTimer = setTimeout(setShowLoading, 0, false)
       return () => {
         clearTimeout(resetTimer)
@@ -112,13 +120,15 @@ export default function Detail() {
         const w = completedData.weather || null
         const a = completedData.accommodation || []
         const n = completedData.nightlife || []
+        const refs = completedData.attractionRefs || []
         setItinerary(dailyItinerary)
         setBudgetBreakdown(bd)
         setTips(t)
         setWeather(w)
         setAccommodation(a)
         setNightlife(n)
-        saveItineraryCache(city, budget, days, { itinerary: dailyItinerary, budgetBreakdown: bd, tips: t, weather: w, accommodation: a, nightlife: n })
+        setAttractionRefs(refs)
+        saveItineraryCache(city, budget, days, { itinerary: dailyItinerary, budgetBreakdown: bd, tips: t, weather: w, accommodation: a, nightlife: n, attractionRefs: refs })
         setTimeout(setShowLoading, 500, false)
       },
       onError: (err) => {
@@ -145,6 +155,7 @@ export default function Detail() {
     hasValidParams,
     sendRequest,
     setAccommodation,
+    setAttractionRefs,
     setBudgetBreakdown,
     setCurrentAgentStep,
     setItinerary,
@@ -305,9 +316,9 @@ export default function Detail() {
                           {isOpen
                             ? (
                                 <div id={panelId} className="detail-page__day-body">
-                                  <SpotItem period="上午" data={item.morning} />
-                                  <SpotItem period="下午" data={item.afternoon} />
-                                  <SpotItem period="晚上" data={item.evening} />
+                                  <SpotItem period="上午" data={item.morning} attractionRef={findAttractionRef(item.morning?.spot)} />
+                                  <SpotItem period="下午" data={item.afternoon} attractionRef={findAttractionRef(item.afternoon?.spot)} />
+                                  <SpotItem period="晚上" data={item.evening} attractionRef={findAttractionRef(item.evening?.spot)} />
                                 </div>
                               )
                             : null}

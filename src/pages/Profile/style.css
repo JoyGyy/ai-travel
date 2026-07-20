@@ -1,0 +1,138 @@
+.profile-page {
+  min-height: 100%;
+  padding: 24px;
+  background: var(--travel-bg);
+}
+
+.profile-page__hero {
+  margin-bottom: 20px;
+  padding: 24px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, rgba(var(--travel-primary-rgb), 0.16), rgba(var(--travel-ocean-rgb), 0.12));
+}
+
+.profile-page__label {
+  margin-bottom: 8px;
+  color: var(--travel-primary);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+
+.profile-page__hero h1 {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  color: var(--travel-ocean);
+}
+
+.profile-page__hero p {
+  margin: 0;
+  color: rgba(var(--travel-ink-rgb), 0.72);
+}
+
+.profile-page__content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.profile-page__card {
+  border-radius: 22px;
+  background: var(--travel-surface);
+  box-shadow: 0 12px 32px rgba(var(--travel-ocean-rgb), 0.08);
+}
+
+.profile-page__card .ant-card-head {
+  border-bottom-color: rgba(var(--travel-ocean-rgb), 0.08);
+}
+
+.profile-page__card .ant-card-head-title {
+  font-family: var(--font-display);
+  color: var(--travel-ocean);
+  font-size: 16px;
+}
+
+/* 用户信息卡 */
+.profile-page__user-card {
+  text-align: center;
+}
+
+.profile-page__user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.profile-page__avatar {
+  background: var(--travel-primary) !important;
+  color: #fff;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.profile-page__username {
+  margin: 0;
+  font-family: var(--font-display);
+  color: var(--travel-ocean);
+  font-size: 22px;
+}
+
+.profile-page__meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 0;
+  color: rgba(var(--travel-ink-rgb), 0.56);
+  font-size: 14px;
+}
+
+/* AI 额度 */
+.profile-page__quota {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-page__quota-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--travel-ink);
+}
+
+.profile-page__quota-tip {
+  margin: 0;
+  color: rgba(var(--travel-ink-rgb), 0.56);
+  font-size: 12px;
+}
+
+/* 修改密码表单 */
+.profile-page__password-form {
+  max-width: 400px;
+}
+
+/* 收藏列表 */
+.profile-page__fav-meta {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+/* 退出登录 */
+.profile-page__logout-card {
+  margin-bottom: 24px;
+}
+
+@media (max-width: 640px) {
+  .profile-page {
+    padding: 16px;
+  }
+
+  .profile-page__content {
+    max-width: 100%;
+  }
+}

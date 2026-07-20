@@ -224,11 +224,11 @@ export default function Home() {
           <div className="home__header-right">
             {user
               ? (
-                  <span className="home__user-badge">
+                  <Link to="/profile" className="home__user-badge">
                     <UserOutlined />
                     {' '}
                     {user.username || '用户'}
-                  </span>
+                  </Link>
                 )
               : (
                   <Link to="/login" className="home__login-btn">

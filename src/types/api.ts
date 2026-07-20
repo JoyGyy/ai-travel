@@ -20,6 +20,20 @@ export interface AuthResponse {
   user: AuthUser
 }
 
+export interface AiQuotaInfo {
+  used: number
+  limit: number
+  remaining: number
+}
+
+export interface ProfileData {
+  id: string
+  username: string
+  createdAt: string
+  aiQuota: AiQuotaInfo
+  favoriteIds: string[]
+}
+
 export interface WeatherForecast {
   date: string
   maxTemp: number

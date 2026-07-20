@@ -265,10 +265,63 @@ async function removeFavoriteAttraction(userId, attractionId) {
   await saveDb()
 }
 
+/**
+ * 获取用户个人资料（含 AI 额度和收藏列表）
+ * @param {string} userId - 用户 ID
+ * @returns {Promise<{ id: string, username: string, createdAt: string, aiQuota: { used: number, limit: number, remaining: number }, favoriteIds: string[] }>}
+ */
+async function getProfile(userId) {
+  await ready
+  if (initError) throw new Error('数据库初始化失败，请稍后重试')
+  if (!userId) throw new Error('用户信息无效')
+
+  const result = db.exec('SELECT id, username, created_at FROM users WHERE id = ?', [userId])
+  if (result.length === 0 || result[0].values.length === 0)
+    throw new Error('用户不存在')
+
+  const [id, username, createdAt] = result[0].values[0]
+  const aiQuota = await getAiQuotaStatus(userId)
+  const favoriteIds = await listFavoriteAttractionIds(userId)
+
+  return { id, username, createdAt, aiQuota, favoriteIds }
+}
+
+/**
+ * 修改用户密码
+ * @param {string} userId - 用户 ID
+ * @param {string} currentPassword - 当前密码
+ * @param {string} newPassword - 新密码
+ * @returns {Promise<void>}
+ */
+async function changePassword(userId, currentPassword, newPassword) {
+  await ready
+  if (initError) throw new Error('数据库初始化失败，请稍后重试')
+  if (!userId) throw new Error('用户信息无效')
+  if (!currentPassword || !newPassword)
+    throw new Error('当前密码和新密码不能为空')
+  if (newPassword.length < 6)
+    throw new Error('新密码长度至少 6 个字符')
+
+  const result = db.exec('SELECT password FROM users WHERE id = ?', [userId])
+  if (result.length === 0 || result[0].values.length === 0)
+    throw new Error('用户不存在')
+
+  const [hashedPassword] = result[0].values[0]
+  const match = await bcrypt.compare(currentPassword, hashedPassword)
+  if (!match)
+    throw new Error('当前密码错误')
+
+  const newHashed = await bcrypt.hash(newPassword, SALT_ROUNDS)
+  db.run('UPDATE users SET password = ? WHERE id = ?', [newHashed, userId])
+  await saveDb()
+}
+
 export {
   addFavoriteAttraction,
+  changePassword,
   consumeAiQuota,
   getAiQuotaStatus,
+  getProfile,
   listFavoriteAttractionIds,
   login,
   register,

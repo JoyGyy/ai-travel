@@ -179,7 +179,7 @@ const AGENT_TOOLS = [
 
 // ========== Tool 执行函数 ==========
 
-function executeTool(toolName, args, context) {
+async function executeTool(toolName, args, context) {
   switch (toolName) {
     case 'parse_intent': {
       const intent = {
@@ -354,7 +354,7 @@ async function executeAgent(res, params) {
           sendSSE(res, { type: 'step', step: stepNum, name: STEP_NAMES[stepNum], status: 'start' })
         }
 
-        const result = executeTool(name, args, context)
+        const result = await executeTool(name, args, context)
 
         if (stepNum) {
           sendSSE(res, { type: 'step', step: stepNum, name: STEP_NAMES[stepNum], status: 'complete', data: result.summary })
@@ -371,12 +371,12 @@ async function executeAgent(res, params) {
     // 补执行缺失步骤
     if (!context.intent) {
       sendSSE(res, { type: 'step', step: 1, name: '解析意图', status: 'start' })
-      const result = executeTool('parse_intent', params, context)
+      const result = await executeTool('parse_intent', params, context)
       sendSSE(res, { type: 'step', step: 1, name: '解析意图', status: 'complete', data: result.summary })
     }
     if (!context.ragResult) {
       sendSSE(res, { type: 'step', step: 2, name: '知识库检索', status: 'start' })
-      const result = executeTool('search_attractions', { city: context.intent?.city || params.city }, context)
+      const result = await executeTool('search_attractions', { city: context.intent?.city || params.city }, context)
       sendSSE(res, { type: 'step', step: 2, name: '知识库检索', status: 'complete', data: result.summary })
     }
     if (!context.weather) {
@@ -394,7 +394,7 @@ async function executeAgent(res, params) {
 
     if (!context.budgetBreakdown) {
       sendSSE(res, { type: 'step', step: 5, name: '预算计算', status: 'start' })
-      const result = executeTool('calculate_budget', {
+      const result = await executeTool('calculate_budget', {
         totalBudget: context.intent?.budget || params.budget,
         days: context.intent?.days || params.days,
         ticketCost: (context.ragResult?.attractions || []).slice(0, (context.intent?.days || params.days) * 3).reduce((s, a) => s + (a.ticket || 0), 0),
@@ -405,7 +405,7 @@ async function executeAgent(res, params) {
     if (!context.tips) {
       sendSSE(res, { type: 'step', step: 6, name: '生成建议', status: 'start' })
       const cityData = context.ragResult || {}
-      const result = executeTool('generate_tips', {
+      const result = await executeTool('generate_tips', {
         city: context.intent?.city || params.city,
         days: context.intent?.days || params.days,
         bestSeason: cityData.bestSeason || '春秋两季',

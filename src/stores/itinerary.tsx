@@ -9,11 +9,11 @@ import type { SSEEvent, WeatherResponse } from '@/types/api'
 export interface ItineraryDay {
   day: number
   title: string
-  spots: Array<{ name: string; description: string; duration: string }>
+  spots: Array<{ name: string, description: string, duration: string }>
   date?: string
-  morning?: { spot: string; description: string; duration: string; ticket?: string; transportation?: string }
-  afternoon?: { spot: string; description: string; duration: string; ticket?: string; transportation?: string }
-  evening?: { spot: string; description: string; duration: string; ticket?: string; transportation?: string }
+  morning?: { spot: string, description: string, duration: string, ticket?: string, transportation?: string }
+  afternoon?: { spot: string, description: string, duration: string, ticket?: string, transportation?: string }
+  evening?: { spot: string, description: string, duration: string, ticket?: string, transportation?: string }
 }
 
 export interface AttractionRef {

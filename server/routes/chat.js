@@ -299,7 +299,7 @@ function executeProductAttractionsTool(args) {
  * @param {string} currentMessage - 当前用户消息
  * @returns {object[]} 用于 LLM 的消息数组
  */
-function buildMessagesWithMemory(historyMessages, currentMessage) {
+async function buildMessagesWithMemory(historyMessages, currentMessage) {
   const systemMsg = { role: 'system', content: CHAT_SYSTEM_PROMPT }
 
   // 无历史或历史很短，直接用
@@ -369,7 +369,7 @@ router.post('/chat', asyncHandler(async (req, res) => {
     const config = getLLMConfig()
     if (config) {
       try {
-        const messages = buildMessagesWithMemory(historyMessages, message)
+        const messages = await buildMessagesWithMemory(historyMessages, message)
         let stepCounter = 0
 
         // ReAct 循环：LLM 自主决定是否调用工具
@@ -492,7 +492,7 @@ router.post('/chat', asyncHandler(async (req, res) => {
       sendSSE(res, { type: 'step', step: stepCounter, name: '查询知识库', status: 'complete', data: { city: ragResult.city, attractionCount: ragResult.attractions.length } })
     }
 
-    const mockReply = getMockResponse(message, ragResult)
+    const mockReply = await getMockResponse(message, ragResult)
     let accumulated = ''
     for (const char of mockReply) {
       accumulated += char
@@ -515,7 +515,7 @@ router.post('/chat', asyncHandler(async (req, res) => {
 
 // ========== Mock 回复 ==========
 
-function getMockResponse(message, ragResult) {
+async function getMockResponse(message, ragResult) {
   if (ragResult) {
     const { attractions, food, bestSeason, transport } = ragResult
     const city = ragResult.city || '该城市'

@@ -1,0 +1,17 @@
+.attractions-page { min-height: 100%; padding: 24px; background: var(--travel-bg); }
+.attractions-page__hero { margin-bottom: 20px; padding: 24px; border-radius: 28px; background: linear-gradient(135deg, rgba(var(--travel-primary-rgb), 0.16), rgba(var(--travel-ocean-rgb), 0.12)); }
+.attractions-page__label { margin-bottom: 8px; color: var(--travel-primary); font-size: 12px; font-weight: 900; letter-spacing: 0.14em; }
+.attractions-page__hero h1 { margin: 0 0 8px; font-family: var(--font-display); color: var(--travel-ocean); }
+.attractions-page__filters { display: grid; gap: 12px; margin-bottom: 20px; padding: 16px; border-radius: 22px; background: var(--travel-surface); box-shadow: 0 12px 32px rgba(var(--travel-ocean-rgb), 0.08); }
+.attractions-page__filter-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.attractions-page__loading, .attractions-page__error { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 28px; }
+.attractions-page__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.attractions-page__card { overflow: hidden; border-radius: 24px; background: var(--travel-surface); box-shadow: 0 16px 34px rgba(var(--travel-ocean-rgb), 0.1); }
+.attractions-page__cover { width: 100%; height: 150px; object-fit: cover; display: block; }
+.attractions-page__card-body { padding: 16px; }
+.attractions-page__card-title-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.attractions-page__card-title-row h2 { margin: 0; color: var(--travel-ocean); font-size: 18px; }
+.attractions-page__favorite { border: 0; background: transparent; color: var(--travel-primary); cursor: pointer; font-size: 20px; }
+.attractions-page__meta, .attractions-page__tags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 10px 0; color: rgba(var(--travel-ink-rgb), 0.72); font-size: 12px; }
+.attractions-page__detail-link { display: inline-flex; margin-top: 8px; color: var(--travel-primary); font-weight: 800; }
+@media (max-width: 640px) { .attractions-page { padding: 16px; } }

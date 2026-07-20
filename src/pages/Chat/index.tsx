@@ -4,6 +4,7 @@ import { CompassOutlined, DeleteOutlined, ExclamationCircleOutlined, RobotOutlin
  */
 import { Modal } from 'antd'
 import { useEffect, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { ChatAgentSteps } from '@/components/ChatAgentSteps'
 import { ChatBubble } from '@/components/ChatBubble'
 import { RAGSource } from '@/components/RAGSource'
@@ -30,7 +31,9 @@ export default function Chat() {
     setLoading,
     setCurrentAgentStep,
   } = useChatStore()
-  const [inputMsg, setInputMsg] = useState('')
+  const [searchParams] = useSearchParams()
+  const [inputMsg, setInputMsg] = useState(() => searchParams.get('prompt')?.slice(0, 500) || '')
+
   const [ragSources, setRagSources] = useState<string[]>([])
   const [notice, setNotice] = useState('')
   const [chatError, setChatError] = useState('')

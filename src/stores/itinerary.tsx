@@ -15,6 +15,14 @@ export interface ItineraryDay {
   evening?: { spot: string; description: string; duration: string; ticket?: string; transportation?: string }
 }
 
+export interface AttractionRef {
+  id: string
+  name: string
+  city: string
+  ticketType: 'free' | 'paid'
+  priceText: string
+}
+
 export interface BudgetBreakdown {
   accommodation: number
   transport: number
@@ -39,6 +47,7 @@ interface ItineraryState {
   weather: WeatherResponse | null
   accommodation: Accommodation[]
   nightlife: string[]
+  attractionRefs: AttractionRef[]
   agentSteps: Extract<SSEEvent, { type: 'step' }>[]
   currentAgentStep: number
   isLoading: boolean
@@ -49,6 +58,7 @@ interface ItineraryState {
   setWeather: (weather: WeatherResponse | null) => void
   setAccommodation: (data: Accommodation[]) => void
   setNightlife: (data: string[]) => void
+  setAttractionRefs: (data: AttractionRef[]) => void
   addAgentStep: (step: Extract<SSEEvent, { type: 'step' }>) => void
   setCurrentAgentStep: (step: number) => void
   setLoading: (loading: boolean) => void
@@ -63,6 +73,7 @@ const initialState = {
   weather: null,
   accommodation: [],
   nightlife: [],
+  attractionRefs: [],
   agentSteps: [],
   currentAgentStep: 0,
   isLoading: false,
@@ -78,6 +89,7 @@ export const useItineraryStore = create<ItineraryState>()(set => ({
   setWeather: weather => set({ weather }),
   setAccommodation: data => set({ accommodation: data }),
   setNightlife: data => set({ nightlife: data }),
+  setAttractionRefs: data => set({ attractionRefs: data }),
 
   addAgentStep: step =>
     set((state) => {

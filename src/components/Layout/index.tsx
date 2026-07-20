@@ -1,4 +1,4 @@
-import { CloudOutlined, CompassOutlined, HomeOutlined, RobotOutlined, UserOutlined } from '@ant-design/icons'
+import { CloudOutlined, CompassOutlined, EnvironmentOutlined, HomeOutlined, RobotOutlined, UserOutlined } from '@ant-design/icons'
 /**
  * 布局组件
  * 包含顶部导航栏和内容区域
@@ -11,6 +11,7 @@ import './style.css'
 const tabs = [
   { key: '/', title: '首页', icon: <HomeOutlined aria-hidden="true" /> },
   { key: '/weather', title: '天气', icon: <CloudOutlined aria-hidden="true" /> },
+  { key: '/attractions', title: '景点', icon: <EnvironmentOutlined aria-hidden="true" /> },
   { key: '/chat', title: 'AI咨询', icon: <RobotOutlined aria-hidden="true" /> },
 ] as const
 
@@ -69,7 +70,7 @@ function LoadingFallback() {
 /** 布局组件 */
 export default function Layout() {
   const location = useLocation()
-  const navRoutes = ['/weather', '/chat']
+  const navRoutes = ['/weather', '/attractions', '/chat']
   const showNav = navRoutes.includes(location.pathname)
 
   useEffect(() => {

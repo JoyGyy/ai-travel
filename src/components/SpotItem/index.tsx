@@ -3,6 +3,8 @@
  * 展示单个景点的详细信息
  */
 import { ClockCircleOutlined, CompassOutlined } from '@ant-design/icons'
+import { Link } from 'react-router-dom'
+import type { AttractionRef } from '@/stores/itinerary'
 import './style.css'
 
 interface SpotData {
@@ -16,9 +18,10 @@ interface SpotData {
 interface SpotItemProps {
   period: '上午' | '下午' | '晚上'
   data: SpotData
+  attractionRef?: AttractionRef
 }
 
-export function SpotItem({ period, data }: SpotItemProps) {
+export function SpotItem({ period, data, attractionRef }: SpotItemProps) {
   const periodColorMap: Record<string, string> = {
     上午: 'var(--travel-period-morning)',
     下午: 'var(--travel-period-afternoon)',
@@ -53,6 +56,9 @@ export function SpotItem({ period, data }: SpotItemProps) {
             {data.transportation}
           </span>
         </div>
+        {attractionRef
+          ? <Link className="spot-item__detail-link" to={`/attractions/${attractionRef.id}`}>查看{attractionRef.name}详情</Link>
+          : null}
       </div>
     </div>
   )

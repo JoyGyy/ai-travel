@@ -1,0 +1,13 @@
+.attraction-detail { min-height: 100%; padding: 24px; background: var(--travel-bg); }
+.attraction-detail__back { margin-bottom: 16px; border: 0; background: transparent; color: var(--travel-ocean); font-weight: 800; cursor: pointer; }
+.attraction-detail__hero { display: grid; grid-template-columns: minmax(220px, 380px) 1fr; gap: 24px; padding: 20px; border-radius: 28px; background: var(--travel-surface); box-shadow: 0 18px 40px rgba(var(--travel-ocean-rgb), 0.1); }
+.attraction-detail__hero img { width: 100%; height: 260px; object-fit: cover; border-radius: 22px; }
+.attraction-detail__city { color: var(--travel-primary); font-size: 12px; font-weight: 900; letter-spacing: 0.12em; }
+.attraction-detail__hero h1 { margin: 0 0 10px; color: var(--travel-ocean); font-family: var(--font-display); }
+.attraction-detail__tags, .attraction-detail__booking { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0; }
+.attraction-detail__section { margin-top: 18px; padding: 18px; border-radius: 22px; background: var(--travel-surface); }
+.attraction-detail__section h2 { margin: 0 0 10px; color: var(--travel-ocean); font-size: 18px; }
+.attraction-detail__notice { color: rgba(var(--travel-ink-rgb), 0.66); font-size: 13px; }
+.attraction-detail__booking a, .attraction-detail__actions a { display: inline-flex; padding: 10px 14px; border-radius: 999px; background: var(--travel-primary); color: white; font-weight: 800; }
+.attraction-detail__actions { margin-top: 20px; }
+@media (max-width: 760px) { .attraction-detail__hero { grid-template-columns: 1fr; } .attraction-detail { padding: 16px; } }

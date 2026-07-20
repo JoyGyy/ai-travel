@@ -62,6 +62,15 @@ const ready = (async () => {
       updated_at TEXT NOT NULL,
       PRIMARY KEY (user_id, usage_date)
     );
+
+    CREATE TABLE IF NOT EXISTS user_favorite_attractions (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      attraction_id TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      UNIQUE(user_id, attraction_id),
+      FOREIGN KEY(user_id) REFERENCES users(id)
+    );
   `)
 
   saveDb = async () => {
@@ -141,6 +150,12 @@ function verifyToken(token) {
   return jwt.verify(token, env.JWT_SECRET)
 }
 
+/**
+ * 查询用户当日 AI 使用额度状态
+ * @param {string} userId - 用户 ID
+ * @param {string} [date] - 日期字符串，默认今天
+ * @returns {Promise<{ used: number, limit: number, remaining: number }>}
+ */
 async function getAiQuotaStatus(userId, date = getTodayKey()) {
   await ready
   if (initError) throw new Error('数据库初始化失败，请稍后重试')
@@ -158,6 +173,12 @@ async function getAiQuotaStatus(userId, date = getTodayKey()) {
   }
 }
 
+/**
+ * 消耗一次 AI 使用额度
+ * @param {string} userId - 用户 ID
+ * @param {string} [date] - 日期字符串，默认今天
+ * @returns {Promise<{ used: number, limit: number, remaining: number }>}
+ */
 async function consumeAiQuota(userId, date = getTodayKey()) {
   const currentQuota = await getAiQuotaStatus(userId, date)
 
@@ -187,4 +208,70 @@ async function consumeAiQuota(userId, date = getTodayKey()) {
   }
 }
 
-export { consumeAiQuota, getAiQuotaStatus, login, register, verifyToken }
+/**
+ * 列出用户收藏的景点 ID 列表
+ * @param {string} userId - 用户 ID
+ * @returns {Promise<string[]>} 收藏的景点 ID 数组，按收藏时间倒序
+ */
+async function listFavoriteAttractionIds(userId) {
+  await ready
+  if (!userId) throw new Error('用户信息无效')
+
+  const result = db.exec(
+    'SELECT attraction_id FROM user_favorite_attractions WHERE user_id = ? ORDER BY created_at DESC',
+    [userId],
+  )
+
+  if (result.length === 0) return []
+  return result[0].values.map(row => row[0])
+}
+
+/**
+ * 添加用户收藏景点（幂等，重复添加不报错）
+ * @param {string} userId - 用户 ID
+ * @param {string} attractionId - 景点 ID
+ * @returns {Promise<void>}
+ */
+async function addFavoriteAttraction(userId, attractionId) {
+  await ready
+  if (!userId) throw new Error('用户信息无效')
+  if (!attractionId) throw new Error('景点信息无效')
+
+  const id = `${userId}:${attractionId}`
+  const createdAt = new Date().toISOString()
+  db.run(
+    `INSERT OR IGNORE INTO user_favorite_attractions (id, user_id, attraction_id, created_at)
+     VALUES (?, ?, ?, ?)`,
+    [id, userId, attractionId, createdAt],
+  )
+  await saveDb()
+}
+
+/**
+ * 移除用户收藏景点（幂等，重复移除不报错）
+ * @param {string} userId - 用户 ID
+ * @param {string} attractionId - 景点 ID
+ * @returns {Promise<void>}
+ */
+async function removeFavoriteAttraction(userId, attractionId) {
+  await ready
+  if (!userId) throw new Error('用户信息无效')
+  if (!attractionId) throw new Error('景点信息无效')
+
+  db.run(
+    'DELETE FROM user_favorite_attractions WHERE user_id = ? AND attraction_id = ?',
+    [userId, attractionId],
+  )
+  await saveDb()
+}
+
+export {
+  addFavoriteAttraction,
+  consumeAiQuota,
+  getAiQuotaStatus,
+  listFavoriteAttractionIds,
+  login,
+  register,
+  removeFavoriteAttraction,
+  verifyToken,
+}

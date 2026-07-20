@@ -86,6 +86,14 @@
   font-weight: 900;
 }
 
+.spot-item__detail-link {
+  display: inline-flex;
+  margin-top: 10px;
+  color: var(--travel-primary);
+  font-size: 12px;
+  font-weight: 900;
+}
+
 @media (max-width: 560px) {
   .spot-item {
     flex-direction: column;

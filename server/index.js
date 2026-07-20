@@ -9,6 +9,7 @@ import helmet from 'helmet'
 
 import travelRoutes from './routes/travel.js'
 import chatRoutes from './routes/chat.js'
+import attractionRoutes from './routes/attractions.js'
 import weatherRoutes from './routes/weather.js'
 import authRoutes from './routes/auth.js'
 import shareRoutes from './routes/share.js'
@@ -55,6 +56,7 @@ app.use('/api/travel/recommend', aiLimiter)
 app.use('/api/travel/chat', aiLimiter)
 app.use('/api/travel', travelRoutes)
 app.use('/api/travel', chatRoutes)
+app.use('/api/attractions', attractionRoutes)
 app.use('/api/travel', shareRoutes)
 app.use('/api', weatherRoutes)
 app.use('/api/auth/register', registerLimiter)
@@ -78,5 +80,6 @@ app.listen(PORT, () => {
   console.log(`  📋 接口:`)
   console.log(`     POST /api/travel/recommend - 行程推荐`)
   console.log(`     POST /api/travel/chat      - AI 对话`)
+  console.log(`     GET  /api/attractions       - 景点列表`)
   console.log(`     GET  /api/health            - 健康检查\n`)
 })

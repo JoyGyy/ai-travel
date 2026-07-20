@@ -30,6 +30,7 @@ import './style.css'
 const quickEntries = [
   { icon: <HomeOutlined />, label: '酒店民宿', color: '#FF6B35' },
   { icon: <CompassOutlined />, label: 'AI 行程', color: '#F59E0B' },
+  { icon: <EnvironmentOutlined />, label: '精选景点', color: '#10B981' },
   { icon: <CloudOutlined />, label: '天气查询', color: '#3B82F6' },
   { icon: <RobotOutlined />, label: 'AI 咨询', color: '#E84057' },
 ]
@@ -203,6 +204,7 @@ export default function Home() {
           <nav className="home__nav" aria-label="主导航">
             <NavLink end to="/" className="home__nav-link home__nav-link--active">首页</NavLink>
             <NavLink to="/weather" className="home__nav-link">天气</NavLink>
+            <NavLink to="/attractions" className="home__nav-link">景点</NavLink>
             <NavLink to="/chat" className="home__nav-link">AI 咨询</NavLink>
           </nav>
           <div className="home__header-right">
@@ -357,7 +359,7 @@ export default function Home() {
           {quickEntries.map(entry => (
             <Link
               key={entry.label}
-              to={entry.label === '天气查询' ? '/weather' : entry.label === 'AI 咨询' ? '/chat' : entry.label === 'AI 行程' ? '/detail' : '/'}
+              to={entry.label === '天气查询' ? '/weather' : entry.label === 'AI 咨询' ? '/chat' : entry.label === 'AI 行程' ? '/detail' : entry.label === '精选景点' ? '/attractions' : '/'}
               className="home__quick-item"
             >
               <span className="home__quick-icon" style={{ background: entry.color }} aria-hidden="true">{entry.icon}</span>

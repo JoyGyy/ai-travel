@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "node index.js",
     "start": "node index.js",
-    "check": "node --check index.js && node --check services/llm.js && node --check services/auth.js && node --check middleware/rateLimit.js && node --check middleware/auth.js && node --check routes/auth.js && node --check routes/chat.js && node --check routes/share.js && node --check routes/travel.js && node --check routes/weather.js && node --check config/env.js && node --check utils/http.js && node --check utils/validation.js"
+    "check": "node --check index.js && node --check services/llm.js && node --check services/auth.js && node --check middleware/rateLimit.js && node --check middleware/auth.js && node --check routes/auth.js && node --check routes/chat.js && node --check routes/share.js && node --check routes/travel.js && node --check routes/weather.js && node --check routes/attractions.js && node --check services/attractions/attractionService.js && node --check services/attractions/providers/localAttractionProvider.js && node --check config/env.js && node --check utils/http.js && node --check utils/validation.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

@@ -9,6 +9,7 @@ import helmet from 'helmet'
 
 import travelRoutes from './routes/travel.js'
 import chatRoutes from './routes/chat.js'
+import attractionRoutes from './routes/attractions.js'
 import weatherRoutes from './routes/weather.js'
 import authRoutes from './routes/auth.js'
 import shareRoutes from './routes/share.js'
@@ -51,6 +52,7 @@ const authLimiter = createRateLimit({ name: 'auth', windowMs: 60_000, maxRequest
 // 挂载路由
 app.use('/api/travel', aiLimiter, travelRoutes)
 app.use('/api/travel', aiLimiter, chatRoutes)
+app.use('/api/attractions', attractionRoutes)
 app.use('/api', weatherRoutes)
 app.use('/api/auth', authLimiter, authRoutes)
 app.use('/api/travel', shareRoutes)

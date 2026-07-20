@@ -31,15 +31,8 @@ export default function Chat() {
     setLoading,
     setCurrentAgentStep,
   } = useChatStore()
-  const [inputMsg, setInputMsg] = useState('')
   const [searchParams] = useSearchParams()
-
-  // 从 URL 查询参数预填聊天问题
-  useEffect(() => {
-    const prompt = searchParams.get('prompt')
-    if (prompt)
-      setInputMsg(prompt.slice(0, 500))
-  }, [searchParams])
+  const [inputMsg, setInputMsg] = useState(() => searchParams.get('prompt')?.slice(0, 500) || '')
 
   const [ragSources, setRagSources] = useState<string[]>([])
   const [notice, setNotice] = useState('')

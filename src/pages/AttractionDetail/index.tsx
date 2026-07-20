@@ -5,7 +5,7 @@
 import type { Attraction } from '@/types/attraction'
 import { ArrowLeftOutlined, HeartFilled, HeartOutlined } from '@ant-design/icons'
 import { Button, Spin, Tag, message } from 'antd'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { favoriteAttraction, fetchAttractionDetail, unfavoriteAttraction } from '@/api/attractions'
 import './style.css'
@@ -35,22 +35,28 @@ export default function AttractionDetail() {
   const [error, setError] = useState('')
   const [msg, contextHolder] = message.useMessage()
 
-  const load = useCallback(async () => {
-    setLoading(true)
-    setError('')
-    try {
-      const data = await fetchAttractionDetail(id)
-      setAttraction({ ...data.attraction, isFavorite: data.isFavorite })
+  useEffect(() => {
+    let cancelled = false
+    async function loadData() {
+      setLoading(true)
+      setError('')
+      try {
+        const data = await fetchAttractionDetail(id)
+        if (!cancelled)
+          setAttraction({ ...data.attraction, isFavorite: data.isFavorite })
+      }
+      catch (err) {
+        if (!cancelled)
+          setError(err instanceof Error ? err.message : '景点加载失败')
+      }
+      finally {
+        if (!cancelled)
+          setLoading(false)
+      }
     }
-    catch (err) {
-      setError(err instanceof Error ? err.message : '景点加载失败')
-    }
-    finally {
-      setLoading(false)
-    }
+    loadData()
+    return () => { cancelled = true }
   }, [id])
-
-  useEffect(() => { load() }, [load])
 
   /** 切换收藏状态 */
   async function toggleFavorite() {

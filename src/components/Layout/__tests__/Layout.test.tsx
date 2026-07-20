@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import Layout from '../index'
 
 vi.mock('@/stores/auth', () => ({
-  useAuthStore: (selector: any) => selector({ user: { username: 'test' } }),
+  useAuthStore: (selector: (state: { user: { username: string } }) => unknown) => selector({ user: { username: 'test' } }),
 }))
 
 describe('Layout navigation', () => {

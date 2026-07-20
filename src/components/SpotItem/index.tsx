@@ -4,7 +4,9 @@
  */
 import { ClockCircleOutlined, CompassOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
+
 import type { AttractionRef } from '@/stores/itinerary'
+
 import './style.css'
 
 interface SpotData {

@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { Suspense } from 'react'
 import { describe, expect, it } from 'vitest'
+
 import { ChatBubble } from '../index'
 
 /**

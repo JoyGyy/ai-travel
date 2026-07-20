@@ -3,6 +3,7 @@
  * 紧凑展示当前城市天气和未来预报
  */
 import type { WeatherResponse } from '@/types/api'
+
 import './style.css'
 
 function getWeatherIconType(desc = ''): string {

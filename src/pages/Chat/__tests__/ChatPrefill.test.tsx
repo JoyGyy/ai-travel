@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
+
 import Chat from '../index'
 
 vi.mock('@/hooks/useSSE', () => ({ useSSE: () => ({ sendRequest: vi.fn(), abort: vi.fn() }) }))

@@ -4,6 +4,7 @@
  */
 import React from 'react'
 import { createBrowserRouter } from 'react-router-dom'
+
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import Layout from '@/components/Layout'
 import { ProtectedRoute } from '@/components/ProtectedRoute'

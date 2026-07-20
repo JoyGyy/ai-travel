@@ -1,5 +1,6 @@
 import { act, renderHook } from '@testing-library/react'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
+
 import { useSSE } from '../useSSE'
 
 vi.mock('@/api/client', () => ({

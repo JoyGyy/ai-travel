@@ -2,9 +2,11 @@
  * 天气查询页面
  */
 import { useMemo, useState } from 'react'
+
 import { HomeWeather } from '@/components/HomeWeather'
 import { allCities, hotCities } from '@/constants/cities'
 import { useWeather } from '@/hooks/useWeather'
+
 import './style.css'
 
 export default function Weather() {

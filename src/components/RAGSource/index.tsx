@@ -2,6 +2,7 @@
  * RAG 来源展示组件
  */
 import { EnvironmentOutlined } from '@ant-design/icons'
+
 import './style.css'
 
 interface RAGSourceProps {

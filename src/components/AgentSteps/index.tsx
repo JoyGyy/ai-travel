@@ -1,8 +1,3 @@
-/**
- * Agent 执行步骤可视化组件
- * 展示 AI Agent 的多步骤推理过程
- */
-import type { SSEEvent } from '@/types/api'
 import {
   CheckCircleOutlined,
   DollarOutlined,
@@ -13,6 +8,13 @@ import {
   SearchOutlined,
   UnorderedListOutlined,
 } from '@ant-design/icons'
+
+/**
+ * Agent 执行步骤可视化组件
+ * 展示 AI Agent 的多步骤推理过程
+ */
+import type { SSEEvent } from '@/types/api'
+
 import './style.css'
 
 type StepEvent = Extract<SSEEvent, { type: 'step' }>

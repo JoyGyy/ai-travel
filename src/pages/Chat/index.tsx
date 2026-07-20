@@ -5,11 +5,13 @@ import { CompassOutlined, DeleteOutlined, ExclamationCircleOutlined, RobotOutlin
 import { Modal } from 'antd'
 import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+
 import { ChatAgentSteps } from '@/components/ChatAgentSteps'
 import { ChatBubble } from '@/components/ChatBubble'
 import { RAGSource } from '@/components/RAGSource'
 import { useSSE } from '@/hooks/useSSE'
 import { useChatStore } from '@/stores/chat'
+
 import './style.css'
 
 const quickQuestions = [

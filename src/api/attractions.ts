@@ -1,4 +1,5 @@
 import type { AttractionDetailData, AttractionFilters, AttractionListData, FavoriteResult } from '@/types/attraction'
+
 import { request } from './client'
 
 function buildQuery(filters: AttractionFilters = {}) {

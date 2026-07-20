@@ -4,8 +4,10 @@ import { ArrowLeftOutlined, CompassOutlined } from '@ant-design/icons'
  */
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+
 import { useAppMessage } from '@/hooks/useAppMessage'
 import { useAuthStore } from '@/stores/auth'
+
 import './style.css'
 
 const formCopy = {
@@ -161,7 +163,10 @@ export default function Login() {
                   name="username"
                   type="text"
                   value={username}
-                  onChange={(e) => { setUsername(e.target.value); setFormError('') }}
+                  onChange={(e) => {
+                    setUsername(e.target.value)
+                    setFormError('')
+                  }}
                   placeholder="请输入用户名…"
                   autoComplete="username"
                   spellCheck={false}
@@ -176,7 +181,10 @@ export default function Login() {
                   name="password"
                   type="password"
                   value={password}
-                  onChange={(e) => { setPassword(e.target.value); setFormError('') }}
+                  onChange={(e) => {
+                    setPassword(e.target.value)
+                    setFormError('')
+                  }}
                   placeholder={currentCopy.passwordPlaceholder}
                   autoComplete={tab === 'register' ? 'new-password' : 'current-password'}
                   aria-invalid={Boolean(formError && (!password || (tab === 'register' && password.length < 6)))}

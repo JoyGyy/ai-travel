@@ -1,4 +1,5 @@
 import type { AuthResponse } from '@/types/api'
+
 import { request } from './client'
 
 export async function loginApi(username: string, password: string): Promise<AuthResponse> {

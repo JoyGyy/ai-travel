@@ -1,4 +1,5 @@
 import js from '@eslint/js'
+import perfectionist from 'eslint-plugin-perfectionist'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
@@ -15,6 +16,13 @@ export default defineConfig([
       reactHooks.configs.flat.recommended,
       reactRefresh.configs.vite,
     ],
+    plugins: {
+      perfectionist,
+    },
+    rules: {
+      'perfectionist/sort-imports': 'error',
+      'max-statements-per-line': ['error', { max: 1 }],
+    },
     languageOptions: {
       globals: globals.browser,
       parserOptions: {

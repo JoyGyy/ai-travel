@@ -5,7 +5,9 @@ import { CloudOutlined, CompassOutlined, EnvironmentOutlined, HomeOutlined, Robo
  */
 import { Suspense, useEffect } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
+
 import { useAuthStore } from '@/stores/auth'
+
 import './style.css'
 
 const tabs = [

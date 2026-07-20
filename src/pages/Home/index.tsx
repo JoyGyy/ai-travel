@@ -1,3 +1,9 @@
+/**
+ * 首页组件 - OTA 旅行平台风格
+ * 丰富内容展示、暖色调、参考携程/飞猪布局
+ */
+import type { ChangeEvent, KeyboardEvent, SubmitEvent } from 'react'
+
 import {
   CalendarOutlined,
   CloudOutlined,
@@ -13,17 +19,14 @@ import {
   ThunderboltOutlined,
   UserOutlined,
 } from '@ant-design/icons'
-/**
- * 首页组件 - OTA 旅行平台风格
- * 丰富内容展示、暖色调、参考携程/飞猪布局
- */
-import type { ChangeEvent, KeyboardEvent, SubmitEvent } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
+
 import { allCities } from '@/constants/cities'
 import { useAppMessage } from '@/hooks/useAppMessage'
 import { useWeather } from '@/hooks/useWeather'
 import { useAuthStore } from '@/stores/auth'
+
 import './style.css'
 
 /* 快捷入口 */
@@ -105,7 +108,8 @@ export default function Home() {
 
   const filteredCities = useMemo(() => {
     const keyword = city.trim()
-    if (!keyword) return allCities
+    if (!keyword)
+      return allCities
     return allCities.filter(c => c.includes(keyword))
   }, [city])
 
@@ -156,19 +160,27 @@ export default function Home() {
   }
 
   useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current)
+    if (debounceRef.current)
+      clearTimeout(debounceRef.current)
     const trimmed = city.trim()
-    if (!trimmed || trimmed.length < 2) return
+    if (!trimmed || trimmed.length < 2)
+      return
     debounceRef.current = setTimeout(() => {
-      if (allCities.includes(trimmed)) fetchWeather(trimmed)
+      if (allCities.includes(trimmed))
+        fetchWeather(trimmed)
     }, 800)
-    return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
+    return () => {
+      if (debounceRef.current)
+        clearTimeout(debounceRef.current)
+    }
   }, [city, fetchWeather])
 
   function validatePlanner() {
     const errors: Record<string, string> = {}
-    if (!city.trim()) errors.city = '请选择目的地'
-    if (!budget) errors.budget = '请输入预算'
+    if (!city.trim())
+      errors.city = '请选择目的地'
+    if (!budget)
+      errors.budget = '请输入预算'
     const budgetNum = Number(budget)
     if (budget && (Number.isNaN(budgetNum) || budgetNum <= 0))
       errors.budget = '预算需大于 0'
@@ -181,9 +193,11 @@ export default function Home() {
       message.loading('加载中...')
       return
     }
-    if (!user) return navigate('/login')
+    if (!user)
+      return navigate('/login')
     const { isValid, budgetNum } = validatePlanner()
-    if (!isValid) return
+    if (!isValid)
+      return
     navigate(`/detail?city=${encodeURIComponent(city.trim())}&budget=${budgetNum}&days=${days}`)
   }
 
@@ -209,8 +223,20 @@ export default function Home() {
           </nav>
           <div className="home__header-right">
             {user
-              ? <span className="home__user-badge"><UserOutlined /> {user.username || '用户'}</span>
-              : <Link to="/login" className="home__login-btn"><LoginOutlined /> 登录 / 注册</Link>}
+              ? (
+                  <span className="home__user-badge">
+                    <UserOutlined />
+                    {' '}
+                    {user.username || '用户'}
+                  </span>
+                )
+              : (
+                  <Link to="/login" className="home__login-btn">
+                    <LoginOutlined />
+                    {' '}
+                    登录 / 注册
+                  </Link>
+                )}
           </div>
         </div>
       </header>
@@ -295,7 +321,10 @@ export default function Home() {
                     type="number"
                     placeholder="3000"
                     value={budget}
-                    onChange={(e) => { setBudget(e.target.value); clearFieldError('budget') }}
+                    onChange={(e) => {
+                      setBudget(e.target.value)
+                      clearFieldError('budget')
+                    }}
                     onFocus={() => setShowDropdown(false)}
                     className="home__search-input"
                     min="1"
@@ -316,7 +345,10 @@ export default function Home() {
                   <span className="home__search-label-text">天数</span>
                   <div className="home__days-picker" aria-label="旅行天数">
                     <button type="button" onClick={() => setDays(prev => Math.max(1, prev - 1))} className="home__days-btn" aria-label="减少天数" disabled={days <= 1}>-</button>
-                    <span className="home__days-value" aria-live="polite">{days}天</span>
+                    <span className="home__days-value" aria-live="polite">
+                      {days}
+                      天
+                    </span>
                     <button type="button" onClick={() => setDays(prev => Math.min(30, prev + 1))} className="home__days-btn" aria-label="增加天数" disabled={days >= 30}>+</button>
                   </div>
                 </div>
@@ -334,9 +366,26 @@ export default function Home() {
               ? (
                   <div className="home__search-weather" aria-live="polite">
                     {weatherLoading
-                      ? <><span className="home__search-weather-spin" aria-hidden="true" /> 正在查询天气...</>
+                      ? (
+                          <>
+                            <span className="home__search-weather-spin" aria-hidden="true" />
+                            {' '}
+                            正在查询天气...
+                          </>
+                        )
                       : weather
-                        ? <><CloudOutlined aria-hidden="true" /> {weather.city} {weather.temperature}°C {weather.weatherDesc}</>
+                        ? (
+                            <>
+                              <CloudOutlined aria-hidden="true" />
+                              {' '}
+                              {weather.city}
+                              {' '}
+                              {weather.temperature}
+                              °C
+                              {' '}
+                              {weather.weatherDesc}
+                            </>
+                          )
                         : null}
                   </div>
                 )
@@ -345,7 +394,11 @@ export default function Home() {
 
           {/* 热门搜索标签 */}
           <div className="home__hot-tags">
-            <span className="home__hot-tag-label"><FireOutlined aria-hidden="true" /> 热门：</span>
+            <span className="home__hot-tag-label">
+              <FireOutlined aria-hidden="true" />
+              {' '}
+              热门：
+            </span>
             {['三亚', '丽江', '西安', '成都', '大理', '厦门'].map(tag => (
               <button key={tag} type="button" className="home__hot-tag" onClick={() => selectCity(tag)}>{tag}</button>
             ))}
@@ -373,7 +426,9 @@ export default function Home() {
       <section className="home__section" aria-labelledby="hot-dest-title">
         <div className="home__section-head">
           <h2 id="hot-dest-title" className="home__section-title">
-            <FireOutlined aria-hidden="true" /> 热门目的地
+            <FireOutlined aria-hidden="true" />
+            {' '}
+            热门目的地
           </h2>
           <span className="home__section-more">查看更多 &gt;</span>
         </div>
@@ -398,7 +453,9 @@ export default function Home() {
       <section className="home__section" aria-labelledby="featured-title">
         <div className="home__section-head">
           <h2 id="featured-title" className="home__section-title">
-            <StarOutlined aria-hidden="true" /> 精选推荐
+            <StarOutlined aria-hidden="true" />
+            {' '}
+            精选推荐
           </h2>
           <span className="home__section-more">更多行程 &gt;</span>
         </div>
@@ -417,11 +474,21 @@ export default function Home() {
                     <StarOutlined aria-hidden="true" />
                     {trip.rating}
                   </span>
-                  <span className="home__featured-reviews">{trip.reviews} 条评价</span>
+                  <span className="home__featured-reviews">
+                    {trip.reviews}
+                    {' '}
+                    条评价
+                  </span>
                 </div>
                 <div className="home__featured-price-row">
-                  <span className="home__featured-price">¥{trip.price}</span>
-                  <span className="home__featured-original">¥{trip.originalPrice}</span>
+                  <span className="home__featured-price">
+                    ¥
+                    {trip.price}
+                  </span>
+                  <span className="home__featured-original">
+                    ¥
+                    {trip.originalPrice}
+                  </span>
                   <span className="home__featured-discount">
                     {Math.round((1 - trip.price / trip.originalPrice) * 100)}
                     % OFF
@@ -478,7 +545,11 @@ export default function Home() {
 
           {/* 用户评价 */}
           <div className="home__reviews-card">
-            <h3 className="home__reviews-title"><TeamOutlined aria-hidden="true" /> 用户怎么说</h3>
+            <h3 className="home__reviews-title">
+              <TeamOutlined aria-hidden="true" />
+              {' '}
+              用户怎么说
+            </h3>
             <div className="home__reviews-list">
               {userReviews.map(review => (
                 <div key={review.name} className="home__review-item">
@@ -486,7 +557,10 @@ export default function Home() {
                     <span className="home__review-avatar">{review.avatar}</span>
                     <div>
                       <span className="home__review-name">{review.name}</span>
-                      <span className="home__review-dest">去了 {review.dest}</span>
+                      <span className="home__review-dest">
+                        去了
+                        {review.dest}
+                      </span>
                     </div>
                     <span className="home__review-stars" aria-label={`${review.rating} 星`}>
                       {'★'.repeat(review.rating)}

@@ -3,6 +3,7 @@
  * 展示目的地实时天气和未来几天预报
  */
 import type { WeatherResponse } from '@/types/api'
+
 import './style.css'
 
 function getWeatherIconType(desc = ''): string {

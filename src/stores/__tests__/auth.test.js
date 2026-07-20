@@ -1,4 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest'
+
 import { useAuthStore } from '../auth'
 
 vi.mock('@/api/auth', () => ({

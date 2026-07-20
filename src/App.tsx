@@ -4,6 +4,7 @@
  */
 import { App as AntdApp, ConfigProvider } from 'antd'
 import { RouterProvider } from 'react-router-dom'
+
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import router from '@/router'
 

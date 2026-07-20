@@ -1,12 +1,14 @@
+import { ArrowLeftOutlined, CloseOutlined, CompassOutlined, EnvironmentOutlined } from '@ant-design/icons'
+import { useEffect, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+
+import type { ItineraryDay, BudgetBreakdown, Accommodation, AttractionRef } from '@/stores/itinerary'
 /**
  * 行程详情页面
  * 展示 AI 生成的旅行行程
  */
 import type { WeatherResponse } from '@/types/api'
-import type { ItineraryDay, BudgetBreakdown, Accommodation, AttractionRef } from '@/stores/itinerary'
-import { ArrowLeftOutlined, CloseOutlined, CompassOutlined, EnvironmentOutlined } from '@ant-design/icons'
-import { useEffect, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+
 import { AccommodationCard } from '@/components/AccommodationCard'
 import { AgentSteps } from '@/components/AgentSteps'
 import { BudgetTable } from '@/components/BudgetTable'
@@ -15,6 +17,7 @@ import { WeatherCard } from '@/components/WeatherCard'
 import { useSSE } from '@/hooks/useSSE'
 import { useItineraryStore } from '@/stores/itinerary'
 import { loadItineraryCache, saveItineraryCache } from '@/utils/storage'
+
 import './style.css'
 
 interface ItineraryData {

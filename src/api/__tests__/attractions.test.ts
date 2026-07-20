@@ -3,6 +3,7 @@ import {
   favoriteAttraction,
   fetchAttractionDetail,
   fetchAttractions,
+  fetchFavoriteAttractions,
   unfavoriteAttraction,
 } from '../attractions'
 
@@ -41,6 +42,19 @@ describe('attractions api', () => {
 
     expect(data.isFavorite).toBe(true)
     expect(data.attraction.id).toBe('hangzhou-west-lake')
+  })
+
+  it('fetchFavoriteAttractions 会请求收藏列表并携带 Authorization header', async () => {
+    localStorage.setItem('travel_auth', JSON.stringify({ state: { token: 'token-2' } }))
+    const fetchMock = mockFetch({ success: true, data: { items: [], total: 0, cities: [], tags: [] } })
+
+    const data = await fetchFavoriteAttractions()
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/attractions/favorites',
+      expect.objectContaining({ headers: expect.objectContaining({ Authorization: 'Bearer token-2' }) }),
+    )
+    expect(data.items).toEqual([])
   })
 
   it('favoriteAttraction 和 unfavoriteAttraction 使用正确方法', async () => {

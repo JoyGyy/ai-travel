@@ -4,6 +4,7 @@ import { CompassOutlined, DeleteOutlined, ExclamationCircleOutlined, RobotOutlin
  */
 import { Modal } from 'antd'
 import { useEffect, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { ChatAgentSteps } from '@/components/ChatAgentSteps'
 import { ChatBubble } from '@/components/ChatBubble'
 import { RAGSource } from '@/components/RAGSource'
@@ -31,6 +32,15 @@ export default function Chat() {
     setCurrentAgentStep,
   } = useChatStore()
   const [inputMsg, setInputMsg] = useState('')
+  const [searchParams] = useSearchParams()
+
+  // 从 URL 查询参数预填聊天问题
+  useEffect(() => {
+    const prompt = searchParams.get('prompt')
+    if (prompt)
+      setInputMsg(prompt.slice(0, 500))
+  }, [searchParams])
+
   const [ragSources, setRagSources] = useState<string[]>([])
   const [notice, setNotice] = useState('')
   const [chatError, setChatError] = useState('')

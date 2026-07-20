@@ -28,6 +28,7 @@ import type { Attraction } from '@/types/attraction'
 
 import { fetchFavoriteAttractions, unfavoriteAttraction } from '@/api/attractions'
 import { getProfileApi, changePasswordApi } from '@/api/auth'
+import { ApiError } from '@/api/client'
 import { useAuthStore } from '@/stores/auth'
 
 import './style.css'
@@ -55,12 +56,18 @@ export default function Profile() {
       setFavorites(favResult.items)
     }
     catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        msg.warning('登录已过期，请重新登录')
+        logout()
+        navigate('/login', { replace: true })
+        return
+      }
       msg.error(err instanceof Error ? err.message : '加载个人资料失败')
     }
     finally {
       setLoading(false)
     }
-  }, [msg])
+  }, [msg, logout, navigate])
 
   /* eslint-disable react-hooks/set-state-in-effect -- 初始化数据加载 */
   useEffect(() => {
@@ -85,6 +92,12 @@ export default function Profile() {
       }, 1500)
     }
     catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        msg.warning('登录已过期，请重新登录')
+        logout()
+        navigate('/login', { replace: true })
+        return
+      }
       msg.error(err instanceof Error ? err.message : '密码修改失败')
     }
     finally {

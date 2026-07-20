@@ -417,7 +417,7 @@ async function executeAgent(res, params) {
 
     // 获取住宿和夜生活数据
     const cityData = attractionsDB.find(c => c.city === (context.intent?.city || params.city))
-    const attractionRefs = matchAttractionRefsFromItinerary(context.itinerary)
+    const attractionRefs = await matchAttractionRefsFromItinerary(context.itinerary)
 
     sendSSE(res, {
       type: 'complete',
@@ -626,7 +626,7 @@ async function executeAgentMock(res, params) {
   const cityData = attractionsDB.find(c => c.city === intent.city)
 
   // 匹配景点引用
-  const attractionRefs = matchAttractionRefsFromItinerary(itinerary)
+  const attractionRefs = await matchAttractionRefsFromItinerary(itinerary)
 
   // 发送最终结果
   sendSSE(res, {

@@ -43,11 +43,4 @@ async function getClient() {
   return pool.connect()
 }
 
-/**
- * 是否已配置数据库
- */
-function isDbReady() {
-  return pool !== null
-}
-
-export { getClient, isDbReady, query }
+export { getClient, query }

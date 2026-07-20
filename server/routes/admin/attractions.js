@@ -6,18 +6,13 @@
 import { Router } from 'express'
 import { requireAuth } from '../../middleware/auth.js'
 import { query, getClient } from '../../db/index.js'
-import { isDbReady } from '../../db/index.js'
 import { asyncHandler, httpError } from '../../utils/http.js'
 import { readRequiredString } from '../../utils/validation.js'
 
 const router = Router()
 
-// 所有管理接口都需要认证和数据库
+// 所有管理接口都需要认证
 router.use(requireAuth)
-router.use((req, res, next) => {
-  if (!isDbReady()) throw httpError(503, '数据库未配置')
-  next()
-})
 
 /** 列出全部景点（管理用，支持分页） */
 router.get('/', asyncHandler(async (req, res) => {

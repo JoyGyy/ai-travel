@@ -1,7 +1,6 @@
 /**
  * RAG 检索服务
  * 混合检索：关键词匹配 + TF-IDF 语义相似度
- * 已配置 DATABASE_URL 时从 PostgreSQL 读取知识库，否则降级到 JSON
  *
  * 面试要点：
  * - RAG（Retrieval Augmented Generation）= 检索增强生成
@@ -9,26 +8,25 @@
  * - 本项目使用混合检索：精确关键词匹配 + TF-IDF 语义加权
  */
 
-import { isDbReady, query } from '../db/index.js'
-import attractionsDB from '../knowledge/attractions.json' with { type: 'json' }
+import { query } from '../db/index.js'
 import { TFIDFIndex } from './tfidf.js'
 
-// ========== 根据数据库配置选择数据源 ==========
+// ========== 从 PostgreSQL 加载知识库并构建 TF-IDF 索引 ==========
 
-let usePg = false
 let knowledgeCache = null
+const globalIndex = new TFIDFIndex()
 
 /**
- * 从 PostgreSQL 加载知识库数据并缓存
+ * 从 PostgreSQL 加载知识库数据并构建全局 TF-IDF 索引
  */
-async function loadKnowledgeFromPg() {
+async function loadKnowledge() {
   if (knowledgeCache) return knowledgeCache
 
   const result = await query(
     'SELECT city, name, description, ticket, duration, tips, indoor, tags, food, transport, best_season, accommodation, nightlife FROM attraction_knowledge ORDER BY city, name',
   )
 
-  // 按城市分组，模拟原 attractions.json 结构
+  // 按城市分组
   const cityMap = new Map()
   for (const row of result.rows) {
     if (!cityMap.has(row.city)) {
@@ -54,28 +52,10 @@ async function loadKnowledgeFromPg() {
   }
 
   knowledgeCache = [...cityMap.values()]
-  return knowledgeCache
-}
 
-/**
- * 获取知识库数据（PG 或 JSON）
- */
-async function getKnowledgeBase() {
-  if (usePg) return loadKnowledgeFromPg()
-  return attractionsDB
-}
-
-// 初始化：检测是否使用 PG
-if (isDbReady()) {
-  usePg = true
-}
-
-// ========== 构建全局 TF-IDF 索引（JSON 模式使用） ==========
-
-const globalIndex = new TFIDFIndex()
-;(function buildGlobalIndex() {
+  // 构建全局 TF-IDF 索引
   const docs = []
-  for (const cityData of attractionsDB) {
+  for (const cityData of knowledgeCache) {
     for (const attr of cityData.attractions) {
       const id = `${cityData.city}:${attr.name}`
       const text = `${attr.name} ${attr.description} ${attr.tags.join(' ')} ${attr.tips || ''}`
@@ -83,7 +63,9 @@ const globalIndex = new TFIDFIndex()
     }
   }
   globalIndex.buildIndex(docs)
-})()
+
+  return knowledgeCache
+}
 
 /**
  * 根据城市名获取城市数据
@@ -91,7 +73,7 @@ const globalIndex = new TFIDFIndex()
  * @returns {Promise<object|null>} 城市数据对象
  */
 async function getCityData(cityName) {
-  const db = await getKnowledgeBase()
+  const db = await loadKnowledge()
   return db.find(c => c.city === cityName) || null
 }
 
@@ -183,7 +165,7 @@ async function retrieve(city, preferenceTags = [], query = '') {
  * @returns {Promise<string[]>}
  */
 async function getAllCities() {
-  const db = await getKnowledgeBase()
+  const db = await loadKnowledge()
   return db.map(c => c.city)
 }
 

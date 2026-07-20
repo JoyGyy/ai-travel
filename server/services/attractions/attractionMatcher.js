@@ -3,7 +3,7 @@
  * 从行程点位名称中匹配产品景点数据，生成 attractionRefs 引用列表
  */
 
-import { searchAttractions } from './providers/localAttractionProvider.js'
+import { searchAttractions } from './attractionService.js'
 
 /**
  * 收集行程中所有景点名称
@@ -23,14 +23,15 @@ function collectSpotNames(itinerary = []) {
 /**
  * 从行程数据中匹配产品景点引用并去重
  * @param {Array} itinerary - 行程点位数组
- * @returns {Array} 景点引用数组，包含 id, name, city, ticketType, priceText
+ * @returns {Promise<Array>} 景点引用数组，包含 id, name, city, ticketType, priceText
  */
-function matchAttractionRefsFromItinerary(itinerary = []) {
+async function matchAttractionRefsFromItinerary(itinerary = []) {
   const refs = []
   const seen = new Set()
 
   for (const spotName of collectSpotNames(itinerary)) {
-    const matched = searchAttractions({ keyword: spotName }).find(
+    const results = await searchAttractions({ keyword: spotName })
+    const matched = results.find(
       item => item.name === spotName || (item.aliases || []).includes(spotName),
     )
     if (!matched || seen.has(matched.id))

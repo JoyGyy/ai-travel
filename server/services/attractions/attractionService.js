@@ -1,7 +1,6 @@
 /**
  * 景点领域服务
  * 组合景点数据 provider 和收藏数据库函数，提供统一的景点业务接口
- * 已配置 DATABASE_URL 时使用 PostgreSQL，否则降级到本地 JSON
  */
 
 import {
@@ -9,20 +8,13 @@ import {
   listFavoriteAttractionIds,
   removeFavoriteAttraction,
 } from '../auth.js'
-import { isDbReady } from '../../db/index.js'
 import { httpError } from '../../utils/http.js'
-
-// 根据数据库配置选择 provider
-const providerModule = isDbReady()
-  ? await import('./providers/pgAttractionProvider.js')
-  : await import('./providers/localAttractionProvider.js')
-
-const {
-  getAttractionById: providerGetAttractionById,
+import {
+  getAttractionById as providerGetAttractionById,
   getAttractionMeta,
-  listAttractions: providerListAttractions,
-  searchAttractions: providerSearchAttractions,
-} = providerModule
+  listAttractions as providerListAttractions,
+  searchAttractions as providerSearchAttractions,
+} from './providers/pgAttractionProvider.js'
 
 /**
  * 获取用户收藏的景点 ID 集合

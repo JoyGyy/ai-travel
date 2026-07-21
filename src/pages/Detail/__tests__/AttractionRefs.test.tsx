@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 
 import { SpotItem } from '@/components/SpotItem'
 
-describe('SpotItem attraction ref', () => {
+describe('spotItem attraction ref', () => {
   it('有关联景点时展示详情入口', () => {
     render(
       <MemoryRouter>

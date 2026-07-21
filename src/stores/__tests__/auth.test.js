@@ -1,4 +1,6 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { loginApi, registerApi } from '@/api/auth'
 
 import { useAuthStore } from '../auth'
 
@@ -6,8 +8,6 @@ vi.mock('@/api/auth', () => ({
   loginApi: vi.fn(),
   registerApi: vi.fn(),
 }))
-
-import { loginApi, registerApi } from '@/api/auth'
 
 describe('auth store', () => {
   beforeEach(() => {

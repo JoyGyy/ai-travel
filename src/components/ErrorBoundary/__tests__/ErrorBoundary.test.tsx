@@ -13,7 +13,7 @@ function GoodChild() {
   return <div>正常内容</div>
 }
 
-describe('ErrorBoundary', () => {
+describe('errorBoundary', () => {
   it('正常渲染子组件', () => {
     render(
       <ErrorBoundary>
@@ -41,7 +41,8 @@ describe('ErrorBoundary', () => {
     let shouldThrow = true
 
     function ConditionalBomb() {
-      if (shouldThrow) throw new Error('测试错误')
+      if (shouldThrow)
+        throw new Error('测试错误')
       return <div>恢复成功</div>
     }
 

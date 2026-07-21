@@ -22,7 +22,8 @@ function initSSE(res) {
  */
 function sendSSE(res, data) {
   // BUG FIX: 检查流是否仍可写，防止客户端断开后写入导致进程崩溃
-  if (res.destroyed || !res.writable) return
+  if (res.destroyed || !res.writable)
+    return
   try {
     res.write(`data: ${JSON.stringify(data)}\n\n`)
   }
@@ -40,4 +41,4 @@ function sendError(res, message) {
   sendSSE(res, { type: 'error', message })
 }
 
-export { initSSE, sendSSE, sendError }
+export { initSSE, sendError, sendSSE }

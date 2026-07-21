@@ -1,13 +1,13 @@
-import { ArrowLeftOutlined, CloseOutlined, CompassOutlined, EnvironmentOutlined } from '@ant-design/icons'
-import { useEffect, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-
-import type { ItineraryDay, BudgetBreakdown, Accommodation, AttractionRef } from '@/stores/itinerary'
+import type { Accommodation, AttractionRef, BudgetBreakdown, ItineraryDay } from '@/stores/itinerary'
 /**
  * 行程详情页面
  * 展示 AI 生成的旅行行程
  */
 import type { WeatherResponse } from '@/types/api'
+import { ArrowLeftOutlined, CloseOutlined, CompassOutlined, EnvironmentOutlined } from '@ant-design/icons'
+
+import { useEffect, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { AccommodationCard } from '@/components/AccommodationCard'
 import { AgentSteps } from '@/components/AgentSteps'
@@ -89,14 +89,18 @@ export default function Detail() {
     const cached = loadItineraryCache(city, budget, days)
     if (cached) {
       useItineraryStore.setState({ agentSteps: [], currentAgentStep: 0 })
-      setItinerary((cached.itinerary as ItineraryDay[]) || [])
+      const cachedItinerary = (cached.itinerary as ItineraryDay[]) || []
+      setItinerary(cachedItinerary)
       setBudgetBreakdown((cached.budgetBreakdown as BudgetBreakdown) || null)
       setTips((cached.tips as string[]) || [])
       setWeather((cached.weather as WeatherResponse) || null)
       setAccommodation((cached.accommodation as Accommodation[]) || [])
       setNightlife((cached.nightlife as string[]) || [])
       setAttractionRefs((cached.attractionRefs as AttractionRef[]) || [])
-      cacheTimer = setTimeout(setShowLoading, 0, false)
+      cacheTimer = setTimeout(() => {
+        setActiveKeys(cachedItinerary[0]?.day ? [String(cachedItinerary[0].day)] : [])
+        setShowLoading(false)
+      }, 0)
       return () => {
         clearTimeout(resetTimer)
         clearTimeout(cacheTimer)
@@ -107,6 +111,7 @@ export default function Detail() {
     useItineraryStore.setState({ agentSteps: [], currentAgentStep: 0 })
 
     let dataReceived = false
+    let showTimer: ReturnType<typeof setTimeout>
 
     sendRequest('/api/travel/recommend', { city, budget, days }, {
       onStep: (step) => {
@@ -131,8 +136,9 @@ export default function Detail() {
         setAccommodation(a)
         setNightlife(n)
         setAttractionRefs(refs)
+        setActiveKeys(dailyItinerary[0]?.day ? [String(dailyItinerary[0].day)] : [])
         saveItineraryCache(city, budget, days, { itinerary: dailyItinerary, budgetBreakdown: bd, tips: t, weather: w, accommodation: a, nightlife: n, attractionRefs: refs })
-        setTimeout(setShowLoading, 500, false)
+        showTimer = setTimeout(setShowLoading, 500, false)
       },
       onError: (err) => {
         setErrorMessage(err.message || '生成行程失败，请稍后重试')
@@ -147,6 +153,7 @@ export default function Detail() {
 
     return () => {
       clearTimeout(resetTimer)
+      clearTimeout(showTimer)
       abort()
     }
   }, [
@@ -169,7 +176,7 @@ export default function Detail() {
 
   return (
     <main className="detail-page" aria-labelledby="detail-title">
-      <div className="detail-page__hero">
+      <div className="detail-page__hero travel-route-line">
         <div className="detail-page__deco" aria-hidden="true" />
         <button
           type="button"
@@ -248,7 +255,7 @@ export default function Detail() {
           ? (
               <>
                 {/* 摘要卡片 */}
-                <div className="detail-page__summary" aria-label="行程摘要">
+                <div className="detail-page__summary travel-ticket-edge" aria-label="行程摘要">
                   <div className="detail-page__summary-item">
                     <span className="detail-page__summary-label">目的地</span>
                     <span className="detail-page__summary-value">{city}</span>
@@ -319,9 +326,9 @@ export default function Detail() {
                           {isOpen
                             ? (
                                 <div id={panelId} className="detail-page__day-body">
-                                  <SpotItem period="上午" data={item.morning} attractionRef={findAttractionRef(item.morning?.spot)} />
-                                  <SpotItem period="下午" data={item.afternoon} attractionRef={findAttractionRef(item.afternoon?.spot)} />
-                                  <SpotItem period="晚上" data={item.evening} attractionRef={findAttractionRef(item.evening?.spot)} />
+                                  {item.morning && <SpotItem period="上午" data={item.morning} attractionRef={findAttractionRef(item.morning.spot)} />}
+                                  {item.afternoon && <SpotItem period="下午" data={item.afternoon} attractionRef={findAttractionRef(item.afternoon.spot)} />}
+                                  {item.evening && <SpotItem period="晚上" data={item.evening} attractionRef={findAttractionRef(item.evening.spot)} />}
                                 </div>
                               )
                             : null}
@@ -345,8 +352,8 @@ export default function Detail() {
                           温馨提示
                         </h2>
                         <div className="detail-page__tips">
-                          {tips.map((tip, i) => (
-                            <div key={i} className="detail-page__tip">
+                          {tips.map(tip => (
+                            <div key={tip} className="detail-page__tip">
                               <span className="detail-page__tip-dot" aria-hidden="true" />
                               {tip}
                             </div>
@@ -358,7 +365,7 @@ export default function Detail() {
 
                 {/* 咨询 AI 按钮 */}
                 <div className="detail-page__actions">
-                  <button type="button" onClick={() => navigate('/chat')} className="detail-page__chat-btn">咨询 AI</button>
+                  <button type="button" onClick={() => navigate('/chat')} className="detail-page__chat-btn" aria-label="咨询 AI 优化当前行程">咨询 AI 优化行程</button>
                 </div>
               </>
             )

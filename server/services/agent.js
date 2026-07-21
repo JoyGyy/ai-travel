@@ -4,9 +4,9 @@
  * 无 API key 时降级为 Mock 模式
  */
 
-import { matchAttractionRefsFromItinerary } from './attractions/attractionMatcher.js'
 import attractionsDB from '../knowledge/attractions.json' with { type: 'json' }
 import { sendSSE } from '../utils/sse.js'
+import { matchAttractionRefsFromItinerary } from './attractions/attractionMatcher.js'
 import { callLLMWithTools, getLLMConfig } from './llm.js'
 import { retrieve } from './rag.js'
 import { getDressAdvice, getWeather, isGoodForOutdoor } from './weather.js'

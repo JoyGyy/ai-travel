@@ -12,7 +12,7 @@ vi.mock('@/api/attractions', () => ({
 
 const api = await import('@/api/attractions')
 
-describe('Attractions page', () => {
+describe('attractions page', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.mocked(api.fetchAttractions).mockResolvedValue({
@@ -47,11 +47,22 @@ describe('Attractions page', () => {
 
     expect(await screen.findByText('精选景点')).toBeInTheDocument()
     expect(await screen.findByText('西湖')).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: /西湖，杭州景点封面/ })).toBeInTheDocument()
 
     // Ant Design Button 在 jsdom 中 accessible name 会在 CJK 字符间插入空格（如 "杭 州"）
     fireEvent.click(screen.getByRole('button', { name: /杭\s*州/ }))
 
     await waitFor(() => expect(api.fetchAttractions).toHaveBeenLastCalledWith(expect.objectContaining({ city: '杭州' })))
+  })
+
+  it('可以通过搜索按钮提交关键词', async () => {
+    render(<MemoryRouter><Attractions /></MemoryRouter>)
+
+    const input = await screen.findByLabelText('搜索关键词')
+    fireEvent.change(input, { target: { value: '西湖' } })
+    fireEvent.click(screen.getByRole('button', { name: /搜\s*索/ }))
+
+    await waitFor(() => expect(api.fetchAttractions).toHaveBeenLastCalledWith(expect.objectContaining({ keyword: '西湖' })))
   })
 
   it('可以收藏景点', async () => {

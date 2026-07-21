@@ -75,7 +75,7 @@ export function WeatherCard({ weather }: WeatherCardProps) {
       {weather.forecast && weather.forecast.length > 0 && (
         <div className="weather-card__forecast" aria-label="未来三天天气预报">
           {weather.forecast.map((day, i) => (
-            <div key={i} className="weather-card__forecast-item">
+            <div key={day.date} className="weather-card__forecast-item">
               <p className="weather-card__forecast-label">{i === 0 ? '今天' : i === 1 ? '明天' : '后天'}</p>
               <WeatherIcon desc={day.weatherDesc} className="weather-card__forecast-icon" />
               <p className="weather-card__forecast-temp">

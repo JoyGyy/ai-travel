@@ -4,11 +4,12 @@
  * 使用 SQLite (sql.js WASM) 存储用户数据
  */
 
-import { readFile, writeFile, mkdir } from 'node:fs/promises'
+import { Buffer } from 'node:buffer'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import bcrypt from 'bcryptjs'
-import initSqlJs from 'sql.js'
 import jwt from 'jsonwebtoken'
+import initSqlJs from 'sql.js'
 import { env } from '../config/env.js'
 
 const SALT_ROUNDS = 10
@@ -91,7 +92,8 @@ const ready = (async () => {
  */
 async function register(username, password) {
   await ready
-  if (initError) throw new Error('数据库初始化失败，请稍后重试')
+  if (initError)
+    throw new Error('数据库初始化失败，请稍后重试')
 
   if (!username || !password)
     throw new Error('用户名和密码不能为空')
@@ -123,7 +125,8 @@ async function register(username, password) {
  */
 async function login(username, password) {
   await ready
-  if (initError) throw new Error('数据库初始化失败，请稍后重试')
+  if (initError)
+    throw new Error('数据库初始化失败，请稍后重试')
 
   if (!username || !password)
     throw new Error('用户名和密码不能为空')
@@ -158,8 +161,10 @@ function verifyToken(token) {
  */
 async function getAiQuotaStatus(userId, date = getTodayKey()) {
   await ready
-  if (initError) throw new Error('数据库初始化失败，请稍后重试')
-  if (!userId) throw new Error('用户信息无效')
+  if (initError)
+    throw new Error('数据库初始化失败，请稍后重试')
+  if (!userId)
+    throw new Error('用户信息无效')
 
   const result = db.exec('SELECT used_count FROM ai_usage WHERE user_id = ? AND usage_date = ?', [userId, date])
   const used = result.length > 0 && result[0].values.length > 0
@@ -215,14 +220,16 @@ async function consumeAiQuota(userId, date = getTodayKey()) {
  */
 async function listFavoriteAttractionIds(userId) {
   await ready
-  if (!userId) throw new Error('用户信息无效')
+  if (!userId)
+    throw new Error('用户信息无效')
 
   const result = db.exec(
     'SELECT attraction_id FROM user_favorite_attractions WHERE user_id = ? ORDER BY created_at DESC',
     [userId],
   )
 
-  if (result.length === 0) return []
+  if (result.length === 0)
+    return []
   return result[0].values.map(row => row[0])
 }
 
@@ -234,8 +241,10 @@ async function listFavoriteAttractionIds(userId) {
  */
 async function addFavoriteAttraction(userId, attractionId) {
   await ready
-  if (!userId) throw new Error('用户信息无效')
-  if (!attractionId) throw new Error('景点信息无效')
+  if (!userId)
+    throw new Error('用户信息无效')
+  if (!attractionId)
+    throw new Error('景点信息无效')
 
   const id = `${userId}:${attractionId}`
   const createdAt = new Date().toISOString()
@@ -255,8 +264,10 @@ async function addFavoriteAttraction(userId, attractionId) {
  */
 async function removeFavoriteAttraction(userId, attractionId) {
   await ready
-  if (!userId) throw new Error('用户信息无效')
-  if (!attractionId) throw new Error('景点信息无效')
+  if (!userId)
+    throw new Error('用户信息无效')
+  if (!attractionId)
+    throw new Error('景点信息无效')
 
   db.run(
     'DELETE FROM user_favorite_attractions WHERE user_id = ? AND attraction_id = ?',
@@ -272,8 +283,10 @@ async function removeFavoriteAttraction(userId, attractionId) {
  */
 async function getProfile(userId) {
   await ready
-  if (initError) throw new Error('数据库初始化失败，请稍后重试')
-  if (!userId) throw new Error('用户信息无效')
+  if (initError)
+    throw new Error('数据库初始化失败，请稍后重试')
+  if (!userId)
+    throw new Error('用户信息无效')
 
   const result = db.exec('SELECT id, username, created_at FROM users WHERE id = ?', [userId])
   if (result.length === 0 || result[0].values.length === 0)
@@ -295,8 +308,10 @@ async function getProfile(userId) {
  */
 async function changePassword(userId, currentPassword, newPassword) {
   await ready
-  if (initError) throw new Error('数据库初始化失败，请稍后重试')
-  if (!userId) throw new Error('用户信息无效')
+  if (initError)
+    throw new Error('数据库初始化失败，请稍后重试')
+  if (!userId)
+    throw new Error('用户信息无效')
   if (!currentPassword || !newPassword)
     throw new Error('当前密码和新密码不能为空')
   if (newPassword.length < 6)

@@ -4,17 +4,31 @@ import { request } from './client'
 
 function buildQuery(filters: AttractionFilters = {}) {
   const params = new URLSearchParams()
-  if (filters.city) params.set('city', filters.city)
-  if (filters.ticketType) params.set('ticketType', filters.ticketType)
-  if (filters.keyword) params.set('keyword', filters.keyword)
-  if (filters.tag) params.set('tag', filters.tag)
-  if (filters.page) params.set('page', String(filters.page))
-  if (filters.pageSize) params.set('pageSize', String(filters.pageSize))
+  if (filters.city) {
+    params.set('city', filters.city)
+  }
+  if (filters.ticketType) {
+    params.set('ticketType', filters.ticketType)
+  }
+  if (filters.keyword) {
+    params.set('keyword', filters.keyword)
+  }
+  if (filters.tag) {
+    params.set('tag', filters.tag)
+  }
+  if (filters.page) {
+    params.set('page', String(filters.page))
+  }
+  if (filters.pageSize) {
+    params.set('pageSize', String(filters.pageSize))
+  }
   const query = params.toString()
   return query ? `?${query}` : ''
 }
 
-type DataResponse<T> = { data: T }
+interface DataResponse<T> {
+  data: T
+}
 
 export async function fetchAttractions(filters: AttractionFilters = {}): Promise<AttractionListData> {
   const data = await request(`/api/attractions${buildQuery(filters)}`, { auth: true })

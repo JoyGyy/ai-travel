@@ -4,7 +4,7 @@ import { RobotOutlined } from '@ant-design/icons'
  * 根据消息角色（用户/AI）显示不同样式的气泡
  * react-markdown 使用动态导入以减少初始包大小
  */
-import { Suspense, lazy } from 'react'
+import { lazy, Suspense } from 'react'
 
 import './style.css'
 

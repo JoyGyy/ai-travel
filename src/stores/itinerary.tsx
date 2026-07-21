@@ -1,10 +1,10 @@
-import { create } from 'zustand'
-
 /**
  * 行程状态管理
  * 管理行程规划页面的数据和加载状态
  */
 import type { SSEEvent, WeatherResponse } from '@/types/api'
+
+import { create } from 'zustand'
 
 export interface ItineraryDay {
   day: number

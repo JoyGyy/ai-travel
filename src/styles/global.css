@@ -36,6 +36,25 @@
   --travel-muted: var(--color-muted);
   --travel-white: #ffffff;
 
+  /* 兼容页面中已使用的旅行语义别名 */
+  --travel-bg: var(--color-background);
+  --travel-primary: var(--color-primary);
+  --travel-primary-strong: var(--color-primary-strong);
+
+  /* 页面级旅行手账视觉 token */
+  --travel-hero-gradient: linear-gradient(135deg, rgba(255, 107, 53, 0.16), rgba(245, 158, 11, 0.12) 48%, rgba(232, 64, 87, 0.1));
+  --travel-ticket-border: rgba(255, 107, 53, 0.2);
+  --travel-tag-free-bg: rgba(5, 150, 105, 0.1);
+  --travel-tag-free-text: #047857;
+  --travel-tag-paid-bg: rgba(217, 119, 6, 0.12);
+  --travel-tag-paid-text: #B45309;
+  --travel-tag-info-bg: rgba(59, 130, 246, 0.1);
+  --travel-tag-info-text: #1D4ED8;
+  --travel-tag-danger-bg: rgba(220, 38, 38, 0.1);
+  --travel-tag-danger-text: #B91C1C;
+  --travel-tag-success-bg: rgba(5, 150, 105, 0.1);
+  --travel-tag-success-text: #047857;
+
   --travel-primary-rgb: 255, 107, 53;
   --travel-secondary-rgb: 245, 158, 11;
   --travel-ocean-rgb: 41, 37, 36;
@@ -209,6 +228,151 @@ a:focus-visible {
 ::selection {
   background: rgba(var(--travel-primary-rgb), 0.12);
   color: var(--travel-ocean);
+}
+
+/* 页面级旅行手账工具类 */
+.travel-page-shell {
+  min-height: 100%;
+  padding: clamp(16px, 3vw, 28px);
+  padding-bottom: max(clamp(24px, 4vw, 40px), env(safe-area-inset-bottom));
+  background:
+    var(--texture-linen),
+    var(--travel-bg);
+}
+
+.travel-page-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin-bottom: var(--space-5);
+  padding: clamp(22px, 4vw, 34px);
+  border: 1px solid var(--travel-ticket-border);
+  border-radius: var(--travel-radius-2xl);
+  background:
+    var(--texture-dots),
+    var(--travel-hero-gradient),
+    var(--travel-surface);
+  background-size: var(--texture-dots-size), auto, auto;
+  box-shadow: var(--shadow-paper);
+}
+
+.travel-page-hero::before {
+  position: absolute;
+  inset: auto 24px 18px auto;
+  width: min(180px, 38vw);
+  height: 82px;
+  content: '';
+  border-radius: 999px;
+  background: radial-gradient(circle at 18px 50%, rgba(var(--travel-primary-rgb), 0.32) 0 4px, transparent 5px), linear-gradient(90deg, rgba(var(--travel-primary-rgb), 0.18), rgba(var(--travel-secondary-rgb), 0.02));
+  background-size: 28px 28px, auto;
+  opacity: 0.6;
+  transform: rotate(-6deg);
+  pointer-events: none;
+}
+
+.travel-page-hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+.travel-surface-card {
+  border: 1px solid rgba(var(--travel-ocean-rgb), 0.07);
+  border-radius: var(--travel-radius-xl);
+  background: var(--travel-surface);
+  box-shadow: var(--shadow-paper);
+  transition:
+    transform var(--motion-base) var(--ease-standard),
+    box-shadow var(--motion-base) var(--ease-standard),
+    border-color var(--motion-base) var(--ease-standard);
+}
+
+.travel-surface-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(var(--travel-primary-rgb), 0.18);
+  box-shadow: var(--shadow-paper-hover);
+}
+
+.travel-ticket-edge {
+  position: relative;
+}
+
+.travel-ticket-edge::after {
+  position: absolute;
+  top: 18px;
+  right: -8px;
+  bottom: 18px;
+  width: 16px;
+  content: '';
+  background: radial-gradient(circle, var(--travel-bg) 0 6px, transparent 6.5px) center / 16px 28px repeat-y;
+  pointer-events: none;
+}
+
+.travel-route-line {
+  position: relative;
+}
+
+.travel-route-line::before {
+  position: absolute;
+  inset: 18px 18px auto auto;
+  width: 112px;
+  height: 54px;
+  content: '';
+  border-top: 2px dashed rgba(var(--travel-primary-rgb), 0.32);
+  border-right: 2px dashed rgba(var(--travel-secondary-rgb), 0.32);
+  border-radius: 0 var(--travel-radius-xl) 0 0;
+  pointer-events: none;
+}
+
+.travel-tag {
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  border: 0;
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.travel-tag--free,
+.travel-tag--success {
+  color: var(--travel-tag-success-text);
+  background: var(--travel-tag-success-bg);
+}
+
+.travel-tag--paid,
+.travel-tag--warning {
+  color: var(--travel-tag-paid-text);
+  background: var(--travel-tag-paid-bg);
+}
+
+.travel-tag--info {
+  color: var(--travel-tag-info-text);
+  background: var(--travel-tag-info-bg);
+}
+
+.travel-tag--danger {
+  color: var(--travel-tag-danger-text);
+  background: var(--travel-tag-danger-bg);
+}
+
+.travel-visually-muted {
+  color: rgba(var(--travel-ink-rgb), 0.68);
+}
+
+@media (max-width: 640px) {
+  .travel-ticket-edge::after,
+  .travel-route-line::before {
+    content: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .travel-surface-card {
+    transition: none;
+  }
+
+  .travel-surface-card:hover {
+    transform: none;
+  }
 }
 
 /* 统一天气图标：用可控 CSS 图形替代 emoji */

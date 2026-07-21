@@ -2,8 +2,8 @@ import assert from 'node:assert/strict'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { test } from 'node:test'
 import express from 'express'
+import { it } from 'vitest'
 
 async function createTestApp() {
   const dir = await mkdtemp(path.join(tmpdir(), 'travel-attractions-routes-'))
@@ -43,7 +43,7 @@ async function request(app, path, options = {}) {
   }
 }
 
-test('景点接口要求登录并支持列表、详情、收藏', async () => {
+it('景点接口要求登录并支持列表、详情、收藏', async () => {
   const { app, headers, dir } = await createTestApp()
   try {
     const unauthorized = await request(app, '/api/attractions')

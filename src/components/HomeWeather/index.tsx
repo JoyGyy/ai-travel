@@ -78,7 +78,7 @@ export function HomeWeather({ weather, loading }: HomeWeatherProps) {
       {weather.forecast && weather.forecast.length > 0 && (
         <div className="home-weather__forecast" aria-label="未来三天天气预报">
           {weather.forecast.map((day, i) => (
-            <div key={i} className="home-weather__forecast-item">
+            <div key={day.date} className="home-weather__forecast-item">
               <span className="home-weather__forecast-label">{i === 0 ? '今天' : i === 1 ? '明天' : '后天'}</span>
               <WeatherIcon desc={day.weatherDesc} className="home-weather__forecast-icon" />
               <span className="home-weather__forecast-temp">

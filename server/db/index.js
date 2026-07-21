@@ -30,7 +30,8 @@ if (env.DATABASE_URL) {
  * @returns {Promise<import('pg').QueryResult>}
  */
 async function query(text, params) {
-  if (!pool) throw new Error('数据库未配置，请设置 DATABASE_URL 环境变量')
+  if (!pool)
+    throw new Error('数据库未配置，请设置 DATABASE_URL 环境变量')
   return pool.query(text, params)
 }
 
@@ -39,7 +40,8 @@ async function query(text, params) {
  * @returns {Promise<import('pg').PoolClient>}
  */
 async function getClient() {
-  if (!pool) throw new Error('数据库未配置，请设置 DATABASE_URL 环境变量')
+  if (!pool)
+    throw new Error('数据库未配置，请设置 DATABASE_URL 环境变量')
   return pool.connect()
 }
 

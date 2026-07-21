@@ -20,8 +20,8 @@ export function RAGSource({ sources }: RAGSourceProps) {
         <span>参考来源</span>
       </div>
       <div className="rag-source__list">
-        {sources.map((source, i) => (
-          <span key={i} className="rag-source__tag">{source}</span>
+        {sources.map(source => (
+          <span key={source} className="rag-source__tag">{source}</span>
         ))}
       </div>
     </div>

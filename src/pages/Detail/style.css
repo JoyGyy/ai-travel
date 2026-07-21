@@ -18,6 +18,8 @@
   padding: 22px clamp(20px, 5vw, 44px) 70px;
   overflow: hidden;
   background:
+    radial-gradient(circle at 82% 18%, rgba(255, 107, 53, 0.26), transparent 28%),
+    radial-gradient(circle at 16% 82%, rgba(245, 158, 11, 0.18), transparent 26%),
     linear-gradient(160deg, #1e293b 0%, #334155 45%, #475569 100%);
   border-radius: 0 0 clamp(26px, 6vw, 44px) clamp(26px, 6vw, 44px);
 }
@@ -44,8 +46,8 @@
 .detail-page__back {
   position: relative;
   z-index: 2;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: 14px;
   display: flex;
   align-items: center;
@@ -255,6 +257,7 @@
   z-index: 10;
   display: flex;
   align-items: center;
+  overflow: hidden;
   margin: -40px 0 0;
   padding: 18px 20px;
   border-radius: 22px;

@@ -1,7 +1,7 @@
-import { CompassOutlined, DeleteOutlined, ExclamationCircleOutlined, RobotOutlined } from '@ant-design/icons'
 /**
  * AI 对话页面
  */
+import { CompassOutlined, DeleteOutlined, ExclamationCircleOutlined, RobotOutlined } from '@ant-design/icons'
 import { Modal } from 'antd'
 import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
@@ -15,10 +15,10 @@ import { useChatStore } from '@/stores/chat'
 import './style.css'
 
 const quickQuestions = [
-  '北京有哪些必去的景点？',
-  '上海美食推荐',
-  '成都三日游攻略',
-  '如何选择旅行保险？',
+  '北京三日游怎么安排？',
+  '亲子游适合去哪里？',
+  '成都旅游预算怎么规划？',
+  '第一次去日本需要注意什么？',
 ]
 
 export default function Chat() {
@@ -136,7 +136,7 @@ export default function Chat() {
           <div>
             <p className="chat-page__hero-label">AI ASSISTANT</p>
             <h1 id="chat-title" className="chat-page__hero-title">旅行顾问</h1>
-            <p className="chat-page__hero-subtitle">有什么旅行问题，尽管问我</p>
+            <p className="chat-page__hero-subtitle">我是你的 AI 旅行规划师，专注目的地、行程、预算与出行建议</p>
           </div>
           {messages.length > 0
             ? (
@@ -217,8 +217,8 @@ export default function Chat() {
                     <CompassOutlined />
                   </div>
                   <h2>你好，旅行者</h2>
-                  <p>告诉我你的目的地，我来帮你规划</p>
-                  <p className="chat-page__empty-hint">基于 RAG + Agent 技术，提供精准旅行建议</p>
+                  <p>告诉我目的地、天数、预算或出行偏好，我来帮你做规划</p>
+                  <p className="chat-page__empty-hint">结合知识库与 Agent 工具，为你提供更精准的旅行建议</p>
                 </div>
                 <p className="chat-page__quick-title">试试这样问</p>
                 <div className="chat-page__quick-list">
@@ -248,7 +248,7 @@ export default function Chat() {
             type="text"
             name="travel-question"
             autoComplete="off"
-            placeholder="输入你的问题..."
+            placeholder="问我目的地、行程、预算、交通或美食建议..."
             value={inputMsg}
             onChange={e => setInputMsg(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && sendMessage()}

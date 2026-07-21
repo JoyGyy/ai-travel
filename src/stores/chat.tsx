@@ -1,10 +1,10 @@
-import { create } from 'zustand'
-
 /**
  * 聊天状态管理
  * 进入页面时自动清空，不持久化
  */
 import type { SSEEvent } from '@/types/api'
+
+import { create } from 'zustand'
 
 interface ChatMessage {
   _id: number

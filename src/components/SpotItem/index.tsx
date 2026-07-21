@@ -1,11 +1,11 @@
+import type { AttractionRef } from '@/stores/itinerary'
 /**
  * 景点项目组件
  * 展示单个景点的详细信息
  */
 import { ClockCircleOutlined, CompassOutlined } from '@ant-design/icons'
-import { Link } from 'react-router-dom'
 
-import type { AttractionRef } from '@/stores/itinerary'
+import { Link } from 'react-router-dom'
 
 import './style.css'
 
@@ -59,7 +59,11 @@ export function SpotItem({ period, data, attractionRef }: SpotItemProps) {
           </span>
         </div>
         {attractionRef
-          ? <Link className="spot-item__detail-link" to={`/attractions/${attractionRef.id}`}>查看{attractionRef.name}详情</Link>
+          ? (
+              <Link className="spot-item__detail-link" to={`/attractions/${attractionRef.id}`}>
+                {`查看${attractionRef.name}详情`}
+              </Link>
+            )
           : null}
       </div>
     </div>

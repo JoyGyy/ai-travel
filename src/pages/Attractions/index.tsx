@@ -1,9 +1,9 @@
+import type { Attraction, AttractionFilters, AttractionTicketType } from '@/types/attraction'
 import { HeartFilled, HeartOutlined, SearchOutlined } from '@ant-design/icons'
 import { Button, Empty, Input, message, Pagination, Select, Spin, Tag } from 'antd'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
 
-import type { Attraction, AttractionFilters, AttractionTicketType } from '@/types/attraction'
+import { Link } from 'react-router-dom'
 
 import { favoriteAttraction, fetchAttractions, unfavoriteAttraction } from '@/api/attractions'
 
@@ -15,8 +15,10 @@ export default function Attractions() {
   const [cities, setCities] = useState<string[]>([])
   const [tags, setTags] = useState<string[]>([])
   const [filters, setFilters] = useState<AttractionFilters>({})
+  const [keywordInput, setKeywordInput] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [favoritePendingIds, setFavoritePendingIds] = useState<Set<string>>(() => new Set())
   const [msg, contextHolder] = message.useMessage()
 
   const PAGE_SIZE = 12
@@ -39,14 +41,24 @@ export default function Attractions() {
     }
   }, [])
 
-  /* eslint-disable react-hooks/set-state-in-effect -- 初始化数据加载是合法的 effect 用法 */
   useEffect(() => {
     load({})
   }, [load])
-  /* eslint-enable react-hooks/set-state-in-effect */
 
   function updateFilters(patch: AttractionFilters) {
     const next = { ...filters, ...patch, page: patch.page || 1 }
+    setFilters(next)
+    load(next)
+  }
+
+  function handleSearchSubmit(event: { preventDefault: () => void }) {
+    event.preventDefault()
+    updateFilters({ keyword: keywordInput.trim() })
+  }
+
+  function handleClearFilters() {
+    setKeywordInput('')
+    const next: AttractionFilters = {}
     setFilters(next)
     load(next)
   }
@@ -56,6 +68,7 @@ export default function Attractions() {
   }
 
   async function toggleFavorite(item: Attraction) {
+    setFavoritePendingIds(prev => new Set(prev).add(item.id))
     try {
       const result = item.isFavorite
         ? await unfavoriteAttraction(item.id)
@@ -66,6 +79,13 @@ export default function Attractions() {
     catch (err) {
       msg.error(err instanceof Error ? err.message : '收藏操作失败')
     }
+    finally {
+      setFavoritePendingIds((prev) => {
+        const next = new Set(prev)
+        next.delete(item.id)
+        return next
+      })
+    }
   }
 
   const ticketOptions = useMemo(() => [
@@ -74,83 +94,156 @@ export default function Attractions() {
     { value: 'paid', label: '收费' },
   ], [])
 
+  const hasActiveFilters = Boolean(filters.keyword || filters.city || filters.ticketType || filters.tag)
+
   return (
-    <main className="attractions-page" aria-labelledby="attractions-title">
+    <main className="attractions-page travel-page-shell" aria-labelledby="attractions-title">
       {contextHolder}
-      <section className="attractions-page__hero">
+      <section className="attractions-page__hero travel-page-hero travel-ticket-edge travel-route-line">
         <p className="attractions-page__label">ATTRACTIONS</p>
         <h1 id="attractions-title">精选景点</h1>
-        <p>发现热门目的地，收藏想去的景点，并跳转第三方平台购票。</p>
+        <p>像翻旅行票根一样发现目的地，收藏想去的景点，再让 AI 帮你串成路线。</p>
       </section>
 
-      <section className="attractions-page__filters" aria-label="景点筛选">
-        <Input
-          allowClear
-          prefix={<SearchOutlined />}
-          placeholder="搜索景点、城市或标签"
-          onPressEnter={event => updateFilters({ keyword: event.currentTarget.value.trim() })}
-          onChange={(event) => {
-            if (!event.target.value)
-              updateFilters({ keyword: '' })
-          }}
-        />
-        <div className="attractions-page__filter-row">
-          {cities.map(city => (
-            <Button key={city} type={filters.city === city ? 'primary' : 'default'} onClick={() => updateFilters({ city: filters.city === city ? '' : city })}>{city}</Button>
-          ))}
+      <section className="attractions-page__filters travel-surface-card" aria-labelledby="attractions-filter-title">
+        <div className="attractions-page__filters-header">
+          <h2 id="attractions-filter-title">筛选景点</h2>
+          {hasActiveFilters ? <Button type="link" onClick={handleClearFilters}>清空筛选</Button> : null}
         </div>
-        <Select aria-label="收费类型" value={filters.ticketType || ''} options={ticketOptions} onChange={ticketType => updateFilters({ ticketType: ticketType as AttractionTicketType | '' })} />
-        <div className="attractions-page__filter-row">
-          {tags.map(tag => (
-            <Button key={tag} type={filters.tag === tag ? 'primary' : 'default'} onClick={() => updateFilters({ tag: filters.tag === tag ? '' : tag })}>{tag}</Button>
-          ))}
+        <form className="attractions-page__search" onSubmit={handleSearchSubmit}>
+          <label htmlFor="attractions-keyword">搜索关键词</label>
+          <div className="attractions-page__search-control">
+            <Input
+              id="attractions-keyword"
+              allowClear
+              prefix={<SearchOutlined aria-hidden="true" />}
+              placeholder="搜索景点、城市或标签"
+              value={keywordInput}
+              onChange={event => setKeywordInput(event.target.value)}
+            />
+            <Button type="primary" htmlType="submit">搜索</Button>
+          </div>
+        </form>
+        {cities.length > 0
+          ? (
+              <div className="attractions-page__filter-group" aria-labelledby="attractions-city-filter">
+                <p id="attractions-city-filter">城市</p>
+                <div className="attractions-page__filter-row">
+                  {cities.map(city => (
+                    <Button
+                      key={city}
+                      type={filters.city === city ? 'primary' : 'default'}
+                      aria-pressed={filters.city === city}
+                      onClick={() => updateFilters({ city: filters.city === city ? '' : city })}
+                    >
+                      {city}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )
+          : null}
+        <div className="attractions-page__select-group">
+          <label htmlFor="attractions-ticket-type">收费类型</label>
+          <Select
+            id="attractions-ticket-type"
+            value={filters.ticketType || ''}
+            options={ticketOptions}
+            onChange={ticketType => updateFilters({ ticketType: ticketType as AttractionTicketType | '' })}
+          />
         </div>
+        {tags.length > 0
+          ? (
+              <div className="attractions-page__filter-group" aria-labelledby="attractions-tag-filter">
+                <p id="attractions-tag-filter">标签</p>
+                <div className="attractions-page__filter-row">
+                  {tags.map(tag => (
+                    <Button
+                      key={tag}
+                      type={filters.tag === tag ? 'primary' : 'default'}
+                      aria-pressed={filters.tag === tag}
+                      onClick={() => updateFilters({ tag: filters.tag === tag ? '' : tag })}
+                    >
+                      {tag}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )
+          : null}
+        <p className="attractions-page__result-status" aria-live="polite">
+          {loading ? '正在应用筛选...' : `共找到 ${total} 个景点`}
+        </p>
       </section>
 
       {loading
         ? (
-            <div className="attractions-page__loading">
+            <div className="attractions-page__loading" role="status" aria-live="polite">
               <Spin />
-              {' '}
-              加载景点中...
+              <span>加载景点中...</span>
             </div>
           )
         : null}
       {!loading && error
         ? (
-            <div className="attractions-page__error" role="alert">
+            <div className="attractions-page__error travel-surface-card" role="alert">
               <span>{error}</span>
               <Button onClick={() => load(filters)}>重试</Button>
             </div>
           )
         : null}
-      {!loading && !error && items.length === 0 ? <Empty description="暂无符合条件的景点" /> : null}
+      {!loading && !error && items.length === 0
+        ? (
+            <div className="attractions-page__empty travel-surface-card">
+              <Empty description="没有找到符合筛选条件的景点" />
+              {hasActiveFilters ? <Button type="primary" onClick={handleClearFilters}>清空筛选</Button> : null}
+            </div>
+          )
+        : null}
 
       {!loading && !error && items.length > 0
         ? (
             <>
               <section className="attractions-page__grid" aria-label="景点列表">
-                {items.map(item => (
-                  <article key={item.id} className="attractions-page__card">
-                    <img src={item.coverImage} alt="" className="attractions-page__cover" />
-                    <div className="attractions-page__card-body">
-                      <div className="attractions-page__card-title-row">
-                        <h2>{item.name}</h2>
-                        <button type="button" aria-label={`${item.isFavorite ? '取消收藏' : '收藏'}${item.name}`} onClick={() => toggleFavorite(item)} className="attractions-page__favorite">
-                          {item.isFavorite ? <HeartFilled /> : <HeartOutlined />}
-                        </button>
+                {items.map((item) => {
+                  const isFavoritePending = favoritePendingIds.has(item.id)
+                  return (
+                    <article key={item.id} className="attractions-page__card travel-surface-card travel-ticket-edge">
+                      <img
+                        src={item.coverImage}
+                        alt={`${item.name}，${item.city}景点封面`}
+                        className="attractions-page__cover"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      <div className="attractions-page__card-body">
+                        <div className="attractions-page__card-title-row">
+                          <h2>{item.name}</h2>
+                          <button
+                            type="button"
+                            aria-label={`${item.isFavorite ? '取消收藏' : '收藏'}${item.name}`}
+                            aria-pressed={Boolean(item.isFavorite)}
+                            disabled={isFavoritePending}
+                            onClick={() => toggleFavorite(item)}
+                            className="attractions-page__favorite"
+                          >
+                            {item.isFavorite ? <HeartFilled aria-hidden="true" /> : <HeartOutlined aria-hidden="true" />}
+                          </button>
+                        </div>
+                        <p>{item.summary}</p>
+                        <div className="attractions-page__meta">
+                          <Tag className={`travel-tag ${item.ticketType === 'free' ? 'travel-tag--free' : 'travel-tag--paid'}`}>{item.ticketType === 'free' ? '免费' : '收费'}</Tag>
+                          <span>{item.city}</span>
+                          <span>{item.priceText}</span>
+                        </div>
+                        <div className="attractions-page__tags">
+                          {item.tags.map(tag => <Tag key={tag} className="travel-tag travel-tag--info">{tag}</Tag>)}
+                        </div>
+                        <Link className="attractions-page__detail-link" to={`/attractions/${item.id}`} aria-label={`查看${item.name}详情`}>查看详情</Link>
                       </div>
-                      <p>{item.summary}</p>
-                      <div className="attractions-page__meta">
-                        <Tag color={item.ticketType === 'free' ? 'green' : 'orange'}>{item.ticketType === 'free' ? '免费' : '收费'}</Tag>
-                        <span>{item.city}</span>
-                        <span>{item.priceText}</span>
-                      </div>
-                      <div className="attractions-page__tags">{item.tags.map(tag => <Tag key={tag}>{tag}</Tag>)}</div>
-                      <Link className="attractions-page__detail-link" to={`/attractions/${item.id}`}>查看详情</Link>
-                    </div>
-                  </article>
-                ))}
+                    </article>
+                  )
+                })}
               </section>
               {total > PAGE_SIZE && (
                 <div className="attractions-page__pagination">

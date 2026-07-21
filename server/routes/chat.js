@@ -155,7 +155,7 @@ async function getKnownCitiesForGuard() {
     return await getAllCities()
   }
   catch {
-    // 数据库不可用时使用静态知识库兜底，避免边界守卫依赖外部服务
+    // 数据库不可用时兜底到静态知识库，保证边界守卫可继续工作
     return attractionsDB.map(item => item.city)
   }
 }

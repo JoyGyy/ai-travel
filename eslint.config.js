@@ -1,58 +1,6 @@
-import js from '@eslint/js'
-import perfectionist from 'eslint-plugin-perfectionist'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import { defineConfig, globalIgnores } from 'eslint/config'
-import globals from 'globals'
-import tseslint from 'typescript-eslint'
+import antfu from '@antfu/eslint-config'
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['src/**/*.{js,jsx,ts,tsx}'],
-    extends: [
-      js.configs.recommended,
-      ...tseslint.configs.recommended,
-      reactHooks.configs.flat.recommended,
-      reactRefresh.configs.vite,
-    ],
-    plugins: {
-      perfectionist,
-    },
-    rules: {
-      'perfectionist/sort-imports': 'error',
-      'max-statements-per-line': ['error', { max: 1 }],
-    },
-    languageOptions: {
-      globals: globals.browser,
-      parserOptions: {
-        ecmaFeatures: { jsx: true },
-      },
-    },
-  },
-  {
-    files: ['src/**/__tests__/**/*.{js,jsx,ts,tsx}'],
-    languageOptions: {
-      globals: {
-        ...globals.browser,
-        global: 'readonly',
-      },
-    },
-    rules: {
-      '@typescript-eslint/no-unused-vars': 'off',
-    },
-  },
-  {
-    files: ['vite.config.js', 'vitest.config.js'],
-    extends: [js.configs.recommended],
-    languageOptions: {
-      globals: globals.node,
-    },
-  },
-  {
-    files: ['src/router/**'],
-    rules: {
-      'react-refresh/only-export-components': 'off',
-    },
-  },
-])
+export default antfu({
+  typescript: true,
+  react: true,
+})

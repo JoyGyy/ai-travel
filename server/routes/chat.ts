@@ -593,7 +593,7 @@ router.post('/chat', asyncHandler(async (req: Request, res: Response) => {
           if (!assistantMsg)
             break
 
-          messages.push(assistantMsg)
+          messages.push(assistantMsg as ChatMessage)
 
           // 没有 tool_calls → LLM 已生成最终答案
           if (!assistantMsg.tool_calls || assistantMsg.tool_calls.length === 0) {
@@ -695,8 +695,10 @@ router.post('/chat', asyncHandler(async (req: Request, res: Response) => {
         const found = cityData.attractions.find(a => message.includes(a.name))
         if (found) {
           const result = await retrieve(cityData.city, [], message)
-          ragResult = { ...result, city: cityData.city }
-          ragSources = [found.name, ...result.attractions.filter(a => a.name !== found.name).slice(0, 4).map(a => a.name)]
+          if (result) {
+            ragResult = { ...result, city: cityData.city }
+            ragSources = [found.name, ...result.attractions.filter(a => a.name !== found.name).slice(0, 4).map(a => a.name)]
+          }
           break
         }
       }

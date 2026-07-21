@@ -341,9 +341,9 @@ async function executeChatTool(toolName: string, args: Record<string, unknown>):
     case 'get_city_list':
       return await executeGetCityList()
     case 'compare_cities':
-      return await executeCompareCities(args as CompareCitiesArgs)
+      return await executeCompareCities(args as unknown as CompareCitiesArgs)
     case 'get_travel_tips':
-      return await executeGetTravelTips(args as TravelTipsArgs)
+      return await executeGetTravelTips(args as unknown as TravelTipsArgs)
     case 'search_product_attractions':
       return executeProductAttractionsTool(args as ProductAttractionsArgs)
     default:

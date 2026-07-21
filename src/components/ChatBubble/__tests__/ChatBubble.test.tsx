@@ -23,13 +23,13 @@ describe('chat bubble 组件', () => {
     expect(container.querySelector('.chat-bubble--ai')).not.toBeInTheDocument()
   })
 
-  it('AI 消息使用 ai 样式类', async () => {
+  it('assistant 消息使用 ai 样式类', async () => {
     const { container } = renderWithSuspense(<ChatBubble role="assistant" content="回复" />)
     expect(container.querySelector('.chat-bubble--ai')).toBeInTheDocument()
     expect(container.querySelector('.chat-bubble--user')).not.toBeInTheDocument()
   })
 
-  it('AI 消息显示机器人头像', () => {
+  it('assistant 消息显示机器人头像', () => {
     const { container } = renderWithSuspense(<ChatBubble role="assistant" content="有头像" />)
     const avatar = container.querySelector('.chat-bubble__avatar')
     expect(avatar).toBeInTheDocument()
@@ -41,7 +41,7 @@ describe('chat bubble 组件', () => {
     expect(container.querySelector('.chat-bubble__avatar')).not.toBeInTheDocument()
   })
 
-  it('AI 消息通过 react-markdown 渲染 Markdown 内容', async () => {
+  it('assistant 消息通过 react-markdown 渲染 Markdown 内容', async () => {
     renderWithSuspense(<ChatBubble role="assistant" content="**加粗文本**" />)
     await waitFor(() => {
       expect(screen.getByText('加粗文本')).toBeInTheDocument()
@@ -49,7 +49,7 @@ describe('chat bubble 组件', () => {
     expect(screen.getByText('加粗文本').tagName).toBe('STRONG')
   })
 
-  it('AI 消息渲染 Markdown 链接', async () => {
+  it('assistant 消息渲染 Markdown 链接', async () => {
     renderWithSuspense(<ChatBubble role="assistant" content="[链接](https://example.com)" />)
     await waitFor(() => {
       expect(screen.getByText('链接')).toBeInTheDocument()
@@ -57,7 +57,7 @@ describe('chat bubble 组件', () => {
     expect(screen.getByText('链接').closest('a')).toHaveAttribute('href', 'https://example.com')
   })
 
-  it('AI 消息包含 markdown-body 容器', async () => {
+  it('assistant 消息包含 markdown-body 容器', async () => {
     const { container } = renderWithSuspense(<ChatBubble role="assistant" content="内容" />)
     await waitFor(() => {
       expect(container.querySelector('.markdown-body')).toBeInTheDocument()

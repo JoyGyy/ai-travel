@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 /**
  * 路由配置文件
  * 定义应用的所有路由规则和页面组件

@@ -18,20 +18,25 @@ const router = Router()
 
 // ========== Chat Agent System Prompt ==========
 
-const CHAT_SYSTEM_PROMPT = `你是一个专业的旅行顾问 AI 助手。你可以帮用户：
-1. 推荐旅游城市和景点
-2. 规划旅行行程
-3. 推荐当地美食
-4. 提供交通和旅行建议
+const CHAT_SYSTEM_PROMPT = `你是一个专业的旅行规划师，不是通用问答助手。你的职责是帮助用户解决旅游相关问题，包括：
+1. 目的地选择、城市和景点推荐
+2. 行程规划、路线安排和游玩节奏建议
+3. 当地美食、住宿、交通、预算建议
+4. 最佳旅行季节、签证、护照、旅行保险和旅行安全提醒
+
+回答规则：
+- 只回答旅游、出行和旅行规划相关内容。
+- 如果用户问题明显与旅游无关，不要展开回答，只简短说明你的服务范围，并引导用户询问旅行规划相关问题。
+- 回答使用中文，语气专业、简洁、实用。
+- 复杂规划类问题优先结构化输出：先给结论，再给推荐理由、行程建议、预算与交通、注意事项。
+- 用户信息不足时，先给通用建议，再用 1-2 个问题引导用户补充目的地、天数、预算、出行人群或偏好。
 
 你有以下工具，根据用户问题选择合适的工具调用：
 - search_travel_info：查询城市、景点、美食、交通等详细信息。当用户询问具体城市或景点时必须调用。
 - get_city_list：获取知识库中所有可查询的城市列表。当用户问"有哪些城市""推荐去哪里"时调用。
 - compare_cities：对比两个城市的特点。当用户问"A和B哪个好""对比两个城市"时调用。
 - search_product_attractions：查询产品景点库，返回可进入详情页、收藏和购票的景点。当用户询问免费景点、收费景点、亲子景点、夜游景点或购票信息时优先调用。
-- get_travel_tips：获取城市旅行贴士和注意事项。当用户问"注意事项""带什么""tips"时调用。
-
-回答要简洁实用，使用中文，适当使用 Markdown 格式。`
+- get_travel_tips：获取城市旅行贴士和注意事项。当用户问"注意事项""带什么""tips"时调用。`
 
 // ========== Tool 定义 ==========
 
@@ -123,6 +128,87 @@ const CHAT_STEP_MAP = {
   compare_cities: '对比城市信息',
   get_travel_tips: '获取旅行贴士',
   search_product_attractions: '查询精选景点',
+}
+
+// ========== 旅行主题边界守卫 ==========
+
+const TRAVEL_KEYWORDS = [
+  '旅行', '旅游', '出行', '自由行', '跟团', '自驾', '攻略', '行程', '路线', '规划',
+  '目的地', '城市', '景点', '门票', '游玩', '打卡', '美食', '餐厅', '小吃',
+  '酒店', '住宿', '民宿', '交通', '地铁', '公交', '高铁', '火车', '机票', '机场',
+  '预算', '费用', '花费', '签证', '护照', '保险', '安全', '天气', '季节',
+  '亲子游', '情侣游', '毕业旅行', '蜜月', '周末游', '夜游', '避暑', '周边游',
+]
+
+const NON_TRAVEL_KEYWORDS = [
+  '代码', '编程', '函数', '组件', '接口', '数据库', '算法', '数学题', '论文',
+  '股票', '基金', '理财', '政治', '简历', '翻译', '作文', 'react', 'vue',
+  'python', 'java', 'typescript', 'javascript', 'css', 'html',
+]
+
+function normalizeText(text) {
+  return String(text || '').trim().toLowerCase()
+}
+
+async function getKnownCitiesForGuard() {
+  try {
+    return await getAllCities()
+  }
+  catch {
+    // 数据库不可用时使用静态知识库兜底，避免边界守卫依赖外部服务
+    return attractionsDB.map(item => item.city)
+  }
+}
+
+function hasKnownAttraction(message) {
+  return attractionsDB.some(cityData => cityData.attractions.some(attraction => message.includes(attraction.name)))
+}
+
+async function isTravelRelatedMessage(message) {
+  const normalized = normalizeText(message)
+  if (!normalized)
+    return false
+
+  const cities = await getKnownCitiesForGuard()
+  const hasKnownCity = cities.some(city => message.includes(city))
+  const hasTravelKeyword = TRAVEL_KEYWORDS.some(keyword => normalized.includes(keyword.toLowerCase()))
+
+  if (hasKnownCity || hasKnownAttraction(message) || hasTravelKeyword)
+    return true
+
+  const hasNonTravelKeyword = NON_TRAVEL_KEYWORDS.some(keyword => normalized.includes(keyword.toLowerCase()))
+  if (hasNonTravelKeyword)
+    return false
+
+  // 不确定的问题交给 system prompt 约束，避免误伤边缘旅行咨询
+  return true
+}
+
+function getNonTravelResponse() {
+  return '我主要提供旅行规划咨询，暂时不展开这个话题。你可以问我：\n\n1. 北京三日游怎么安排？\n2. 亲子游适合去哪里？\n3. 去成都预算怎么规划？'
+}
+
+async function streamTextResponse(res, content, options = {}) {
+  const { sources = [], delayMs = 0 } = options
+  let accumulated = ''
+
+  for (const char of content) {
+    accumulated += char
+    sendSSE(res, { type: 'chunk', content: char })
+    if (delayMs > 0 && (char === '\n' || accumulated.length % 5 === 0)) {
+      await delay(delayMs)
+    }
+  }
+
+  sendSSE(res, { type: 'complete', data: { content, sources } })
+}
+
+async function handleNonTravelMessage(message, res, options = {}) {
+  if (await isTravelRelatedMessage(message))
+    return false
+
+  await streamTextResponse(res, getNonTravelResponse(), { sources: [], delayMs: options.delayMs ?? 10 })
+  return true
 }
 
 // ========== 工具执行 ==========
@@ -365,6 +451,9 @@ router.post('/chat', asyncHandler(async (req, res) => {
 
     let ragSources = []
 
+    if (await handleNonTravelMessage(message, res))
+      return
+
     // 尝试 Agent 模式（LLM + function calling）
     const config = getLLMConfig()
     if (config) {
@@ -564,4 +653,9 @@ function delay(ms) {
 
 export default router
 
-export { executeChatTool as executeChatToolForTest }
+export {
+  executeChatTool as executeChatToolForTest,
+  getNonTravelResponse as getNonTravelResponseForTest,
+  handleNonTravelMessage as handleNonTravelMessageForTest,
+  isTravelRelatedMessage as isTravelRelatedMessageForTest,
+}

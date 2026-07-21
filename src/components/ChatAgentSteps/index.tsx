@@ -1,6 +1,7 @@
 /**
  * Chat Agent 思考过程可视化组件
- * 可折叠的动态步骤卡片
+ * 以可折叠卡片形式展示聊天页中 AI Agent 的推理步骤
+ * 加载中自动展开，完成后延迟 800ms 自动收起，也可手动切换
  */
 import type { SSEEvent } from '@/types/api'
 import { CheckCircleOutlined, RightOutlined } from '@ant-design/icons'
@@ -9,6 +10,9 @@ import { useEffect, useState } from 'react'
 
 import './style.css'
 
+/* ========== 类型定义 ========== */
+
+/** 从 SSEEvent 中提取 step 类型事件 */
 type StepEvent = Extract<SSEEvent, { type: 'step' }>
 
 interface ChatAgentStepsProps {
@@ -17,9 +21,13 @@ interface ChatAgentStepsProps {
   isLoading: boolean
 }
 
+/* ========== Chat Agent 步骤组件 ========== */
+
 export function ChatAgentSteps({ steps, currentStep, isLoading }: ChatAgentStepsProps) {
+  /** 控制步骤卡片的展开/收起状态 */
   const [isExpanded, setIsExpanded] = useState(true)
 
+  /** 自动展开/收起逻辑：加载中展开，完成后延迟收起 */
   useEffect(() => {
     if (isLoading) {
       const timer = setTimeout(setIsExpanded, 0, true)
@@ -31,12 +39,16 @@ export function ChatAgentSteps({ steps, currentStep, isLoading }: ChatAgentSteps
     }
   }, [isLoading, steps.length])
 
+  // 无步骤时不渲染
   if (steps.length === 0)
     return null
 
+  /** 将步骤事件数组转为 Map，便于按步骤号快速查找 */
   const stepMap = new Map(steps.map(s => [s.step, s]))
+  /** 已完成步骤数 */
   const completedCount = steps.filter(s => s.status === 'complete').length
 
+  /** 判断指定步骤的当前状态：已完成 / 执行中 / 等待中 */
   function getStepStatus(stepNum: number): 'done' | 'running' | 'pending' {
     const step = stepMap.get(stepNum)
     if (step?.status === 'complete')
@@ -46,6 +58,7 @@ export function ChatAgentSteps({ steps, currentStep, isLoading }: ChatAgentSteps
     return 'pending'
   }
 
+  /** 根据步骤数据提取人类可读的摘要文本 */
   function getSummary(step: StepEvent): string {
     if (!step.data)
       return ''
@@ -61,8 +74,11 @@ export function ChatAgentSteps({ steps, currentStep, isLoading }: ChatAgentSteps
     return ''
   }
 
+  /* ========== 渲染：可折叠步骤卡片 ========== */
+
   return (
     <div className="chat-agent-steps">
+      {/* 可点击的折叠头：显示状态图标、标题和步骤计数 */}
       <button
         type="button"
         className="chat-agent-steps__header"
@@ -71,6 +87,7 @@ export function ChatAgentSteps({ steps, currentStep, isLoading }: ChatAgentSteps
         aria-controls="chat-agent-steps-list"
       >
         <span className="chat-agent-steps__header-left">
+          {/* 加载中显示动态圆点，完成后显示勾号 */}
           <span className={`chat-agent-steps__icon ${isLoading ? 'chat-agent-steps__icon--loading' : 'chat-agent-steps__icon--done'}`} aria-hidden="true">
             {isLoading ? <span className="chat-agent-steps__dot" /> : <CheckCircleOutlined />}
           </span>
@@ -86,6 +103,7 @@ export function ChatAgentSteps({ steps, currentStep, isLoading }: ChatAgentSteps
         <span className={`chat-agent-steps__arrow ${isExpanded ? 'chat-agent-steps__arrow--expanded' : ''}`} aria-hidden="true">▶</span>
       </button>
 
+      {/* 展开后的步骤列表 */}
       {isExpanded && (
         <div id="chat-agent-steps-list" className="chat-agent-steps__list" aria-live="polite">
           {steps.map((step, index) => {
@@ -93,6 +111,7 @@ export function ChatAgentSteps({ steps, currentStep, isLoading }: ChatAgentSteps
             const summary = getSummary(step)
             return (
               <div key={step.step} className="chat-agent-steps__item">
+                {/* 左侧时间线：步骤编号圆点 + 连接线 */}
                 <div className="chat-agent-steps__line">
                   <div className={`chat-agent-steps__dot-item chat-agent-steps__dot-item--${status}`}>
                     {status === 'done' ? <CheckCircleOutlined /> : <span>{step.step}</span>}
@@ -101,6 +120,7 @@ export function ChatAgentSteps({ steps, currentStep, isLoading }: ChatAgentSteps
                     <div className={`chat-agent-steps__conn ${status === 'done' ? 'chat-agent-steps__conn--done' : ''}`} />
                   )}
                 </div>
+                {/* 右侧步骤信息：名称 + 状态 + 结果摘要 */}
                 <div className="chat-agent-steps__body">
                   <div className="chat-agent-steps__name-row">
                     <span className={`chat-agent-steps__name ${status === 'pending' ? 'chat-agent-steps__name--pending' : ''}`}>

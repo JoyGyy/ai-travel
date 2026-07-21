@@ -1,14 +1,17 @@
-import { CloudOutlined, CompassOutlined, EnvironmentOutlined, HomeOutlined, RobotOutlined, UserOutlined } from '@ant-design/icons'
 /**
- * 布局组件
- * 包含顶部导航栏和内容区域
+ * 全局布局组件
+ * 包含顶部导航栏（TopNav）、路由内容区域和懒加载 Suspense fallback
+ * 根据当前路径决定是否显示导航栏（首页和登录页隐藏）
  */
+import { CloudOutlined, CompassOutlined, EnvironmentOutlined, HomeOutlined, RobotOutlined, UserOutlined } from '@ant-design/icons'
 import { Suspense, useEffect } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 
 import { useAuthStore } from '@/stores/auth'
 
 import './style.css'
+
+/* ========== 导航标签配置 ========== */
 
 const tabs = [
   { key: '/', title: '首页', icon: <HomeOutlined aria-hidden="true" /> },
@@ -17,6 +20,7 @@ const tabs = [
   { key: '/chat', title: 'AI咨询', icon: <RobotOutlined aria-hidden="true" /> },
 ] as const
 
+/** 根据路径判断是否显示导航栏（首页和登录页不显示） */
 function shouldShowNav(pathname: string) {
   if (pathname === '/' || pathname === '/login')
     return false
@@ -29,7 +33,9 @@ function shouldShowNav(pathname: string) {
     || pathname.startsWith('/attractions/')
 }
 
-/** 顶部导航 */
+/* ========== 顶部导航栏 ========== */
+
+/** 顶部导航栏组件：品牌标识 + 标签页 + 用户入口 */
 function TopNav() {
   const user = useAuthStore(state => state.user)
 
@@ -78,7 +84,9 @@ function TopNav() {
   )
 }
 
-/** 加载中状态 */
+/* ========== 懒加载 fallback ========== */
+
+/** 加载中占位组件 */
 function LoadingFallback() {
   return (
     <div className="layout-loading" role="status" aria-live="polite">
@@ -88,11 +96,14 @@ function LoadingFallback() {
   )
 }
 
-/** 布局组件 */
+/* ========== 主布局 ========== */
+
+/** 全局布局：导航栏 + Suspense 包裹的路由出口 */
 export default function Layout() {
   const location = useLocation()
   const showNav = shouldShowNav(location.pathname)
 
+  /** 路由切换时重置滚动位置到顶部 */
   useEffect(() => {
     const content = document.getElementById('main-content')
     if (content)

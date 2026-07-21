@@ -1,6 +1,8 @@
 /**
  * 天气查询页面
  */
+import type { ChangeEvent, KeyboardEvent } from 'react'
+
 import { useMemo, useState } from 'react'
 
 import { HomeWeather } from '@/components/HomeWeather'
@@ -26,20 +28,20 @@ export default function Weather() {
     ? `weather-city-option-${activeCityIndex}`
     : undefined
 
-  function selectCity(name) {
+  function selectCity(name: string) {
     setCity(name)
     setActiveCityIndex(0)
     setShowDropdown(false)
     fetchWeather(name)
   }
 
-  function handleInputChange(event) {
+  function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
     setCity(event.target.value)
     setActiveCityIndex(0)
     setShowDropdown(true)
   }
 
-  function handleInputKeyDown(event) {
+  function handleInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (!showDropdown && ['ArrowDown', 'ArrowUp'].includes(event.key)) {
       setShowDropdown(true)
       return

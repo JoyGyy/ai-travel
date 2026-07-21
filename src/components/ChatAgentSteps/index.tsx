@@ -1,11 +1,11 @@
-import { CheckCircleOutlined, RightOutlined } from '@ant-design/icons'
-import { useEffect, useState } from 'react'
-
 /**
  * Chat Agent 思考过程可视化组件
  * 可折叠的动态步骤卡片
  */
 import type { SSEEvent } from '@/types/api'
+import { CheckCircleOutlined, RightOutlined } from '@ant-design/icons'
+
+import { useEffect, useState } from 'react'
 
 import './style.css'
 

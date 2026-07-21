@@ -12,7 +12,7 @@ vi.mock('@/api/attractions', () => ({
 
 const api = await import('@/api/attractions')
 
-describe('Attractions page', () => {
+describe('attractions page', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.mocked(api.fetchAttractions).mockResolvedValue({

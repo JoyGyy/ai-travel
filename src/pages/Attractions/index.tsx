@@ -1,9 +1,9 @@
+import type { Attraction, AttractionFilters, AttractionTicketType } from '@/types/attraction'
 import { HeartFilled, HeartOutlined, SearchOutlined } from '@ant-design/icons'
 import { Button, Empty, Input, message, Pagination, Select, Spin, Tag } from 'antd'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
 
-import type { Attraction, AttractionFilters, AttractionTicketType } from '@/types/attraction'
+import { Link } from 'react-router-dom'
 
 import { favoriteAttraction, fetchAttractions, unfavoriteAttraction } from '@/api/attractions'
 
@@ -18,7 +18,7 @@ export default function Attractions() {
   const [keywordInput, setKeywordInput] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [favoritePendingIds, setFavoritePendingIds] = useState<Set<string>>(new Set())
+  const [favoritePendingIds, setFavoritePendingIds] = useState<Set<string>>(() => new Set())
   const [msg, contextHolder] = message.useMessage()
 
   const PAGE_SIZE = 12
@@ -41,11 +41,9 @@ export default function Attractions() {
     }
   }, [])
 
-  /* eslint-disable react-hooks/set-state-in-effect -- 初始化数据加载是合法的 effect 用法 */
   useEffect(() => {
     load({})
   }, [load])
-  /* eslint-enable react-hooks/set-state-in-effect */
 
   function updateFilters(patch: AttractionFilters) {
     const next = { ...filters, ...patch, page: patch.page || 1 }
@@ -207,7 +205,7 @@ export default function Attractions() {
         ? (
             <>
               <section className="attractions-page__grid" aria-label="景点列表">
-                {items.map(item => {
+                {items.map((item) => {
                   const isFavoritePending = favoritePendingIds.has(item.id)
                   return (
                     <article key={item.id} className="attractions-page__card travel-surface-card travel-ticket-edge">

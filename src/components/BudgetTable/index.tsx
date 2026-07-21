@@ -36,6 +36,8 @@ export function BudgetTable({ data }: BudgetTableProps) {
   const total = Object.values(data).reduce((sum, v) => sum + (v || 0), 0)
   const max = Math.max(...Object.values(data).map(v => v || 0), 1)
 
+  const budgetKeys = Object.keys(labels) as Array<keyof BudgetData>
+
   return (
     <section className="budget-table" aria-labelledby="budget-table-title">
       <h2 id="budget-table-title" className="budget-table__header">
@@ -46,7 +48,7 @@ export function BudgetTable({ data }: BudgetTableProps) {
         <table className="budget-table__table">
           <caption className="sr-only">旅行预算分类明细</caption>
           <tbody>
-            {Object.keys(labels).map(key => (
+            {budgetKeys.map(key => (
               <tr key={key} className="budget-table__row">
                 <th scope="row" className="budget-table__label">{labels[key]}</th>
                 <td className="budget-table__value">
@@ -58,7 +60,7 @@ export function BudgetTable({ data }: BudgetTableProps) {
           </tbody>
         </table>
         <div className="budget-table__bars" aria-label="预算占比可视化">
-          {Object.keys(labels).map(key => (
+          {budgetKeys.map(key => (
             <div key={key} className="budget-table__bar-row">
               <span className="budget-table__bar-label">{labels[key]}</span>
               <div

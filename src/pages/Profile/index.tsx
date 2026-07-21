@@ -1,3 +1,5 @@
+import type { ProfileData } from '@/types/api'
+import type { Attraction } from '@/types/attraction'
 import {
   ClockCircleOutlined,
   HeartOutlined,
@@ -20,11 +22,9 @@ import {
   Skeleton,
   Tag,
 } from 'antd'
+
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-
-import type { ProfileData } from '@/types/api'
-import type { Attraction } from '@/types/attraction'
 
 import { fetchFavoriteAttractions, unfavoriteAttraction } from '@/api/attractions'
 import { changePasswordApi, getProfileApi } from '@/api/auth'
@@ -43,7 +43,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
   const [changingPassword, setChangingPassword] = useState(false)
-  const [removingFavoriteIds, setRemovingFavoriteIds] = useState<Set<string>>(new Set())
+  const [removingFavoriteIds, setRemovingFavoriteIds] = useState<Set<string>>(() => new Set())
   const [msg, contextHolder] = message.useMessage()
   const [form] = Form.useForm()
 
@@ -72,13 +72,11 @@ export default function Profile() {
     }
   }, [msg, logout, navigate])
 
-  /* eslint-disable react-hooks/set-state-in-effect -- 初始化数据加载 */
   useEffect(() => {
     loadProfile()
   }, [loadProfile])
-  /* eslint-enable react-hooks/set-state-in-effect */
 
-  async function handlePasswordChange(values: { currentPassword: string; newPassword: string }) {
+  async function handlePasswordChange(values: { currentPassword: string, newPassword: string }) {
     setChangingPassword(true)
     try {
       await changePasswordApi(values.currentPassword, values.newPassword)
@@ -190,7 +188,17 @@ export default function Profile() {
         </Card>
 
         {/* AI 使用额度 */}
-        <Card className="profile-page__card travel-surface-card" variant="borderless" title={<><RobotOutlined aria-hidden="true" /> AI 使用额度</>}>
+        <Card
+          className="profile-page__card travel-surface-card"
+          variant="borderless"
+          title={(
+            <>
+              <RobotOutlined aria-hidden="true" />
+              {' '}
+              AI 使用额度
+            </>
+          )}
+        >
           {quota
             ? (
                 <div className="profile-page__quota">
@@ -219,7 +227,17 @@ export default function Profile() {
         </Card>
 
         {/* 修改密码 */}
-        <Card className="profile-page__card travel-surface-card" variant="borderless" title={<><KeyOutlined aria-hidden="true" /> 修改密码</>}>
+        <Card
+          className="profile-page__card travel-surface-card"
+          variant="borderless"
+          title={(
+            <>
+              <KeyOutlined aria-hidden="true" />
+              {' '}
+              修改密码
+            </>
+          )}
+        >
           <Form
             form={form}
             layout="vertical"
@@ -269,7 +287,19 @@ export default function Profile() {
         </Card>
 
         {/* 我的收藏 */}
-        <Card className="profile-page__card travel-surface-card" variant="borderless" title={<><HeartOutlined aria-hidden="true" /> 我的收藏 ({favorites.length})</>}>
+        <Card
+          className="profile-page__card travel-surface-card"
+          variant="borderless"
+          title={(
+            <>
+              <HeartOutlined aria-hidden="true" />
+              {' '}
+              我的收藏 (
+              {favorites.length}
+              )
+            </>
+          )}
+        >
           {favorites.length > 0
             ? (
                 <List
@@ -305,9 +335,11 @@ export default function Profile() {
                   )}
                 />
               )
-            : <Empty description="还没有收藏景点" image={Empty.PRESENTED_IMAGE_SIMPLE}>
-                <Link to="/attractions"><Button type="primary">去逛逛</Button></Link>
-              </Empty>}
+            : (
+                <Empty description="还没有收藏景点" image={Empty.PRESENTED_IMAGE_SIMPLE}>
+                  <Link to="/attractions"><Button type="primary">去逛逛</Button></Link>
+                </Empty>
+              )}
         </Card>
 
         {/* 退出登录 */}

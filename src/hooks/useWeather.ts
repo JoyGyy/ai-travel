@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-
 /**
  * 天气查询 Hook
  * 根据城市名获取天气信息
  */
 import type { WeatherResponse } from '@/types/api'
+
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { getWeatherApi } from '@/api/weather'
 

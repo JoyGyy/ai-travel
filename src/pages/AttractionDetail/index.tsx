@@ -1,13 +1,13 @@
-import { ArrowLeftOutlined, HeartFilled, HeartOutlined } from '@ant-design/icons'
-import { Button, message, Spin, Tag } from 'antd'
-import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
-
 /**
  * 景点详情页面
  * 展示景点详细信息、购票入口和 AI 规划入口
  */
 import type { Attraction } from '@/types/attraction'
+import { ArrowLeftOutlined, HeartFilled, HeartOutlined } from '@ant-design/icons'
+import { Button, message, Spin, Tag } from 'antd'
+import { useEffect, useState } from 'react'
+
+import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { favoriteAttraction, fetchAttractionDetail, unfavoriteAttraction } from '@/api/attractions'
 

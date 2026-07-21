@@ -25,7 +25,7 @@ function renderAt(path: string) {
   render(<RouterProvider router={router} />)
 }
 
-describe('Layout navigation', () => {
+describe('layout navigation', () => {
   it('顶部导航包含景点入口', async () => {
     renderAt('/chat')
 

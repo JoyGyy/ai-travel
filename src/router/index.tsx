@@ -2,6 +2,7 @@
  * 路由配置文件
  * 定义应用的所有路由规则和页面组件
  */
+/* eslint-disable react-refresh/only-export-components -- 路由配置文件，非组件 */
 import React from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 

@@ -1,5 +1,5 @@
 import { act, renderHook } from '@testing-library/react'
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { useSSE } from '../useSSE'
 
@@ -10,7 +10,7 @@ vi.mock('@/api/client', () => ({
 describe('useSSE', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    global.fetch = vi.fn()
+    globalThis.fetch = vi.fn()
   })
 
   it('返回 sendRequest 和 abort 函数', () => {
@@ -26,7 +26,7 @@ describe('useSSE', () => {
         .mockResolvedValueOnce({ done: true }),
     }
 
-    global.fetch.mockResolvedValue({
+    globalThis.fetch.mockResolvedValue({
       ok: true,
       body: { getReader: () => mockReader },
     })
@@ -37,14 +37,14 @@ describe('useSSE', () => {
       await result.current.sendRequest('/api/test', { message: 'hello' })
     })
 
-    expect(global.fetch).toHaveBeenCalledWith('/api/test', expect.objectContaining({
+    expect(globalThis.fetch).toHaveBeenCalledWith('/api/test', expect.objectContaining({
       method: 'POST',
       headers: expect.objectContaining({ 'Content-Type': 'application/json' }),
     }))
   })
 
   it('请求失败时触发 onError 回调', async () => {
-    global.fetch.mockResolvedValue({
+    globalThis.fetch.mockResolvedValue({
       ok: false,
       status: 500,
       json: () => Promise.resolve({ message: '服务器错误' }),
@@ -66,18 +66,14 @@ describe('useSSE', () => {
   })
 
   it('abort 中止请求', async () => {
-    const mockAbort = vi.fn()
     const mockReader = {
       read: vi.fn(() => new Promise(() => {})),
     }
 
-    global.fetch.mockImplementation(() => {
-      const controller = { signal: { aborted: false } }
-      return Promise.resolve({
-        ok: true,
-        body: { getReader: () => mockReader },
-      })
-    })
+    globalThis.fetch.mockImplementation(() => Promise.resolve({
+      ok: true,
+      body: { getReader: () => mockReader },
+    }))
 
     const { result } = renderHook(() => useSSE())
 

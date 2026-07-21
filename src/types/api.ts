@@ -53,12 +53,12 @@ export interface WeatherResponse {
   forecast?: WeatherForecast[]
 }
 
-export type SSEEvent =
-  | { type: 'chunk'; content: string }
-  | { type: 'step'; step: number; name: string; status: 'start' | 'complete'; data?: object }
-  | { type: 'notice'; message: string }
-  | { type: 'complete'; data?: object }
-  | { type: 'error'; message?: string }
+export type SSEEvent
+  = | { type: 'chunk', content: string }
+    | { type: 'step', step: number, name: string, status: 'start' | 'complete', data?: object }
+    | { type: 'notice', message: string }
+    | { type: 'complete', data?: object }
+    | { type: 'error', message?: string }
 
 export interface SSECallbacks {
   onChunk?: (content: string) => void

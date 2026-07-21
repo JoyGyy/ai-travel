@@ -11,7 +11,7 @@ function renderWithSuspense(ui: React.ReactElement) {
   return render(<Suspense fallback={<span>加载中...</span>}>{ui}</Suspense>)
 }
 
-describe('ChatBubble', () => {
+describe('chatBubble', () => {
   it('用户消息渲染为纯文本', () => {
     renderWithSuspense(<ChatBubble role="user" content="你好" />)
     expect(screen.getByText('你好')).toBeInTheDocument()
@@ -23,13 +23,13 @@ describe('ChatBubble', () => {
     expect(container.querySelector('.chat-bubble--ai')).not.toBeInTheDocument()
   })
 
-  it('AI 消息使用 ai 样式类', async () => {
+  it('aI 消息使用 ai 样式类', async () => {
     const { container } = renderWithSuspense(<ChatBubble role="assistant" content="回复" />)
     expect(container.querySelector('.chat-bubble--ai')).toBeInTheDocument()
     expect(container.querySelector('.chat-bubble--user')).not.toBeInTheDocument()
   })
 
-  it('AI 消息显示机器人头像', () => {
+  it('aI 消息显示机器人头像', () => {
     const { container } = renderWithSuspense(<ChatBubble role="assistant" content="有头像" />)
     const avatar = container.querySelector('.chat-bubble__avatar')
     expect(avatar).toBeInTheDocument()
@@ -41,7 +41,7 @@ describe('ChatBubble', () => {
     expect(container.querySelector('.chat-bubble__avatar')).not.toBeInTheDocument()
   })
 
-  it('AI 消息通过 react-markdown 渲染 Markdown 内容', async () => {
+  it('aI 消息通过 react-markdown 渲染 Markdown 内容', async () => {
     renderWithSuspense(<ChatBubble role="assistant" content="**加粗文本**" />)
     // 等待 lazy 组件加载完成
     await waitFor(() => {
@@ -51,7 +51,7 @@ describe('ChatBubble', () => {
     expect(screen.getByText('加粗文本').tagName).toBe('STRONG')
   })
 
-  it('AI 消息渲染 Markdown 链接', async () => {
+  it('aI 消息渲染 Markdown 链接', async () => {
     renderWithSuspense(<ChatBubble role="assistant" content="[链接](https://example.com)" />)
     await waitFor(() => {
       expect(screen.getByText('链接')).toBeInTheDocument()
@@ -59,7 +59,7 @@ describe('ChatBubble', () => {
     expect(screen.getByText('链接').closest('a')).toHaveAttribute('href', 'https://example.com')
   })
 
-  it('AI 消息包含 markdown-body 容器', async () => {
+  it('aI 消息包含 markdown-body 容器', async () => {
     const { container } = renderWithSuspense(<ChatBubble role="assistant" content="内容" />)
     await waitFor(() => {
       expect(container.querySelector('.markdown-body')).toBeInTheDocument()

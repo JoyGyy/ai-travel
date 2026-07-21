@@ -1,10 +1,10 @@
-import { useCallback, useRef } from 'react'
-
 /**
  * SSE (Server-Sent Events) 自定义 Hook
  * 用于处理流式 HTTP 响应，实现 AI 回复的实时流式显示
  */
 import type { SSECallbacks, SSEEvent } from '@/types/api'
+
+import { useCallback, useRef } from 'react'
 
 import { getAuthHeader } from '@/api/client'
 
@@ -100,9 +100,10 @@ export function useSSE() {
         await handleLine(remainder)
     }
     catch (err) {
-      if (err.name !== 'AbortError' && isCurrentRequest()) {
-        callbacks.onError?.(err as Error)
-        throw err
+      const error = err instanceof Error ? err : new Error(String(err))
+      if (error.name !== 'AbortError' && isCurrentRequest()) {
+        callbacks.onError?.(error)
+        throw error
       }
     }
     finally {

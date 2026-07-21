@@ -1,11 +1,11 @@
+import type { AuthUser } from '@/types/api'
 /**
  * 认证状态管理
  * 使用 Zustand + persist 持久化用户登录状态
  */
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 
-import type { AuthUser } from '@/types/api'
+import { persist } from 'zustand/middleware'
 
 import { loginApi, registerApi } from '@/api/auth'
 

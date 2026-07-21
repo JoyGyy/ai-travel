@@ -41,6 +41,7 @@ export interface SearchResult {
 let knowledgeCache: CityKnowledge[] | null = null
 const globalIndex = new TFIDFIndex()
 
+/** 从数据库加载景点知识库并构建 TF-IDF 索引（带缓存） */
 async function loadKnowledge(): Promise<CityKnowledge[]> {
   if (knowledgeCache)
     return knowledgeCache
@@ -75,6 +76,7 @@ async function loadKnowledge(): Promise<CityKnowledge[]> {
 
   knowledgeCache = [...cityMap.values()]
 
+  // 构建 TF-IDF 索引文档：将景点名称、描述、标签拼接为文本
   const docs: Array<{ id: string, text: string }> = []
   for (const cityData of knowledgeCache) {
     for (const attr of cityData.attractions) {
@@ -93,6 +95,7 @@ async function getCityData(cityName: string): Promise<CityKnowledge | null> {
   return db.find(c => c.city === cityName) || null
 }
 
+/** 关键词匹配：根据标签和文本匹配景点，返回带关键词得分的结果 */
 function matchByKeyword(tags: string[], queryText: string, attractions: AttractionKnowledge[]) {
   return attractions.map((attr) => {
     let score = 0
@@ -119,6 +122,10 @@ function matchByKeyword(tags: string[], queryText: string, attractions: Attracti
     return { ...attr, keywordScore: score }
   })
 }
+
+/**
+ * 混合检索：向量 + 关键词
+ */
 
 /**
  * 向量搜索：使用 pgvector 进行语义相似度搜索

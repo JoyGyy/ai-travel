@@ -6,11 +6,13 @@ import type { NextFunction, Request, Response } from 'express'
 
 import { verifyToken } from '../services/auth.js'
 
+/** 按 key 存储请求时间戳列表，用于滑动窗口计数 */
 const requestLog = new Map<string, number[]>()
 
 const CLEANUP_INTERVAL = 60_000
 const MAX_RECORD_AGE = 60 * 60_000
 
+// 定期清理过期的时间戳记录，防止内存泄漏
 setInterval(() => {
   const now = Date.now()
   for (const [key, timestamps] of requestLog) {
@@ -21,6 +23,7 @@ setInterval(() => {
   }
 }, CLEANUP_INTERVAL)
 
+/** 从 Authorization 头解析已认证用户 ID，未认证返回 null */
 function getVerifiedUserId(req: Request): string | null {
   const authHeader = req.headers.authorization
   if (!authHeader?.startsWith('Bearer '))
@@ -41,6 +44,7 @@ interface RateLimitOptions {
   message?: string
 }
 
+/** 创建限流中间件，已认证用户按用户 ID 限流，未认证按 IP 限流 */
 function createRateLimit({ name = 'default', windowMs = 60_000, maxRequests = 15, message = '请求过于频繁，请稍后再试' }: RateLimitOptions = {}) {
   return (req: Request, res: Response, next: NextFunction) => {
     const userId = getVerifiedUserId(req)

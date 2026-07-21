@@ -15,6 +15,7 @@ export interface EmbeddingConfig {
   apiKey: string
 }
 
+/** 获取 Embedding API 配置，未配置时返回 null */
 function getEmbeddingConfig(): EmbeddingConfig | null {
   if (!env.SILICONFLOW_API_KEY)
     return null
@@ -25,6 +26,7 @@ function getEmbeddingConfig(): EmbeddingConfig | null {
   }
 }
 
+/** 生成单条文本的向量嵌入 */
 export async function generateEmbedding(text: string): Promise<number[] | null> {
   const config = getEmbeddingConfig()
   if (!config) {
@@ -60,6 +62,7 @@ export async function generateEmbedding(text: string): Promise<number[] | null> 
   }
 }
 
+/** 批量生成多条文本的向量嵌入（SiliconFlow 支持批量请求） */
 export async function generateEmbeddings(texts: string[]): Promise<(number[] | null)[]> {
   const config = getEmbeddingConfig()
   if (!config) {
@@ -96,6 +99,7 @@ export async function generateEmbeddings(texts: string[]): Promise<(number[] | n
   }
 }
 
+/** 将向量数组格式化为 pgvector 可接受的字符串，如 "[0.1,0.2,0.3]" */
 export function formatEmbeddingForPg(embedding: number[]): string {
   return `[${embedding.join(',')}]`
 }

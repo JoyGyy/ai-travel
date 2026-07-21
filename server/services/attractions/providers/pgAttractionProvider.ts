@@ -44,8 +44,10 @@ interface AttractionRow {
   booking_links?: Record<string, unknown>
 }
 
+/** 城市显示排序，热门城市排在前面 */
 const CITY_ORDER = ['北京', '上海', '杭州', '成都', '西安']
 
+/** 将数据库行映射为 AttractionItem（snake_case → camelCase） */
 function mapRow(row: AttractionRow): AttractionItem {
   return {
     id: row.id,
@@ -77,6 +79,7 @@ interface ListFilters {
   pageSize?: number | string
 }
 
+/** 分页查询景点列表，支持城市、关键词、票型、标签等多条件过滤 */
 async function listAttractions(filters: ListFilters = {}): Promise<{ items: AttractionItem[], total: number }> {
   const conditions: string[] = []
   const params: unknown[] = []
@@ -136,6 +139,7 @@ async function listAttractions(filters: ListFilters = {}): Promise<{ items: Attr
   }
 }
 
+/** 根据 ID 获取景点详情 */
 async function getAttractionById(id: string): Promise<AttractionItem | null> {
   const result = await query(
     `SELECT a.*, COALESCE(ARRAY_AGG(t.name ORDER BY t.name) FILTER (WHERE t.name IS NOT NULL), '{}') AS tags
@@ -149,6 +153,7 @@ async function getAttractionById(id: string): Promise<AttractionItem | null> {
   return result.rows.length > 0 ? mapRow(result.rows[0] as AttractionRow) : null
 }
 
+/** 获取所有城市列表（按预设排序）和标签列表 */
 async function getAttractionMeta(): Promise<{ cities: string[], tags: string[] }> {
   const [cityResult, tagResult] = await Promise.all([
     query('SELECT DISTINCT city FROM attractions ORDER BY city'),

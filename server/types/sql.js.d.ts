@@ -1,3 +1,7 @@
+/**
+ * sql.js 类型声明
+ * sql.js 是 SQLite 的 WebAssembly 实现，提供内存中的 SQLite 数据库操作
+ */
 declare module 'sql.js' {
   interface SqlJsConfig {
     locateFile?: (file: string) => string

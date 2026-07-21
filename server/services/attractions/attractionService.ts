@@ -16,12 +16,14 @@ import {
   searchAttractions as providerSearchAttractions,
 } from './providers/pgAttractionProvider.js'
 
+/** 获取用户收藏的景点 ID 集合 */
 async function getFavoriteIdSet(userId: string | undefined): Promise<Set<string>> {
   if (!userId)
     return new Set()
   return new Set(await listFavoriteAttractionIds(userId))
 }
 
+/** 为景点数据附加 isFavorite 标记 */
 function withFavorite(attraction: AttractionItem, favoriteIds: Set<string>): AttractionItem & { isFavorite: boolean } {
   return {
     ...attraction,

@@ -11,7 +11,9 @@ import { createLogger } from '../utils/logger.js'
 
 const log = createLogger('auth')
 
+/** bcrypt 加盐轮数 */
 const SALT_ROUNDS = 10
+/** 每日 AI 调用上限 */
 const DAILY_AI_LIMIT = 10
 
 export interface AuthResult {
@@ -38,6 +40,7 @@ export interface JwtPayload {
   username: string
 }
 
+/** 生成当天日期 key，格式 YYYY-MM-DD，用于 AI 配额按日统计 */
 function getTodayKey(): string {
   const now = new Date()
   const year = now.getFullYear()
@@ -46,6 +49,7 @@ function getTodayKey(): string {
   return `${year}-${month}-${day}`
 }
 
+/** 用户注册：校验参数、密码哈希、写入数据库、签发 JWT */
 async function register(username: string, password: string): Promise<AuthResult> {
   if (!username || !password)
     throw new Error('用户名和密码不能为空')
@@ -71,6 +75,7 @@ async function register(username: string, password: string): Promise<AuthResult>
   return { token, user: { id, username, createdAt } }
 }
 
+/** 用户登录：验证用户名密码，签发 JWT（有效期 7 天） */
 async function login(username: string, password: string): Promise<AuthResult> {
   if (!username || !password)
     throw new Error('用户名和密码不能为空')
@@ -98,10 +103,12 @@ async function login(username: string, password: string): Promise<AuthResult> {
   }
 }
 
+/** 验证 JWT token，无效时抛出异常 */
 function verifyToken(token: string): JwtPayload {
   return jwt.verify(token, env.JWT_SECRET) as JwtPayload
 }
 
+/** 查询用户当日 AI 配额使用情况 */
 async function getAiQuotaStatus(userId: string | undefined, date = getTodayKey()): Promise<AiQuotaStatus> {
   if (!userId)
     throw new Error('用户信息无效')
@@ -119,6 +126,7 @@ async function getAiQuotaStatus(userId: string | undefined, date = getTodayKey()
   }
 }
 
+/** 消耗一次 AI 配额（UPSERT），超限抛出 429 错误 */
 async function consumeAiQuota(userId: string | undefined, date = getTodayKey()): Promise<AiQuotaStatus> {
   const currentQuota = await getAiQuotaStatus(userId, date)
 

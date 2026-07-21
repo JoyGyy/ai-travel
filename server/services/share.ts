@@ -21,6 +21,7 @@ interface ShareRecord {
   createdAt: string
 }
 
+/** 从 JSON 文件读取所有分享记录 */
 function readShares(): ShareRecord[] {
   try {
     const raw = fs.readFileSync(DATA_PATH, 'utf-8')
@@ -31,16 +32,19 @@ function readShares(): ShareRecord[] {
   }
 }
 
+/** 写入分享记录（先写临时文件再原子重命名，防止数据损坏） */
 function writeShares(shares: ShareRecord[]): void {
   const tmpPath = `${DATA_PATH}.tmp`
   fs.writeFileSync(tmpPath, JSON.stringify(shares, null, 2), 'utf-8')
   fs.renameSync(tmpPath, DATA_PATH)
 }
 
+/** 对行程数据取 SHA-256 哈希前 16 位，用于去重 */
 function hashItinerary(itinerary: unknown): string {
   return createHash('sha256').update(JSON.stringify(itinerary)).digest('hex').slice(0, 16)
 }
 
+/** 创建分享记录，相同内容的行程会复用已有 ID */
 export function createShare({ city, days, budget, itinerary }: { city: string, days: number, budget: string, itinerary: unknown }): string {
   const shares = readShares()
   const contentHash = hashItinerary(itinerary)
@@ -70,6 +74,7 @@ export function createShare({ city, days, budget, itinerary }: { city: string, d
   return id
 }
 
+/** 获取分享记录并自增浏览次数 */
 export function getShare(id: string): ShareRecord | null {
   const shares = readShares()
   const share = shares.find(s => s.id === id)

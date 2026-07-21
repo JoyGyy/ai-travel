@@ -24,6 +24,7 @@ export interface WeatherData {
 
 const WEATHER_TIMEOUT = 15_000
 
+/** wttr.in 天气代码到中文描述的映射 */
 const WEATHER_CODE_MAP: Record<number, string> = {
   113: '晴',
   116: '多云',
@@ -92,6 +93,7 @@ interface WttrInResponse {
   }>
 }
 
+/** 获取指定城市的实时天气和未来 3 天预报 */
 async function getWeather(city: string): Promise<WeatherData | null> {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), WEATHER_TIMEOUT)
@@ -139,6 +141,7 @@ async function getWeather(city: string): Promise<WeatherData | null> {
   }
 }
 
+/** 判断当前天气是否适合户外活动（排除雨天和极端温度） */
 function isGoodForOutdoor(weather: WeatherData | null): boolean {
   if (!weather)
     return true
@@ -150,6 +153,7 @@ function isGoodForOutdoor(weather: WeatherData | null): boolean {
   return true
 }
 
+/** 根据温度、天气、湿度生成穿衣和出行建议 */
 function getDressAdvice(weather: WeatherData | null): string[] {
   if (!weather)
     return []

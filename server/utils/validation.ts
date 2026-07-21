@@ -1,10 +1,16 @@
+/**
+ * 参数校验工具
+ * 提供常用的数据类型和范围校验函数，校验失败抛出 HttpError(400)
+ */
 import { httpError } from './http.js'
 
+/** 数值范围选项 */
 interface RangeOptions {
   min?: number
   max?: number
 }
 
+/** 校验必填字符串参数，去除首尾空格后检查长度范围 */
 export function readRequiredString(value: unknown, fieldName: string, options: RangeOptions & { min?: number, max?: number } = {}): string {
   const { min = 1, max = 2000 } = options
   if (typeof value !== 'string')
@@ -19,6 +25,7 @@ export function readRequiredString(value: unknown, fieldName: string, options: R
   return trimmed
 }
 
+/** 校验正整数参数，检查范围是否在 [min, max] 内 */
 export function readPositiveInteger(value: unknown, fieldName: string, options: RangeOptions & { min?: number, max?: number } = {}): number {
   const { min = 1, max = 30 } = options
   const number = Number(value)
@@ -27,6 +34,7 @@ export function readPositiveInteger(value: unknown, fieldName: string, options: 
   return number
 }
 
+/** 校验正数参数（支持小数），检查范围是否在 [min, max] 内 */
 export function readPositiveNumber(value: unknown, fieldName: string, options: RangeOptions & { min?: number, max?: number } = {}): number {
   const { min = 1, max = 1_000_000 } = options
   const number = Number(value)
@@ -35,6 +43,7 @@ export function readPositiveNumber(value: unknown, fieldName: string, options: R
   return number
 }
 
+/** 校验数组参数，undefined 时返回空数组，超过最大长度时抛错 */
 export function ensureArray(value: unknown, fieldName: string, options: { max?: number } = {}): unknown[] {
   const { max = 20 } = options
   if (value === undefined)

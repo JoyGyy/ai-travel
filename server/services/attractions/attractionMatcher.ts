@@ -19,6 +19,7 @@ interface AttractionRef {
   priceText: string
 }
 
+/** 从行程数据中提取所有景点名称（去重） */
 function collectSpotNames(itinerary: ItineraryDay[] = []): string[] {
   const names: string[] = []
   for (const day of itinerary) {
@@ -31,6 +32,7 @@ function collectSpotNames(itinerary: ItineraryDay[] = []): string[] {
   return names
 }
 
+/** 将行程中的景点名称匹配到产品景点数据，生成引用列表（按 ID 去重） */
 async function matchAttractionRefsFromItinerary(itinerary: ItineraryDay[] = []): Promise<AttractionRef[]> {
   const refs: AttractionRef[] = []
   const seen = new Set<string>()

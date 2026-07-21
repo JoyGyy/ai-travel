@@ -38,16 +38,19 @@ export interface LLMToolResponse {
   tool_calls?: ToolCall[]
 }
 
+/** 获取第一个可用的 LLM 提供商配置 */
 function getLLMConfig(): LLMProviderConfig | null {
   return getLLMProviders()[0] || null
 }
 
+/** 创建带超时的 AbortController，用于请求取消 */
 function createTimeout(ms: number) {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), ms)
   return { controller, timeout }
 }
 
+/** 统一的 Chat Completions API 请求封装 */
 async function fetchChatCompletion(config: LLMProviderConfig, body: Record<string, unknown>, signal: AbortSignal) {
   const response = await fetch(`${config.baseUrl}/chat/completions`, {
     method: 'POST',
@@ -67,6 +70,7 @@ async function fetchChatCompletion(config: LLMProviderConfig, body: Record<strin
   return response
 }
 
+/** 非流式调用 LLM，返回完整响应文本 */
 async function callLLM(systemPrompt: string, userPrompt: string): Promise<string> {
   const config = getLLMConfig()
   if (!config)
@@ -92,6 +96,7 @@ async function callLLM(systemPrompt: string, userPrompt: string): Promise<string
   }
 }
 
+/** 流式调用 LLM，逐块回调并返回拼接后的完整内容 */
 async function callLLMStream(systemPrompt: string, userPrompt: string, onChunk: (content: string) => void): Promise<string> {
   const config = getLLMConfig()
   if (!config)
@@ -146,6 +151,7 @@ async function callLLMStream(systemPrompt: string, userPrompt: string, onChunk: 
   }
 }
 
+/** 支持 function calling 的 LLM 调用，返回助手消息（可能包含 tool_calls） */
 async function callLLMWithTools(messages: ChatMessage[], tools: ToolDefinition[]): Promise<LLMToolResponse | null> {
   const config = getLLMConfig()
   if (!config)

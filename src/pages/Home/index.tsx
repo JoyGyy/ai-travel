@@ -25,6 +25,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { allCities } from '@/constants/cities'
 import { useAppMessage } from '@/hooks/useAppMessage'
 import { useWeather } from '@/hooks/useWeather'
+import { imageUrl } from '@/lib/images'
 import { useAuthStore } from '@/stores/auth'
 
 import './style.css'
@@ -40,12 +41,12 @@ const quickEntries = [
 
 /* 热门目的地 */
 const hotDestinations = [
-  { name: '三亚', tag: '海岛度假', img: '/images/home/trip-greece.jpg', temp: '28°C', price: '¥2,899起' },
-  { name: '丽江', tag: '古城慢游', img: '/images/home/trip-scotland.jpg', temp: '18°C', price: '¥1,599起' },
-  { name: '西安', tag: '历史探秘', img: '/images/home/trip-egypt.jpg', temp: '22°C', price: '¥1,299起' },
-  { name: '成都', tag: '美食之都', img: '/images/home/trip-scotland.jpg', temp: '24°C', price: '¥1,499起' },
-  { name: '大理', tag: '风花雪月', img: '/images/home/trip-greece.jpg', temp: '20°C', price: '¥1,899起' },
-  { name: '厦门', tag: '文艺小城', img: '/images/home/trip-egypt.jpg', temp: '26°C', price: '¥1,699起' },
+  { name: '三亚', tag: '海岛度假', img: imageUrl('/images/home/trip-greece.jpg'), temp: '28°C', price: '¥2,899起' },
+  { name: '丽江', tag: '古城慢游', img: imageUrl('/images/home/trip-scotland.jpg'), temp: '18°C', price: '¥1,599起' },
+  { name: '西安', tag: '历史探秘', img: imageUrl('/images/home/trip-egypt.jpg'), temp: '22°C', price: '¥1,299起' },
+  { name: '成都', tag: '美食之都', img: imageUrl('/images/home/trip-scotland.jpg'), temp: '24°C', price: '¥1,499起' },
+  { name: '大理', tag: '风花雪月', img: imageUrl('/images/home/trip-greece.jpg'), temp: '20°C', price: '¥1,899起' },
+  { name: '厦门', tag: '文艺小城', img: imageUrl('/images/home/trip-egypt.jpg'), temp: '26°C', price: '¥1,699起' },
 ]
 
 /* 精选推荐 */
@@ -53,7 +54,7 @@ const featuredTrips = [
   {
     title: '三亚 5 天 4 晚海岛深度游',
     desc: '蜈支洲岛 + 亚龙湾 + 南山寺，含五星酒店',
-    image: '/images/home/trip-greece.jpg',
+    image: imageUrl('/images/home/trip-greece.jpg'),
     tag: '人气爆款',
     rating: 4.9,
     reviews: 2341,
@@ -64,7 +65,7 @@ const featuredTrips = [
   {
     title: '丽江古城 + 玉龙雪山 4 日游',
     desc: '纳西古韵 + 雪山索道 + 蓝月谷',
-    image: '/images/home/trip-scotland.jpg',
+    image: imageUrl('/images/home/trip-scotland.jpg'),
     tag: '限时特惠',
     rating: 4.8,
     reviews: 1856,
@@ -75,7 +76,7 @@ const featuredTrips = [
   {
     title: '西安兵马俑 + 华清池 3 日文化之旅',
     desc: '世界遗产 + 回民街美食 + 大唐不夜城',
-    image: '/images/home/trip-egypt.jpg',
+    image: imageUrl('/images/home/trip-egypt.jpg'),
     tag: '周末可用',
     rating: 4.7,
     reviews: 1523,

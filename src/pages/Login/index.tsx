@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { useAppMessage } from '@/hooks/useAppMessage'
+import { imageUrl } from '@/lib/images'
 import { useAuthStore } from '@/stores/auth'
 
 import './style.css'
@@ -88,7 +89,7 @@ export default function Login() {
       {/* 左侧品牌区 */}
       <section className="login-page__hero-side" aria-label="品牌介绍">
         <div className="login-page__hero-bg" aria-hidden="true">
-          <img src="/images/home/hero-boat.jpg" alt="" />
+          <img src={imageUrl('/images/home/hero-boat.jpg')} alt="" />
         </div>
         <div className="login-page__hero-overlay" aria-hidden="true" />
 

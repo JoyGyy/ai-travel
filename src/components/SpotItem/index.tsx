@@ -61,9 +61,7 @@ export function SpotItem({ period, data, attractionRef }: SpotItemProps) {
         {attractionRef
           ? (
               <Link className="spot-item__detail-link" to={`/attractions/${attractionRef.id}`}>
-                查看
-                {attractionRef.name}
-                详情
+                {`查看${attractionRef.name}详情`}
               </Link>
             )
           : null}

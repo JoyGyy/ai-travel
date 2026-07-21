@@ -1,6 +1,9 @@
 /**
- * SSE (Server-Sent Events) 自定义 Hook
- * 用于处理流式 HTTP 响应，实现 AI 回复的实时流式显示
+ * SSE (Server-Sent Events) 流式请求 Hook
+ *
+ * 封装 fetch + ReadableStream 实现自定义 SSE 解析，
+ * 支持 chunk / step / notice / complete / error 五种事件类型，
+ * 内置请求竞态控制（旧请求自动 abort）和类型守卫校验。
  */
 import type { SSECallbacks, SSEEvent } from '@/types/api'
 
@@ -8,9 +11,10 @@ import { useCallback, useRef } from 'react'
 
 import { getAuthHeader } from '@/api/client'
 
+// --- 合法事件类型集合 ---
 const SSE_EVENT_TYPES = new Set(['chunk', 'step', 'notice', 'complete', 'error'])
 
-/** 运行时类型守卫：校验 JSON 解析结果是否为合法的 SSE 事件 */
+// --- 运行时类型守卫：校验 JSON 解析结果是否为合法的 SSE 事件 ---
 function isSSEEvent(data: unknown): data is SSEEvent {
   if (typeof data !== 'object' || data === null)
     return false
@@ -19,6 +23,7 @@ function isSSEEvent(data: unknown): data is SSEEvent {
 }
 
 export function useSSE() {
+  // --- 请求竞态控制：通过 requestId 保证只有最新请求的回调生效 ---
   const abortControllerRef = useRef<AbortController | null>(null)
   const requestIdRef = useRef(0)
 
@@ -127,6 +132,7 @@ export function useSSE() {
     }
   }, [])
 
+  // --- 手动中止当前请求，递增 requestId 使旧回调失效 ---
   const abort = useCallback(() => {
     abortControllerRef.current?.abort()
     abortControllerRef.current = null

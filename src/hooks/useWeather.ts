@@ -1,6 +1,8 @@
 /**
  * 天气查询 Hook
- * 根据城市名获取天气信息
+ *
+ * 根据城市名调用后端天气接口，返回天气数据、加载状态和错误信息。
+ * 内置请求竞态控制（切换城市时自动中止旧请求）和组件卸载时的清理逻辑。
  */
 import type { WeatherResponse } from '@/types/api'
 
@@ -9,6 +11,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { getWeatherApi } from '@/api/weather'
 
 export function useWeather() {
+  // --- 状态管理 ---
   const [weather, setWeather] = useState<WeatherResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -42,6 +45,7 @@ export function useWeather() {
       })
   }, [])
 
+  // --- 组件卸载时中止进行中的请求 ---
   useEffect(() => {
     return () => {
       abortRef.current?.abort()

@@ -11,7 +11,7 @@ function renderWithSuspense(ui: React.ReactElement) {
   return render(<Suspense fallback={<span>加载中...</span>}>{ui}</Suspense>)
 }
 
-describe('ChatBubble', () => {
+describe('chat bubble 组件', () => {
   it('用户消息渲染为纯文本', () => {
     renderWithSuspense(<ChatBubble role="user" content="你好" />)
     expect(screen.getByText('你好')).toBeInTheDocument()
@@ -43,11 +43,9 @@ describe('ChatBubble', () => {
 
   it('AI 消息通过 react-markdown 渲染 Markdown 内容', async () => {
     renderWithSuspense(<ChatBubble role="assistant" content="**加粗文本**" />)
-    // 等待 lazy 组件加载完成
     await waitFor(() => {
       expect(screen.getByText('加粗文本')).toBeInTheDocument()
     })
-    // Markdown 应渲染为 <strong> 标签
     expect(screen.getByText('加粗文本').tagName).toBe('STRONG')
   })
 

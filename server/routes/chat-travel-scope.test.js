@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { it } from 'vitest'
 
 async function importChatModule() {
   process.env.JWT_SECRET = 'test-secret-for-chat-travel-scope-123456'
@@ -29,7 +29,7 @@ function parseSSEPayloads(chunks) {
     .map(line => JSON.parse(line.replace(/^data: /, '')))
 }
 
-test('isTravelRelatedMessage 识别非旅游问题和旅游边缘问题', async () => {
+it('isTravelRelatedMessage 识别非旅游问题和旅游边缘问题', async () => {
   const { isTravelRelatedMessageForTest } = await importChatModule()
 
   assert.equal(await isTravelRelatedMessageForTest('帮我写一段 React 代码'), false)
@@ -39,7 +39,7 @@ test('isTravelRelatedMessage 识别非旅游问题和旅游边缘问题', async 
   assert.equal(await isTravelRelatedMessageForTest('西湖门票多少钱？'), true)
 })
 
-test('handleNonTravelMessage 用 SSE 返回简短旅游引导', async () => {
+it('handleNonTravelMessage 用 SSE 返回简短旅游引导', async () => {
   const { getNonTravelResponseForTest, handleNonTravelMessageForTest } = await importChatModule()
   const res = createWritableResponse()
 
@@ -57,7 +57,7 @@ test('handleNonTravelMessage 用 SSE 返回简短旅游引导', async () => {
   assert.deepEqual(complete.data.sources, [])
 })
 
-test('handleNonTravelMessage 对旅游问题不拦截', async () => {
+it('handleNonTravelMessage 对旅游问题不拦截', async () => {
   const { handleNonTravelMessageForTest } = await importChatModule()
   const res = createWritableResponse()
 

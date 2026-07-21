@@ -4,9 +4,9 @@
  */
 
 import { Router } from 'express'
+import attractionsDB from '../knowledge/attractions.json' with { type: 'json' }
 import { consumeAiQuotaForRequest } from '../middleware/aiQuota.js'
 import { requireAuthForRequest } from '../middleware/auth.js'
-import attractionsDB from '../knowledge/attractions.json' with { type: 'json' }
 import { searchAttractions as searchProductAttractions } from '../services/attractions/attractionService.js'
 import { callLLMWithTools, getLLMConfig } from '../services/llm.js'
 import { getAllCities, retrieve } from '../services/rag.js'
@@ -133,17 +133,79 @@ const CHAT_STEP_MAP = {
 // ========== 旅行主题边界守卫 ==========
 
 const TRAVEL_KEYWORDS = [
-  '旅行', '旅游', '出行', '自由行', '跟团', '自驾', '攻略', '行程', '路线', '规划',
-  '目的地', '城市', '景点', '门票', '游玩', '打卡', '美食', '餐厅', '小吃',
-  '酒店', '住宿', '民宿', '交通', '地铁', '公交', '高铁', '火车', '机票', '机场',
-  '预算', '费用', '花费', '签证', '护照', '保险', '安全', '天气', '季节',
-  '亲子游', '情侣游', '毕业旅行', '蜜月', '周末游', '夜游', '避暑', '周边游',
+  '旅行',
+  '旅游',
+  '出行',
+  '自由行',
+  '跟团',
+  '自驾',
+  '攻略',
+  '行程',
+  '路线',
+  '规划',
+  '目的地',
+  '城市',
+  '景点',
+  '门票',
+  '游玩',
+  '打卡',
+  '美食',
+  '餐厅',
+  '小吃',
+  '酒店',
+  '住宿',
+  '民宿',
+  '交通',
+  '地铁',
+  '公交',
+  '高铁',
+  '火车',
+  '机票',
+  '机场',
+  '预算',
+  '费用',
+  '花费',
+  '签证',
+  '护照',
+  '保险',
+  '安全',
+  '天气',
+  '季节',
+  '亲子游',
+  '情侣游',
+  '毕业旅行',
+  '蜜月',
+  '周末游',
+  '夜游',
+  '避暑',
+  '周边游',
 ]
 
 const NON_TRAVEL_KEYWORDS = [
-  '代码', '编程', '函数', '组件', '接口', '数据库', '算法', '数学题', '论文',
-  '股票', '基金', '理财', '政治', '简历', '翻译', '作文', 'react', 'vue',
-  'python', 'java', 'typescript', 'javascript', 'css', 'html',
+  '代码',
+  '编程',
+  '函数',
+  '组件',
+  '接口',
+  '数据库',
+  '算法',
+  '数学题',
+  '论文',
+  '股票',
+  '基金',
+  '理财',
+  '政治',
+  '简历',
+  '翻译',
+  '作文',
+  'react',
+  'vue',
+  'python',
+  'java',
+  'typescript',
+  'javascript',
+  'css',
+  'html',
 ]
 
 function normalizeText(text) {
@@ -479,8 +541,12 @@ router.post('/chat', asyncHandler(async (req, res) => {
           for (const toolCall of assistantMsg.tool_calls) {
             const toolName = toolCall.function.name
             let args = {}
-            try { args = JSON.parse(toolCall.function.arguments) }
-            catch { /* 空 */ }
+            try {
+              args = JSON.parse(toolCall.function.arguments)
+            }
+            catch {
+              // JSON 解析失败时 args 保持 {}
+            }
 
             stepCounter++
             const stepName = CHAT_STEP_MAP[toolName] || toolName

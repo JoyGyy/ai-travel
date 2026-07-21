@@ -1,4 +1,5 @@
 import path from 'node:path'
+import process from 'node:process'
 import { config } from 'dotenv'
 
 config({ path: path.resolve(import.meta.dirname, '../../.env') })

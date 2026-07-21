@@ -4,8 +4,8 @@
  */
 
 import { Router } from 'express'
+import { getClient, query } from '../../db/index.js'
 import { requireAuth } from '../../middleware/auth.js'
-import { query, getClient } from '../../db/index.js'
 import { asyncHandler, httpError } from '../../utils/http.js'
 import { readRequiredString } from '../../utils/validation.js'
 
@@ -57,7 +57,8 @@ router.get('/:id', asyncHandler(async (req, res) => {
     [req.params.id],
   )
 
-  if (result.rows.length === 0) throw httpError(404, '景点不存在')
+  if (result.rows.length === 0)
+    throw httpError(404, '景点不存在')
   res.json({ success: true, data: mapRow(result.rows[0]) })
 }))
 
@@ -77,10 +78,22 @@ router.post('/', asyncHandler(async (req, res) => {
         suitable_for, booking_links
       ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,
       [
-        data.id, data.name, data.city, data.ticketType, data.priceText, data.coverImage,
-        data.summary, data.description, data.address, data.openingHours,
-        data.recommendedDuration, data.aliases, data.highlights, data.tips,
-        data.suitableFor, JSON.stringify(data.bookingLinks),
+        data.id,
+        data.name,
+        data.city,
+        data.ticketType,
+        data.priceText,
+        data.coverImage,
+        data.summary,
+        data.description,
+        data.address,
+        data.openingHours,
+        data.recommendedDuration,
+        data.aliases,
+        data.highlights,
+        data.tips,
+        data.suitableFor,
+        JSON.stringify(data.bookingLinks),
       ],
     )
 
@@ -91,7 +104,8 @@ router.post('/', asyncHandler(async (req, res) => {
   }
   catch (err) {
     await client.query('ROLLBACK')
-    if (err.code === '23505') throw httpError(409, '景点 ID 已存在')
+    if (err.code === '23505')
+      throw httpError(409, '景点 ID 已存在')
     throw err
   }
   finally {
@@ -117,15 +131,27 @@ router.put('/:id', asyncHandler(async (req, res) => {
         suitable_for = $15, booking_links = $16, updated_at = NOW()
        WHERE id = $1`,
       [
-        id, data.name, data.city, data.ticketType, data.priceText,
-        data.coverImage, data.summary, data.description, data.address,
-        data.openingHours, data.recommendedDuration, data.aliases,
-        data.highlights, data.tips, data.suitableFor,
+        id,
+        data.name,
+        data.city,
+        data.ticketType,
+        data.priceText,
+        data.coverImage,
+        data.summary,
+        data.description,
+        data.address,
+        data.openingHours,
+        data.recommendedDuration,
+        data.aliases,
+        data.highlights,
+        data.tips,
+        data.suitableFor,
         JSON.stringify(data.bookingLinks),
       ],
     )
 
-    if (result.rowCount === 0) throw httpError(404, '景点不存在')
+    if (result.rowCount === 0)
+      throw httpError(404, '景点不存在')
 
     // 删除旧标签关联后重新同步
     await client.query('DELETE FROM attraction_tags WHERE attraction_id = $1', [id])
@@ -146,7 +172,8 @@ router.put('/:id', asyncHandler(async (req, res) => {
 /** 删除景点 */
 router.delete('/:id', asyncHandler(async (req, res) => {
   const result = await query('DELETE FROM attractions WHERE id = $1', [req.params.id])
-  if (result.rowCount === 0) throw httpError(404, '景点不存在')
+  if (result.rowCount === 0)
+    throw httpError(404, '景点不存在')
   res.json({ success: true, message: '已删除' })
 }))
 

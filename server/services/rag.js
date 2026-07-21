@@ -20,7 +20,8 @@ const globalIndex = new TFIDFIndex()
  * 从 PostgreSQL 加载知识库数据并构建全局 TF-IDF 索引
  */
 async function loadKnowledge() {
-  if (knowledgeCache) return knowledgeCache
+  if (knowledgeCache)
+    return knowledgeCache
 
   const result = await query(
     'SELECT city, name, description, ticket, duration, tips, indoor, tags, food, transport, best_season, accommodation, nightlife FROM attraction_knowledge ORDER BY city, name',
@@ -86,17 +87,22 @@ function matchByKeyword(tags, query, attractions) {
     const queryLower = query.toLowerCase()
 
     for (const tag of tags) {
-      if (attr.tags.includes(tag)) score += 3
+      if (attr.tags.includes(tag))
+        score += 3
     }
 
-    if (queryLower && attr.description.toLowerCase().includes(queryLower)) score += 2
-    if (queryLower && attr.name.toLowerCase().includes(queryLower)) score += 5
+    if (queryLower && attr.description.toLowerCase().includes(queryLower))
+      score += 2
+    if (queryLower && attr.name.toLowerCase().includes(queryLower))
+      score += 5
 
     for (const tag of tags) {
-      if (attr.name.includes(tag) || attr.description.includes(tag)) score += 1
+      if (attr.name.includes(tag) || attr.description.includes(tag))
+        score += 1
     }
 
-    if (attr.tags.includes('必去')) score += 2
+    if (attr.tags.includes('必去'))
+      score += 2
 
     return { ...attr, keywordScore: score }
   })
@@ -111,7 +117,7 @@ function matchAttractions(tags, query, attractions, city) {
   const tfidfResults = globalIndex.search(query)
   const tfidfMap = new Map()
   for (const result of tfidfResults) {
-    if (result.id.startsWith(city + ':')) {
+    if (result.id.startsWith(`${city}:`)) {
       tfidfMap.set(result.id.split(':')[1], result.score)
     }
   }
@@ -147,7 +153,8 @@ function matchAttractions(tags, query, attractions, city) {
  */
 async function retrieve(city, preferenceTags = [], query = '') {
   const cityData = await getCityData(city)
-  if (!cityData) return null
+  if (!cityData)
+    return null
 
   const matchedAttractions = matchAttractions(preferenceTags, query, cityData.attractions, city)
 
@@ -169,4 +176,4 @@ async function getAllCities() {
   return db.map(c => c.city)
 }
 
-export { retrieve, getCityData, getAllCities }
+export { getAllCities, getCityData, retrieve }

@@ -3,6 +3,7 @@
  * 提供行程分享的创建和查询接口
  */
 
+import { Buffer } from 'node:buffer'
 import { Router } from 'express'
 import { requireAuth } from '../middleware/auth.js'
 import { createRateLimit } from '../middleware/rateLimit.js'

@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
+import { it } from 'vitest'
 
 // 需要 DATABASE_URL 才能运行
 const skip = !process.env.DATABASE_URL
 
-test('从行程点位名称匹配产品景点引用并去重', { skip }, async () => {
+it('从行程点位名称匹配产品景点引用并去重', { skip }, async () => {
   const { matchAttractionRefsFromItinerary } = await import('./attractionMatcher.js')
 
   const refs = await matchAttractionRefsFromItinerary([

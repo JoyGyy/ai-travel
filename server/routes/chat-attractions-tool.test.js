@@ -2,9 +2,9 @@ import assert from 'node:assert/strict'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { test } from 'node:test'
+import { it } from 'vitest'
 
-test('search_product_attractions 按城市和免费类型返回产品景点详情入口', async () => {
+it('search_product_attractions 按城市和免费类型返回产品景点详情入口', async () => {
   const dir = await mkdtemp(path.join(tmpdir(), 'travel-chat-attractions-tool-'))
   process.env.JWT_SECRET = 'test-secret-for-chat-attractions-tool-123456'
   process.env.USERS_DB_PATH = path.join(dir, 'users.db')

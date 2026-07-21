@@ -3,15 +3,15 @@
  * 组合景点数据 provider 和收藏数据库函数，提供统一的景点业务接口
  */
 
+import { httpError } from '../../utils/http.js'
 import {
   addFavoriteAttraction,
   listFavoriteAttractionIds,
   removeFavoriteAttraction,
 } from '../auth.js'
-import { httpError } from '../../utils/http.js'
 import {
-  getAttractionById as providerGetAttractionById,
   getAttractionMeta,
+  getAttractionById as providerGetAttractionById,
   listAttractions as providerListAttractions,
   searchAttractions as providerSearchAttractions,
 } from './providers/pgAttractionProvider.js'

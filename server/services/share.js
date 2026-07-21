@@ -16,7 +16,8 @@ function readShares() {
   try {
     const raw = fs.readFileSync(DATA_PATH, 'utf-8')
     return JSON.parse(raw)
-  } catch {
+  }
+  catch {
     return []
   }
 }

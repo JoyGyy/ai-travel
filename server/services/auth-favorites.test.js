@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { test } from 'node:test'
+import { it } from 'vitest'
 
 async function importAuthWithTempDb() {
   const dir = await mkdtemp(path.join(tmpdir(), 'travel-auth-favorites-'))
@@ -14,7 +14,7 @@ async function importAuthWithTempDb() {
   return { auth, dir }
 }
 
-test('用户收藏景点会按用户隔离并保持幂等', async () => {
+it('用户收藏景点会按用户隔离并保持幂等', async () => {
   const { auth, dir } = await importAuthWithTempDb()
   try {
     const userA = await auth.register('userA', '123456')

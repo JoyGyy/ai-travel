@@ -16,9 +16,10 @@
  * @returns {string[]} 分词结果
  */
 function tokenize(text) {
-  if (!text) return []
+  if (!text)
+    return []
   // 去除标点和空白，转小写
-  const cleaned = text.replace(/[，。！？、；：""''（）《》【】\s\-.]/g, '').toLowerCase()
+  const cleaned = text.replace(/[，。！？、；："'（）《》【】\s\-.]/g, '').toLowerCase()
   const tokens = []
 
   for (let i = 0; i < cleaned.length; i++) {
@@ -108,7 +109,8 @@ class TFIDFIndex {
     const queryTokens = tokenize(query)
     const queryTF = computeTF(queryTokens)
     const docTF = this.docTFs.get(docId)
-    if (!docTF) return 0
+    if (!docTF)
+      return 0
 
     // 构建 TF-IDF 向量（只计算查询和文档共有的词）
     let dotProduct = 0
@@ -144,4 +146,4 @@ class TFIDFIndex {
   }
 }
 
-export { TFIDFIndex, tokenize, computeTF }
+export { computeTF, TFIDFIndex, tokenize }

@@ -3,19 +3,19 @@
  * 提供旅行推荐和 AI 对话的 API 接口
  */
 
-import express from 'express'
 import cors from 'cors'
+import express from 'express'
 import helmet from 'helmet'
 
-import travelRoutes from './routes/travel.js'
-import chatRoutes from './routes/chat.js'
-import attractionRoutes from './routes/attractions.js'
-import weatherRoutes from './routes/weather.js'
-import authRoutes from './routes/auth.js'
-import shareRoutes from './routes/share.js'
-import adminAttractionRoutes from './routes/admin/attractions.js'
-import { createRateLimit } from './middleware/rateLimit.js'
 import { env, getLLMProviders } from './config/env.js'
+import { createRateLimit } from './middleware/rateLimit.js'
+import adminAttractionRoutes from './routes/admin/attractions.js'
+import attractionRoutes from './routes/attractions.js'
+import authRoutes from './routes/auth.js'
+import chatRoutes from './routes/chat.js'
+import shareRoutes from './routes/share.js'
+import travelRoutes from './routes/travel.js'
+import weatherRoutes from './routes/weather.js'
 import { errorHandler, notFoundHandler } from './utils/http.js'
 
 const app = express()

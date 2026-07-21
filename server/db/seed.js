@@ -4,8 +4,11 @@
  * 用法: node server/db/seed.js
  */
 
+/* eslint-disable no-console -- CLI 迁移脚本需要输出进度信息 */
+
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
+import process from 'node:process'
 import { config } from 'dotenv'
 import pg from 'pg'
 
@@ -75,10 +78,22 @@ async function seedAttractions(client) {
         booking_links = EXCLUDED.booking_links,
         updated_at = NOW()`,
       [
-        item.id, item.name, item.city, item.ticketType, item.priceText, item.coverImage,
-        item.summary, item.description, item.address, item.openingHours,
-        item.recommendedDuration, item.aliases || [], item.highlights || [], item.tips || [],
-        item.suitableFor || [], JSON.stringify(item.bookingLinks || {}),
+        item.id,
+        item.name,
+        item.city,
+        item.ticketType,
+        item.priceText,
+        item.coverImage,
+        item.summary,
+        item.description,
+        item.address,
+        item.openingHours,
+        item.recommendedDuration,
+        item.aliases || [],
+        item.highlights || [],
+        item.tips || [],
+        item.suitableFor || [],
+        JSON.stringify(item.bookingLinks || {}),
       ],
     )
 
@@ -118,9 +133,17 @@ async function seedKnowledge(client) {
           accommodation = EXCLUDED.accommodation,
           nightlife = EXCLUDED.nightlife`,
         [
-          cityData.city, attr.name, attr.description, attr.ticket,
-          attr.duration, attr.tips || '', attr.indoor || false, attr.tags || [],
-          cityData.food || [], cityData.transport || '', cityData.bestSeason || '',
+          cityData.city,
+          attr.name,
+          attr.description,
+          attr.ticket,
+          attr.duration,
+          attr.tips || '',
+          attr.indoor || false,
+          attr.tags || [],
+          cityData.food || [],
+          cityData.transport || '',
+          cityData.bestSeason || '',
           JSON.stringify(cityData.accommodation || []),
           JSON.stringify(cityData.nightlife || []),
         ],

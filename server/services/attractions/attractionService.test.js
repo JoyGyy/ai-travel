@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { test } from 'node:test'
+import { it } from 'vitest'
 
 async function importModulesWithTempDb(name) {
   const dir = await mkdtemp(path.join(tmpdir(), `travel-attractions-service-${name}-`))
@@ -20,7 +20,7 @@ async function importModulesWithTempDb(name) {
   return { auth, service, dir }
 }
 
-test('列表和详情会带上当前用户收藏状态', async () => {
+it('列表和详情会带上当前用户收藏状态', async () => {
   const { auth, service, dir } = await importModulesWithTempDb('favorite-state')
   try {
     const result = await auth.register('favoriteUser', '123456')
@@ -39,7 +39,7 @@ test('列表和详情会带上当前用户收藏状态', async () => {
   }
 })
 
-test('收藏不存在的景点会抛出 404 状态错误', async () => {
+it('收藏不存在的景点会抛出 404 状态错误', async () => {
   const { auth, service, dir } = await importModulesWithTempDb('missing')
   try {
     const result = await auth.register('missingUser', '123456')

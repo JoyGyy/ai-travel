@@ -1,3 +1,9 @@
+/**
+ * 景点列表页面
+ *
+ * 支持关键词搜索、城市/收费类型/标签筛选与分页，
+ * 每个景点卡片可收藏，并链接到详情页。
+ */
 import type { Attraction, AttractionFilters, AttractionTicketType } from '@/types/attraction'
 import { HeartFilled, HeartOutlined, SearchOutlined } from '@ant-design/icons'
 import { Button, Empty, Input, message, Pagination, Select, Spin, Tag } from 'antd'
@@ -23,6 +29,7 @@ export default function Attractions() {
 
   const PAGE_SIZE = 12
 
+  // ---- 数据加载 ----
   const load = useCallback(async (nextFilters: AttractionFilters) => {
     setLoading(true)
     setError('')
@@ -45,6 +52,7 @@ export default function Attractions() {
     load({})
   }, [load])
 
+  // ---- 筛选条件管理 ----
   function updateFilters(patch: AttractionFilters) {
     const next = { ...filters, ...patch, page: patch.page || 1 }
     setFilters(next)
@@ -67,6 +75,7 @@ export default function Attractions() {
     updateFilters({ page })
   }
 
+  // ---- 收藏切换 ----
   async function toggleFavorite(item: Attraction) {
     setFavoritePendingIds(prev => new Set(prev).add(item.id))
     try {
@@ -105,6 +114,7 @@ export default function Attractions() {
         <p>像翻旅行票根一样发现目的地，收藏想去的景点，再让 AI 帮你串成路线。</p>
       </section>
 
+      {/* ---- 筛选面板 ---- */}
       <section className="attractions-page__filters travel-surface-card" aria-labelledby="attractions-filter-title">
         <div className="attractions-page__filters-header">
           <h2 id="attractions-filter-title">筛选景点</h2>
@@ -201,6 +211,7 @@ export default function Attractions() {
           )
         : null}
 
+      {/* ---- 景点卡片网格 ---- */}
       {!loading && !error && items.length > 0
         ? (
             <>
@@ -245,6 +256,7 @@ export default function Attractions() {
                   )
                 })}
               </section>
+              {/* ---- 分页 ---- */}
               {total > PAGE_SIZE && (
                 <div className="attractions-page__pagination">
                   <Pagination

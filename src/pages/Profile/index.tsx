@@ -1,3 +1,9 @@
+/**
+ * 个人中心页面
+ *
+ * 展示用户信息、AI 使用额度、修改密码表单、
+ * 收藏景点列表，支持取消收藏和退出登录。
+ */
 import type { ProfileData } from '@/types/api'
 import type { Attraction } from '@/types/attraction'
 import {
@@ -34,6 +40,7 @@ import { useAuthStore } from '@/stores/auth'
 import './style.css'
 
 export default function Profile() {
+  // ---- 路由与全局状态 ----
   const navigate = useNavigate()
   const logout = useAuthStore(state => state.logout)
   const user = useAuthStore(state => state.user)
@@ -47,6 +54,7 @@ export default function Profile() {
   const [msg, contextHolder] = message.useMessage()
   const [form] = Form.useForm()
 
+  // ---- 加载用户资料与收藏列表 ----
   const loadProfile = useCallback(async () => {
     setLoading(true)
     setLoadError('')
@@ -76,6 +84,7 @@ export default function Profile() {
     loadProfile()
   }, [loadProfile])
 
+  // ---- 密码修改 ----
   async function handlePasswordChange(values: { currentPassword: string, newPassword: string }) {
     setChangingPassword(true)
     try {
@@ -101,6 +110,7 @@ export default function Profile() {
     }
   }
 
+  // ---- 取消收藏 ----
   async function handleRemoveFavorite(attractionId: string) {
     setRemovingFavoriteIds(prev => new Set(prev).add(attractionId))
     try {
@@ -120,11 +130,13 @@ export default function Profile() {
     }
   }
 
+  // ---- 退出登录 ----
   function handleLogout() {
     logout()
     navigate('/', { replace: true })
   }
 
+  // ---- 加载中骨架屏 ----
   if (loading) {
     return (
       <main className="profile-page travel-page-shell">
@@ -141,6 +153,7 @@ export default function Profile() {
     )
   }
 
+  // ---- 额度与显示名计算 ----
   const quota = profile?.aiQuota
   const quotaPercent = quota ? Math.min(100, Math.round((quota.used / quota.limit) * 100)) : 0
   const quotaDanger = quotaPercent >= 80

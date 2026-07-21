@@ -1,6 +1,8 @@
 /**
  * 景点详情页面
- * 展示景点详细信息、购票入口和 AI 规划入口
+ *
+ * 根据 URL 参数加载景点详情，展示封面、介绍、实用信息、
+ * 游玩亮点、注意事项和购票入口，支持收藏和 AI 行程规划跳转。
  */
 import type { Attraction } from '@/types/attraction'
 import { ArrowLeftOutlined, HeartFilled, HeartOutlined } from '@ant-design/icons'
@@ -33,6 +35,7 @@ function buildBookingLinks(attraction: Attraction) {
 }
 
 export default function AttractionDetail() {
+  // ---- 路由参数与状态 ----
   const { id = '' } = useParams()
   const navigate = useNavigate()
   const [attraction, setAttraction] = useState<Attraction | null>(null)
@@ -42,6 +45,7 @@ export default function AttractionDetail() {
   const [reloadKey, setReloadKey] = useState(0)
   const [msg, contextHolder] = message.useMessage()
 
+  // ---- 加载景点数据 ----
   useEffect(() => {
     let cancelled = false
     async function loadData() {
@@ -87,6 +91,7 @@ export default function AttractionDetail() {
     }
   }
 
+  // ---- 加载中状态 ----
   if (loading) {
     return (
       <main className="attraction-detail travel-page-shell" aria-labelledby="attraction-loading-title">
@@ -99,6 +104,7 @@ export default function AttractionDetail() {
       </main>
     )
   }
+  // ---- 错误/空数据状态 ----
   if (error || !attraction) {
     return (
       <main className="attraction-detail travel-page-shell" aria-labelledby="attraction-error-title">
@@ -115,6 +121,7 @@ export default function AttractionDetail() {
     )
   }
 
+  // ---- 构建 AI 规划跳转参数 ----
   const prompt = encodeURIComponent(`帮我规划一个包含${attraction.city}${attraction.name}的旅行行程`)
   const ticketTypeClass = attraction.ticketType === 'free' ? 'travel-tag--free' : 'travel-tag--paid'
 
@@ -125,6 +132,7 @@ export default function AttractionDetail() {
         <ArrowLeftOutlined aria-hidden="true" />
         <span>返回</span>
       </button>
+      {/* ---- 封面与操作区 ---- */}
       <section className="attraction-detail__hero travel-surface-card travel-ticket-edge travel-route-line">
         <img src={attraction.coverImage} alt={`${attraction.name}，${attraction.city}景点封面`} loading="eager" decoding="async" />
         <div className="attraction-detail__hero-content">
@@ -152,10 +160,12 @@ export default function AttractionDetail() {
         </div>
       </section>
 
+      {/* ---- 景点介绍 ---- */}
       <section className="attraction-detail__section travel-surface-card">
         <h2>景点介绍</h2>
         <p>{attraction.description}</p>
       </section>
+      {/* ---- 实用信息 ---- */}
       <section className="attraction-detail__section travel-surface-card">
         <h2>实用信息</h2>
         <dl className="attraction-detail__info-grid">
@@ -177,14 +187,17 @@ export default function AttractionDetail() {
           </div>
         </dl>
       </section>
+      {/* ---- 游玩亮点 ---- */}
       <section className="attraction-detail__section travel-surface-card">
         <h2>游玩亮点</h2>
         <ul className="attraction-detail__list">{attraction.highlights.map(item => <li key={item}>{item}</li>)}</ul>
       </section>
+      {/* ---- 注意事项 ---- */}
       <section className="attraction-detail__section travel-surface-card">
         <h2>注意事项</h2>
         <ul className="attraction-detail__list">{attraction.tips.map(item => <li key={item}>{item}</li>)}</ul>
       </section>
+      {/* ---- 购票入口 ---- */}
       <section className="attraction-detail__section travel-surface-card">
         <h2>购票入口</h2>
         <p className="attraction-detail__notice">价格、库存和开放时间以第三方平台及景区官方公告为准。</p>

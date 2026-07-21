@@ -1,5 +1,8 @@
 /**
  * 天气查询页面
+ *
+ * 提供城市搜索（带下拉联想）和热门城市快捷入口，
+ * 调用 useWeather hook 获取并展示实时天气数据。
  */
 import type { ChangeEvent, KeyboardEvent } from 'react'
 
@@ -17,6 +20,7 @@ export default function Weather() {
   const [activeCityIndex, setActiveCityIndex] = useState(0)
   const { weather, loading, error, fetchWeather } = useWeather()
 
+  // ---- 城市搜索过滤 ----
   const filteredCities = useMemo(() => {
     const keyword = city.trim()
     if (!keyword)
@@ -28,6 +32,7 @@ export default function Weather() {
     ? `weather-city-option-${activeCityIndex}`
     : undefined
 
+  // ---- 城市选择 ----
   function selectCity(name: string) {
     setCity(name)
     setActiveCityIndex(0)
@@ -35,12 +40,14 @@ export default function Weather() {
     fetchWeather(name)
   }
 
+  // ---- 输入处理 ----
   function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
     setCity(event.target.value)
     setActiveCityIndex(0)
     setShowDropdown(true)
   }
 
+  // ---- 下拉列表键盘导航 ----
   function handleInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (!showDropdown && ['ArrowDown', 'ArrowUp'].includes(event.key)) {
       setShowDropdown(true)
@@ -69,6 +76,7 @@ export default function Weather() {
     }
   }
 
+  // ---- 错误重试 ----
   function retryWeather() {
     if (city.trim())
       fetchWeather(city.trim())
@@ -130,12 +138,14 @@ export default function Weather() {
           )}
         </div>
 
+        {/* ---- 天气结果展示 ---- */}
         {(loading || weather) && (
           <div className="weather-page__result">
             <HomeWeather weather={weather} loading={loading} />
           </div>
         )}
 
+        {/* ---- 错误提示 ---- */}
         {error && (
           <div className="weather-page__error" role="alert">
             <span>{error}</span>
@@ -147,6 +157,7 @@ export default function Weather() {
           </div>
         )}
 
+        {/* ---- 热门城市快捷入口 ---- */}
         <div className="weather-page__hot">
           <div className="weather-page__hot-header">
             <div className="weather-page__hot-line" />

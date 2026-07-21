@@ -1,8 +1,11 @@
-import type { AttractionRef } from '@/stores/itinerary'
 /**
  * 景点项目组件
- * 展示单个景点的详细信息
+ *
+ * 展示行程中单个景点的详细信息，包括时段标签、
+ * 景点名称、描述、游玩时长、门票价格和交通方式。
+ * 支持链接到景点详情页。
  */
+import type { AttractionRef } from '@/stores/itinerary'
 import { ClockCircleOutlined, CompassOutlined } from '@ant-design/icons'
 
 import { Link } from 'react-router-dom'
@@ -24,6 +27,7 @@ interface SpotItemProps {
 }
 
 export function SpotItem({ period, data, attractionRef }: SpotItemProps) {
+  // 根据时段（上午/下午/晚上）映射不同的主题色和背景色
   const periodColorMap: Record<string, string> = {
     上午: 'var(--travel-period-morning)',
     下午: 'var(--travel-period-afternoon)',
@@ -45,6 +49,7 @@ export function SpotItem({ period, data, attractionRef }: SpotItemProps) {
       <div className="spot-item__body">
         <h4 className="spot-item__name">{data.spot}</h4>
         <p className="spot-item__desc">{data.description}</p>
+        {/* ---- 标签：游玩时长 / 门票 / 交通方式 ---- */}
         <div className="spot-item__tags">
           <span className="spot-item__tag">
             <ClockCircleOutlined />
@@ -58,6 +63,7 @@ export function SpotItem({ period, data, attractionRef }: SpotItemProps) {
             {data.transportation}
           </span>
         </div>
+        {/* ---- 关联景点详情链接（有 attractionRef 时显示） ---- */}
         {attractionRef
           ? (
               <Link className="spot-item__detail-link" to={`/attractions/${attractionRef.id}`}>

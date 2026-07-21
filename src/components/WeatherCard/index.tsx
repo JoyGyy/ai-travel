@@ -1,11 +1,14 @@
 /**
- * 天气信息卡片
- * 展示目的地实时天气和未来几天预报
+ * 天气信息卡片组件
+ *
+ * 展示目的地实时天气（温度、体感温度、湿度）和未来三天预报，
+ * 根据天气描述自动匹配对应的天气图标。
  */
 import type { WeatherResponse } from '@/types/api'
 
 import './style.css'
 
+/** 根据天气描述文本匹配对应的图标类型 */
 function getWeatherIconType(desc = ''): string {
   if (desc.includes('雷') || desc.includes('暴雨'))
     return 'storm'
@@ -37,11 +40,13 @@ interface WeatherCardProps {
 }
 
 export function WeatherCard({ weather }: WeatherCardProps) {
+  // 无天气数据时不渲染
   if (!weather)
     return null
 
   return (
     <section className="weather-card" aria-label={`${weather.city} 实时天气`}>
+      {/* ---- 当前天气信息 ---- */}
       <div className="weather-card__current">
         <div className="weather-card__main">
           <div className="weather-card__temp-row">
@@ -72,6 +77,7 @@ export function WeatherCard({ weather }: WeatherCardProps) {
           </p>
         </div>
       </div>
+      {/* ---- 未来三天预报 ---- */}
       {weather.forecast && weather.forecast.length > 0 && (
         <div className="weather-card__forecast" aria-label="未来三天天气预报">
           {weather.forecast.map((day, i) => (

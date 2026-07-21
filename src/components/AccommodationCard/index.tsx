@@ -1,5 +1,8 @@
 /**
- * 住宿与夜生活推荐卡片
+ * 住宿与夜生活推荐卡片组件
+ *
+ * 展示行程中的住宿推荐列表和吃喝玩乐推荐列表，
+ * 每个住宿项包含名称、类型、描述和价格区间。
  */
 import './style.css'
 
@@ -16,11 +19,13 @@ interface AccommodationCardProps {
 }
 
 export function AccommodationCard({ accommodation, nightlife }: AccommodationCardProps) {
+  // 两项均为空时不渲染
   if (!accommodation.length && !nightlife.length)
     return null
 
   return (
     <div className="accommodation-card">
+      {/* ---- 住宿推荐列表 ---- */}
       {accommodation.length > 0 && (
         <div className="accommodation-card__section">
           <div className="accommodation-card__title">
@@ -45,6 +50,7 @@ export function AccommodationCard({ accommodation, nightlife }: AccommodationCar
         </div>
       )}
 
+      {/* ---- 吃喝玩乐推荐列表 ---- */}
       {nightlife.length > 0 && (
         <div className="accommodation-card__section">
           <div className="accommodation-card__title">

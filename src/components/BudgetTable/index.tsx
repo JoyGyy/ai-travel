@@ -1,6 +1,8 @@
 /**
  * 预算明细表格组件
- * 以表格形式展示行程的预算分解情况
+ *
+ * 以表格 + 柱状图的形式展示行程的预算分解情况，
+ * 包含住宿、餐饮、交通、门票、其他五个分类及总计。
  */
 import './style.css'
 
@@ -33,6 +35,7 @@ const barColors: Record<keyof BudgetData, string> = {
 }
 
 export function BudgetTable({ data }: BudgetTableProps) {
+  // 计算预算总和与最大单项值（用于柱状图宽度归一化）
   const total = Object.values(data).reduce((sum, v) => sum + (v || 0), 0)
   const max = Math.max(...Object.values(data).map(v => v || 0), 1)
 
@@ -45,6 +48,7 @@ export function BudgetTable({ data }: BudgetTableProps) {
         <span>预算明细</span>
       </h2>
       <div className="budget-table__card">
+        {/* ---- 数值表格 ---- */}
         <table className="budget-table__table">
           <caption className="sr-only">旅行预算分类明细</caption>
           <tbody>
@@ -59,6 +63,7 @@ export function BudgetTable({ data }: BudgetTableProps) {
             ))}
           </tbody>
         </table>
+        {/* ---- 柱状图可视化 ---- */}
         <div className="budget-table__bars" aria-label="预算占比可视化">
           {budgetKeys.map(key => (
             <div key={key} className="budget-table__bar-row">
@@ -76,6 +81,7 @@ export function BudgetTable({ data }: BudgetTableProps) {
             </div>
           ))}
         </div>
+        {/* ---- 总计行 ---- */}
         <div className="budget-table__total">
           <span>总计</span>
           <span className="budget-table__total-value">

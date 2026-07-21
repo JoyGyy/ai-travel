@@ -1,11 +1,14 @@
 /**
  * 首页天气小组件
- * 紧凑展示当前城市天气和未来预报
+ *
+ * 在首页紧凑展示当前城市的实时天气和未来三天预报，
+ * 加载中显示旋转指示器。根据天气描述自动匹配天气图标。
  */
 import type { WeatherResponse } from '@/types/api'
 
 import './style.css'
 
+/** 根据天气描述文本匹配对应的图标类型 */
 function getWeatherIconType(desc = ''): string {
   if (desc.includes('雷') || desc.includes('暴雨'))
     return 'storm'
@@ -38,6 +41,7 @@ interface HomeWeatherProps {
 }
 
 export function HomeWeather({ weather, loading }: HomeWeatherProps) {
+  // 加载中或无数据时显示 loading 状态
   if (loading || !weather) {
     return (
       <div className="home-weather home-weather--loading" role="status" aria-live="polite">
@@ -49,6 +53,7 @@ export function HomeWeather({ weather, loading }: HomeWeatherProps) {
 
   return (
     <section className="home-weather" aria-label={`${weather.city} 天气概览`}>
+      {/* ---- 当前天气 ---- */}
       <div className="home-weather__current">
         <div className="home-weather__main">
           <WeatherIcon desc={weather.weatherDesc} className="home-weather__icon" />
@@ -75,6 +80,7 @@ export function HomeWeather({ weather, loading }: HomeWeatherProps) {
           </p>
         </div>
       </div>
+      {/* ---- 未来三天预报 ---- */}
       {weather.forecast && weather.forecast.length > 0 && (
         <div className="home-weather__forecast" aria-label="未来三天天气预报">
           {weather.forecast.map((day, i) => (

@@ -3,7 +3,8 @@ import type { ItineraryCache } from '@/utils/storage'
 
 /**
  * 行程详情页面
- * 展示 AI 生成的旅行行程
+ * 展示 AI 生成的旅行行程，包含天气、住宿、每日景点、预算明细等模块。
+ * 优先从本地缓存读取，缓存未命中时通过 SSE 流式调用推荐接口生成行程。
  */
 import { ArrowLeftOutlined, CloseOutlined, CompassOutlined, EnvironmentOutlined } from '@ant-design/icons'
 import { useEffect, useState } from 'react'
@@ -21,6 +22,8 @@ import { loadItineraryCache, saveItineraryCache } from '@/utils/storage'
 import './style.css'
 
 export default function Detail() {
+  /* ---------- 路由参数解析 ---------- */
+
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
 
@@ -49,6 +52,8 @@ export default function Detail() {
     setCurrentAgentStep,
   } = useItineraryStore()
 
+  /* ---------- 本地 UI 状态 ---------- */
+
   const [activeKeys, setActiveKeys] = useState<string[]>([])
   const [showLoading, setShowLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
@@ -58,6 +63,8 @@ export default function Detail() {
   function findAttractionRef(spot?: string) {
     return attractionRefs.find(ref => ref.name === spot)
   }
+
+  /* ---------- 数据加载：优先缓存 → SSE 流式生成 ---------- */
 
   useEffect(() => {
     let resetTimer: ReturnType<typeof setTimeout>
@@ -163,6 +170,8 @@ export default function Detail() {
     setTips,
     setWeather,
   ])
+
+  /* ========== 渲染 ========== */
 
   return (
     <main className="detail-page" aria-labelledby="detail-title">

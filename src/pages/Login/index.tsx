@@ -1,3 +1,8 @@
+/**
+ * 登录 / 注册页面
+ * 左右分栏布局：左侧品牌展示区，右侧登录/注册表单。
+ * 通过 Zustand auth store 管理认证状态，支持登录和注册两种模式切换。
+ */
 import { ArrowLeftOutlined, CompassOutlined } from '@ant-design/icons'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -7,6 +12,8 @@ import { imageUrl } from '@/lib/images'
 import { useAuthStore } from '@/stores/auth'
 
 import './style.css'
+
+/* ========== 表单文案配置 ========== */
 
 const formCopy = {
   login: {
@@ -26,6 +33,8 @@ const formCopy = {
 }
 
 export default function Login() {
+  /* ---------- 状态与 Store ---------- */
+
   const navigate = useNavigate()
   const message = useAppMessage()
   const { login, register } = useAuthStore()
@@ -36,12 +45,16 @@ export default function Login() {
   const [formError, setFormError] = useState('')
   const currentCopy = formCopy[tab]
 
+  /* ---------- 登录/注册模式切换 ---------- */
+
   function switchTab(t: 'login' | 'register') {
     setTab(t)
     setUsername('')
     setPassword('')
     setFormError('')
   }
+
+  /* ---------- 表单校验 ---------- */
 
   function validateForm() {
     if (!username.trim())
@@ -52,6 +65,8 @@ export default function Login() {
       return '密码长度至少 6 位'
     return ''
   }
+
+  /* ---------- 提交登录/注册请求 ---------- */
 
   async function handleSubmit(event: { preventDefault: () => void }) {
     event.preventDefault()
@@ -83,6 +98,8 @@ export default function Login() {
       setLoading(false)
     }
   }
+
+  /* ========== 渲染 ========== */
 
   return (
     <main className="login-page" aria-labelledby="login-title">

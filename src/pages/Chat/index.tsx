@@ -1,5 +1,7 @@
 /**
  * AI 对话页面
+ * 与旅行顾问 AI 进行流式对话，支持 SSE 实时响应、Agent 步骤展示、
+ * RAG 知识来源显示和快捷提问。对话历史保存在 Zustand store 中。
  */
 import { CompassOutlined, DeleteOutlined, ExclamationCircleOutlined, RobotOutlined } from '@ant-design/icons'
 import { Modal } from 'antd'
@@ -22,6 +24,7 @@ const quickQuestions = [
 ]
 
 export default function Chat() {
+  /* ---------- 状态与 Store ---------- */
   const {
     messages,
     isLoading,
@@ -46,6 +49,8 @@ export default function Chat() {
 
   const lastMessage = messages[messages.length - 1]
 
+  /* ---------- 生命周期：卸载时中断 SSE、初始化时清空历史 ---------- */
+
   useEffect(() => {
     return () => abort()
   }, [abort])
@@ -64,6 +69,8 @@ export default function Chat() {
       el.scrollTop = el.scrollHeight
   }, [messages.length, lastMessage?.content, lastMessage?.steps?.length])
 
+  /* ---------- 清空对话（带二次确认弹窗） ---------- */
+
   function clearChat() {
     modal.confirm({
       title: '确定要清空所有对话记录吗？',
@@ -79,6 +86,8 @@ export default function Chat() {
       },
     })
   }
+
+  /* ---------- 发送消息：通过 SSE 流式请求 AI 响应 ---------- */
 
   async function sendMessage(msg?: string) {
     const text = msg || inputMsg.trim()
@@ -126,6 +135,8 @@ export default function Chat() {
       setCurrentAgentStep(0)
     }
   }
+
+  /* ========== 渲染 ========== */
 
   return (
     <main className="chat-page" aria-labelledby="chat-title">

@@ -1,6 +1,7 @@
 /**
- * 首页组件 - OTA 旅行平台风格
- * 丰富内容展示、暖色调、参考携程/飞猪布局
+ * 首页（行程推荐）
+ * OTA 旅行平台风格的落地页，包含搜索表单、热门目的地、精选推荐、AI 特色介绍等模块。
+ * 用户输入目的地/预算/天数后，跳转到行程详情页进行 AI 规划。
  */
 import type { ChangeEvent, KeyboardEvent, SubmitEvent } from 'react'
 
@@ -29,6 +30,8 @@ import { imageUrl } from '@/lib/images'
 import { useAuthStore } from '@/stores/auth'
 
 import './style.css'
+
+/* ========== 静态数据 ========== */
 
 /* 快捷入口 */
 const quickEntries = [
@@ -94,6 +97,7 @@ const userReviews = [
 ]
 
 export default function Home() {
+  /* ---------- 路由与全局状态 ---------- */
   const navigate = useNavigate()
   const message = useAppMessage()
   const user = useAuthStore(state => state.user)
@@ -107,6 +111,8 @@ export default function Home() {
   const { weather, loading: weatherLoading, fetchWeather } = useWeather()
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  /* ---------- 城市搜索过滤 ---------- */
+
   const filteredCities = useMemo(() => {
     const keyword = city.trim()
     if (!keyword)
@@ -117,6 +123,8 @@ export default function Home() {
   const activeCityId = showDropdown && filteredCities[activeCityIndex]
     ? `home-city-option-${activeCityIndex}`
     : undefined
+
+  /* ---------- 表单交互函数 ---------- */
 
   function clearFieldError(field: string) {
     setFieldErrors(prev => ({ ...prev, [field]: '' }))
@@ -160,6 +168,8 @@ export default function Home() {
     }
   }
 
+  /* ---------- 防抖天气查询：输入 2 字以上自动查询 ---------- */
+
   useEffect(() => {
     if (debounceRef.current)
       clearTimeout(debounceRef.current)
@@ -175,6 +185,8 @@ export default function Home() {
         clearTimeout(debounceRef.current)
     }
   }, [city, fetchWeather])
+
+  /* ---------- 表单校验与提交 ---------- */
 
   function validatePlanner() {
     const errors: Record<string, string> = {}
@@ -206,6 +218,8 @@ export default function Home() {
     event.preventDefault()
     onStart()
   }
+
+  /* ========== 渲染 ========== */
 
   return (
     <main className="home" onClick={() => showDropdown && setShowDropdown(false)}>

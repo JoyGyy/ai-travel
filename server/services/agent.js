@@ -6,6 +6,9 @@
 
 import attractionsDB from '../knowledge/attractions.json' with { type: 'json' }
 import { sendSSE } from '../utils/sse.js'
+import { createLogger } from '../utils/logger.js'
+
+const log = createLogger('agent')
 import { matchAttractionRefsFromItinerary } from './attractions/attractionMatcher.js'
 import { callLLMWithTools, getLLMConfig } from './llm.js'
 import { retrieve } from './rag.js'
@@ -436,7 +439,7 @@ async function executeAgent(res, params) {
     })
   }
   catch (err) {
-    console.error('Agent 执行失败，降级到 Mock:', err.message)
+    log.error('Agent 执行失败，降级到 Mock:', err.message)
     return executeAgentMock(res, params)
   }
 }

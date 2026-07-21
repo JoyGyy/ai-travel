@@ -17,6 +17,9 @@ import shareRoutes from './routes/share.js'
 import travelRoutes from './routes/travel.js'
 import weatherRoutes from './routes/weather.js'
 import { errorHandler, notFoundHandler } from './utils/http.js'
+import { createLogger } from './utils/logger.js'
+
+const log = createLogger('server')
 
 const app = express()
 const PORT = env.PORT
@@ -41,7 +44,7 @@ app.use(express.json({ limit: env.REQUEST_BODY_LIMIT }))
 
 // 请求日志中间件
 app.use((req, _res, next) => {
-  console.log(`[${new Date().toLocaleTimeString()}] ${req.method} ${req.url}`)
+  log.debug(`${req.method} ${req.url}`)
   next()
 })
 
@@ -76,12 +79,7 @@ app.use(errorHandler)
 // 启动服务
 app.listen(PORT, () => {
   const providers = getLLMProviders().map(provider => provider.name).join(' / ') || 'Mock/知识库降级模式'
-  console.log(`\n  🚀 旅行助手后端服务已启动`)
-  console.log(`  📡 地址: http://localhost:${PORT}`)
-  console.log(`  🤖 LLM: ${providers}`)
-  console.log(`  📋 接口:`)
-  console.log(`     POST /api/travel/recommend - 行程推荐`)
-  console.log(`     POST /api/travel/chat      - AI 对话`)
-  console.log(`     GET  /api/attractions       - 景点列表`)
-  console.log(`     GET  /api/health            - 健康检查\n`)
+  log.info(`服务已启动 — http://localhost:${PORT}`)
+  log.info(`LLM: ${providers}`)
+  log.info('接口: POST /api/travel/recommend | POST /api/travel/chat | GET /api/attractions | GET /api/health')
 })

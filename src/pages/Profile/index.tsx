@@ -58,7 +58,7 @@ export default function Profile() {
       setProfile(profileResult.profile)
       setFavorites(favResult.items)
     }
-    catch (err) {
+    catch (err: unknown) {
       if (err instanceof ApiError && err.status === 401) {
         msg.warning('登录已过期，请重新登录')
         logout()
@@ -87,7 +87,7 @@ export default function Profile() {
         navigate('/login', { replace: true })
       }, 1500)
     }
-    catch (err) {
+    catch (err: unknown) {
       if (err instanceof ApiError && err.status === 401) {
         msg.warning('登录已过期，请重新登录')
         logout()
@@ -108,7 +108,7 @@ export default function Profile() {
       setFavorites(prev => prev.filter(item => item.id !== attractionId))
       msg.success('已取消收藏')
     }
-    catch (err) {
+    catch (err: unknown) {
       msg.error(err instanceof Error ? err.message : '取消收藏失败')
     }
     finally {

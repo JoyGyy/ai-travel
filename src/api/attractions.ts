@@ -31,26 +31,26 @@ interface DataResponse<T> {
 }
 
 export async function fetchAttractions(filters: AttractionFilters = {}): Promise<AttractionListData> {
-  const data = await request(`/api/attractions${buildQuery(filters)}`, { auth: true })
-  return (data as DataResponse<AttractionListData>).data
+  const res = await request<DataResponse<AttractionListData>>(`/api/attractions${buildQuery(filters)}`, { auth: true })
+  return res.data
 }
 
 export async function fetchAttractionDetail(id: string): Promise<AttractionDetailData> {
-  const data = await request(`/api/attractions/${id}`, { auth: true })
-  return (data as DataResponse<AttractionDetailData>).data
+  const res = await request<DataResponse<AttractionDetailData>>(`/api/attractions/${id}`, { auth: true })
+  return res.data
 }
 
 export async function fetchFavoriteAttractions(): Promise<AttractionListData> {
-  const data = await request('/api/attractions/favorites', { auth: true })
-  return (data as DataResponse<AttractionListData>).data
+  const res = await request<DataResponse<AttractionListData>>('/api/attractions/favorites', { auth: true })
+  return res.data
 }
 
 export async function favoriteAttraction(id: string): Promise<FavoriteResult> {
-  const data = await request(`/api/attractions/${id}/favorite`, { method: 'POST', auth: true })
-  return (data as DataResponse<FavoriteResult>).data
+  const res = await request<DataResponse<FavoriteResult>>(`/api/attractions/${id}/favorite`, { method: 'POST', auth: true })
+  return res.data
 }
 
 export async function unfavoriteAttraction(id: string): Promise<FavoriteResult> {
-  const data = await request(`/api/attractions/${id}/favorite`, { method: 'DELETE', auth: true })
-  return (data as DataResponse<FavoriteResult>).data
+  const res = await request<DataResponse<FavoriteResult>>(`/api/attractions/${id}/favorite`, { method: 'DELETE', auth: true })
+  return res.data
 }

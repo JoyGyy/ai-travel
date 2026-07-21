@@ -33,7 +33,7 @@ export default function Attractions() {
       setCities(data.cities)
       setTags(data.tags)
     }
-    catch (err) {
+    catch (err: unknown) {
       setError(err instanceof Error ? err.message : '景点加载失败')
     }
     finally {
@@ -76,7 +76,7 @@ export default function Attractions() {
       setItems(prev => prev.map(current => current.id === item.id ? { ...current, isFavorite: result.isFavorite } : current))
       msg.success(result.isFavorite ? '已收藏' : '已取消收藏')
     }
-    catch (err) {
+    catch (err: unknown) {
       msg.error(err instanceof Error ? err.message : '收藏操作失败')
     }
     finally {

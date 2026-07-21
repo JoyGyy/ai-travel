@@ -2,6 +2,20 @@ import { beforeEach, describe, expect, it } from 'vitest'
 
 import { loadItineraryCache, saveItineraryCache } from '../storage'
 
+/** 构建符合 ItineraryCache 接口的最小测试数据 */
+function makeCacheData(overrides: Partial<ReturnType<typeof loadItineraryCache>> = {}) {
+  return {
+    itinerary: [],
+    budgetBreakdown: null,
+    tips: [],
+    weather: null,
+    accommodation: [],
+    nightlife: [],
+    attractionRefs: [],
+    ...overrides,
+  }
+}
+
 describe('storage 工具', () => {
   beforeEach(() => {
     localStorage.clear()
@@ -13,17 +27,19 @@ describe('storage 工具', () => {
   })
 
   it('saveItineraryCache 保存后可正确读取', () => {
-    const data = { city: '北京', spots: ['故宫', '长城'] }
+    const data = makeCacheData({ tips: ['带好防晒霜'] })
     saveItineraryCache('北京', 3000, 5, data)
     const result = loadItineraryCache('北京', 3000, 5)
     expect(result).toEqual(data)
   })
 
   it('不同参数的缓存相互独立', () => {
-    saveItineraryCache('北京', 3000, 5, { city: '北京' })
-    saveItineraryCache('上海', 5000, 3, { city: '上海' })
-    expect(loadItineraryCache('北京', 3000, 5)).toEqual({ city: '北京' })
-    expect(loadItineraryCache('上海', 5000, 3)).toEqual({ city: '上海' })
+    const bj = makeCacheData({ tips: ['北京提示'] })
+    const sh = makeCacheData({ tips: ['上海提示'] })
+    saveItineraryCache('北京', 3000, 5, bj)
+    saveItineraryCache('上海', 5000, 3, sh)
+    expect(loadItineraryCache('北京', 3000, 5)).toEqual(bj)
+    expect(loadItineraryCache('上海', 5000, 3)).toEqual(sh)
   })
 
   it('损坏的 JSON 返回 null', () => {

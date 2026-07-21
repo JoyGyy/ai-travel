@@ -1,14 +1,14 @@
-import type { Accommodation, AttractionRef, BudgetBreakdown, ItineraryDay } from '@/stores/itinerary'
+import type { ItineraryDay } from '@/stores/itinerary'
+import type { ItineraryCache } from '@/utils/storage'
+
 /**
  * 行程详情页面
  * 展示 AI 生成的旅行行程
  */
-import type { WeatherResponse } from '@/types/api'
 import { ArrowLeftOutlined, CloseOutlined, CompassOutlined, EnvironmentOutlined } from '@ant-design/icons'
-
 import { useEffect, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
 
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { AccommodationCard } from '@/components/AccommodationCard'
 import { AgentSteps } from '@/components/AgentSteps'
 import { BudgetTable } from '@/components/BudgetTable'
@@ -19,16 +19,6 @@ import { useItineraryStore } from '@/stores/itinerary'
 import { loadItineraryCache, saveItineraryCache } from '@/utils/storage'
 
 import './style.css'
-
-interface ItineraryData {
-  dailyItinerary?: ItineraryDay[]
-  budgetBreakdown?: BudgetBreakdown | null
-  tips?: string[]
-  weather?: WeatherResponse | null
-  accommodation?: Accommodation[]
-  nightlife?: string[]
-  attractionRefs?: AttractionRef[]
-}
 
 export default function Detail() {
   const navigate = useNavigate()
@@ -89,14 +79,14 @@ export default function Detail() {
     const cached = loadItineraryCache(city, budget, days)
     if (cached) {
       useItineraryStore.setState({ agentSteps: [], currentAgentStep: 0 })
-      const cachedItinerary = (cached.itinerary as ItineraryDay[]) || []
+      const cachedItinerary = cached.itinerary || []
       setItinerary(cachedItinerary)
-      setBudgetBreakdown((cached.budgetBreakdown as BudgetBreakdown) || null)
-      setTips((cached.tips as string[]) || [])
-      setWeather((cached.weather as WeatherResponse) || null)
-      setAccommodation((cached.accommodation as Accommodation[]) || [])
-      setNightlife((cached.nightlife as string[]) || [])
-      setAttractionRefs((cached.attractionRefs as AttractionRef[]) || [])
+      setBudgetBreakdown(cached.budgetBreakdown || null)
+      setTips(cached.tips || [])
+      setWeather(cached.weather || null)
+      setAccommodation(cached.accommodation || [])
+      setNightlife(cached.nightlife || [])
+      setAttractionRefs(cached.attractionRefs || [])
       cacheTimer = setTimeout(() => {
         setActiveKeys(cachedItinerary[0]?.day ? [String(cachedItinerary[0].day)] : [])
         setShowLoading(false)
@@ -121,14 +111,14 @@ export default function Detail() {
       },
       onComplete: (data) => {
         dataReceived = true
-        const completedData = data as ItineraryData
-        const dailyItinerary = completedData.dailyItinerary || []
-        const bd = completedData.budgetBreakdown || null
-        const t = completedData.tips || []
-        const w = completedData.weather || null
-        const a = completedData.accommodation || []
-        const n = completedData.nightlife || []
-        const refs = completedData.attractionRefs || []
+        const result = (data ?? {}) as Partial<ItineraryCache> & { dailyItinerary?: ItineraryDay[] }
+        const dailyItinerary = result.dailyItinerary || result.itinerary || []
+        const bd = result.budgetBreakdown || null
+        const t = result.tips || []
+        const w = result.weather || null
+        const a = result.accommodation || []
+        const n = result.nightlife || []
+        const refs = result.attractionRefs || []
         setItinerary(dailyItinerary)
         setBudgetBreakdown(bd)
         setTips(t)
@@ -147,8 +137,8 @@ export default function Detail() {
         if (!dataReceived)
           setShowLoading(false)
       },
-    }).catch((err) => {
-      setErrorMessage(err.message || '生成行程失败，请稍后重试')
+    }).catch((err: unknown) => {
+      setErrorMessage(err instanceof Error ? err.message : '生成行程失败，请稍后重试')
     })
 
     return () => {

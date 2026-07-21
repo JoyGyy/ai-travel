@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 /**
  * 错误边界组件
  * 捕获子组件的渲染错误，显示友好的错误页面
+ * 支持 onError 回调，便于接入 Sentry 等监控服务
  */
 import { Component } from 'react'
 
@@ -10,6 +11,8 @@ import './style.css'
 
 interface ErrorBoundaryProps {
   children: ReactNode
+  /** 错误回调，可用于上报监控服务 */
+  onError?: (error: Error, errorInfo: React.ErrorInfo) => void
 }
 
 interface ErrorBoundaryState {
@@ -28,7 +31,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('ErrorBoundary 捕获到错误:', error, errorInfo)
+    this.props.onError?.(error, errorInfo)
   }
 
   handleReload = () => {

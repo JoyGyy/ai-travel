@@ -14,6 +14,11 @@ export interface AuthUser {
   createdAt?: string
 }
 
+export interface ShareResponse {
+  id: string
+  url: string
+}
+
 export interface AuthResponse {
   success: true
   token: string

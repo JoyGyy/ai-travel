@@ -1,13 +1,14 @@
+import type { WeatherResponse } from '@/types/api'
 import { act, renderHook } from '@testing-library/react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { getWeatherApi } from '@/api/weather'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import * as weatherApi from '@/api/weather'
 
 import { useWeather } from '../useWeather'
 
-vi.mock('@/api/weather', () => ({
-  getWeatherApi: vi.fn(),
-}))
+vi.mock('@/api/weather')
+
+const mockedGetWeatherApi = vi.mocked(weatherApi.getWeatherApi)
 
 describe('useWeather', () => {
   beforeEach(() => {
@@ -23,7 +24,7 @@ describe('useWeather', () => {
 
   it('fetchWeather 成功时更新 weather', async () => {
     const mockWeather = { city: '北京', temperature: 25, weatherDesc: '晴' }
-    getWeatherApi.mockResolvedValue(mockWeather)
+    mockedGetWeatherApi.mockResolvedValue(mockWeather as WeatherResponse)
 
     const { result } = renderHook(() => useWeather())
 
@@ -37,7 +38,7 @@ describe('useWeather', () => {
   })
 
   it('fetchWeather 失败时更新 error', async () => {
-    getWeatherApi.mockRejectedValue(new Error('网络错误'))
+    mockedGetWeatherApi.mockRejectedValue(new Error('网络错误'))
 
     const { result } = renderHook(() => useWeather())
 
@@ -58,6 +59,6 @@ describe('useWeather', () => {
     })
 
     expect(result.current.weather).toBeNull()
-    expect(getWeatherApi).not.toHaveBeenCalled()
+    expect(mockedGetWeatherApi).not.toHaveBeenCalled()
   })
 })

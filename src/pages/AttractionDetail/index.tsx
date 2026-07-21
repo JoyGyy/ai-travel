@@ -52,7 +52,7 @@ export default function AttractionDetail() {
         if (!cancelled)
           setAttraction({ ...data.attraction, isFavorite: data.isFavorite })
       }
-      catch (err) {
+      catch (err: unknown) {
         if (!cancelled)
           setError(err instanceof Error ? err.message : '景点加载失败')
       }
@@ -79,7 +79,7 @@ export default function AttractionDetail() {
       setAttraction({ ...attraction, isFavorite: result.isFavorite })
       msg.success(result.isFavorite ? '已收藏' : '已取消收藏')
     }
-    catch (err) {
+    catch (err: unknown) {
       msg.error(err instanceof Error ? err.message : '收藏操作失败')
     }
     finally {

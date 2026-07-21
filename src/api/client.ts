@@ -4,9 +4,9 @@ const AUTH_STORAGE_KEY = 'travel_auth'
 
 export class ApiError extends Error {
   status?: number
-  data?: ApiSuccess | null
+  data?: unknown
 
-  constructor(message: string, { status, data }: { status?: number; data?: ApiSuccess | null } = {}) {
+  constructor(message: string, { status, data }: { status?: number, data?: unknown } = {}) {
     super(message)
     this.name = 'ApiError'
     this.status = status
@@ -33,13 +33,13 @@ export function getAuthHeader(): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
-async function parseResponse(res: Response): Promise<ApiSuccess | null> {
+async function parseResponse<T>(res: Response): Promise<T | null> {
   const contentType = res.headers.get('content-type') || ''
   if (!contentType.includes('application/json'))
     return null
 
   try {
-    return await res.json()
+    return await res.json() as T
   }
   catch {
     return null
@@ -57,7 +57,7 @@ interface RequestOptions {
 /**
  * 发起 JSON API 请求。
  */
-export async function request(path: string, options: RequestOptions = {}): Promise<ApiSuccess | null> {
+export async function request<T = ApiSuccess>(path: string, options: RequestOptions = {}): Promise<T> {
   const {
     method = 'GET',
     body,
@@ -77,12 +77,13 @@ export async function request(path: string, options: RequestOptions = {}): Promi
     signal,
   })
 
-  const data = await parseResponse(res)
+  const data = await parseResponse<T>(res)
 
-  if (!res.ok || data?.success === false) {
-    const message = data?.message || data?.error || `请求失败: HTTP ${res.status}`
+  if (!res.ok) {
+    const fallback = data && typeof data === 'object' ? data as Record<string, unknown> : {}
+    const message = (fallback.message as string) || (fallback.error as string) || `请求失败: HTTP ${res.status}`
     throw new ApiError(message, { status: res.status, data })
   }
 
-  return data
+  return data as T
 }

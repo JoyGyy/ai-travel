@@ -8,6 +8,16 @@ import { useCallback, useRef } from 'react'
 
 import { getAuthHeader } from '@/api/client'
 
+const SSE_EVENT_TYPES = new Set(['chunk', 'step', 'notice', 'complete', 'error'])
+
+/** 运行时类型守卫：校验 JSON 解析结果是否为合法的 SSE 事件 */
+function isSSEEvent(data: unknown): data is SSEEvent {
+  if (typeof data !== 'object' || data === null)
+    return false
+  const obj = data as Record<string, unknown>
+  return typeof obj.type === 'string' && SSE_EVENT_TYPES.has(obj.type)
+}
+
 export function useSSE() {
   const abortControllerRef = useRef<AbortController | null>(null)
   const requestIdRef = useRef(0)
@@ -58,26 +68,29 @@ export function useSSE() {
         if (!line.startsWith('data: ') || !isCurrentRequest())
           return
 
-        let data: Record<string, unknown>
+        let raw: unknown
         try {
-          data = JSON.parse(line.slice(6))
+          raw = JSON.parse(line.slice(6))
         }
         catch {
           throw new Error('服务端返回了无法解析的流式数据')
         }
 
-        if (data.type === 'error')
-          throw new Error((data.message as string) || '流式请求失败')
-        if (data.type === 'chunk' && callbacks.onChunk) {
-          full += (data.content as string) || ''
+        if (!isSSEEvent(raw))
+          return
+
+        if (raw.type === 'error')
+          throw new Error(raw.message || '流式请求失败')
+        if (raw.type === 'chunk' && callbacks.onChunk) {
+          full += raw.content || ''
           callbacks.onChunk(full)
         }
-        if (data.type === 'step' && callbacks.onStep)
-          callbacks.onStep(data as Extract<SSEEvent, { type: 'step' }>)
-        if (data.type === 'notice' && callbacks.onNotice)
-          callbacks.onNotice(data.message as string)
-        if (data.type === 'complete' && callbacks.onComplete)
-          callbacks.onComplete(data.data as object)
+        if (raw.type === 'step' && callbacks.onStep)
+          callbacks.onStep(raw)
+        if (raw.type === 'notice' && callbacks.onNotice)
+          callbacks.onNotice(raw.message)
+        if (raw.type === 'complete' && callbacks.onComplete)
+          callbacks.onComplete(raw.data)
       }
 
       while (true) {
@@ -99,7 +112,7 @@ export function useSSE() {
       if (remainder.trim())
         await handleLine(remainder)
     }
-    catch (err) {
+    catch (err: unknown) {
       const error = err instanceof Error ? err : new Error(String(err))
       if (error.name !== 'AbortError' && isCurrentRequest()) {
         callbacks.onError?.(error)

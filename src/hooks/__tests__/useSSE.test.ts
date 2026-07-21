@@ -7,10 +7,12 @@ vi.mock('@/api/client', () => ({
   getAuthHeader: vi.fn(() => ({})),
 }))
 
+const fetchMock = vi.fn<typeof fetch>()
+
 describe('useSSE', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    globalThis.fetch = vi.fn()
+    globalThis.fetch = fetchMock
   })
 
   it('返回 sendRequest 和 abort 函数', () => {
@@ -26,10 +28,10 @@ describe('useSSE', () => {
         .mockResolvedValueOnce({ done: true }),
     }
 
-    globalThis.fetch.mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       body: { getReader: () => mockReader },
-    })
+    } as unknown as Response)
 
     const { result } = renderHook(() => useSSE())
 
@@ -37,18 +39,18 @@ describe('useSSE', () => {
       await result.current.sendRequest('/api/test', { message: 'hello' })
     })
 
-    expect(globalThis.fetch).toHaveBeenCalledWith('/api/test', expect.objectContaining({
+    expect(fetchMock).toHaveBeenCalledWith('/api/test', expect.objectContaining({
       method: 'POST',
       headers: expect.objectContaining({ 'Content-Type': 'application/json' }),
     }))
   })
 
   it('请求失败时触发 onError 回调', async () => {
-    globalThis.fetch.mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: false,
       status: 500,
       json: () => Promise.resolve({ message: '服务器错误' }),
-    })
+    } as unknown as Response)
 
     const onError = vi.fn()
     const { result } = renderHook(() => useSSE())
@@ -70,10 +72,10 @@ describe('useSSE', () => {
       read: vi.fn(() => new Promise(() => {})),
     }
 
-    globalThis.fetch.mockImplementation(() => Promise.resolve({
+    fetchMock.mockImplementation(() => Promise.resolve({
       ok: true,
       body: { getReader: () => mockReader },
-    }))
+    } as unknown as Response))
 
     const { result } = renderHook(() => useSSE())
 

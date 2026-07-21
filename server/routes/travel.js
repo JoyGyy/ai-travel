@@ -8,7 +8,10 @@ import { consumeAiQuotaForRequest } from '../middleware/aiQuota.js'
 import { requireAuthForRequest } from '../middleware/auth.js'
 import { executeAgent } from '../services/agent.js'
 import { asyncHandler } from '../utils/http.js'
+import { createLogger } from '../utils/logger.js'
 import { initSSE, sendError } from '../utils/sse.js'
+
+const log = createLogger('travel')
 import { readPositiveInteger, readPositiveNumber, readRequiredString } from '../utils/validation.js'
 
 const router = Router()
@@ -34,7 +37,7 @@ router.post('/recommend', asyncHandler(async (req, res) => {
     await executeAgent(res, { city, budget, days })
   }
   catch (err) {
-    console.error('行程推荐失败:', err)
+    log.error('行程推荐失败:', err)
     sendError(res, '生成行程时出现错误，请稍后重试')
   }
   finally {

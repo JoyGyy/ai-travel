@@ -1,3 +1,7 @@
+import { createLogger } from './logger.js'
+
+const log = createLogger('http')
+
 export class HttpError extends Error {
   constructor(status, message) {
     super(message)
@@ -54,6 +58,6 @@ export function errorHandler(err, _req, res, next) {
     return
   }
 
-  console.error('服务器错误:', err)
+  log.error('服务器错误:', err)
   res.status(500).json({ success: false, message: '服务器内部错误' })
 }

@@ -5,6 +5,9 @@
 
 import pg from 'pg'
 import { env } from '../config/env.js'
+import { createLogger } from '../utils/logger.js'
+
+const log = createLogger('db')
 
 const { Pool } = pg
 
@@ -19,7 +22,7 @@ if (env.DATABASE_URL) {
   })
 
   pool.on('error', (err) => {
-    console.error('[db] 连接池异常:', err.message)
+    log.error('连接池异常:', err.message)
   })
 }
 

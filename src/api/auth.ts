@@ -1,42 +1,37 @@
-import type { AuthResponse, ProfileData } from '@/types/api'
+import type { AuthResponse, AuthUser, ProfileData } from '@/types/api'
 
 import { request } from './client'
 
 export async function loginApi(username: string, password: string): Promise<AuthResponse> {
-  const data = await request('/api/auth/login', {
+  return request<AuthResponse>('/api/auth/login', {
     method: 'POST',
     body: { username, password },
   })
-  return data as AuthResponse
 }
 
 export async function registerApi(username: string, password: string): Promise<AuthResponse> {
-  const data = await request('/api/auth/register', {
+  return request<AuthResponse>('/api/auth/register', {
     method: 'POST',
     body: { username, password },
   })
-  return data as AuthResponse
 }
 
-export async function getMeApi(): Promise<{ success: true, user: import('@/types/api').AuthUser }> {
-  const data = await request('/api/auth/me', {
+export async function getMeApi(): Promise<{ success: true, user: AuthUser }> {
+  return request<{ success: true, user: AuthUser }>('/api/auth/me', {
     auth: true,
   })
-  return data as { success: true, user: import('@/types/api').AuthUser }
 }
 
 export async function getProfileApi(): Promise<{ success: true, profile: ProfileData }> {
-  const data = await request('/api/auth/profile', {
+  return request<{ success: true, profile: ProfileData }>('/api/auth/profile', {
     auth: true,
   })
-  return data as { success: true, profile: ProfileData }
 }
 
 export async function changePasswordApi(currentPassword: string, newPassword: string): Promise<{ success: true, message: string }> {
-  const data = await request('/api/auth/password', {
+  return request<{ success: true, message: string }>('/api/auth/password', {
     method: 'PUT',
     body: { currentPassword, newPassword },
     auth: true,
   })
-  return data as { success: true, message: string }
 }

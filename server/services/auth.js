@@ -11,6 +11,9 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import initSqlJs from 'sql.js'
 import { env } from '../config/env.js'
+import { createLogger } from '../utils/logger.js'
+
+const log = createLogger('auth')
 
 const SALT_ROUNDS = 10
 const DAILY_AI_LIMIT = 10
@@ -80,7 +83,7 @@ const ready = (async () => {
   }
   await saveDb()
 })().catch((err) => {
-  console.error('[auth] 数据库初始化失败:', err.message)
+  log.error('数据库初始化失败:', err.message)
   initError = err
 })
 

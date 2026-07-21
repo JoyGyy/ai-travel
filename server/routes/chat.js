@@ -11,7 +11,10 @@ import { searchAttractions as searchProductAttractions } from '../services/attra
 import { callLLMWithTools, getLLMConfig } from '../services/llm.js'
 import { getAllCities, retrieve } from '../services/rag.js'
 import { asyncHandler } from '../utils/http.js'
+import { createLogger } from '../utils/logger.js'
 import { initSSE, sendError, sendSSE } from '../utils/sse.js'
+
+const log = createLogger('chat')
 import { ensureArray, readRequiredString } from '../utils/validation.js'
 
 const router = Router()
@@ -604,7 +607,7 @@ router.post('/chat', asyncHandler(async (req, res) => {
         }
       }
       catch (err) {
-        console.error('Chat Agent 失败，降级到 Mock:', err.message)
+        log.error('Chat Agent 失败，降级到 Mock:', err.message)
         sendSSE(res, { type: 'notice', message: 'AI 模型暂不可用，已切换为知识库模式' })
       }
     }
@@ -660,7 +663,7 @@ router.post('/chat', asyncHandler(async (req, res) => {
     sendSSE(res, { type: 'complete', data: { content: mockReply, sources: ragSources } })
   }
   catch (err) {
-    console.error('对话失败:', err)
+    log.error('对话失败:', err)
     sendError(res, '处理消息时出现错误，请稍后重试')
   }
   finally {

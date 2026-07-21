@@ -1,11 +1,22 @@
 /**
- * 行程状态管理
- * 管理行程规划页面的数据和加载状态
+ * 行程状态管理 Store
+ *
+ * 管理旅行行程规划页面的全部数据，包括行程安排、预算、
+ * 天气、住宿、景点参考、Agent 执行步骤等。
+ *
+ * 功能：
+ * - 存储和更新行程数据（SSE 流式接收）
+ * - 管理预算、住宿、夜生活、天气等辅助信息
+ * - 追踪 Agent 执行步骤和加载状态
+ * - 支持分享 ID 和重置操作
  */
 import type { SSEEvent, WeatherResponse } from '@/types/api'
 
 import { create } from 'zustand'
 
+// --- 类型定义 ---
+
+/** 单日行程安排 */
 export interface ItineraryDay {
   day: number
   title: string
@@ -16,6 +27,7 @@ export interface ItineraryDay {
   evening?: { spot: string, description: string, duration: string, ticket?: string, transportation?: string }
 }
 
+/** 景点参考信息 */
 export interface AttractionRef {
   id: string
   name: string
@@ -24,6 +36,7 @@ export interface AttractionRef {
   priceText: string
 }
 
+/** 预算明细 */
 export interface BudgetBreakdown {
   accommodation: number
   transport: number
@@ -32,6 +45,7 @@ export interface BudgetBreakdown {
   total: number
 }
 
+/** 住宿推荐 */
 export interface Accommodation {
   name: string
   type: string
@@ -41,6 +55,7 @@ export interface Accommodation {
   priceRange?: string
 }
 
+/** Store 状态和操作类型 */
 interface ItineraryState {
   itinerary: ItineraryDay[]
   budgetBreakdown: BudgetBreakdown | null
@@ -67,6 +82,8 @@ interface ItineraryState {
   reset: () => void
 }
 
+// --- 初始状态 ---
+
 const initialState = {
   itinerary: [],
   budgetBreakdown: null,
@@ -81,8 +98,12 @@ const initialState = {
   shareId: null,
 }
 
+// --- 创建 Store ---
+
 export const useItineraryStore = create<ItineraryState>()(set => ({
   ...initialState,
+
+  // --- 简单 Setter 操作 ---
 
   setItinerary: data => set({ itinerary: data }),
   setBudgetBreakdown: data => set({ budgetBreakdown: data }),
@@ -92,6 +113,8 @@ export const useItineraryStore = create<ItineraryState>()(set => ({
   setNightlife: data => set({ nightlife: data }),
   setAttractionRefs: data => set({ attractionRefs: data }),
 
+  // --- Agent 步骤操作（支持去重更新） ---
+
   addAgentStep: step =>
     set((state) => {
       const exists = state.agentSteps.find(s => s.step === step.step)
@@ -100,6 +123,8 @@ export const useItineraryStore = create<ItineraryState>()(set => ({
       }
       return { agentSteps: [...state.agentSteps, step] }
     }),
+
+  // --- 状态控制和重置 ---
 
   setCurrentAgentStep: step => set({ currentAgentStep: step }),
   setLoading: loading => set({ isLoading: loading }),

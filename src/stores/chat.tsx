@@ -1,11 +1,21 @@
 /**
- * 聊天状态管理
- * 进入页面时自动清空，不持久化
+ * 聊天状态管理 Store
+ *
+ * 管理 AI 聊天对话的消息列表和加载状态。
+ * 不使用持久化，进入聊天页面时自动清空历史消息。
+ *
+ * 功能：
+ * - 添加/更新消息（支持流式响应的逐步更新）
+ * - 更新消息的 Agent 步骤信息
+ * - 管理加载状态和当前步骤
  */
 import type { SSEEvent } from '@/types/api'
 
 import { create } from 'zustand'
 
+// --- 类型定义 ---
+
+/** 单条聊天消息 */
 interface ChatMessage {
   _id: number
   role: 'user' | 'assistant'
@@ -25,12 +35,20 @@ interface ChatState {
   setCurrentAgentStep: (currentAgentStep: number) => void
 }
 
+// --- 消息 ID 计数器（模块级，用于生成唯一 ID） ---
+
 let messageIdCounter = 0
 
+// --- 创建 Store ---
+
 export const useChatStore = create<ChatState>()(set => ({
+  // --- 初始状态 ---
+
   messages: [],
   isLoading: false,
   currentAgentStep: 0,
+
+  // --- 消息操作 ---
 
   addMessage: msg =>
     set(state => ({ messages: [...state.messages, { ...msg, _id: ++messageIdCounter }] })),
@@ -62,6 +80,8 @@ export const useChatStore = create<ChatState>()(set => ({
       }
       return { messages }
     }),
+
+  // --- 状态控制 ---
 
   clearMessages: () => set({ messages: [], isLoading: false, currentAgentStep: 0 }),
   setLoading: isLoading => set({ isLoading }),

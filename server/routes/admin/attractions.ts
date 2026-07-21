@@ -1,5 +1,5 @@
 /**
- * 景点管理 API
+ * 景点管理路由（后台）
  * 提供景点 CRUD 操作，仅限已认证用户
  */
 
@@ -15,6 +15,8 @@ const router: ReturnType<typeof Router> = Router()
 
 // 所有管理接口都需要认证
 router.use(requireAuth)
+
+// ========== 类型定义 ==========
 
 /** 景点数据库行类型 */
 interface AttractionRow {
@@ -78,6 +80,8 @@ interface AttractionBody {
   suitableFor: string[]
   bookingLinks: Record<string, unknown>
 }
+
+// ========== 路由定义 ==========
 
 /** 列出全部景点（管理用，支持分页） */
 router.get('/', asyncHandler(async (req: Request, res: Response) => {
@@ -246,6 +250,9 @@ router.delete('/:id', asyncHandler(async (req: Request, res: Response) => {
 
 // ========== 辅助函数 ==========
 
+// ========== 辅助函数 ==========
+
+/** 数据库行 -> API 返回格式转换 */
 function mapRow(row: AttractionRow): AttractionResponse {
   return {
     id: row.id,

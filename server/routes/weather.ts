@@ -10,6 +10,8 @@ import { readRequiredString } from '../utils/validation.js'
 
 const router: ReturnType<typeof Router> = Router()
 
+// ========== 路由定义 ==========
+
 /**
  * GET /api/weather?city=北京
  * 查询指定城市的天气信息

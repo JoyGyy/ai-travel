@@ -12,6 +12,7 @@ import process from 'node:process'
 import { config } from 'dotenv'
 import pg from 'pg'
 
+// 加载 .env 配置
 config({ path: path.resolve(import.meta.dirname!, '../../.env') })
 
 const { Pool } = pg
@@ -24,6 +25,7 @@ if (!DATABASE_URL) {
 
 const pool = new Pool({ connectionString: DATABASE_URL })
 
+// 数据文件路径
 const SCHEMA_PATH = path.join(import.meta.dirname!, 'schema.sql')
 const PRODUCT_PATH = path.join(import.meta.dirname!, '../knowledge/attractions-product.json')
 const KNOWLEDGE_PATH = path.join(import.meta.dirname!, '../knowledge/attractions.json')
@@ -66,12 +68,16 @@ interface KnowledgeCity {
   }>
 }
 
+// ========== 迁移步骤 ==========
+
+/** 执行建表 SQL */
 async function runSchema(client: pg.PoolClient) {
   const sql = await readFile(SCHEMA_PATH, 'utf-8')
   await client.query(sql)
   console.log('✓ Schema 创建完成')
 }
 
+/** 导入产品景点数据（含标签关联） */
 async function seedAttractions(client: pg.PoolClient) {
   const raw = await readFile(PRODUCT_PATH, 'utf-8')
   const attractions: AttractionProduct[] = JSON.parse(raw)
@@ -146,6 +152,7 @@ async function seedAttractions(client: pg.PoolClient) {
   console.log(`✓ 导入 ${count} 个景点`)
 }
 
+/** 导入 RAG 知识库数据 */
 async function seedKnowledge(client: pg.PoolClient) {
   const raw = await readFile(KNOWLEDGE_PATH, 'utf-8')
   const cities: KnowledgeCity[] = JSON.parse(raw)
@@ -187,6 +194,8 @@ async function seedKnowledge(client: pg.PoolClient) {
   }
   console.log(`✓ 导入 ${count} 条 RAG 知识库`)
 }
+
+// ========== 主入口 ==========
 
 async function main() {
   const client = await pool.connect()

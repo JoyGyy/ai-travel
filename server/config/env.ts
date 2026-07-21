@@ -1,8 +1,16 @@
+/**
+ * 环境变量配置
+ * 从 .env 文件加载并校验所有运行时配置，导出统一的 env 对象
+ */
+
 import path from 'node:path'
 import process from 'node:process'
 import { config } from 'dotenv'
 
+// 加载仓库根目录的 .env 文件
 config({ path: path.resolve(import.meta.dirname!, '../../.env') })
+
+// ========== 类型定义 ==========
 
 export interface LLMProviderConfig {
   name: string
@@ -11,6 +19,8 @@ export interface LLMProviderConfig {
   model: string
 }
 
+// ========== 默认值常量 ==========
+
 const DEFAULT_CORS_ORIGINS = ['http://localhost:5181', 'http://127.0.0.1:5181', 'http://localhost:3000', 'http://127.0.0.1:3000']
 const DEFAULT_SILICONFLOW_BASE_URL = 'https://api.siliconflow.cn/v1'
 const DEFAULT_SILICONFLOW_MODEL = 'Qwen/Qwen2.5-7B-Instruct'
@@ -18,6 +28,8 @@ const DEFAULT_DEEPSEEK_BASE_URL = 'https://api.deepseek.com/v1'
 const DEFAULT_DEEPSEEK_MODEL = 'deepseek-chat'
 const MIN_JWT_SECRET_LENGTH = 32
 const BODY_LIMIT_PATTERN = /^\d+(?:\.\d+)?(?:b|kb|mb)$/i
+
+// ========== 环境变量读取工具函数 ==========
 
 function readString(name: string, fallback = ''): string {
   return process.env[name]?.trim() || fallback
@@ -43,6 +55,8 @@ function readCorsOrigins(): string[] {
     return DEFAULT_CORS_ORIGINS
   return raw.split(',').map(item => item.trim()).filter(Boolean)
 }
+
+// ========== 统一配置对象 ==========
 
 export interface EnvConfig {
   NODE_ENV: string
@@ -82,6 +96,8 @@ const env: EnvConfig = {
 
 env.IS_PRODUCTION = env.NODE_ENV === 'production'
 
+// ========== 配置校验 ==========
+
 function validateEnv(): void {
   if (!env.JWT_SECRET) {
     throw new Error('JWT_SECRET 环境变量未设置，请在 .env 中配置')
@@ -99,6 +115,9 @@ function validateEnv(): void {
 
 validateEnv()
 
+// ========== LLM 提供商 ==========
+
+/** 根据配置返回已启用的 LLM 提供商列表（按优先级排序） */
 export function getLLMProviders(): LLMProviderConfig[] {
   const providers: LLMProviderConfig[] = []
   if (env.SILICONFLOW_API_KEY) {

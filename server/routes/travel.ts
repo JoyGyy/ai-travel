@@ -17,6 +17,8 @@ import { readPositiveInteger, readPositiveNumber, readRequiredString } from '../
 
 const router: ReturnType<typeof Router> = Router()
 
+// ========== 路由定义 ==========
+
 /**
  * POST /api/travel/recommend
  * 请求体：{ city: string, budget: number, days: number }

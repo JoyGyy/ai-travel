@@ -14,6 +14,8 @@ import { readPositiveInteger, readRequiredString } from '../utils/validation.js'
 
 const router: ReturnType<typeof Router> = Router()
 
+// ========== 常量与限流 ==========
+
 /** 分享内容持久化上限（字节）：100KB */
 const MAX_SHARE_BODY_SIZE = 100 * 1024
 
@@ -29,6 +31,8 @@ interface SharePayload {
   budget: string
   itinerary: unknown
 }
+
+// ========== 数据校验 ==========
 
 function validateSharePayload(payload: unknown): SharePayload {
   if (!payload || typeof payload !== 'object')
@@ -48,6 +52,8 @@ function validateSharePayload(payload: unknown): SharePayload {
 
   return { city, days, budget, itinerary: p.itinerary }
 }
+
+// ========== 路由定义 ==========
 
 /** 创建分享 — 需要 JWT 认证 */
 router.post('/share', sharePostLimiter, requireAuth, asyncHandler(async (req: Request, res: Response) => {

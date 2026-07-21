@@ -12,6 +12,8 @@ const log = createLogger('db')
 
 const { Pool } = pg
 
+// ========== 连接池初始化 ==========
+
 let pool: pg.Pool | null = null
 
 if (env.DATABASE_URL) {
@@ -27,6 +29,9 @@ if (env.DATABASE_URL) {
   })
 }
 
+// ========== 导出方法 ==========
+
+/** 执行 SQL 查询 */
 async function query(text: string, params?: unknown[]): Promise<QueryResult> {
   if (!pool)
     throw new Error('数据库未配置，请设置 DATABASE_URL 环境变量')

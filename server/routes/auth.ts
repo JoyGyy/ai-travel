@@ -1,6 +1,6 @@
 /**
  * 认证路由
- * 提供注册、登录、获取当前用户信息的 API
+ * 提供注册、登录、CSRF 防护、获取用户信息和修改密码的 API
  */
 
 import type { Request, Response } from 'express'
@@ -12,6 +12,8 @@ import { asyncHandler, httpError } from '../utils/http.js'
 import { readRequiredString } from '../utils/validation.js'
 
 const router: ReturnType<typeof Router> = Router()
+
+// ========== 路由定义 ==========
 
 /** 注册 */
 router.post('/register', asyncHandler(async (req: Request, res: Response) => {

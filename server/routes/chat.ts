@@ -1,6 +1,7 @@
 /**
  * AI 对话路由（Agent 模式）
  * POST /api/travel/chat - 多工具 ReAct Agent + 对话历史 + Step 可视化
+ * 支持 LLM function calling 与知识库 Mock 降级两种模式
  */
 
 import type { Request, Response } from 'express'
@@ -261,6 +262,8 @@ const NON_TRAVEL_KEYWORDS = [
   'html',
 ]
 
+// ========== 旅行主题边界守卫 ==========
+
 function normalizeText(text: string): string {
   return String(text || '').trim().toLowerCase()
 }
@@ -299,10 +302,12 @@ async function isTravelRelatedMessage(message: string): Promise<boolean> {
   return true
 }
 
+/** 返回非旅行问题的引导回复 */
 function getNonTravelResponse(): string {
   return '我主要提供旅行规划咨询，暂时不展开这个话题。你可以问我：\n\n1. 北京三日游怎么安排？\n2. 亲子游适合去哪里？\n3. 去成都预算怎么规划？'
 }
 
+/** 逐字符流式输出文本到 SSE */
 async function streamTextResponse(res: SSERes, content: string, options: StreamTextOptions = {}): Promise<void> {
   const { sources = [], delayMs = 0 } = options
   let accumulated = ''
@@ -318,6 +323,7 @@ async function streamTextResponse(res: SSERes, content: string, options: StreamT
   sendSSE(res, { type: 'complete', data: { content, sources } })
 }
 
+/** 拦截非旅行相关消息并返回引导回复 */
 async function handleNonTravelMessage(message: string, res: SSERes, options: StreamTextOptions = {}): Promise<boolean> {
   if (await isTravelRelatedMessage(message))
     return false
@@ -733,7 +739,7 @@ router.post('/chat', asyncHandler(async (req: Request, res: Response) => {
   }
 }))
 
-// ========== Mock 回复 ==========
+// ========== Mock 降级模式 ==========
 
 async function getMockResponse(message: string, ragResult: MockRagResult | null): Promise<string> {
   if (ragResult) {
@@ -777,6 +783,8 @@ async function getMockResponse(message: string, ragResult: MockRagResult | null)
 
   return '你好！我是你的 AI 旅行顾问，可以帮你：\n\n1. 规划旅行行程\n2. 推荐当地景点和美食\n3. 提供旅行攻略和建议\n4. 解答旅行相关问题\n\n请告诉我你想去哪里旅行，我来帮你规划！'
 }
+
+// ========== 工具函数 ==========
 
 function delay(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms))

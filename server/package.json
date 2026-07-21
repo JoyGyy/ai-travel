@@ -3,11 +3,14 @@
   "type": "module",
   "version": "1.0.0",
   "scripts": {
-    "dev": "node index.js",
-    "start": "node index.js",
-    "check": "node --check index.js && node --check services/llm.js && node --check services/auth.js && node --check middleware/rateLimit.js && node --check middleware/auth.js && node --check middleware/aiQuota.js && node --check routes/auth.js && node --check routes/chat.js && node --check routes/share.js && node --check routes/travel.js && node --check routes/weather.js && node --check routes/attractions.js && node --check routes/admin/attractions.js && node --check services/attractions/attractionService.js && node --check services/attractions/attractionMatcher.js && node --check services/attractions/providers/pgAttractionProvider.js && node --check services/rag.js && node --check db/index.js && node --check config/env.js && node --check utils/http.js && node --check utils/validation.js",
+    "dev": "tsx watch index.ts",
+    "start": "tsx index.ts",
+    "typecheck": "tsc --noEmit",
+    "check": "pnpm typecheck",
     "lint": "eslint . --max-warnings=0",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "seed": "tsx db/seed.ts",
+    "generate-embeddings": "tsx scripts/generate-embeddings.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -17,11 +20,18 @@
     "helmet": "^8.2.0",
     "jsonwebtoken": "^9.0.3",
     "nanoid": "^5.1.11",
-    "pg": "^8.22.0",
-    "sql.js": "^1.14.1"
+    "pg": "^8.22.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^9.1.0",
-    "eslint": "^10.7.0"
+    "@types/bcryptjs": "^3.0.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^26.1.1",
+    "@types/pg": "^8.20.0",
+    "eslint": "^10.7.0",
+    "tsx": "^4.23.1",
+    "typescript": "^7.0.2"
   }
 }

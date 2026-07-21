@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
+import type { Express } from 'express'
 import express from 'express'
 import { it } from 'vitest'
 
@@ -18,10 +19,10 @@ async function createTestApp() {
   routeUrl.searchParams.set('case', String(Date.now()))
   const routes = await import(routeUrl.href)
 
-  const app = express()
+  const app: Express = express()
   app.use(express.json())
   app.use('/api/attractions', routes.default)
-  app.use((err, _req, res, _next) => {
+  app.use((err: { status?: number, message: string }, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
     res.status(err.status || 500).json({ success: false, message: err.message })
   })
 
@@ -30,10 +31,10 @@ async function createTestApp() {
   return { app, headers, dir }
 }
 
-async function request(app, path, options = {}) {
+async function request(app: Express, path: string, options: RequestInit = {}) {
   const server = app.listen(0)
   try {
-    const { port } = server.address()
+    const { port } = server.address() as { port: number }
     const res = await fetch(`http://127.0.0.1:${port}${path}`, options)
     const data = await res.json()
     return { status: res.status, data }

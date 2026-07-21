@@ -54,6 +54,19 @@ interface RequestOptions {
   signal?: AbortSignal
 }
 
+const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS'])
+
+/**
+ * 获取 CSRF token（从 cookie 或 header）
+ */
+function getCsrfHeader(): Record<string, string> {
+  // 尝试从 cookie 读取
+  const match = document.cookie.match(/csrf_token=([^;]+)/)
+  if (match)
+    return { 'X-CSRF-Token': match[1] }
+  return {}
+}
+
 /**
  * 发起 JSON API 请求。
  */
@@ -66,11 +79,15 @@ export async function request<T = ApiSuccess>(path: string, options: RequestOpti
     signal,
   } = options
 
+  const isWriteMethod = !SAFE_METHODS.has(method.toUpperCase())
+
   const res = await fetch(path, {
     method,
     headers: {
       ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
       ...(auth ? getAuthHeader() : {}),
+      // 写操作自动附加 CSRF token
+      ...(isWriteMethod ? getCsrfHeader() : {}),
       ...headers,
     },
     body: body === undefined ? undefined : JSON.stringify(body),

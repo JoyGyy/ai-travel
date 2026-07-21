@@ -1,6 +1,33 @@
 -- 景点数据库 Schema
 -- 使用 pg_trgm 扩展支持模糊搜索
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
+-- pgvector 扩展支持向量搜索
+CREATE EXTENSION IF NOT EXISTS vector;
+
+-- 用户表
+CREATE TABLE IF NOT EXISTS users (
+  id          VARCHAR(64) PRIMARY KEY,
+  username    VARCHAR(64) UNIQUE NOT NULL,
+  password    VARCHAR(128) NOT NULL,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- AI 使用额度表
+CREATE TABLE IF NOT EXISTS ai_usage (
+  user_id     VARCHAR(64) NOT NULL REFERENCES users(id),
+  usage_date  DATE NOT NULL DEFAULT CURRENT_DATE,
+  used_count  INTEGER NOT NULL DEFAULT 0,
+  updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (user_id, usage_date)
+);
+
+-- 用户收藏景点表
+CREATE TABLE IF NOT EXISTS user_favorite_attractions (
+  user_id       VARCHAR(64) NOT NULL REFERENCES users(id),
+  attraction_id VARCHAR(64) NOT NULL,
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (user_id, attraction_id)
+);
 
 -- 景点主表
 CREATE TABLE IF NOT EXISTS attractions (
@@ -53,6 +80,7 @@ CREATE TABLE IF NOT EXISTS attraction_knowledge (
   best_season   TEXT NOT NULL DEFAULT '',
   accommodation JSONB DEFAULT '[]',
   nightlife     JSONB DEFAULT '[]',
+  embedding     vector(1024),
   UNIQUE(city, name)
 );
 
@@ -61,3 +89,4 @@ CREATE INDEX IF NOT EXISTS idx_attractions_city      ON attractions(city);
 CREATE INDEX IF NOT EXISTS idx_attractions_name_trgm ON attractions USING gin (name gin_trgm_ops);
 CREATE INDEX IF NOT EXISTS idx_knowledge_city        ON attraction_knowledge(city);
 CREATE INDEX IF NOT EXISTS idx_attraction_tags_tag   ON attraction_tags(tag_id);
+CREATE INDEX IF NOT EXISTS idx_knowledge_embedding   ON attraction_knowledge USING ivfflat (embedding vector_cosine_ops) WITH (lists = 10);

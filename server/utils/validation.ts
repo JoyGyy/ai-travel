@@ -1,6 +1,11 @@
 import { httpError } from './http.js'
 
-export function readRequiredString(value, fieldName, options = {}) {
+interface RangeOptions {
+  min?: number
+  max?: number
+}
+
+export function readRequiredString(value: unknown, fieldName: string, options: RangeOptions & { min?: number, max?: number } = {}): string {
   const { min = 1, max = 2000 } = options
   if (typeof value !== 'string')
     throw httpError(400, `${fieldName}必须是文本`)
@@ -14,7 +19,7 @@ export function readRequiredString(value, fieldName, options = {}) {
   return trimmed
 }
 
-export function readPositiveInteger(value, fieldName, options = {}) {
+export function readPositiveInteger(value: unknown, fieldName: string, options: RangeOptions & { min?: number, max?: number } = {}): number {
   const { min = 1, max = 30 } = options
   const number = Number(value)
   if (!Number.isInteger(number) || number < min || number > max)
@@ -22,7 +27,7 @@ export function readPositiveInteger(value, fieldName, options = {}) {
   return number
 }
 
-export function readPositiveNumber(value, fieldName, options = {}) {
+export function readPositiveNumber(value: unknown, fieldName: string, options: RangeOptions & { min?: number, max?: number } = {}): number {
   const { min = 1, max = 1_000_000 } = options
   const number = Number(value)
   if (!Number.isFinite(number) || number < min || number > max)
@@ -30,7 +35,7 @@ export function readPositiveNumber(value, fieldName, options = {}) {
   return number
 }
 
-export function ensureArray(value, fieldName, options = {}) {
+export function ensureArray(value: unknown, fieldName: string, options: { max?: number } = {}): unknown[] {
   const { max = 20 } = options
   if (value === undefined)
     return []

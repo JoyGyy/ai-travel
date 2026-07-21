@@ -2,20 +2,53 @@
  * LLM 服务封装
  * 支持 DeepSeek / SiliconFlow API，含 function calling
  */
+import type { LLMProviderConfig } from '../config/env.js'
 
 import { env, getLLMProviders } from '../config/env.js'
 
-function getLLMConfig() {
+export interface ChatMessage {
+  role: 'system' | 'user' | 'assistant' | 'tool'
+  content?: string
+  tool_calls?: ToolCall[]
+  tool_call_id?: string
+  name?: string
+}
+
+export interface ToolCall {
+  id: string
+  type: 'function'
+  function: {
+    name: string
+    arguments: string
+  }
+}
+
+export interface ToolDefinition {
+  type: 'function'
+  function: {
+    name: string
+    description: string
+    parameters: Record<string, unknown>
+  }
+}
+
+export interface LLMToolResponse {
+  role: 'assistant'
+  content: string | null
+  tool_calls?: ToolCall[]
+}
+
+function getLLMConfig(): LLMProviderConfig | null {
   return getLLMProviders()[0] || null
 }
 
-function createTimeout(ms) {
+function createTimeout(ms: number) {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), ms)
   return { controller, timeout }
 }
 
-async function fetchChatCompletion(config, body, signal) {
+async function fetchChatCompletion(config: LLMProviderConfig, body: Record<string, unknown>, signal: AbortSignal) {
   const response = await fetch(`${config.baseUrl}/chat/completions`, {
     method: 'POST',
     headers: {
@@ -34,10 +67,7 @@ async function fetchChatCompletion(config, body, signal) {
   return response
 }
 
-/**
- * 调用 LLM（纯文本）
- */
-async function callLLM(systemPrompt, userPrompt) {
+async function callLLM(systemPrompt: string, userPrompt: string): Promise<string> {
   const config = getLLMConfig()
   if (!config)
     return ''
@@ -54,7 +84,7 @@ async function callLLM(systemPrompt, userPrompt) {
       max_tokens: 2048,
     }, controller.signal)
 
-    const data = await response.json()
+    const data = await response.json() as { choices?: { message?: { content?: string } }[] }
     return data.choices?.[0]?.message?.content || ''
   }
   finally {
@@ -62,10 +92,7 @@ async function callLLM(systemPrompt, userPrompt) {
   }
 }
 
-/**
- * 流式调用 LLM
- */
-async function callLLMStream(systemPrompt, userPrompt, onChunk) {
+async function callLLMStream(systemPrompt: string, userPrompt: string, onChunk: (content: string) => void): Promise<string> {
   const config = getLLMConfig()
   if (!config)
     return ''
@@ -84,9 +111,9 @@ async function callLLMStream(systemPrompt, userPrompt, onChunk) {
     }, controller.signal)
 
     let fullContent = ''
-    const reader = response.body.getReader()
-    const decoder = new TextDecoder('utf-8', { stream: true })
-    let remainder = '' // 缓冲不完整的行
+    const reader = response.body!.getReader()
+    const decoder = new TextDecoder('utf-8')
+    let remainder = ''
 
     while (true) {
       const { done, value } = await reader.read()
@@ -102,7 +129,7 @@ async function callLLMStream(systemPrompt, userPrompt, onChunk) {
       for (const line of lines) {
         if (line.startsWith('data: ') && line !== 'data: [DONE]') {
           try {
-            const content = JSON.parse(line.slice(6)).choices?.[0]?.delta?.content || ''
+            const content = (JSON.parse(line.slice(6)) as { choices?: { delta?: { content?: string } }[] }).choices?.[0]?.delta?.content || ''
             if (content) {
               fullContent += content
               onChunk(content)
@@ -119,13 +146,7 @@ async function callLLMStream(systemPrompt, userPrompt, onChunk) {
   }
 }
 
-/**
- * 调用 LLM（支持 function calling）
- * @param {object[]} messages - 对话历史
- * @param {object[]} tools - 工具定义
- * @returns {Promise<object|null>} LLM 响应消息
- */
-async function callLLMWithTools(messages, tools) {
+async function callLLMWithTools(messages: ChatMessage[], tools: ToolDefinition[]): Promise<LLMToolResponse | null> {
   const config = getLLMConfig()
   if (!config)
     return null
@@ -141,7 +162,7 @@ async function callLLMWithTools(messages, tools) {
       max_tokens: 4096,
     }, controller.signal)
 
-    const data = await response.json()
+    const data = await response.json() as { choices?: { message?: LLMToolResponse }[] }
     return data.choices?.[0]?.message || null
   }
   finally {

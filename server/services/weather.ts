@@ -3,11 +3,28 @@
  * 调用 wttr.in 免费 API 获取城市实时天气和预报
  */
 
-/** 天气请求超时时间 */
+export interface WeatherForecast {
+  date: string
+  maxTemp: number
+  minTemp: number
+  weatherCode: number
+  weatherDesc: string
+}
+
+export interface WeatherData {
+  city: string
+  temperature: number
+  feelsLike: number
+  humidity: number
+  windSpeed: number
+  weatherCode: number
+  weatherDesc: string
+  forecast: WeatherForecast[]
+}
+
 const WEATHER_TIMEOUT = 15_000
 
-/** 天气代码映射表（wttr.in weatherCode → 中文描述） */
-const WEATHER_CODE_MAP = {
+const WEATHER_CODE_MAP: Record<number, string> = {
   113: '晴',
   116: '多云',
   119: '阴',
@@ -58,12 +75,24 @@ const WEATHER_CODE_MAP = {
   395: '雷暴大雪',
 }
 
-/**
- * 获取城市天气信息
- * @param {string} city - 城市名称（中文）
- * @returns {Promise<object|null>} 天气数据或 null（请求失败时）
- */
-async function getWeather(city) {
+interface WttrInResponse {
+  current_condition?: Array<{
+    temp_C: string
+    FeelsLikeC: string
+    humidity: string
+    windspeedKmph: string
+    weatherCode: string
+    lang_zh?: Array<{ value: string }>
+  }>
+  weather?: Array<{
+    date: string
+    maxtempC: string
+    mintempC: string
+    hourly?: Array<{ weatherCode: string }>
+  }>
+}
+
+async function getWeather(city: string): Promise<WeatherData | null> {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), WEATHER_TIMEOUT)
 
@@ -77,13 +106,13 @@ async function getWeather(city) {
     if (!res.ok)
       return null
 
-    const data = await res.json()
+    const data = await res.json() as WttrInResponse
     const current = data.current_condition?.[0]
     if (!current)
       return null
 
     const weatherCode = Number(current.weatherCode)
-    const forecast = (data.weather || []).slice(0, 3).map(day => ({
+    const forecast: WeatherForecast[] = (data.weather || []).slice(0, 3).map(day => ({
       date: day.date,
       maxTemp: Number(day.maxtempC),
       minTemp: Number(day.mintempC),
@@ -110,33 +139,21 @@ async function getWeather(city) {
   }
 }
 
-/**
- * 根据天气判断是否适合户外活动
- * @param {object} weather - 天气数据
- * @return {boolean}
- */
-function isGoodForOutdoor(weather) {
+function isGoodForOutdoor(weather: WeatherData | null): boolean {
   if (!weather)
     return true
   const { temperature, weatherCode } = weather
-  // 雨雪天气不适合户外
   if ([176, 179, 200, 263, 266, 293, 296, 299, 302, 305, 308, 353, 356, 359, 386, 389].includes(weatherCode))
     return false
-  // 极端温度不适合
   if (temperature > 38 || temperature < -5)
     return false
   return true
 }
 
-/**
- * 根据天气生成穿衣建议
- * @param {object} weather - 天气数据
- * @return {string[]}
- */
-function getDressAdvice(weather) {
+function getDressAdvice(weather: WeatherData | null): string[] {
   if (!weather)
     return []
-  const tips = []
+  const tips: string[] = []
   const { temperature, weatherCode, humidity } = weather
 
   if (temperature > 30) {

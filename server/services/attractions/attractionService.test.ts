@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { it } from 'vitest'
 
-async function importModulesWithTempDb(name) {
+async function importModulesWithTempDb(name: string) {
   const dir = await mkdtemp(path.join(tmpdir(), `travel-attractions-service-${name}-`))
   process.env.JWT_SECRET = 'test-secret-for-attractions-service-123456'
   process.env.USERS_DB_PATH = path.join(dir, 'users.db')
@@ -27,7 +27,7 @@ it('列表和详情会带上当前用户收藏状态', async () => {
     await service.favoriteAttraction(result.user.id, 'hangzhou-west-lake')
 
     const list = await service.listAttractions({ city: '杭州', ticketType: 'free' }, result.user.id)
-    const westLake = list.items.find(item => item.id === 'hangzhou-west-lake')
+    const westLake = list.items.find((item: { id: string }) => item.id === 'hangzhou-west-lake')
     assert.equal(westLake.isFavorite, true)
 
     const detail = await service.getAttractionById('hangzhou-west-lake', result.user.id)
@@ -45,7 +45,7 @@ it('收藏不存在的景点会抛出 404 状态错误', async () => {
     const result = await auth.register('missingUser', '123456')
     await assert.rejects(
       () => service.favoriteAttraction(result.user.id, 'missing-attraction'),
-      err => err.status === 404 && err.message === '景点不存在',
+      (err: unknown) => (err as { status?: number }).status === 404 && (err as Error).message === '景点不存在',
     )
   }
   finally {

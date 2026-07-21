@@ -7,6 +7,7 @@ import type { Request, Response } from 'express'
 import { Router } from 'express'
 import { requireAuth } from '../middleware/auth.js'
 import { changePassword, getProfile, login, register } from '../services/auth.js'
+import { generateCsrfToken } from '../utils/csrf.js'
 import { asyncHandler, httpError } from '../utils/http.js'
 import { readRequiredString } from '../utils/validation.js'
 
@@ -24,6 +25,19 @@ router.post('/register', asyncHandler(async (req: Request, res: Response) => {
     throw httpError(400, (err as Error).message)
   }
 }))
+
+/** 获取 CSRF token */
+router.get('/csrf-token', (req: Request, res: Response) => {
+  const token = generateCsrfToken()
+  res.setHeader('X-CSRF-Token', token)
+  res.cookie('csrf_token', token, {
+    httpOnly: false,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 60 * 60 * 1000,
+  })
+  res.json({ success: true, csrfToken: token })
+})
 
 /** 登录 */
 router.post('/login', asyncHandler(async (req: Request, res: Response) => {

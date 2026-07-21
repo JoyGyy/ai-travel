@@ -2,7 +2,14 @@ import path from 'node:path'
 import process from 'node:process'
 import { config } from 'dotenv'
 
-config({ path: path.resolve(import.meta.dirname, '../../.env') })
+config({ path: path.resolve(import.meta.dirname!, '../../.env') })
+
+export interface LLMProviderConfig {
+  name: string
+  baseUrl: string
+  apiKey: string
+  model: string
+}
 
 const DEFAULT_CORS_ORIGINS = ['http://localhost:5181', 'http://127.0.0.1:5181', 'http://localhost:3000', 'http://127.0.0.1:3000']
 const DEFAULT_SILICONFLOW_BASE_URL = 'https://api.siliconflow.cn/v1'
@@ -12,11 +19,11 @@ const DEFAULT_DEEPSEEK_MODEL = 'deepseek-chat'
 const MIN_JWT_SECRET_LENGTH = 32
 const BODY_LIMIT_PATTERN = /^\d+(?:\.\d+)?(?:b|kb|mb)$/i
 
-function readString(name, fallback = '') {
+function readString(name: string, fallback = ''): string {
   return process.env[name]?.trim() || fallback
 }
 
-function readNumber(name, fallback) {
+function readNumber(name: string, fallback: number): number {
   const raw = readString(name)
   if (!raw)
     return fallback
@@ -28,7 +35,7 @@ function readNumber(name, fallback) {
   return value
 }
 
-function readCorsOrigins() {
+function readCorsOrigins(): string[] {
   const raw = readString('CORS_ORIGIN')
   if (!raw && process.env.NODE_ENV === 'production')
     return []
@@ -37,7 +44,25 @@ function readCorsOrigins() {
   return raw.split(',').map(item => item.trim()).filter(Boolean)
 }
 
-const env = {
+export interface EnvConfig {
+  NODE_ENV: string
+  PORT: number
+  JWT_SECRET: string
+  CORS_ORIGINS: string[]
+  REQUEST_BODY_LIMIT: string
+  LLM_TIMEOUT_MS: number
+  LLM_STREAM_TIMEOUT_MS: number
+  SILICONFLOW_API_KEY: string
+  SILICONFLOW_BASE_URL: string
+  SILICONFLOW_MODEL: string
+  DEEPSEEK_API_KEY: string
+  DEEPSEEK_BASE_URL: string
+  DEEPSEEK_MODEL: string
+  DATABASE_URL: string
+  IS_PRODUCTION: boolean
+}
+
+const env: EnvConfig = {
   NODE_ENV: readString('NODE_ENV', 'development'),
   PORT: readNumber('PORT', 3030),
   JWT_SECRET: readString('JWT_SECRET'),
@@ -52,11 +77,12 @@ const env = {
   DEEPSEEK_BASE_URL: readString('DEEPSEEK_BASE_URL', DEFAULT_DEEPSEEK_BASE_URL),
   DEEPSEEK_MODEL: readString('DEEPSEEK_MODEL', DEFAULT_DEEPSEEK_MODEL),
   DATABASE_URL: readString('DATABASE_URL'),
+  IS_PRODUCTION: false,
 }
 
 env.IS_PRODUCTION = env.NODE_ENV === 'production'
 
-function validateEnv() {
+function validateEnv(): void {
   if (!env.JWT_SECRET) {
     throw new Error('JWT_SECRET 环境变量未设置，请在 .env 中配置')
   }
@@ -73,21 +99,25 @@ function validateEnv() {
 
 validateEnv()
 
-function getLLMProviders() {
-  return [
-    env.SILICONFLOW_API_KEY && {
+export function getLLMProviders(): LLMProviderConfig[] {
+  const providers: LLMProviderConfig[] = []
+  if (env.SILICONFLOW_API_KEY) {
+    providers.push({
       name: 'SiliconFlow',
       baseUrl: env.SILICONFLOW_BASE_URL,
       apiKey: env.SILICONFLOW_API_KEY,
       model: env.SILICONFLOW_MODEL,
-    },
-    env.DEEPSEEK_API_KEY && {
+    })
+  }
+  if (env.DEEPSEEK_API_KEY) {
+    providers.push({
       name: 'DeepSeek',
       baseUrl: env.DEEPSEEK_BASE_URL,
       apiKey: env.DEEPSEEK_API_KEY,
       model: env.DEEPSEEK_MODEL,
-    },
-  ].filter(Boolean)
+    })
+  }
+  return providers
 }
 
-export { env, getLLMProviders }
+export { env }

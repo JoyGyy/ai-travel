@@ -2,15 +2,51 @@
  * PostgreSQL 景点数据 Provider
  * 实现与 localAttractionProvider 相同的接口，数据来自 PostgreSQL
  */
-
 import { query } from '../../../db/index.js'
+
+export interface AttractionItem {
+  id: string
+  name: string
+  city: string
+  ticketType: string
+  priceText: string
+  coverImage: string
+  summary: string
+  description: string
+  address: string
+  openingHours: string
+  recommendedDuration: string
+  tags: string[]
+  aliases: string[]
+  highlights: string[]
+  tips: string[]
+  suitableFor: string[]
+  bookingLinks: Record<string, unknown>
+}
+
+interface AttractionRow {
+  id: string
+  name: string
+  city: string
+  ticket_type: string
+  price_text: string
+  cover_image: string
+  summary: string
+  description: string
+  address: string
+  opening_hours: string
+  recommended_duration: string
+  tags?: string[]
+  aliases?: string[]
+  highlights?: string[]
+  tips?: string[]
+  suitable_for?: string[]
+  booking_links?: Record<string, unknown>
+}
 
 const CITY_ORDER = ['北京', '上海', '杭州', '成都', '西安']
 
-/**
- * 将数据库行映射为前端 Attraction 对象
- */
-function mapRow(row) {
+function mapRow(row: AttractionRow): AttractionItem {
   return {
     id: row.id,
     name: row.name,
@@ -32,14 +68,18 @@ function mapRow(row) {
   }
 }
 
-/**
- * 列出景点（支持筛选 + 分页）
- * @param {object} filters - { city?, keyword?, ticketType?, tag?, page?, pageSize? }
- * @returns {Promise<{ items: object[], total: number }>}
- */
-async function listAttractions(filters = {}) {
-  const conditions = []
-  const params = []
+interface ListFilters {
+  city?: string
+  keyword?: string
+  ticketType?: string
+  tag?: string
+  page?: number | string
+  pageSize?: number | string
+}
+
+async function listAttractions(filters: ListFilters = {}): Promise<{ items: AttractionItem[], total: number }> {
+  const conditions: string[] = []
+  const params: unknown[] = []
   let paramIndex = 1
 
   if (filters.city) {
@@ -66,7 +106,6 @@ async function listAttractions(filters = {}) {
 
   const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
 
-  // 分页
   const page = Math.max(1, Number(filters.page) || 1)
   const pageSize = Math.min(100, Math.max(1, Number(filters.pageSize) || 20))
   const offset = (page - 1) * pageSize
@@ -84,7 +123,7 @@ async function listAttractions(filters = {}) {
   params.push(pageSize, offset)
 
   const countSql = `SELECT COUNT(DISTINCT a.id) FROM attractions a ${where}`
-  const countParams = params.slice(0, -2) // 去掉 LIMIT/OFFSET 参数
+  const countParams = params.slice(0, -2)
 
   const [dataResult, countResult] = await Promise.all([
     query(dataSql, params),
@@ -97,12 +136,7 @@ async function listAttractions(filters = {}) {
   }
 }
 
-/**
- * 根据 ID 获取景点
- * @param {string} id
- * @returns {Promise<object|null>}
- */
-async function getAttractionById(id) {
+async function getAttractionById(id: string): Promise<AttractionItem | null> {
   const result = await query(
     `SELECT a.*, COALESCE(ARRAY_AGG(t.name ORDER BY t.name) FILTER (WHERE t.name IS NOT NULL), '{}') AS tags
      FROM attractions a
@@ -112,21 +146,16 @@ async function getAttractionById(id) {
      GROUP BY a.id`,
     [id],
   )
-  return result.rows.length > 0 ? mapRow(result.rows[0]) : null
+  return result.rows.length > 0 ? mapRow(result.rows[0] as AttractionRow) : null
 }
 
-/**
- * 获取筛选元数据（城市列表 + 标签列表）
- * @returns {Promise<{ cities: string[], tags: string[] }>}
- */
-async function getAttractionMeta() {
+async function getAttractionMeta(): Promise<{ cities: string[], tags: string[] }> {
   const [cityResult, tagResult] = await Promise.all([
     query('SELECT DISTINCT city FROM attractions ORDER BY city'),
     query('SELECT name FROM tags ORDER BY name'),
   ])
 
   const dbCities = cityResult.rows.map(r => r.city)
-  // 保持预设城市排序，新增城市排在末尾
   const orderedCities = [
     ...CITY_ORDER.filter(c => dbCities.includes(c)),
     ...dbCities.filter(c => !CITY_ORDER.includes(c)),
@@ -138,12 +167,7 @@ async function getAttractionMeta() {
   }
 }
 
-/**
- * 搜索景点（别名给 RAG 用，逻辑同 listAttractions）
- * @param {object} filters
- * @returns {Promise<object[]>}
- */
-function searchAttractions(filters = {}) {
+async function searchAttractions(filters: ListFilters = {}): Promise<{ items: AttractionItem[], total: number }> {
   return listAttractions(filters)
 }
 

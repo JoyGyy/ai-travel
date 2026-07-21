@@ -3,52 +3,48 @@
  * 提供行程分享的创建和查询功能
  * 使用 JSON 文件存储分享数据
  */
-
 import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 import { nanoid } from 'nanoid'
 
-const DATA_PATH = path.join(import.meta.dirname, '../data/shared_itineraries.json')
+const DATA_PATH = path.join(import.meta.dirname!, '../data/shared_itineraries.json')
 
-/** 读取所有分享数据，文件不存在或解析失败时返回空数组 */
-function readShares() {
+interface ShareRecord {
+  id: string
+  city: string
+  days: number
+  budget: string
+  itinerary: unknown
+  contentHash: string
+  viewCount: number
+  createdAt: string
+}
+
+function readShares(): ShareRecord[] {
   try {
     const raw = fs.readFileSync(DATA_PATH, 'utf-8')
-    return JSON.parse(raw)
+    return JSON.parse(raw) as ShareRecord[]
   }
   catch {
     return []
   }
 }
 
-/** 原子写入：先写临时文件再 rename */
-function writeShares(shares) {
+function writeShares(shares: ShareRecord[]): void {
   const tmpPath = `${DATA_PATH}.tmp`
   fs.writeFileSync(tmpPath, JSON.stringify(shares, null, 2), 'utf-8')
   fs.renameSync(tmpPath, DATA_PATH)
 }
 
-/**
- * 计算行程内容的哈希值，用于幂等去重
- * @param {any} itinerary
- * @returns {string} 16 位十六进制哈希
- */
-function hashItinerary(itinerary) {
+function hashItinerary(itinerary: unknown): string {
   return createHash('sha256').update(JSON.stringify(itinerary)).digest('hex').slice(0, 16)
 }
 
-/**
- * 创建分享链接
- * 幂等：同一 city+days+budget+itineraryHash 组合返回已有的 shareId
- * @param {{ city: string, days: number, budget: string, itinerary: any }} data
- * @returns {string} shareId
- */
-export function createShare({ city, days, budget, itinerary }) {
+export function createShare({ city, days, budget, itinerary }: { city: string, days: number, budget: string, itinerary: unknown }): string {
   const shares = readShares()
   const contentHash = hashItinerary(itinerary)
 
-  // 幂等检查：城市+天数+预算+行程内容哈希
   const existing = shares.find(
     s => s.city === city && s.days === days && s.budget === budget && s.contentHash === contentHash,
   )
@@ -57,7 +53,7 @@ export function createShare({ city, days, budget, itinerary }) {
   }
 
   const id = nanoid(8)
-  const share = {
+  const share: ShareRecord = {
     id,
     city,
     days,
@@ -74,12 +70,7 @@ export function createShare({ city, days, budget, itinerary }) {
   return id
 }
 
-/**
- * 获取分享数据并递增浏览次数
- * @param {string} id
- * @returns {object | null}
- */
-export function getShare(id) {
+export function getShare(id: string): ShareRecord | null {
   const shares = readShares()
   const share = shares.find(s => s.id === id)
 
@@ -87,7 +78,6 @@ export function getShare(id) {
     return null
   }
 
-  // 递增浏览次数并持久化
   share.viewCount += 1
   writeShares(shares)
 

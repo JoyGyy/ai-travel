@@ -2,16 +2,13 @@
  * 限流中间件
  * 基于内存的滑动窗口限流，按 IP 或已认证用户 ID 统计
  */
+import type { NextFunction, Request, Response } from 'express'
 
 import { verifyToken } from '../services/auth.js'
 
-/** 请求记录 Map: key → 时间戳数组 */
-const requestLog = new Map()
+const requestLog = new Map<string, number[]>()
 
-/** 清理过期记录的间隔（毫秒） */
 const CLEANUP_INTERVAL = 60_000
-
-/** 记录保留时间（毫秒） */
 const MAX_RECORD_AGE = 60 * 60_000
 
 setInterval(() => {
@@ -24,7 +21,7 @@ setInterval(() => {
   }
 }, CLEANUP_INTERVAL)
 
-function getVerifiedUserId(req) {
+function getVerifiedUserId(req: Request): string | null {
   const authHeader = req.headers.authorization
   if (!authHeader?.startsWith('Bearer '))
     return null
@@ -33,24 +30,21 @@ function getVerifiedUserId(req) {
     return verifyToken(authHeader.slice(7))?.id || null
   }
   catch {
-    // 限流不信任未验证令牌，失败时退回 IP 维度
     return null
   }
 }
 
-/**
- * 创建限流中间件
- * @param {object} options
- * @param {string} options.name - 限流器名称，用于隔离不同接口
- * @param {number} options.windowMs - 时间窗口（毫秒），默认 60 秒
- * @param {number} options.maxRequests - 窗口内最大请求数，默认 15
- * @param {string} options.message - 超限提示信息
- */
-function createRateLimit({ name = 'default', windowMs = 60_000, maxRequests = 15, message = '请求过于频繁，请稍后再试' } = {}) {
-  return (req, res, next) => {
-    // 优先用已验证用户 ID，其次用 IP
+interface RateLimitOptions {
+  name?: string
+  windowMs?: number
+  maxRequests?: number
+  message?: string
+}
+
+function createRateLimit({ name = 'default', windowMs = 60_000, maxRequests = 15, message = '请求过于频繁，请稍后再试' }: RateLimitOptions = {}) {
+  return (req: Request, res: Response, next: NextFunction) => {
     const userId = getVerifiedUserId(req)
-    const identity = userId ? `user:${userId}` : `ip:${req.ip || req.connection.remoteAddress || 'unknown'}`
+    const identity = userId ? `user:${userId}` : `ip:${req.ip || (req.socket.remoteAddress as string) || 'unknown'}`
     const key = `${name}:${identity}`
 
     const now = Date.now()
@@ -58,11 +52,12 @@ function createRateLimit({ name = 'default', windowMs = 60_000, maxRequests = 15
 
     if (timestamps.length >= maxRequests) {
       const retryAfter = Math.ceil((timestamps[0] + windowMs - now) / 1000)
-      return res.status(429).json({
+      res.status(429).json({
         success: false,
         message,
         retryAfter,
       })
+      return
     }
 
     timestamps.push(now)

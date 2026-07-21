@@ -18,6 +18,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.6.1",
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
+    "@sentry/react": "^10.66.0",
     "antd": "^5.25.3",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",

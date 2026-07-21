@@ -9,24 +9,37 @@ async function importChatModule() {
   return await import(chatUrl.href)
 }
 
-function createWritableResponse() {
-  const chunks = []
+interface WritableResponse {
+  chunks: string[]
+  destroyed: boolean
+  writable: boolean
+  write: (chunk: string) => void
+}
+
+function createWritableResponse(): WritableResponse {
+  const chunks: string[] = []
   return {
     chunks,
     destroyed: false,
     writable: true,
-    write(chunk) {
+    write(chunk: string) {
       chunks.push(chunk)
     },
   }
 }
 
-function parseSSEPayloads(chunks) {
+interface SSEPayload {
+  type: string
+  content?: string
+  data?: { content?: string, sources?: unknown[] }
+}
+
+function parseSSEPayloads(chunks: string[]): SSEPayload[] {
   return chunks
     .join('')
     .split('\n\n')
     .filter(Boolean)
-    .map(line => JSON.parse(line.replace(/^data: /, '')))
+    .map(line => JSON.parse(line.replace(/^data: /, '')) as SSEPayload)
 }
 
 it('isTravelRelatedMessage 识别非旅游问题和旅游边缘问题', async () => {
@@ -45,16 +58,16 @@ it('handleNonTravelMessage 用 SSE 返回简短旅游引导', async () => {
 
   const handled = await handleNonTravelMessageForTest('帮我写一段 React 代码', res, { delayMs: 0 })
   const payloads = parseSSEPayloads(res.chunks)
-  const chunkContent = payloads.filter(item => item.type === 'chunk').map(item => item.content).join('')
-  const complete = payloads.find(item => item.type === 'complete')
+  const chunkContent = payloads.filter((item: SSEPayload) => item.type === 'chunk').map((item: SSEPayload) => item.content).join('')
+  const complete = payloads.find((item: SSEPayload) => item.type === 'complete')
 
   assert.equal(handled, true)
-  assert.equal(payloads.some(item => item.type === 'step'), false)
+  assert.equal(payloads.some((item: SSEPayload) => item.type === 'step'), false)
   assert.match(chunkContent, /旅行规划咨询/)
   assert.match(chunkContent, /北京三日游怎么安排/)
   assert.doesNotMatch(chunkContent, /React 代码示例|组件代码|function App/)
-  assert.equal(complete.data.content, getNonTravelResponseForTest())
-  assert.deepEqual(complete.data.sources, [])
+  assert.equal(complete!.data!.content, getNonTravelResponseForTest())
+  assert.deepEqual(complete!.data!.sources, [])
 })
 
 it('handleNonTravelMessage 对旅游问题不拦截', async () => {

@@ -1,35 +1,35 @@
+import type { NextFunction, Request, Response } from 'express'
+
 import { createLogger } from './logger.js'
 
 const log = createLogger('http')
 
 export class HttpError extends Error {
-  constructor(status, message) {
+  status: number
+  quota?: { used: number, limit: number, remaining: number }
+
+  constructor(status: number, message: string) {
     super(message)
     this.name = 'HttpError'
     this.status = status
   }
 }
 
-export function httpError(status, message) {
+export function httpError(status: number, message: string): HttpError {
   return new HttpError(status, message)
 }
 
-export function asyncHandler(handler) {
-  return async (req, res, next) => {
-    try {
-      await handler(req, res, next)
-    }
-    catch (err) {
-      next(err)
-    }
+export function asyncHandler(handler: (req: Request, res: Response, next: NextFunction) => Promise<void>) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    handler(req, res, next).catch(next)
   }
 }
 
-export function notFoundHandler(_req, res) {
+export function notFoundHandler(_req: Request, res: Response): void {
   res.status(404).json({ success: false, message: '接口不存在' })
 }
 
-export function errorHandler(err, _req, res, next) {
+export function errorHandler(err: Error & { type?: string, status?: number, quota?: { used: number, limit: number, remaining: number } }, _req: Request, res: Response, next: NextFunction): void {
   if (res.headersSent) {
     next(err)
     return
@@ -51,7 +51,7 @@ export function errorHandler(err, _req, res, next) {
   }
 
   if (typeof err.status === 'number') {
-    const payload = { success: false, message: err.message }
+    const payload: Record<string, unknown> = { success: false, message: err.message }
     if (err.quota)
       payload.quota = err.quota
     res.status(err.status).json(payload)

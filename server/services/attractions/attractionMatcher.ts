@@ -2,16 +2,27 @@
  * 行程景点匹配器
  * 从行程点位名称中匹配产品景点数据，生成 attractionRefs 引用列表
  */
-
 import { searchAttractions } from './attractionService.js'
 
-/**
- * 收集行程中所有景点名称
- */
-function collectSpotNames(itinerary = []) {
-  const names = []
+interface ItineraryDay {
+  day?: number
+  morning?: { spot?: string }
+  afternoon?: { spot?: string }
+  evening?: { spot?: string }
+}
+
+interface AttractionRef {
+  id: string
+  name: string
+  city: string
+  ticketType: string
+  priceText: string
+}
+
+function collectSpotNames(itinerary: ItineraryDay[] = []): string[] {
+  const names: string[] = []
   for (const day of itinerary) {
-    for (const period of ['morning', 'afternoon', 'evening']) {
+    for (const period of ['morning', 'afternoon', 'evening'] as const) {
       const name = day?.[period]?.spot
       if (typeof name === 'string' && name.trim())
         names.push(name.trim())
@@ -20,18 +31,13 @@ function collectSpotNames(itinerary = []) {
   return names
 }
 
-/**
- * 从行程数据中匹配产品景点引用并去重
- * @param {Array} itinerary - 行程点位数组
- * @returns {Promise<Array>} 景点引用数组，包含 id, name, city, ticketType, priceText
- */
-async function matchAttractionRefsFromItinerary(itinerary = []) {
-  const refs = []
-  const seen = new Set()
+async function matchAttractionRefsFromItinerary(itinerary: ItineraryDay[] = []): Promise<AttractionRef[]> {
+  const refs: AttractionRef[] = []
+  const seen = new Set<string>()
 
   for (const spotName of collectSpotNames(itinerary)) {
-    const results = await searchAttractions({ keyword: spotName })
-    const matched = results.find(
+    const result = await searchAttractions({ keyword: spotName })
+    const matched = result.items.find(
       item => item.name === spotName || (item.aliases || []).includes(spotName),
     )
     if (!matched || seen.has(matched.id))

@@ -89,14 +89,18 @@ export default function Detail() {
     const cached = loadItineraryCache(city, budget, days)
     if (cached) {
       useItineraryStore.setState({ agentSteps: [], currentAgentStep: 0 })
-      setItinerary((cached.itinerary as ItineraryDay[]) || [])
+      const cachedItinerary = (cached.itinerary as ItineraryDay[]) || []
+      setItinerary(cachedItinerary)
       setBudgetBreakdown((cached.budgetBreakdown as BudgetBreakdown) || null)
       setTips((cached.tips as string[]) || [])
       setWeather((cached.weather as WeatherResponse) || null)
       setAccommodation((cached.accommodation as Accommodation[]) || [])
       setNightlife((cached.nightlife as string[]) || [])
       setAttractionRefs((cached.attractionRefs as AttractionRef[]) || [])
-      cacheTimer = setTimeout(setShowLoading, 0, false)
+      cacheTimer = setTimeout(() => {
+        setActiveKeys(cachedItinerary[0]?.day ? [String(cachedItinerary[0].day)] : [])
+        setShowLoading(false)
+      }, 0)
       return () => {
         clearTimeout(resetTimer)
         clearTimeout(cacheTimer)
@@ -131,6 +135,7 @@ export default function Detail() {
         setAccommodation(a)
         setNightlife(n)
         setAttractionRefs(refs)
+        setActiveKeys(dailyItinerary[0]?.day ? [String(dailyItinerary[0].day)] : [])
         saveItineraryCache(city, budget, days, { itinerary: dailyItinerary, budgetBreakdown: bd, tips: t, weather: w, accommodation: a, nightlife: n, attractionRefs: refs })
         setTimeout(setShowLoading, 500, false)
       },
@@ -169,7 +174,7 @@ export default function Detail() {
 
   return (
     <main className="detail-page" aria-labelledby="detail-title">
-      <div className="detail-page__hero">
+      <div className="detail-page__hero travel-route-line">
         <div className="detail-page__deco" aria-hidden="true" />
         <button
           type="button"
@@ -248,7 +253,7 @@ export default function Detail() {
           ? (
               <>
                 {/* 摘要卡片 */}
-                <div className="detail-page__summary" aria-label="行程摘要">
+                <div className="detail-page__summary travel-ticket-edge" aria-label="行程摘要">
                   <div className="detail-page__summary-item">
                     <span className="detail-page__summary-label">目的地</span>
                     <span className="detail-page__summary-value">{city}</span>
@@ -358,7 +363,7 @@ export default function Detail() {
 
                 {/* 咨询 AI 按钮 */}
                 <div className="detail-page__actions">
-                  <button type="button" onClick={() => navigate('/chat')} className="detail-page__chat-btn">咨询 AI</button>
+                  <button type="button" onClick={() => navigate('/chat')} className="detail-page__chat-btn" aria-label="咨询 AI 优化当前行程">咨询 AI 优化行程</button>
                 </div>
               </>
             )

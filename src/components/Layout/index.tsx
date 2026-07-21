@@ -17,6 +17,18 @@ const tabs = [
   { key: '/chat', title: 'AI咨询', icon: <RobotOutlined aria-hidden="true" /> },
 ] as const
 
+function shouldShowNav(pathname: string) {
+  if (pathname === '/' || pathname === '/login')
+    return false
+
+  return pathname === '/weather'
+    || pathname === '/chat'
+    || pathname === '/profile'
+    || pathname === '/detail'
+    || pathname === '/attractions'
+    || pathname.startsWith('/attractions/')
+}
+
 /** 顶部导航 */
 function TopNav() {
   const user = useAuthStore(state => state.user)
@@ -45,7 +57,14 @@ function TopNav() {
         <div className="layout-nav__user">
           {user
             ? (
-                <span className="layout-nav__username" aria-label={`当前用户：${user.username}`}>{user.username}</span>
+                <NavLink
+                  to="/profile"
+                  className={({ isActive }) => `layout-nav__username ${isActive ? 'layout-nav__username--active' : ''}`}
+                  aria-label={`当前用户：${user.username}，进入个人中心`}
+                >
+                  <UserOutlined aria-hidden="true" />
+                  <span>{user.username}</span>
+                </NavLink>
               )
             : (
                 <Link className="layout-nav__login-btn" to="/login">
@@ -72,8 +91,7 @@ function LoadingFallback() {
 /** 布局组件 */
 export default function Layout() {
   const location = useLocation()
-  const navRoutes = ['/weather', '/attractions', '/chat']
-  const showNav = navRoutes.includes(location.pathname)
+  const showNav = shouldShowNav(location.pathname)
 
   useEffect(() => {
     const content = document.getElementById('main-content')

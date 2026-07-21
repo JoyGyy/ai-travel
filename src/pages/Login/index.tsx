@@ -52,7 +52,7 @@ export default function Login() {
     return ''
   }
 
-  async function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: { preventDefault: () => void }) {
     event.preventDefault()
     if (loading)
       return
@@ -75,8 +75,8 @@ export default function Login() {
       message.success(tab === 'login' ? '登录成功' : '注册成功')
       navigate('/')
     }
-    catch (err: any) {
-      setFormError(err.message || '操作失败，请检查信息后重试')
+    catch (err: unknown) {
+      setFormError(err instanceof Error ? err.message : '操作失败，请检查信息后重试')
     }
     finally {
       setLoading(false)

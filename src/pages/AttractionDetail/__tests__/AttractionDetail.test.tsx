@@ -47,9 +47,10 @@ describe('AttractionDetail page', () => {
     )
 
     expect(await screen.findByText('西湖')).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: /西湖，杭州景点封面/ })).toBeInTheDocument()
     expect(screen.getByText('西湖适合步行、骑行和泛舟。')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /携程/ })).toHaveAttribute('href', 'https://example.com/ctrip-west-lake')
-    expect(screen.getByRole('link', { name: /让 AI 帮我规划/ })).toHaveAttribute('href', expect.stringContaining('/chat?prompt='))
+    expect(screen.getByRole('link', { name: /去携程查看西湖门票，打开新窗口/ })).toHaveAttribute('href', 'https://example.com/ctrip-west-lake')
+    expect(screen.getByRole('link', { name: /让 AI 规划这站/ })).toHaveAttribute('href', expect.stringContaining('/chat?prompt='))
   })
 
   it('可以收藏详情页景点', async () => {

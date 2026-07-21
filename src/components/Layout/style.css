@@ -55,6 +55,7 @@
 
 .layout-nav__brand,
 .layout-nav__tab,
+.layout-nav__username,
 .layout-nav__login-btn {
   text-decoration: none;
 }
@@ -173,6 +174,17 @@
   background: var(--travel-surface);
   color: var(--travel-ocean);
   border: 1px solid rgba(28, 25, 23, 0.06);
+  transition:
+    transform var(--motion-fast) var(--ease-standard),
+    background var(--motion-fast) var(--ease-standard),
+    border-color var(--motion-fast) var(--ease-standard);
+}
+
+.layout-nav__username:hover,
+.layout-nav__username--active {
+  transform: translateY(-1px);
+  border-color: rgba(var(--travel-primary-rgb), 0.28);
+  background: rgba(var(--travel-primary-rgb), 0.1);
 }
 
 .layout-nav__login-btn {
@@ -249,6 +261,7 @@
   .layout__skip,
   .layout-nav__tab,
   .layout-nav__indicator,
+  .layout-nav__username,
   .layout-nav__login-btn {
     transition: none;
   }

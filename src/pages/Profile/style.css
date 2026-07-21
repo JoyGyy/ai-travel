@@ -1,19 +1,21 @@
 .profile-page {
-  min-height: 100%;
-  padding: 24px;
   background: var(--travel-bg);
 }
 
-.profile-page__hero {
-  margin-bottom: 20px;
-  padding: 24px;
-  border-radius: 28px;
-  background: linear-gradient(135deg, rgba(var(--travel-primary-rgb), 0.16), rgba(var(--travel-ocean-rgb), 0.12));
+.profile-page__hero,
+.profile-page__content {
+  max-width: 760px;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 .profile-page__label {
-  margin-bottom: 8px;
-  color: var(--travel-primary);
+  width: fit-content;
+  margin-bottom: 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: var(--travel-primary-strong);
+  background: rgba(var(--travel-primary-rgb), 0.1);
   font-size: 12px;
   font-weight: 900;
   letter-spacing: 0.14em;
@@ -22,26 +24,31 @@
 .profile-page__hero h1 {
   margin: 0 0 8px;
   font-family: var(--font-display);
+  font-size: clamp(30px, 5vw, 48px);
+  line-height: 1.08;
   color: var(--travel-ocean);
 }
 
-.profile-page__hero p {
+.profile-page__hero p:not(.profile-page__label) {
   margin: 0;
   color: rgba(var(--travel-ink-rgb), 0.72);
+  line-height: 1.7;
 }
 
 .profile-page__content {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  max-width: 640px;
-  margin: 0 auto;
+  gap: 18px;
 }
 
 .profile-page__card {
-  border-radius: 22px;
-  background: var(--travel-surface);
-  box-shadow: 0 12px 32px rgba(var(--travel-ocean-rgb), 0.08);
+  overflow: hidden;
+}
+
+.profile-page__card:hover,
+.profile-page__user-card:hover,
+.profile-page__logout-card:hover {
+  transform: none;
 }
 
 .profile-page__card .ant-card-head {
@@ -49,43 +56,74 @@
 }
 
 .profile-page__card .ant-card-head-title {
-  font-family: var(--font-display);
+  display: flex;
+  align-items: center;
+  gap: 8px;
   color: var(--travel-ocean);
+  font-family: var(--font-display);
   font-size: 16px;
+}
+
+.profile-page__error-card {
+  padding: 4px;
+}
+
+.profile-page__error-card h2 {
+  margin: 0 0 8px;
+  color: var(--travel-ocean);
+  font-size: 18px;
+}
+
+.profile-page__error-card p {
+  margin: 0 0 14px;
+  color: rgba(var(--travel-ink-rgb), 0.7);
 }
 
 /* 用户信息卡 */
 .profile-page__user-card {
-  text-align: center;
+  text-align: left;
+  background:
+    radial-gradient(circle at 88% 18%, rgba(var(--travel-primary-rgb), 0.12), transparent 28%),
+    var(--travel-surface);
 }
 
 .profile-page__user-info {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
 }
 
 .profile-page__avatar {
-  background: var(--travel-primary) !important;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent)) !important;
   color: #fff;
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 900;
+  box-shadow: 0 14px 28px rgba(var(--travel-primary-rgb), 0.26);
+}
+
+.profile-page__user-eyebrow {
+  margin: 0 0 4px;
+  color: var(--travel-primary-strong);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
 }
 
 .profile-page__username {
   margin: 0;
   font-family: var(--font-display);
   color: var(--travel-ocean);
-  font-size: 22px;
+  font-size: 24px;
+  line-height: 1.2;
 }
 
 .profile-page__meta {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin: 4px 0 0;
-  color: rgba(var(--travel-ink-rgb), 0.56);
+  margin: 8px 0 0;
+  color: rgba(var(--travel-ink-rgb), 0.62);
   font-size: 14px;
 }
 
@@ -93,33 +131,74 @@
 .profile-page__quota {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .profile-page__quota-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   font-size: 14px;
   color: var(--travel-ink);
+  font-weight: 800;
 }
 
 .profile-page__quota-tip {
   margin: 0;
-  color: rgba(var(--travel-ink-rgb), 0.56);
-  font-size: 12px;
+  color: rgba(var(--travel-ink-rgb), 0.62);
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 /* 修改密码表单 */
 .profile-page__password-form {
-  max-width: 400px;
+  max-width: 440px;
+}
+
+.profile-page__password-form .ant-btn {
+  min-width: 132px;
 }
 
 /* 收藏列表 */
+.profile-page__favorites-list .ant-list-item {
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+}
+
+.profile-page__favorites-list .ant-list-item-action {
+  margin-left: 12px;
+}
+
+.profile-page__favorites-list .ant-list-item-action .ant-btn {
+  min-height: 44px;
+  border-radius: 999px;
+  font-weight: 900;
+}
+
+.profile-page__fav-title {
+  color: var(--travel-ocean);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.profile-page__fav-title:hover {
+  color: var(--travel-primary-strong);
+}
+
 .profile-page__fav-meta {
   display: flex;
-  gap: 4px;
+  gap: 6px;
   flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.profile-page__card .ant-empty .ant-btn {
+  min-height: 44px;
+  margin-top: 8px;
+  border-radius: 999px;
+  font-weight: 900;
 }
 
 /* 退出登录 */
@@ -127,12 +206,40 @@
   margin-bottom: 24px;
 }
 
-@media (max-width: 640px) {
-  .profile-page {
-    padding: 16px;
-  }
+.profile-page__logout-card .ant-btn {
+  min-height: 48px;
+  border-radius: var(--travel-radius-lg);
+  font-weight: 900;
+}
 
+@media (max-width: 640px) {
   .profile-page__content {
     max-width: 100%;
+  }
+
+  .profile-page__user-info {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .profile-page__quota-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .profile-page__favorites-list .ant-list-item {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .profile-page__favorites-list .ant-list-item-action {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .profile-page__favorites-list .ant-list-item-action > li,
+  .profile-page__favorites-list .ant-list-item-action .ant-btn,
+  .profile-page__password-form .ant-btn {
+    width: 100%;
   }
 }

@@ -26,7 +26,9 @@ function buildQuery(filters: AttractionFilters = {}) {
   return query ? `?${query}` : ''
 }
 
-type DataResponse<T> = { data: T }
+interface DataResponse<T> {
+  data: T
+}
 
 export async function fetchAttractions(filters: AttractionFilters = {}): Promise<AttractionListData> {
   const data = await request(`/api/attractions${buildQuery(filters)}`, { auth: true })

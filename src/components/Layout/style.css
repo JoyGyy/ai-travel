@@ -9,7 +9,6 @@
 .layout__content {
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
 }
 
 .layout__skip {
@@ -201,6 +200,49 @@
   transform: translateY(-1px);
   border-color: rgba(var(--travel-primary-rgb), 0.38);
   background: rgba(var(--travel-primary-rgb), 0.1);
+}
+
+/* 底部备案 */
+.layout-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  padding: 18px 24px 22px;
+  border-top: 1px solid rgba(28, 25, 23, 0.06);
+  color: var(--travel-muted);
+  background: var(--travel-surface);
+  font-size: 12px;
+}
+
+.layout-footer__copyright {
+  color: rgba(var(--travel-ocean-rgb), 0.56);
+}
+
+.layout-police-record {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(var(--travel-ocean-rgb), 0.6);
+  text-decoration: none;
+  transition: color var(--motion-fast) var(--ease-standard);
+}
+
+.layout-police-record:hover {
+  color: var(--travel-ocean);
+}
+
+.layout-police-record:focus-visible {
+  outline: 2px solid rgba(var(--travel-primary-rgb), 0.46);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
+.layout-police-record__icon {
+  width: 16px;
+  height: 17px;
+  flex: 0 0 auto;
 }
 
 /* 加载状态 */

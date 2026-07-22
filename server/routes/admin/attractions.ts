@@ -7,14 +7,19 @@ import type { Request, Response } from 'express'
 import type { PoolClient } from 'pg'
 import { Router } from 'express'
 import { getClient, query } from '../../db/index.js'
+import { requireAdmin } from '../../middleware/admin.js'
 import { requireAuth } from '../../middleware/auth.js'
+import { createRateLimit } from '../../middleware/rateLimit.js'
 import { asyncHandler, httpError } from '../../utils/http.js'
 import { readRequiredString } from '../../utils/validation.js'
 
 const router: ReturnType<typeof Router> = Router()
 
-// 所有管理接口都需要认证
-router.use(requireAuth)
+// 限流：管理接口每分钟最多 30 次
+const adminLimiter = createRateLimit({ name: 'admin', windowMs: 60_000, maxRequests: 30, message: '管理接口请求过于频繁' })
+
+// 所有管理接口需要认证 + 管理员权限
+router.use(requireAuth, requireAdmin, adminLimiter)
 
 // ========== 类型定义 ==========
 

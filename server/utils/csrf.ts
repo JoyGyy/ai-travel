@@ -4,13 +4,10 @@
  */
 import { createHash, randomBytes } from 'node:crypto'
 
-const CSRF_SECRET = process.env.JWT_SECRET || 'csrf-fallback-secret'
-const TOKEN_EXPIRY_MS = 60 * 60 * 1000 // 1 小时过期
+import { env } from '../config/env.js'
 
-interface CsrfTokenPayload {
-  token: string
-  expires: number
-}
+const CSRF_SECRET = env.JWT_SECRET
+const TOKEN_EXPIRY_MS = 60 * 60 * 1000 // 1 小时过期
 
 /**
  * 生成 CSRF token

@@ -8,6 +8,7 @@ import express from 'express'
 import helmet from 'helmet'
 
 import { env, getLLMProviders } from './config/env.js'
+import { csrfProtection } from './middleware/csrf.js'
 import { createRateLimit } from './middleware/rateLimit.js'
 import adminAttractionRoutes from './routes/admin/attractions.js'
 import attractionRoutes from './routes/attractions.js'
@@ -28,15 +29,15 @@ const PORT = env.PORT
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"], // Ant Design 需要 unsafe-inline
-      imgSrc: ["'self'", 'data:', 'https:'],
-      connectSrc: ["'self'"],
-      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-      objectSrc: ["'none'"],
-      mediaSrc: ["'self'"],
-      frameSrc: ["'none'"],
+      defaultSrc: ['\'self\''],
+      scriptSrc: ['\'self\''],
+      styleSrc: ['\'self\'', '\'unsafe-inline\''], // Ant Design 需要 unsafe-inline
+      imgSrc: ['\'self\'', 'data:', 'https:'],
+      connectSrc: ['\'self\''],
+      fontSrc: ['\'self\'', 'https://fonts.gstatic.com'],
+      objectSrc: ['\'none\''],
+      mediaSrc: ['\'self\''],
+      frameSrc: ['\'none\''],
     },
   },
   referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
@@ -62,6 +63,9 @@ app.use((req, _res, next) => {
   log.debug(`${req.method} ${req.url}`)
   next()
 })
+
+// CSRF 校验：对写操作验证 token（需先通过 /api/auth/csrf-token 获取）
+app.use(csrfProtection)
 
 // 限流：AI 接口每分钟最多 15 次
 const aiLimiter = createRateLimit({ name: 'ai', windowMs: 60_000, maxRequests: 15, message: 'AI 请求过于频繁，请稍后再试' })

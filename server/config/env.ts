@@ -73,6 +73,7 @@ export interface EnvConfig {
   DEEPSEEK_BASE_URL: string
   DEEPSEEK_MODEL: string
   DATABASE_URL: string
+  ADMIN_USERS: string
   IS_PRODUCTION: boolean
 }
 
@@ -91,6 +92,7 @@ const env: EnvConfig = {
   DEEPSEEK_BASE_URL: readString('DEEPSEEK_BASE_URL', DEFAULT_DEEPSEEK_BASE_URL),
   DEEPSEEK_MODEL: readString('DEEPSEEK_MODEL', DEFAULT_DEEPSEEK_MODEL),
   DATABASE_URL: readString('DATABASE_URL'),
+  ADMIN_USERS: readString('ADMIN_USERS'),
   IS_PRODUCTION: false,
 }
 

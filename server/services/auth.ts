@@ -5,6 +5,7 @@
  */
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import { nanoid } from 'nanoid'
 import { env } from '../config/env.js'
 import { query } from '../db/index.js'
 import { createLogger } from '../utils/logger.js'
@@ -63,7 +64,7 @@ async function register(username: string, password: string): Promise<AuthResult>
     throw new Error('用户名已存在')
 
   const hashed = await bcrypt.hash(password, SALT_ROUNDS)
-  const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
+  const id = nanoid()
   const createdAt = new Date().toISOString()
 
   await query(

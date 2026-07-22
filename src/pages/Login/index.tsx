@@ -7,6 +7,7 @@ import { ArrowLeftOutlined, CompassOutlined } from '@ant-design/icons'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { ComplianceFooter } from '@/components/ComplianceFooter'
 import { useAppMessage } from '@/hooks/useAppMessage'
 import { imageUrl } from '@/lib/images'
 import { useAuthStore } from '@/stores/auth'
@@ -139,7 +140,7 @@ export default function Login() {
           </div>
         </div>
 
-        <p className="login-page__hero-footer">© 2026 Travel AI. All rights reserved.</p>
+        <ComplianceFooter variant="overlay" />
       </section>
 
       {/* 右侧表单区 */}

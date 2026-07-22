@@ -19,6 +19,8 @@ const Login = React.lazy(() => import('@/pages/Login'))
 const Attractions = React.lazy(() => import('@/pages/Attractions'))
 const AttractionDetail = React.lazy(() => import('@/pages/AttractionDetail'))
 const Profile = React.lazy(() => import('@/pages/Profile'))
+const Terms = React.lazy(() => import('@/pages/Terms'))
+const Privacy = React.lazy(() => import('@/pages/Privacy'))
 
 /** 错误上报：同时输出到控制台和 Sentry */
 function handleRouteError(error: Error, errorInfo: React.ErrorInfo) {
@@ -58,6 +60,16 @@ const router = createBrowserRouter([
       { path: 'login', element: (
         <ErrorBoundary onError={handleRouteError}>
           <Login />
+        </ErrorBoundary>
+      ) },
+      { path: 'terms', element: (
+        <ErrorBoundary onError={handleRouteError}>
+          <Terms />
+        </ErrorBoundary>
+      ) },
+      { path: 'privacy', element: (
+        <ErrorBoundary onError={handleRouteError}>
+          <Privacy />
         </ErrorBoundary>
       ) },
       { path: 'attractions', element: (

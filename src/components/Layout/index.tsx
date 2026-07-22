@@ -7,16 +7,10 @@ import { CloudOutlined, CompassOutlined, EnvironmentOutlined, HomeOutlined, Robo
 import { Suspense, useEffect } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 
-import { imageUrl } from '@/lib/images'
+import { ComplianceFooter } from '@/components/ComplianceFooter'
 import { useAuthStore } from '@/stores/auth'
 
 import './style.css'
-
-/* ========== 公安备案配置 ========== */
-
-const policeRecordCode = '33019202003146'
-const policeRecordText = `浙公网安备${policeRecordCode}号`
-const policeRecordHref = `https://beian.mps.gov.cn/#/query/webSearch?code=${policeRecordCode}`
 
 /* ========== 导航标签配置 ========== */
 
@@ -103,28 +97,6 @@ function LoadingFallback() {
   )
 }
 
-/* ========== 页脚备案信息 ========== */
-
-/** 公安备案链接：按备案要求展示图标与备案号 */
-export function PoliceRecordLink() {
-  return (
-    <a className="layout-police-record" href={policeRecordHref} rel="noreferrer" target="_blank">
-      <img className="layout-police-record__icon" src={imageUrl('/images/beian-gongan.png')} alt="公安备案图标" />
-      <span>{policeRecordText}</span>
-    </a>
-  )
-}
-
-/** 全站页脚：集中放置版权与备案信息 */
-function SiteFooter() {
-  return (
-    <footer className="layout-footer" aria-label="网站备案信息">
-      <span className="layout-footer__copyright">© 2026 Travel AI</span>
-      <PoliceRecordLink />
-    </footer>
-  )
-}
-
 /* ========== 主布局 ========== */
 
 /** 全局布局：导航栏 + Suspense 包裹的路由出口 */
@@ -149,7 +121,7 @@ export default function Layout() {
           <Outlet />
         </Suspense>
       </div>
-      <SiteFooter />
+      <ComplianceFooter />
     </div>
   )
 }

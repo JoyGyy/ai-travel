@@ -139,12 +139,6 @@
   flex-shrink: 0;
 }
 
-/* 底部版权 */
-.login-page__hero-footer {
-  font-size: 12px;
-  color: #78716c;
-}
-
 /* ── 右侧表单区 ── */
 .login-page__form-side {
   flex: 1;

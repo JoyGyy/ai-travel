@@ -1,13 +1,15 @@
 import { useState } from 'react'
 import type { CommunityPost } from '@/types/community'
-import { CommentOutlined, DeleteOutlined, HeartFilled, HeartOutlined, RetweetOutlined } from '@ant-design/icons'
-import { Button, Tag } from 'antd'
+import { CommentOutlined, DeleteOutlined, EnvironmentOutlined, HeartFilled, HeartOutlined, RetweetOutlined } from '@ant-design/icons'
+import { Avatar, Button, Card, Space, Tag, Typography } from 'antd'
 import { Link } from 'react-router-dom'
 
 import { CommunityImageGrid } from '@/components/CommunityImageGrid'
 import { CommunityItineraryPreview } from '@/components/CommunityItineraryPreview'
 
 import './style.css'
+
+const { Text, Paragraph } = Typography
 
 interface CommunityPostCardProps {
   post: CommunityPost
@@ -26,18 +28,23 @@ function formatTime(value: string) {
   if (Number.isNaN(date.getTime()))
     return value
 
-  return date.toLocaleString('zh-CN', {
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
+  const now = new Date()
+  const diff = now.getTime() - date.getTime()
+  const minutes = Math.floor(diff / 60000)
+  const hours = Math.floor(diff / 3600000)
+  const days = Math.floor(diff / 86400000)
+
+  if (minutes < 1) return '刚刚'
+  if (minutes < 60) return `${minutes}分钟前`
+  if (hours < 24) return `${hours}小时前`
+  if (days < 7) return `${days}天前`
+
+  return date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })
 }
 
 function getPostExcerpt(content: string) {
-  if (content.length <= 140)
-    return content
-  return `${content.slice(0, 140)}...`
+  if (content.length <= 80) return content
+  return `${content.slice(0, 80)}...`
 }
 
 export function CommunityPostCard({
@@ -53,10 +60,9 @@ export function CommunityPostCard({
 }: CommunityPostCardProps) {
   const isAuthor = currentUserId === post.author.id
   const displayAuthor = post.postType === 'repost' && post.originalPost
-    ? `${post.author.username} 转发了 ${post.originalPost.author.username} 的旅行分享`
+    ? `${post.author.username} 转发了 ${post.originalPost.author.username}`
     : post.author.username
 
-  // 点赞动画状态
   const [isLikeAnimating, setIsLikeAnimating] = useState(false)
 
   const handleLike = () => {
@@ -67,84 +73,119 @@ export function CommunityPostCard({
     onLike?.(post)
   }
 
+  const hasImages = post.images && post.images.length > 0
+
   return (
-    <article className="community-post-card travel-surface-card travel-ticket-edge" aria-labelledby={`community-post-${post.id}`}>
-      <header className="community-post-card__header">
-        <Link className="community-post-card__avatar" to={`/community?authorId=${post.author.id}`} aria-label={`查看${post.author.username}的分享`}>
-          {post.author.username.slice(0, 1).toUpperCase()}
+    <Card
+      className={`community-post-card ${hasImages ? 'community-post-card--has-images' : ''}`}
+      hoverable
+      styles={{
+        body: { padding: 0 },
+      }}
+    >
+      {/* 图片区域 - 占主要面积 */}
+      {hasImages && (
+        <Link to={`/community/${post.id}`} className="community-post-card__image-wrapper">
+          <CommunityImageGrid images={post.images} compact />
         </Link>
-        <div className="community-post-card__author">
-          <p>{displayAuthor}</p>
-          <span>{formatTime(post.createdAt)}</span>
+      )}
+
+      {/* 内容区域 */}
+      <div className="community-post-card__content">
+        {/* 用户信息 */}
+        <div className="community-post-card__meta">
+          <Link to={`/community?authorId=${post.author.id}`} className="community-post-card__user">
+            <Avatar size={28} className="community-post-card__avatar">
+              {post.author.username.slice(0, 1).toUpperCase()}
+            </Avatar>
+            <Text strong className="community-post-card__username">{displayAuthor}</Text>
+          </Link>
+          <Text type="secondary" className="community-post-card__time">{formatTime(post.createdAt)}</Text>
         </div>
-        {post.city ? <Tag className="travel-tag travel-tag--info">{post.city}</Tag> : null}
-      </header>
 
-      <Link className="community-post-card__body" to={`/community/${post.id}`}>
-        {post.title ? <h2 id={`community-post-${post.id}`}>{post.title}</h2> : <h2 id={`community-post-${post.id}`} className="sr-only">旅行分享</h2>}
-        {post.content ? <p>{getPostExcerpt(post.content)}</p> : null}
-      </Link>
+        {/* 标题和内容 */}
+        <Link to={`/community/${post.id}`} className="community-post-card__body">
+          {post.title && (
+            <Paragraph ellipsis={{ rows: 2 }} className="community-post-card__title">
+              {post.title}
+            </Paragraph>
+          )}
+          {post.content && (
+            <Paragraph ellipsis={{ rows: 2 }} type="secondary" className="community-post-card__excerpt">
+              {getPostExcerpt(post.content)}
+            </Paragraph>
+          )}
+        </Link>
 
-      <CommunityImageGrid images={post.images} compact />
+        {/* 城市标签 */}
+        {post.city && (
+          <Tag icon={<EnvironmentOutlined />} color="blue" className="community-post-card__city">
+            {post.city}
+          </Tag>
+        )}
 
-      {post.itinerarySnapshot ? <CommunityItineraryPreview snapshot={post.itinerarySnapshot} /> : null}
+        {/* 行程预览（紧凑模式） */}
+        {post.itinerarySnapshot && (
+          <div className="community-post-card__itinerary">
+            <CommunityItineraryPreview snapshot={post.itinerarySnapshot} />
+          </div>
+        )}
 
-      {post.originalPost
-        ? (
-            <Link className="community-post-card__quote" to={`/community/${post.originalPost.id}`}>
-              <span>原帖</span>
-              <strong>{post.originalPost.title || `${post.originalPost.city || '旅行'}分享`}</strong>
-              <p>{post.originalPost.content || '这是一条行程分享。'}</p>
-            </Link>
-          )
-        : post.postType === 'repost'
-          ? <div className="community-post-card__quote community-post-card__quote--missing">原帖已删除</div>
-          : null}
+        {/* 原帖引用 */}
+        {post.originalPost && (
+          <Link to={`/community/${post.originalPost.id}`} className="community-post-card__quote">
+            <Text type="secondary" className="community-post-card__quote-label">原帖</Text>
+            <Text strong ellipsis>{post.originalPost.title || `${post.originalPost.city || '旅行'}分享`}</Text>
+          </Link>
+        )}
+        {post.postType === 'repost' && !post.originalPost && (
+          <Text type="secondary" className="community-post-card__quote-missing">原帖已删除</Text>
+        )}
 
-      <footer className="community-post-card__actions" aria-label="帖子操作">
-        <Button
-          type="text"
-          className={`community-post-card__like-btn ${post.likedByMe ? 'community-post-card__like-btn--liked' : ''} ${isLikeAnimating ? 'community-post-card__like-btn--animating' : ''}`}
-          icon={post.likedByMe ? <HeartFilled aria-hidden="true" /> : <HeartOutlined aria-hidden="true" />}
-          loading={likePending}
-          aria-label={post.likedByMe ? '取消点赞' : '点赞'}
-          aria-pressed={post.likedByMe}
-          onClick={handleLike}
-        >
-          {post.likeCount}
-        </Button>
-        <Button
-          type="text"
-          icon={<CommentOutlined aria-hidden="true" />}
-          aria-label="查看评论"
-          onClick={() => onComment?.(post)}
-        >
-          {post.commentCount}
-        </Button>
-        <Button
-          type="text"
-          icon={<RetweetOutlined aria-hidden="true" />}
-          loading={repostPending}
-          aria-label="转发帖子"
-          onClick={() => onRepost?.(post)}
-        >
-          {post.repostCount}
-        </Button>
-        {isAuthor
-          ? (
-              <Button
-                type="text"
-                danger
-                icon={<DeleteOutlined aria-hidden="true" />}
-                loading={deletePending}
-                aria-label="删除帖子"
-                onClick={() => onDelete?.(post)}
-              >
-                删除
-              </Button>
-            )
-          : null}
-      </footer>
-    </article>
+        {/* 操作栏 */}
+        <div className="community-post-card__actions">
+          <Space size={4}>
+            <Button
+              type="text"
+              size="small"
+              className={`community-post-card__action-btn ${post.likedByMe ? 'community-post-card__action-btn--liked' : ''} ${isLikeAnimating ? 'community-post-card__action-btn--animating' : ''}`}
+              icon={post.likedByMe ? <HeartFilled /> : <HeartOutlined />}
+              loading={likePending}
+              onClick={handleLike}
+            >
+              {post.likeCount || ''}
+            </Button>
+            <Button
+              type="text"
+              size="small"
+              icon={<CommentOutlined />}
+              onClick={() => onComment?.(post)}
+            >
+              {post.commentCount || ''}
+            </Button>
+            <Button
+              type="text"
+              size="small"
+              icon={<RetweetOutlined />}
+              loading={repostPending}
+              onClick={() => onRepost?.(post)}
+            >
+              {post.repostCount || ''}
+            </Button>
+          </Space>
+
+          {isAuthor && (
+            <Button
+              type="text"
+              size="small"
+              danger
+              icon={<DeleteOutlined />}
+              loading={deletePending}
+              onClick={() => onDelete?.(post)}
+            />
+          )}
+        </div>
+      </div>
+    </Card>
   )
 }

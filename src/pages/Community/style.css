@@ -110,6 +110,33 @@
   gap: 20px;
 }
 
+/* 帖子进入动画 */
+.community-page__feed > * {
+  animation: fadeSlideUp 0.4s ease-out backwards;
+}
+
+.community-page__feed > *:nth-child(1) { animation-delay: 0.05s; }
+.community-page__feed > *:nth-child(2) { animation-delay: 0.1s; }
+.community-page__feed > *:nth-child(3) { animation-delay: 0.15s; }
+.community-page__feed > *:nth-child(4) { animation-delay: 0.2s; }
+.community-page__feed > *:nth-child(5) { animation-delay: 0.25s; }
+.community-page__feed > *:nth-child(6) { animation-delay: 0.3s; }
+.community-page__feed > *:nth-child(7) { animation-delay: 0.35s; }
+.community-page__feed > *:nth-child(8) { animation-delay: 0.4s; }
+.community-page__feed > *:nth-child(9) { animation-delay: 0.45s; }
+.community-page__feed > *:nth-child(10) { animation-delay: 0.5s; }
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .community-page__pagination {
   display: flex;
   justify-content: center;

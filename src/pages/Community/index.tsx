@@ -1,11 +1,12 @@
 import type { CommunityPost, CommunityPostFilters } from '@/types/community'
 import { PlusOutlined, RetweetOutlined, SearchOutlined } from '@ant-design/icons'
-import { Button, Empty, Input, Modal, Pagination, Spin, Switch } from 'antd'
+import { Button, Empty, Input, Modal, Pagination, Switch } from 'antd'
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { fetchCommunityPosts, likeCommunityPost, repostCommunityPost, unlikeCommunityPost } from '@/api/community'
 import { CommunityPostCard } from '@/components/CommunityPostCard'
+import { CommunityPostCardSkeleton } from '@/components/CommunityPostCard/skeleton'
 import { useAppMessage } from '@/hooks/useAppMessage'
 import { useAuthStore } from '@/stores/auth'
 
@@ -182,10 +183,11 @@ export default function Community() {
 
       {loading
         ? (
-            <div className="community-page__state travel-surface-card" role="status" aria-live="polite">
-              <Spin />
-              <span>加载社区分享中...</span>
-            </div>
+            <section className="community-page__feed" role="status" aria-live="polite">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <CommunityPostCardSkeleton key={i} />
+              ))}
+            </section>
           )
         : null}
 

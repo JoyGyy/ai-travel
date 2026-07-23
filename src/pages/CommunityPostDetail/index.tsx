@@ -1,5 +1,5 @@
 import type { CommunityComment, CommunityPost } from '@/types/community'
-import { ArrowLeftOutlined, DeleteOutlined, LinkOutlined, RetweetOutlined, SendOutlined, ShareAltOutlined } from '@ant-design/icons'
+import { ArrowLeftOutlined, DeleteOutlined, HeartFilled, HeartOutlined, LinkOutlined, RetweetOutlined, SendOutlined, ShareAltOutlined } from '@ant-design/icons'
 import { Button, Empty, Input, Modal, Pagination, Popconfirm, Spin } from 'antd'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -54,6 +54,7 @@ export default function CommunityPostDetail() {
   const [repostOpen, setRepostOpen] = useState(false)
   const [repostContent, setRepostContent] = useState('')
   const [repostPending, setRepostPending] = useState(false)
+  const [isLikeAnimating, setIsLikeAnimating] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -124,6 +125,11 @@ export default function CommunityPostDetail() {
   async function toggleLike() {
     if (!post || !requireLogin('点赞'))
       return
+
+    if (!post.likedByMe) {
+      setIsLikeAnimating(true)
+      setTimeout(() => setIsLikeAnimating(false), 600)
+    }
 
     setLikePending(true)
     try {
@@ -290,11 +296,13 @@ export default function CommunityPostDetail() {
             : null}
 
         <div className="community-detail__actions" aria-label="帖子操作">
-          <Button loading={likePending} onClick={toggleLike}>
-            {post.likedByMe ? '取消点赞' : '点赞'}
-            {' '}
-            ·
-            {' '}
+          <Button
+            className={`community-detail__like-btn ${post.likedByMe ? 'community-detail__like-btn--liked' : ''} ${isLikeAnimating ? 'community-detail__like-btn--animating' : ''}`}
+            icon={post.likedByMe ? <HeartFilled aria-hidden="true" /> : <HeartOutlined aria-hidden="true" />}
+            loading={likePending}
+            aria-pressed={post.likedByMe}
+            onClick={toggleLike}
+          >
             {post.likeCount}
           </Button>
           <Button icon={<RetweetOutlined aria-hidden="true" />} onClick={() => (requireLogin('转发') ? setRepostOpen(true) : undefined)}>

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { CommunityPost } from '@/types/community'
 import { CommentOutlined, DeleteOutlined, HeartFilled, HeartOutlined, RetweetOutlined } from '@ant-design/icons'
 import { Button, Tag } from 'antd'
@@ -55,6 +56,17 @@ export function CommunityPostCard({
     ? `${post.author.username} 转发了 ${post.originalPost.author.username} 的旅行分享`
     : post.author.username
 
+  // 点赞动画状态
+  const [isLikeAnimating, setIsLikeAnimating] = useState(false)
+
+  const handleLike = () => {
+    if (!post.likedByMe) {
+      setIsLikeAnimating(true)
+      setTimeout(() => setIsLikeAnimating(false), 600)
+    }
+    onLike?.(post)
+  }
+
   return (
     <article className="community-post-card travel-surface-card travel-ticket-edge" aria-labelledby={`community-post-${post.id}`}>
       <header className="community-post-card__header">
@@ -92,11 +104,12 @@ export function CommunityPostCard({
       <footer className="community-post-card__actions" aria-label="帖子操作">
         <Button
           type="text"
+          className={`community-post-card__like-btn ${post.likedByMe ? 'community-post-card__like-btn--liked' : ''} ${isLikeAnimating ? 'community-post-card__like-btn--animating' : ''}`}
           icon={post.likedByMe ? <HeartFilled aria-hidden="true" /> : <HeartOutlined aria-hidden="true" />}
           loading={likePending}
           aria-label={post.likedByMe ? '取消点赞' : '点赞'}
           aria-pressed={post.likedByMe}
-          onClick={() => onLike?.(post)}
+          onClick={handleLike}
         >
           {post.likeCount}
         </Button>

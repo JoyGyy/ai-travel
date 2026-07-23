@@ -73,9 +73,25 @@ const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS'])
 
 /**
  * 获取 CSRF token（从 cookie 或 header）
+ * 会检查 token 是否过期（1 小时有效期），过期则清除 cookie 返回空
  */
 function readCsrfToken(): string {
-  return document.cookie.match(/csrf_token=([^;]+)/)?.[1] || ''
+  const token = document.cookie.match(/csrf_token=([^;]+)/)?.[1] || ''
+  if (!token)
+    return ''
+
+  // 格式: random:timestamp:signature，检查 timestamp 是否在 1 小时内
+  const parts = token.split(':')
+  if (parts.length === 3) {
+    const timestamp = Number(parts[1])
+    if (Number.isFinite(timestamp) && Date.now() - timestamp > 60 * 60 * 1000) {
+      // token 已过期，清除 cookie
+      document.cookie = 'csrf_token=; max-age=0; path=/'
+      return ''
+    }
+  }
+
+  return token
 }
 
 function getCsrfHeader(): Record<string, string> {

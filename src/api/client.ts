@@ -68,7 +68,6 @@ interface RequestOptions {
 }
 
 // 不需要 CSRF 保护的 HTTP 方法
-// 不需要 CSRF 保护的 HTTP 方法
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS'])
 
 /**
@@ -99,18 +98,25 @@ function getCsrfHeader(): Record<string, string> {
   return token ? { 'X-CSRF-Token': token } : {}
 }
 
-/** 写请求前确保浏览器已有 CSRF cookie */
-async function ensureCsrfToken(): Promise<void> {
-  if (readCsrfToken())
-    return
-
+/** 强制刷新 CSRF token（清除旧 cookie 后重新获取） */
+async function refreshCsrfToken(): Promise<void> {
+  document.cookie = 'csrf_token=; max-age=0; path=/'
   const res = await fetch('/api/auth/csrf-token', { credentials: 'include' })
   if (!res.ok)
     throw new ApiError('CSRF token 获取失败', { status: res.status })
 }
 
+/** 写请求前确保浏览器已有有效的 CSRF cookie */
+async function ensureCsrfToken(): Promise<void> {
+  if (readCsrfToken())
+    return
+
+  await refreshCsrfToken()
+}
+
 /**
  * 发起 JSON API 请求。
+ * 写操作自动附加 CSRF token；若因 token 过期/失效返回 403，会自动刷新并重试一次。
  */
 export async function request<T = ApiSuccess>(path: string, options: RequestOptions = {}): Promise<T> {
   const {
@@ -121,28 +127,39 @@ export async function request<T = ApiSuccess>(path: string, options: RequestOpti
     signal,
   } = options
 
-  // 写操作（POST/PUT/DELETE）自动附加 CSRF token
   const isWriteMethod = !SAFE_METHODS.has(method.toUpperCase())
   if (isWriteMethod)
     await ensureCsrfToken()
 
   const isFormData = body instanceof FormData
 
-  const res = await fetch(path, {
-    method,
-    credentials: 'include',
-    headers: {
-      ...(body === undefined || isFormData ? {} : { 'Content-Type': 'application/json' }),
-      ...(auth ? getAuthHeader() : {}),
-      // 写操作自动附加 CSRF token
-      ...(isWriteMethod ? getCsrfHeader() : {}),
-      ...headers,
-    },
-    body: body === undefined ? undefined : isFormData ? body : JSON.stringify(body),
-    signal,
-  })
+  async function doFetch(): Promise<Response> {
+    return fetch(path, {
+      method,
+      credentials: 'include',
+      headers: {
+        ...(body === undefined || isFormData ? {} : { 'Content-Type': 'application/json' }),
+        ...(auth ? getAuthHeader() : {}),
+        ...(isWriteMethod ? getCsrfHeader() : {}),
+        ...headers,
+      },
+      body: body === undefined ? undefined : isFormData ? body : JSON.stringify(body),
+      signal,
+    })
+  }
 
-  const data = await parseResponse<T>(res)
+  let res = await doFetch()
+  let data = await parseResponse<T>(res)
+
+  // CSRF 403 自动刷新重试一次
+  if (!res.ok && res.status === 403 && isWriteMethod) {
+    const errMsg = data && typeof data === 'object' ? (data as Record<string, unknown>).message || (data as Record<string, unknown>).error : ''
+    if (/csrf/i.test(String(errMsg))) {
+      await refreshCsrfToken()
+      res = await doFetch()
+      data = await parseResponse<T>(res)
+    }
+  }
 
   // 非 2xx 响应抛出 ApiError
   if (!res.ok) {

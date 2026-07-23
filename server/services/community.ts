@@ -328,12 +328,12 @@ export async function listCommunityPosts(filters: CommunityListFilters, viewerId
   const viewerIdValue = viewerId || ''
 
   const conditions = ['p.deleted_at IS NULL']
-  const params: unknown[] = [viewerIdValue]
-  let paramIndex = 2
+  const filterParams: unknown[] = []
+  let filterParamIndex = 1
 
   if (filters.city) {
-    conditions.push(`p.city = $${paramIndex++}`)
-    params.push(filters.city)
+    conditions.push(`p.city = $${filterParamIndex++}`)
+    filterParams.push(filters.city)
   }
 
   if (filters.withItinerary) {
@@ -341,22 +341,25 @@ export async function listCommunityPosts(filters: CommunityListFilters, viewerId
   }
 
   if (filters.authorId) {
-    conditions.push(`p.author_id = $${paramIndex++}`)
-    params.push(filters.authorId)
+    conditions.push(`p.author_id = $${filterParamIndex++}`)
+    filterParams.push(filters.authorId)
   }
 
   const where = `WHERE ${conditions.join(' AND ')}`
   const countResult = await query(
     `SELECT COUNT(*)::int AS count FROM community_posts p ${where}`,
-    params.slice(),
+    filterParams,
   )
 
+  const dataParams = [viewerIdValue, ...filterParams]
+  const dataWhere = where.replace(/\$(\d+)/g, (_, index: string) => `$${Number(index) + 1}`)
+  const dataParamIndex = dataParams.length + 1
   const dataResult = await query(
     `${basePostSelect(1)}
-     ${where}
+     ${dataWhere}
      ORDER BY p.created_at DESC
-     LIMIT $${paramIndex++} OFFSET $${paramIndex++}`,
-    [...params, pageSize, offset],
+     LIMIT $${dataParamIndex} OFFSET $${dataParamIndex + 1}`,
+    [...dataParams, pageSize, offset],
   )
 
   return {

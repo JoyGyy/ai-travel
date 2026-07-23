@@ -1,8 +1,14 @@
 -- 景点数据库 Schema
 -- 使用 pg_trgm 扩展支持模糊搜索
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
--- pgvector 扩展支持向量搜索
-CREATE EXTENSION IF NOT EXISTS vector;
+-- pgvector 扩展支持向量搜索：本地数据库可能未安装该扩展，因此作为可选能力启用
+DO $$
+BEGIN
+  CREATE EXTENSION IF NOT EXISTS vector;
+EXCEPTION
+  WHEN OTHERS THEN
+    RAISE NOTICE 'pgvector 扩展不可用，跳过向量搜索能力: %', SQLERRM;
+END $$;
 
 -- 用户表
 CREATE TABLE IF NOT EXISTS users (
@@ -80,16 +86,36 @@ CREATE TABLE IF NOT EXISTS attraction_knowledge (
   best_season   TEXT NOT NULL DEFAULT '',
   accommodation JSONB DEFAULT '[]',
   nightlife     JSONB DEFAULT '[]',
-  embedding     vector(1024),
   UNIQUE(city, name)
 );
+
+-- pgvector 可用时再补充 embedding 列，避免无扩展环境阻断基础 schema 和社区表创建
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_type WHERE typname = 'vector') THEN
+    ALTER TABLE attraction_knowledge ADD COLUMN IF NOT EXISTS embedding vector(1024);
+  ELSE
+    RAISE NOTICE 'pgvector 类型不可用，跳过 embedding 列';
+  END IF;
+END $$;
 
 -- 索引
 CREATE INDEX IF NOT EXISTS idx_attractions_city      ON attractions(city);
 CREATE INDEX IF NOT EXISTS idx_attractions_name_trgm ON attractions USING gin (name gin_trgm_ops);
 CREATE INDEX IF NOT EXISTS idx_knowledge_city        ON attraction_knowledge(city);
 CREATE INDEX IF NOT EXISTS idx_attraction_tags_tag   ON attraction_tags(tag_id);
-CREATE INDEX IF NOT EXISTS idx_knowledge_embedding   ON attraction_knowledge USING ivfflat (embedding vector_cosine_ops) WITH (lists = 10);
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_name = 'attraction_knowledge' AND column_name = 'embedding'
+  ) THEN
+    CREATE INDEX IF NOT EXISTS idx_knowledge_embedding ON attraction_knowledge USING ivfflat (embedding vector_cosine_ops) WITH (lists = 10);
+  ELSE
+    RAISE NOTICE 'embedding 列不存在，跳过向量索引';
+  END IF;
+END $$;
 
 -- 社区帖子表：原帖和转发帖共用
 CREATE TABLE IF NOT EXISTS community_posts (

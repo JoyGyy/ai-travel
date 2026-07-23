@@ -5,21 +5,21 @@
  */
 
 import type { Request, Response } from 'express'
+import type { ChatMessage, ToolDefinition } from '../services/llm.js'
+import type { SearchResult } from '../services/rag.js'
 import { Router } from 'express'
 import attractionsDB from '../knowledge/attractions.json' with { type: 'json' }
 import { consumeAiQuotaForRequest } from '../middleware/aiQuota.js'
 import { requireAuthForRequest } from '../middleware/auth.js'
 import { searchAttractions as searchProductAttractions } from '../services/attractions/attractionService.js'
-import type { ChatMessage, ToolDefinition } from '../services/llm.js'
 import { callLLMWithTools, getLLMConfig } from '../services/llm.js'
-import type { SearchResult } from '../services/rag.js'
 import { getAllCities, retrieve } from '../services/rag.js'
 import { asyncHandler } from '../utils/http.js'
 import { createLogger } from '../utils/logger.js'
 import { initSSE, sendError, sendSSE } from '../utils/sse.js'
+import { ensureArray, readRequiredString } from '../utils/validation.js'
 
 const log = createLogger('chat')
-import { ensureArray, readRequiredString } from '../utils/validation.js'
 
 const router: ReturnType<typeof Router> = Router()
 

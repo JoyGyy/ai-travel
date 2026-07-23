@@ -8,7 +8,7 @@ import * as Sentry from '@sentry/react'
 
 export function initSentry(): void {
   // --- 未配置 DSN 则不上报，开发环境可忽略 ---
-  const dsn = (import.meta as unknown as { env: Record<string, string> }).env?.VITE_SENTRY_DSN
+  const dsn = import.meta.env.VITE_SENTRY_DSN
   if (!dsn)
     return
 

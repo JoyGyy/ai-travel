@@ -6,6 +6,16 @@
  */
 /// <reference types="vite/client" />
 
+// --- 自定义环境变量类型声明 ---
+interface ImportMetaEnv {
+  /** Sentry DSN 地址 */
+  readonly VITE_SENTRY_DSN?: string
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv
+}
+
 // --- CSS 模块类型声明 ---
 declare module '*.css' {
   const content: Record<string, string>

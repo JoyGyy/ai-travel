@@ -11,9 +11,9 @@ import { executeAgent } from '../services/agent.js'
 import { asyncHandler } from '../utils/http.js'
 import { createLogger } from '../utils/logger.js'
 import { initSSE, sendError } from '../utils/sse.js'
+import { readPositiveInteger, readPositiveNumber, readRequiredString } from '../utils/validation.js'
 
 const log = createLogger('travel')
-import { readPositiveInteger, readPositiveNumber, readRequiredString } from '../utils/validation.js'
 
 const router: ReturnType<typeof Router> = Router()
 

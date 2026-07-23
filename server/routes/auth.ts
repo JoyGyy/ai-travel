@@ -37,6 +37,7 @@ router.get('/csrf-token', (req: Request, res: Response) => {
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
     maxAge: 60 * 60 * 1000,
+    encode: (v: string) => v, // token 仅含 hex 和冒号，无需额外编码
   })
   res.json({ success: true, csrfToken: token })
 })

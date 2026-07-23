@@ -1,0 +1,136 @@
+.community-post-card {
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+  border-radius: 28px;
+}
+
+.community-post-card__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.community-post-card__avatar {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #fff;
+  background: linear-gradient(135deg, var(--travel-accent), var(--travel-ocean));
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 10px 24px rgba(var(--travel-accent-rgb), 0.2);
+}
+
+.community-post-card__author {
+  min-width: 0;
+  flex: 1;
+}
+
+.community-post-card__author p,
+.community-post-card__author span,
+.community-post-card__body p,
+.community-post-card__quote p {
+  margin: 0;
+}
+
+.community-post-card__author p {
+  color: var(--travel-ink);
+  font-weight: 800;
+}
+
+.community-post-card__author span {
+  color: var(--travel-muted);
+  font-size: 0.88rem;
+}
+
+.community-post-card__body {
+  display: grid;
+  gap: 8px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.community-post-card__body h2 {
+  margin: 0;
+  color: var(--travel-ink);
+  font-size: clamp(1.25rem, 2vw, 1.65rem);
+  line-height: 1.28;
+}
+
+.community-post-card__body p {
+  color: var(--travel-muted);
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+.community-post-card__quote {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid rgba(var(--travel-ocean-rgb), 0.16);
+  border-radius: 18px;
+  color: inherit;
+  background: rgba(var(--travel-ocean-rgb), 0.06);
+  text-decoration: none;
+}
+
+.community-post-card__quote span {
+  color: var(--travel-accent);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.community-post-card__quote strong {
+  color: var(--travel-ink);
+}
+
+.community-post-card__quote p {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--travel-muted);
+  line-height: 1.6;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.community-post-card__quote--missing {
+  color: var(--travel-muted);
+}
+
+.community-post-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding-top: 4px;
+  border-top: 1px dashed rgba(var(--travel-accent-rgb), 0.18);
+}
+
+.community-post-card__actions .ant-btn {
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.community-post-card__actions .ant-btn[aria-pressed="true"] {
+  color: var(--travel-danger);
+  background: rgba(var(--travel-danger-rgb), 0.08);
+}
+
+@media (max-width: 640px) {
+  .community-post-card {
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  .community-post-card__header {
+    align-items: flex-start;
+  }
+}

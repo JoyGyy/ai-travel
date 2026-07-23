@@ -6,7 +6,7 @@ import type { ItineraryCache } from '@/utils/storage'
  * 展示 AI 生成的旅行行程，包含天气、住宿、每日景点、预算明细等模块。
  * 优先从本地缓存读取，缓存未命中时通过 SSE 流式调用推荐接口生成行程。
  */
-import { ArrowLeftOutlined, CloseOutlined, CompassOutlined, EnvironmentOutlined } from '@ant-design/icons'
+import { ArrowLeftOutlined, CloseOutlined, CompassOutlined, EnvironmentOutlined, ShareAltOutlined } from '@ant-design/icons'
 import { useEffect, useState } from 'react'
 
 import { useNavigate, useSearchParams } from 'react-router-dom'
@@ -62,6 +62,23 @@ export default function Detail() {
 
   function findAttractionRef(spot?: string) {
     return attractionRefs.find(ref => ref.name === spot)
+  }
+
+  function shareToCommunity() {
+    navigate('/community/new', {
+      state: {
+        itinerarySnapshot: {
+          city,
+          days,
+          budget,
+          itinerary,
+          budgetBreakdown,
+          weather,
+          tips,
+          attractionRefs,
+        },
+      },
+    })
   }
 
   /* ---------- 数据加载：优先缓存 → SSE 流式生成 ---------- */
@@ -362,8 +379,12 @@ export default function Detail() {
                     )
                   : null}
 
-                {/* 咨询 AI 按钮 */}
+                {/* 分享与咨询操作 */}
                 <div className="detail-page__actions">
+                  <button type="button" onClick={shareToCommunity} className="detail-page__chat-btn" aria-label="分享到社区">
+                    <ShareAltOutlined aria-hidden="true" />
+                    分享到社区
+                  </button>
                   <button type="button" onClick={() => navigate('/chat')} className="detail-page__chat-btn" aria-label="咨询 AI 优化当前行程">咨询 AI 优化行程</button>
                 </div>
               </>

@@ -422,10 +422,16 @@
 
 /* 按钮 */
 .detail-page__actions {
+  display: grid;
+  gap: 12px;
   padding: 24px 0 0;
 }
 
 .detail-page__chat-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   width: 100%;
   min-height: 50px;
   border-radius: 16px;

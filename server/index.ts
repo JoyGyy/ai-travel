@@ -3,6 +3,7 @@
  * 提供旅行推荐和 AI 对话的 API 接口
  */
 
+import path from 'node:path'
 import cors from 'cors'
 import express from 'express'
 import helmet from 'helmet'
@@ -14,6 +15,7 @@ import adminAttractionRoutes from './routes/admin/attractions.js'
 import attractionRoutes from './routes/attractions.js'
 import authRoutes from './routes/auth.js'
 import chatRoutes from './routes/chat.js'
+import communityRoutes from './routes/community.js'
 import shareRoutes from './routes/share.js'
 import travelRoutes from './routes/travel.js'
 import weatherRoutes from './routes/weather.js'
@@ -64,6 +66,9 @@ app.use((req, _res, next) => {
   next()
 })
 
+// 社区上传图片静态资源
+app.use('/uploads', express.static(path.resolve(import.meta.dirname!, 'data/uploads')))
+
 // CSRF 校验：对写操作验证 token（需先通过 /api/auth/csrf-token 获取）
 app.use(csrfProtection)
 
@@ -82,6 +87,7 @@ app.use('/api/travel', chatRoutes)
 app.use('/api/attractions', attractionRoutes)
 app.use('/api/admin/attractions', adminAttractionRoutes)
 app.use('/api/travel', shareRoutes)
+app.use('/api/community', communityRoutes)
 app.use('/api', weatherRoutes)
 app.use('/api/auth/register', registerLimiter)
 app.use('/api/auth', authLimiter, authRoutes)

@@ -64,7 +64,9 @@ describe('attractions api', () => {
     await favoriteAttraction('xian-city-wall')
     await unfavoriteAttraction('xian-city-wall')
 
-    expect(fetchMock).toHaveBeenNthCalledWith(1, '/api/attractions/xian-city-wall/favorite', expect.objectContaining({ method: 'POST' }))
-    expect(fetchMock).toHaveBeenNthCalledWith(2, '/api/attractions/xian-city-wall/favorite', expect.objectContaining({ method: 'DELETE' }))
+    expect(fetchMock).toHaveBeenNthCalledWith(1, '/api/auth/csrf-token', expect.objectContaining({ credentials: 'include' }))
+    expect(fetchMock).toHaveBeenNthCalledWith(2, '/api/attractions/xian-city-wall/favorite', expect.objectContaining({ method: 'POST' }))
+    expect(fetchMock).toHaveBeenNthCalledWith(3, '/api/auth/csrf-token', expect.objectContaining({ credentials: 'include' }))
+    expect(fetchMock).toHaveBeenNthCalledWith(4, '/api/attractions/xian-city-wall/favorite', expect.objectContaining({ method: 'DELETE' }))
   })
 })

@@ -28,6 +28,20 @@ export function requireAuthForRequest(req: Request): AuthUser {
   return user
 }
 
+/** 可选认证：公开接口需要识别登录用户时使用 */
+export function getOptionalAuthForRequest(req: Request): AuthUser | null {
+  const authHeader = req.headers.authorization
+  if (!authHeader)
+    return null
+  if (!authHeader.startsWith('Bearer '))
+    throw httpError(401, '令牌格式无效')
+
+  const token = authHeader.slice(7)
+  const user = verifyToken(token)
+  ;(req as Request & { user: AuthUser }).user = user
+  return user
+}
+
 export function requireAuth(req: Request, _res: Response, next: NextFunction): void {
   try {
     requireAuthForRequest(req)

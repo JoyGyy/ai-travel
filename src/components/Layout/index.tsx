@@ -3,7 +3,7 @@
  * 包含顶部导航栏（TopNav）、路由内容区域和懒加载 Suspense fallback
  * 根据当前路径决定是否显示导航栏（首页和登录页隐藏）
  */
-import { CloudOutlined, CompassOutlined, EnvironmentOutlined, HomeOutlined, RobotOutlined, UserOutlined } from '@ant-design/icons'
+import { CloudOutlined, CompassOutlined, EnvironmentOutlined, HomeOutlined, RobotOutlined, TeamOutlined, UserOutlined } from '@ant-design/icons'
 import { Suspense, useEffect } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 
@@ -18,6 +18,7 @@ const tabs = [
   { key: '/', title: '首页', icon: <HomeOutlined aria-hidden="true" /> },
   { key: '/weather', title: '天气', icon: <CloudOutlined aria-hidden="true" /> },
   { key: '/attractions', title: '景点', icon: <EnvironmentOutlined aria-hidden="true" /> },
+  { key: '/community', title: '社区', icon: <TeamOutlined aria-hidden="true" /> },
   { key: '/chat', title: 'AI咨询', icon: <RobotOutlined aria-hidden="true" /> },
 ] as const
 
@@ -32,6 +33,8 @@ function shouldShowNav(pathname: string) {
     || pathname === '/detail'
     || pathname === '/attractions'
     || pathname.startsWith('/attractions/')
+    || pathname === '/community'
+    || pathname.startsWith('/community/')
 }
 
 /* ========== 顶部导航栏 ========== */

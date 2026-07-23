@@ -90,3 +90,62 @@ CREATE INDEX IF NOT EXISTS idx_attractions_name_trgm ON attractions USING gin (n
 CREATE INDEX IF NOT EXISTS idx_knowledge_city        ON attraction_knowledge(city);
 CREATE INDEX IF NOT EXISTS idx_attraction_tags_tag   ON attraction_tags(tag_id);
 CREATE INDEX IF NOT EXISTS idx_knowledge_embedding   ON attraction_knowledge USING ivfflat (embedding vector_cosine_ops) WITH (lists = 10);
+
+-- 社区帖子表：原帖和转发帖共用
+CREATE TABLE IF NOT EXISTS community_posts (
+  id TEXT PRIMARY KEY,
+  author_id VARCHAR(64) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  post_type TEXT NOT NULL DEFAULT 'original' CHECK (post_type IN ('original', 'repost')),
+  original_post_id TEXT REFERENCES community_posts(id) ON DELETE SET NULL,
+  title TEXT NOT NULL DEFAULT '',
+  content TEXT NOT NULL DEFAULT '',
+  city TEXT NOT NULL DEFAULT '',
+  itinerary_snapshot JSONB,
+  visibility TEXT NOT NULL DEFAULT 'public' CHECK (visibility IN ('public')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  deleted_at TIMESTAMPTZ,
+  CONSTRAINT community_post_repost_target CHECK (
+    (post_type = 'original' AND original_post_id IS NULL)
+    OR (post_type = 'repost' AND original_post_id IS NOT NULL)
+  )
+);
+
+-- 社区帖子图片表：图片文件由上传接口存储，数据库保存可访问 URL 和存储键
+CREATE TABLE IF NOT EXISTS community_post_images (
+  id TEXT PRIMARY KEY,
+  post_id TEXT NOT NULL REFERENCES community_posts(id) ON DELETE CASCADE,
+  url TEXT NOT NULL,
+  storage_key TEXT NOT NULL,
+  alt_text TEXT NOT NULL DEFAULT '',
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- 社区帖子点赞表：复合主键保证同一用户点赞幂等
+CREATE TABLE IF NOT EXISTS community_post_likes (
+  post_id TEXT NOT NULL REFERENCES community_posts(id) ON DELETE CASCADE,
+  user_id VARCHAR(64) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (post_id, user_id)
+);
+
+-- 社区帖子评论表：一期只支持一级评论，删除采用软删除
+CREATE TABLE IF NOT EXISTS community_post_comments (
+  id TEXT PRIMARY KEY,
+  post_id TEXT NOT NULL REFERENCES community_posts(id) ON DELETE CASCADE,
+  author_id VARCHAR(64) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  content TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  deleted_at TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS idx_community_posts_created_at ON community_posts(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_community_posts_author ON community_posts(author_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_community_posts_city ON community_posts(city);
+CREATE INDEX IF NOT EXISTS idx_community_posts_original ON community_posts(original_post_id);
+CREATE INDEX IF NOT EXISTS idx_community_post_images_post ON community_post_images(post_id, sort_order);
+CREATE INDEX IF NOT EXISTS idx_community_post_likes_user ON community_post_likes(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_community_comments_post ON community_post_comments(post_id, created_at ASC);
+CREATE INDEX IF NOT EXISTS idx_community_comments_author ON community_post_comments(author_id, created_at DESC);

@@ -36,6 +36,10 @@ function readPersistedToken(): string {
   }
 }
 
+export function hasAuthToken(): boolean {
+  return Boolean(readPersistedToken())
+}
+
 export function getAuthHeader(): Record<string, string> {
   const token = readPersistedToken()
   return token ? { Authorization: `Bearer ${token}` } : {}
@@ -57,7 +61,7 @@ async function parseResponse<T>(res: Response): Promise<T | null> {
 
 interface RequestOptions {
   method?: string
-  body?: unknown
+  body?: unknown | FormData
   headers?: Record<string, string>
   auth?: boolean
   signal?: AbortSignal
@@ -70,12 +74,23 @@ const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS'])
 /**
  * 获取 CSRF token（从 cookie 或 header）
  */
+function readCsrfToken(): string {
+  return document.cookie.match(/csrf_token=([^;]+)/)?.[1] || ''
+}
+
 function getCsrfHeader(): Record<string, string> {
-  // 尝试从 cookie 读取
-  const match = document.cookie.match(/csrf_token=([^;]+)/)
-  if (match)
-    return { 'X-CSRF-Token': match[1] }
-  return {}
+  const token = readCsrfToken()
+  return token ? { 'X-CSRF-Token': token } : {}
+}
+
+/** 写请求前确保浏览器已有 CSRF cookie */
+async function ensureCsrfToken(): Promise<void> {
+  if (readCsrfToken())
+    return
+
+  const res = await fetch('/api/auth/csrf-token', { credentials: 'include' })
+  if (!res.ok)
+    throw new ApiError('CSRF token 获取失败', { status: res.status })
 }
 
 /**
@@ -92,17 +107,22 @@ export async function request<T = ApiSuccess>(path: string, options: RequestOpti
 
   // 写操作（POST/PUT/DELETE）自动附加 CSRF token
   const isWriteMethod = !SAFE_METHODS.has(method.toUpperCase())
+  if (isWriteMethod)
+    await ensureCsrfToken()
+
+  const isFormData = body instanceof FormData
 
   const res = await fetch(path, {
     method,
+    credentials: 'include',
     headers: {
-      ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
+      ...(body === undefined || isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...(auth ? getAuthHeader() : {}),
       // 写操作自动附加 CSRF token
       ...(isWriteMethod ? getCsrfHeader() : {}),
       ...headers,
     },
-    body: body === undefined ? undefined : JSON.stringify(body),
+    body: body === undefined ? undefined : isFormData ? body : JSON.stringify(body),
     signal,
   })
 

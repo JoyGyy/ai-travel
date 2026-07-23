@@ -18,6 +18,9 @@ const Weather = React.lazy(() => import('@/pages/Weather'))
 const Login = React.lazy(() => import('@/pages/Login'))
 const Attractions = React.lazy(() => import('@/pages/Attractions'))
 const AttractionDetail = React.lazy(() => import('@/pages/AttractionDetail'))
+const Community = React.lazy(() => import('@/pages/Community'))
+const CommunityPostCreate = React.lazy(() => import('@/pages/CommunityPostCreate'))
+const CommunityPostDetail = React.lazy(() => import('@/pages/CommunityPostDetail'))
 const Profile = React.lazy(() => import('@/pages/Profile'))
 const Terms = React.lazy(() => import('@/pages/Terms'))
 const Privacy = React.lazy(() => import('@/pages/Privacy'))
@@ -84,6 +87,23 @@ const router = createBrowserRouter([
           <ProtectedRoute>
             <AttractionDetail />
           </ProtectedRoute>
+        </ErrorBoundary>
+      ) },
+      { path: 'community', element: (
+        <ErrorBoundary onError={handleRouteError}>
+          <Community />
+        </ErrorBoundary>
+      ) },
+      { path: 'community/new', element: (
+        <ErrorBoundary onError={handleRouteError}>
+          <ProtectedRoute>
+            <CommunityPostCreate />
+          </ProtectedRoute>
+        </ErrorBoundary>
+      ) },
+      { path: 'community/:id', element: (
+        <ErrorBoundary onError={handleRouteError}>
+          <CommunityPostDetail />
         </ErrorBoundary>
       ) },
       { path: 'profile', element: (

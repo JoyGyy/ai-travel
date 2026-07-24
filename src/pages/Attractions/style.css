@@ -138,8 +138,20 @@
   gap: 18px;
 }
 
+.attractions-page__card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.attractions-page__card-link:hover .attractions-page__card {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
 .attractions-page__card {
   overflow: hidden;
+  transition: transform var(--motion-fast) var(--ease-standard), box-shadow var(--motion-fast) var(--ease-standard);
 }
 
 .attractions-page__cover {

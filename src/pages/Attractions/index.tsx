@@ -219,40 +219,52 @@ export default function Attractions() {
                 {items.map((item) => {
                   const isFavoritePending = favoritePendingIds.has(item.id)
                   return (
-                    <article key={item.id} className="attractions-page__card travel-surface-card travel-ticket-edge">
-                      <img
-                        src={item.coverImage}
-                        alt={`${item.name}，${item.city}景点封面`}
-                        className="attractions-page__cover"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                      <div className="attractions-page__card-body">
-                        <div className="attractions-page__card-title-row">
-                          <h2>{item.name}</h2>
-                          <button
-                            type="button"
-                            aria-label={`${item.isFavorite ? '取消收藏' : '收藏'}${item.name}`}
-                            aria-pressed={Boolean(item.isFavorite)}
-                            disabled={isFavoritePending}
-                            onClick={() => toggleFavorite(item)}
-                            className="attractions-page__favorite"
-                          >
-                            {item.isFavorite ? <HeartFilled aria-hidden="true" /> : <HeartOutlined aria-hidden="true" />}
-                          </button>
+                    <Link key={item.id} to={`/attractions/${item.id}`} className="attractions-page__card-link" aria-label={`查看${item.name}详情`}>
+                      <article className="attractions-page__card travel-surface-card travel-ticket-edge">
+                        <img
+                          src={item.coverImage}
+                          alt={`${item.name}，${item.city}景点封面`}
+                          className="attractions-page__cover"
+                          loading="lazy"
+                          decoding="async"
+                          onError={(e) => {
+                            const target = e.currentTarget
+                            target.onerror = null
+                            target.style.background = 'linear-gradient(135deg, var(--travel-primary) 0%, var(--travel-ocean) 100%)'
+                            target.src = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500"><text x="50%" y="50%" font-size="48" fill="white" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif">📷</text></svg>')}`
+                          }}
+                        />
+                        <div className="attractions-page__card-body">
+                          <div className="attractions-page__card-title-row">
+                            <h2>{item.name}</h2>
+                            <button
+                              type="button"
+                              aria-label={`${item.isFavorite ? '取消收藏' : '收藏'}${item.name}`}
+                              aria-pressed={Boolean(item.isFavorite)}
+                              disabled={isFavoritePending}
+                              onClick={(e) => {
+                                e.preventDefault()
+                                e.stopPropagation()
+                                toggleFavorite(item)
+                              }}
+                              className="attractions-page__favorite"
+                            >
+                              {item.isFavorite ? <HeartFilled aria-hidden="true" /> : <HeartOutlined aria-hidden="true" />}
+                            </button>
+                          </div>
+                          <p>{item.summary}</p>
+                          <div className="attractions-page__meta">
+                            <Tag className={`travel-tag ${item.ticketType === 'free' ? 'travel-tag--free' : 'travel-tag--paid'}`}>{item.ticketType === 'free' ? '免费' : '收费'}</Tag>
+                            <span>{item.city}</span>
+                            <span>{item.priceText}</span>
+                          </div>
+                          <div className="attractions-page__tags">
+                            {item.tags.map(tag => <Tag key={tag} className="travel-tag travel-tag--info">{tag}</Tag>)}
+                          </div>
+                          <span className="attractions-page__detail-link" aria-hidden="true">查看详情</span>
                         </div>
-                        <p>{item.summary}</p>
-                        <div className="attractions-page__meta">
-                          <Tag className={`travel-tag ${item.ticketType === 'free' ? 'travel-tag--free' : 'travel-tag--paid'}`}>{item.ticketType === 'free' ? '免费' : '收费'}</Tag>
-                          <span>{item.city}</span>
-                          <span>{item.priceText}</span>
-                        </div>
-                        <div className="attractions-page__tags">
-                          {item.tags.map(tag => <Tag key={tag} className="travel-tag travel-tag--info">{tag}</Tag>)}
-                        </div>
-                        <Link className="attractions-page__detail-link" to={`/attractions/${item.id}`} aria-label={`查看${item.name}详情`}>查看详情</Link>
-                      </div>
-                    </article>
+                      </article>
+                    </Link>
                   )
                 })}
               </section>

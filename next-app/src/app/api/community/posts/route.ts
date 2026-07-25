@@ -14,8 +14,13 @@ import {
   createCommunityPost,
   listCommunityPosts,
 } from '@/lib/services/community'
-import { extractCsrfToken, verifyCsrfToken } from '@/lib/utils/csrf'
-import { errorResponse, httpError } from '@/lib/utils/http'
+import { httpError, withErrorHandler, withProtected } from '@/lib/utils/http'
+import {
+  readBoolean,
+  readOptionalString,
+  readPositiveInteger,
+  readRequiredString,
+} from '@/lib/utils/validation'
 
 const MAX_POST_CONTENT_LENGTH = 2000
 const MAX_POST_TITLE_LENGTH = 80
@@ -24,41 +29,7 @@ const MAX_IMAGES_PER_POST = 9
 const MAX_ITINERARY_SNAPSHOT_SIZE = 100 * 1024
 const PUBLIC_UPLOAD_PREFIX = '/uploads/community'
 
-// ========== 参数读取与校验 ==========
-
-function readOptionalString(value: unknown, fieldName: string, max: number): string {
-  if (value === undefined || value === null) return ''
-  if (typeof value !== 'string')
-    throw httpError(400, `${fieldName}必须是文本`)
-  const trimmed = value.trim()
-  if (trimmed.length > max)
-    throw httpError(400, `${fieldName}不能超过 ${max} 个字符`)
-  return trimmed
-}
-
-function readBoolean(value: unknown): boolean {
-  return value === true || value === 'true' || value === '1'
-}
-
-function readPositiveInteger(value: unknown, fieldName: string, options: { min?: number, max?: number } = {}): number {
-  const { min = 1, max = 30 } = options
-  const number = Number(value)
-  if (!Number.isInteger(number) || number < min || number > max)
-    throw httpError(400, `${fieldName}必须是 ${min}-${max} 之间的整数`)
-  return number
-}
-
-function readRequiredString(value: unknown, fieldName: string, options: { min?: number, max?: number } = {}): string {
-  const { min = 1, max = 2000 } = options
-  if (typeof value !== 'string')
-    throw httpError(400, `${fieldName}必须是文本`)
-  const trimmed = value.trim()
-  if (trimmed.length < min)
-    throw httpError(400, `请输入${fieldName}`)
-  if (trimmed.length > max)
-    throw httpError(400, `${fieldName}不能超过 ${max} 个字符`)
-  return trimmed
-}
+// ========== 参数校验 ==========
 
 function ensureArray(value: unknown, fieldName: string, options: { max?: number } = {}): unknown[] {
   const { max = 20 } = options
@@ -132,9 +103,8 @@ function validatePostPayload(payload: unknown): CreateCommunityPostInput {
 
 // ========== 路由处理 ==========
 
-export async function GET(req: Request) {
-  try {
-    // 限流
+export const GET = withErrorHandler(
+  async (req: Request) => {
     const rateLimited = checkRateLimit(req, 'community:read', 60, 60_000)
     if (rateLimited) return rateLimited
 
@@ -153,34 +123,13 @@ export async function GET(req: Request) {
     }, viewer?.id)
 
     return NextResponse.json({ success: true, data, message: 'ok' })
-  }
-  catch (err) {
-    return errorResponse(err)
-  }
-}
+  },
+)
 
-export async function POST(req: Request) {
-  try {
-    const user = getAuthFromHeaders(req.headers)
-    if (!user) {
-      return NextResponse.json({ success: false, message: '未登录' }, { status: 401 })
-    }
-
-    // CSRF 验证
-    const csrfToken = extractCsrfToken(req.headers, req.headers.get('cookie') || undefined)
-    if (!csrfToken || !verifyCsrfToken(csrfToken)) {
-      throw httpError(403, 'CSRF token 无效')
-    }
-
-    // 限流
-    const rateLimited = checkRateLimit(req, 'community:post', 5, 60_000)
-    if (rateLimited) return rateLimited
-
+export const POST = withProtected(
+  async (req, { user }) => {
     const post = await createCommunityPost(user.id, validatePostPayload(await req.json()))
-
     return NextResponse.json({ success: true, data: post, message: '已发布到社区' })
-  }
-  catch (err) {
-    return errorResponse(err)
-  }
-}
+  },
+  { rateLimit: { name: 'community:post', max: 5, windowMs: 60_000 } },
+)

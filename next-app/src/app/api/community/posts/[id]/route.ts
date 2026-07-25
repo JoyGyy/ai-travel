@@ -11,24 +11,14 @@ import {
   deleteCommunityPost,
   getCommunityPostById,
 } from '@/lib/services/community'
-import { extractCsrfToken, verifyCsrfToken } from '@/lib/utils/csrf'
-import { errorResponse, httpError } from '@/lib/utils/http'
+import { readRequiredString } from '@/lib/utils/validation'
+import { httpError, withErrorHandler, withProtected } from '@/lib/utils/http'
 
-function readRequiredString(value: unknown, fieldName: string, options: { min?: number, max?: number } = {}): string {
-  const { min = 1, max = 2000 } = options
-  if (typeof value !== 'string')
-    throw httpError(400, `${fieldName}必须是文本`)
-  const trimmed = value.trim()
-  if (trimmed.length < min)
-    throw httpError(400, `请输入${fieldName}`)
-  if (trimmed.length > max)
-    throw httpError(400, `${fieldName}不能超过 ${max} 个字符`)
-  return trimmed
-}
+type Context = { params: Promise<{ id: string }> }
 
-export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  try {
-    // 限流
+export const GET = withErrorHandler(
+  async (req: Request, context?: unknown) => {
+    const { params } = context as Context
     const rateLimited = checkRateLimit(req, 'community:read', 60, 60_000)
     if (rateLimited) return rateLimited
 
@@ -41,33 +31,16 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       throw httpError(404, '帖子不存在或已删除')
 
     return NextResponse.json({ success: true, data: post, message: 'ok' })
-  }
-  catch (err) {
-    return errorResponse(err)
-  }
-}
+  },
+)
 
-export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  try {
-    const user = getAuthFromHeaders(req.headers)
-    if (!user) {
-      return NextResponse.json({ success: false, message: '未登录' }, { status: 401 })
-    }
-
-    // CSRF 验证
-    const csrfToken = extractCsrfToken(req.headers, req.headers.get('cookie') || undefined)
-    if (!csrfToken || !verifyCsrfToken(csrfToken)) {
-      throw httpError(403, 'CSRF token 无效')
-    }
-
+export const DELETE = withProtected<Context>(
+  async (_req, { user, params }) => {
     const { id } = await params
     readRequiredString(id, '帖子ID', { min: 1, max: 100 })
 
     await deleteCommunityPost(id, user.id)
-
     return NextResponse.json({ success: true, message: '帖子已删除' })
-  }
-  catch (err) {
-    return errorResponse(err)
-  }
-}
+  },
+  { rateLimit: { name: 'community:delete', max: 10, windowMs: 60_000 } },
+)

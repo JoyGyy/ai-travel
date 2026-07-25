@@ -4,20 +4,18 @@
  * 使用 FormData 上传，替代 multer
  * 需要登录
  */
-import { mkdirSync } from 'node:fs'
+import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
 import { NextResponse } from 'next/server'
 import { nanoid } from 'nanoid'
 
-import { checkRateLimit } from '@/lib/rate-limit'
-import { getAuthFromHeaders } from '@/lib/services/auth'
-import { extractCsrfToken, verifyCsrfToken } from '@/lib/utils/csrf'
-import { errorResponse, httpError } from '@/lib/utils/http'
+import { withProtected } from '@/lib/utils/http'
+import { httpError } from '@/lib/utils/http'
 
 const MAX_IMAGES_PER_POST = 9
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024 // 5MB
-const UPLOAD_ROOT = path.resolve(process.cwd(), '../server/data/uploads/community')
+const UPLOAD_ROOT = path.resolve(process.cwd(), 'public/uploads/community')
 const PUBLIC_UPLOAD_PREFIX = '/uploads/community'
 
 const allowedMimeTypes = new Map([
@@ -26,32 +24,17 @@ const allowedMimeTypes = new Map([
   ['image/webp', 'webp'],
 ])
 
-function currentUploadFolder() {
+async function currentUploadFolder() {
   const now = new Date()
   const year = String(now.getFullYear())
   const month = String(now.getMonth() + 1).padStart(2, '0')
   const folder = path.join(UPLOAD_ROOT, year, month)
-  mkdirSync(folder, { recursive: true })
+  await mkdir(folder, { recursive: true })
   return { folder, year, month }
 }
 
-export async function POST(req: Request) {
-  try {
-    const user = getAuthFromHeaders(req.headers)
-    if (!user) {
-      return NextResponse.json({ success: false, message: '未登录' }, { status: 401 })
-    }
-
-    // CSRF 验证
-    const csrfToken = extractCsrfToken(req.headers, req.headers.get('cookie') || undefined)
-    if (!csrfToken || !verifyCsrfToken(csrfToken)) {
-      throw httpError(403, 'CSRF token 无效')
-    }
-
-    // 限流
-    const rateLimited = checkRateLimit(req, 'community:upload', 30, 60 * 60_000)
-    if (rateLimited) return rateLimited
-
+export const POST = withProtected(
+  async (req, { user }) => {
     const formData = await req.formData()
     const files = formData.getAll('files').filter((f): f is File => f instanceof File)
 
@@ -61,27 +44,22 @@ export async function POST(req: Request) {
     if (files.length > MAX_IMAGES_PER_POST)
       throw httpError(400, `每次最多上传 ${MAX_IMAGES_PER_POST} 张图片`)
 
-    const { folder, year, month } = currentUploadFolder()
+    const { folder, year, month } = await currentUploadFolder()
     const images: Array<{ url: string, storageKey: string, altText: string }> = []
 
-    for (const file of files) {
-      // 校验文件类型
+    // 并行写入所有文件，替代串行同步写入
+    await Promise.all(files.map(async (file) => {
       const ext = allowedMimeTypes.get(file.type)
-      if (!ext) {
+      if (!ext)
         throw httpError(400, '仅支持 JPG、PNG 或 WebP 图片')
-      }
 
-      // 校验文件大小
-      if (file.size > MAX_IMAGE_SIZE) {
+      if (file.size > MAX_IMAGE_SIZE)
         throw httpError(413, '单张图片不能超过 5MB')
-      }
 
-      // 生成文件名并写入磁盘
       const filename = `${nanoid(16)}.${ext}`
       const filePath = path.join(folder, filename)
       const buffer = Buffer.from(await file.arrayBuffer())
-      const { writeFileSync } = await import('node:fs')
-      writeFileSync(filePath, buffer)
+      await writeFile(filePath, buffer)
 
       const relativePath = `${year}/${month}/${filename}`
       images.push({
@@ -89,11 +67,9 @@ export async function POST(req: Request) {
         storageKey: `community/${relativePath}`,
         altText: file.name ? `${file.name} 图片` : '旅行分享图片',
       })
-    }
+    }))
 
     return NextResponse.json({ success: true, data: { images }, message: '上传成功' })
-  }
-  catch (err) {
-    return errorResponse(err)
-  }
-}
+  },
+  { rateLimit: { name: 'community:upload', max: 30, windowMs: 60 * 60_000 } },
+)

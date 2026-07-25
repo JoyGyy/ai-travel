@@ -47,8 +47,8 @@ export const POST = withProtected(
     const { folder, year, month } = await currentUploadFolder()
     const images: Array<{ url: string, storageKey: string, altText: string }> = []
 
-    // 并行写入所有文件，替代串行同步写入
-    await Promise.all(files.map(async (file) => {
+    // 并行写入所有文件，用 map 返回结果保证顺序与用户选择一致
+    const results = await Promise.all(files.map(async (file, index) => {
       const ext = allowedMimeTypes.get(file.type)
       if (!ext)
         throw httpError(400, '仅支持 JPG、PNG 或 WebP 图片')
@@ -62,12 +62,13 @@ export const POST = withProtected(
       await writeFile(filePath, buffer)
 
       const relativePath = `${year}/${month}/${filename}`
-      images.push({
+      return {
         url: `${PUBLIC_UPLOAD_PREFIX}/${relativePath}`,
         storageKey: `community/${relativePath}`,
         altText: file.name ? `${file.name} 图片` : '旅行分享图片',
-      })
+      }
     }))
+    images.push(...results)
 
     return NextResponse.json({ success: true, data: { images }, message: '上传成功' })
   },

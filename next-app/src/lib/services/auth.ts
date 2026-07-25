@@ -124,7 +124,8 @@ export function getAuthFromHeaders(headers: Headers): JwtPayload | null {
   // 其次从 cookie
   const cookie = headers.get('cookie')
   if (cookie) {
-    const match = cookie.match(/token=([^;]+)/)
+    // 使用 \b 确保精确匹配 'token' cookie，不会误匹配 'csrf_token' 等
+    const match = cookie.match(/\btoken=([^;]+)/)
     if (match) {
       try {
         return verifyToken(match[1])

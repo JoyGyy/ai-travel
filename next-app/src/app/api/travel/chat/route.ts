@@ -13,6 +13,7 @@ import { getAllCities, retrieve } from '@/lib/services/rag'
 import { errorResponse, httpError } from '@/lib/utils/http'
 import { createLogger } from '@/lib/utils/logger'
 import { createSSEStream, sendError } from '@/lib/utils/sse'
+import type { SSEData } from '@/lib/utils/sse'
 
 const log = createLogger('chat')
 
@@ -213,7 +214,7 @@ function getNonTravelResponse(): string {
 
 /** 逐字符流式输出文本到 SSE */
 async function streamTextResponse(
-  send: (data: Record<string, unknown>) => void,
+  send: (data: SSEData) => void,
   content: string,
   options: { sources?: string[], delayMs?: number } = {},
 ): Promise<void> {
@@ -234,7 +235,7 @@ async function streamTextResponse(
 /** 拦截非旅行相关消息并返回引导回复 */
 async function handleNonTravelMessage(
   message: string,
-  send: (data: Record<string, unknown>) => void,
+  send: (data: SSEData) => void,
   options: { delayMs?: number } = {},
 ): Promise<boolean> {
   if (await isTravelRelatedMessage(message)) return false
@@ -438,9 +439,7 @@ export async function POST(req: Request) {
       })
     }
 
-    // 消耗 AI 配额
-    await consumeAiQuota(user.id)
-
+    // 先校验参数，再扣配额（避免无效请求白白消耗配额）
     const body = await req.json() as { message?: unknown, messages?: unknown }
     const message = readRequiredString(body.message, '问题', { min: 1, max: 2000 })
     const historyMessages = (ensureArray(body.messages, '历史消息', { max: 20 }) as HistoryMessage[]).map((item) => {
@@ -448,6 +447,9 @@ export async function POST(req: Request) {
       const content = typeof item?.content === 'string' ? item.content.slice(0, 2000) : ''
       return { role, content }
     }).filter(item => item.content)
+
+    // 参数校验通过后才消耗 AI 配额
+    await consumeAiQuota(user.id)
 
     return createSSEStream(async (send) => {
       let ragSources: string[] = []

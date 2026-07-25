@@ -52,7 +52,7 @@ function getTodayKey(): string {
 }
 
 /** 用户注册：校验参数、密码哈希、写入数据库、签发 JWT */
-async function register(username: string, password: string): Promise<AuthResult> {
+async function register(username: string, password: string, email?: string): Promise<AuthResult> {
   if (!username || !password)
     throw new Error('用户名和密码不能为空')
   if (username.length < 2 || username.length > 20)
@@ -67,10 +67,11 @@ async function register(username: string, password: string): Promise<AuthResult>
   const hashed = await bcrypt.hash(password, SALT_ROUNDS)
   const id = nanoid()
   const createdAt = new Date().toISOString()
+  const userEmail = email || `${username}@travel.local`
 
   await query(
-    'INSERT INTO users (id, username, password, created_at) VALUES ($1, $2, $3, $4)',
-    [id, username, hashed, createdAt],
+    'INSERT INTO users (id, username, email, password_hash, created_at) VALUES ($1, $2, $3, $4, $5)',
+    [id, username, userEmail, hashed, createdAt],
   )
 
   const token = jwt.sign({ id, username }, env.JWT_SECRET, { expiresIn: '7d' })
@@ -83,14 +84,14 @@ async function login(username: string, password: string): Promise<AuthResult> {
     throw new Error('用户名和密码不能为空')
 
   const result = await query(
-    'SELECT id, username, password, created_at FROM users WHERE username = $1',
+    'SELECT id, username, password_hash, created_at FROM users WHERE username = $1',
     [username],
   )
   if (result.rows.length === 0)
     throw new Error('用户名或密码错误')
 
   const user = result.rows[0]
-  const match = await bcrypt.compare(password, user.password)
+  const match = await bcrypt.compare(password, user.password_hash)
   if (!match)
     throw new Error('用户名或密码错误')
 
@@ -263,16 +264,16 @@ async function changePassword(userId: string, currentPassword: string, newPasswo
   if (!currentPassword || !newPassword) throw new Error('当前密码和新密码不能为空')
   if (newPassword.length < 6) throw new Error('新密码长度至少 6 个字符')
 
-  const result = await query('SELECT password FROM users WHERE id = $1', [userId])
+  const result = await query('SELECT password_hash FROM users WHERE id = $1', [userId])
   if (result.rows.length === 0)
     throw new Error('用户不存在')
 
-  const match = await bcrypt.compare(currentPassword, result.rows[0].password)
+  const match = await bcrypt.compare(currentPassword, result.rows[0].password_hash)
   if (!match)
     throw new Error('当前密码错误')
 
   const newHashed = await bcrypt.hash(newPassword, SALT_ROUNDS)
-  await query('UPDATE users SET password = $1 WHERE id = $2', [newHashed, userId])
+  await query('UPDATE users SET password_hash = $1 WHERE id = $2', [newHashed, userId])
 }
 
 export {

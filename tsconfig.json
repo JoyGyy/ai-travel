@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "ignoreDeprecations": "6.0",
     "module": "ESNext",
     "moduleResolution": "bundler",
@@ -19,9 +23,19 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
-    }
+      "@/*": [
+        "src/*"
+      ]
+    },
+    "incremental": true
   },
-  "include": ["src", "vite.config.js"],
-  "exclude": ["dist", "node_modules", "server"]
+  "include": [
+    "src",
+    "vite.config.js"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules",
+    "server"
+  ]
 }

@@ -128,7 +128,7 @@ export default function CommunityPostDetail() {
 
     if (!post.likedByMe) {
       setIsLikeAnimating(true)
-      setTimeout(() => setIsLikeAnimating(false), 600)
+      setTimeout(setIsLikeAnimating, 600, false)
     }
 
     setLikePending(true)

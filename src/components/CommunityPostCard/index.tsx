@@ -1,7 +1,7 @@
-import { useState } from 'react'
 import type { CommunityPost } from '@/types/community'
 import { CommentOutlined, DeleteOutlined, EnvironmentOutlined, HeartFilled, HeartOutlined, RetweetOutlined } from '@ant-design/icons'
 import { Avatar, Button, Card, Space, Tag, Typography } from 'antd'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { CommunityImageGrid } from '@/components/CommunityImageGrid'
@@ -34,16 +34,21 @@ function formatTime(value: string) {
   const hours = Math.floor(diff / 3600000)
   const days = Math.floor(diff / 86400000)
 
-  if (minutes < 1) return '刚刚'
-  if (minutes < 60) return `${minutes}分钟前`
-  if (hours < 24) return `${hours}小时前`
-  if (days < 7) return `${days}天前`
+  if (minutes < 1)
+    return '刚刚'
+  if (minutes < 60)
+    return `${minutes}分钟前`
+  if (hours < 24)
+    return `${hours}小时前`
+  if (days < 7)
+    return `${days}天前`
 
   return date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })
 }
 
 function getPostExcerpt(content: string) {
-  if (content.length <= 80) return content
+  if (content.length <= 80)
+    return content
   return `${content.slice(0, 80)}...`
 }
 
@@ -68,7 +73,7 @@ export function CommunityPostCard({
   const handleLike = () => {
     if (!post.likedByMe) {
       setIsLikeAnimating(true)
-      setTimeout(() => setIsLikeAnimating(false), 600)
+      setTimeout(setIsLikeAnimating, 600, false)
     }
     onLike?.(post)
   }

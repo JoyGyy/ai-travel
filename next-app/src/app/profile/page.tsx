@@ -84,7 +84,7 @@ export default function Profile() {
   }, [msg, logout, router])
 
   useEffect(() => {
-    loadProfile()
+    queueMicrotask(() => loadProfile())
   }, [loadProfile])
 
   // ---- 密码修改 ----

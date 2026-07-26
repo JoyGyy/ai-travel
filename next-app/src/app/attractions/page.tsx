@@ -51,7 +51,7 @@ export default function Attractions() {
   }, [])
 
   useEffect(() => {
-    load({})
+    queueMicrotask(() => load({}))
   }, [load])
 
   // ---- 筛选条件管理 ----

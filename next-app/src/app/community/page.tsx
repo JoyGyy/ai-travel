@@ -55,7 +55,7 @@ export default function Community() {
   }, [])
 
   useEffect(() => {
-    load({ page: 1, pageSize: PAGE_SIZE })
+    queueMicrotask(() => load({ page: 1, pageSize: PAGE_SIZE }))
   }, [load])
 
   function requireLogin(action: string) {

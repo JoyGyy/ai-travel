@@ -1,0 +1,378 @@
+/**
+ * 登录页 - Web 端风格
+ * 左右分栏：左侧品牌展示区，右侧表单区
+ */
+
+/* ── 页面容器 ── */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  background: #fff;
+}
+
+.login-page button,
+.login-page input {
+  font: inherit;
+}
+
+.login-page button {
+  cursor: pointer;
+}
+
+/* ── 左侧品牌区 ── */
+.login-page__hero-side {
+  flex: 0 0 48%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, #292524 0%, #44403c 100%);
+  color: #fff;
+}
+
+.login-page__hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.login-page__hero-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.16;
+}
+
+.login-page__hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(41, 37, 36, 0.92) 0%, rgba(68, 64, 60, 0.8) 100%);
+  z-index: 1;
+}
+
+.login-page__hero-side > *:not(.login-page__hero-bg):not(.login-page__hero-overlay) {
+  position: relative;
+  z-index: 2;
+}
+
+/* 品牌标识 */
+.login-page__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.login-page__brand-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #FF6B35;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #fff;
+}
+
+.login-page__brand-name {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+
+/* 左侧主标语 */
+.login-page__hero-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+  max-width: 440px;
+}
+
+.login-page__hero-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #FF6B35;
+}
+
+.login-page__hero-title {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #fff;
+  margin: 0;
+}
+
+.login-page__hero-desc {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #a8a29e;
+  margin: 0;
+}
+
+/* 功能标签 */
+.login-page__features {
+  display: flex;
+  gap: 24px;
+  padding-top: 8px;
+}
+
+.login-page__feature {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #d6d3d1;
+}
+
+.login-page__feature-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #FF6B35;
+  flex-shrink: 0;
+}
+
+/* ── 右侧表单区 ── */
+.login-page__form-side {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  background: #fafaf9;
+}
+
+.login-page__form-wrapper {
+  width: 100%;
+  max-width: 400px;
+}
+
+/* 返回按钮 */
+.login-page__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #78716c;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 32px;
+  transition: color 0.2s;
+}
+
+.login-page__back:hover {
+  color: #292524;
+}
+
+/* 表单头部 */
+.login-page__form-head {
+  margin-bottom: 32px;
+}
+
+.login-page__form-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #292524;
+  margin: 0 0 8px;
+}
+
+.login-page__form-subtitle {
+  font-size: 14px;
+  color: #78716c;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Tab 切换 */
+.login-page__tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 28px;
+  border-bottom: 1px solid #e7e5e4;
+}
+
+.login-page__tab {
+  flex: 1;
+  padding: 10px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #78716c;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.login-page__tab:hover {
+  color: #57534e;
+}
+
+.login-page__tab--active {
+  color: #292524;
+  border-bottom-color: #FF6B35;
+}
+
+/* 错误提示 */
+.login-page__error {
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  line-height: 1.5;
+}
+
+/* 表单字段 */
+.login-page__field {
+  margin-bottom: 20px;
+}
+
+.login-page__field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #44403c;
+  margin-bottom: 6px;
+}
+
+.login-page__field input {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  font-size: 14px;
+  color: #292524;
+  background: #fff;
+  border: 1px solid #d6d3d1;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.login-page__field input::placeholder {
+  color: #a8a29e;
+}
+
+.login-page__field input:focus {
+  border-color: #FF6B35;
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+.login-page__field input[aria-invalid="true"] {
+  border-color: #ef4444;
+}
+
+/* 提交按钮 */
+.login-page__submit {
+  width: 100%;
+  height: 44px;
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  background: #FF6B35;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.login-page__submit:hover {
+  background: #E85D2A;
+}
+
+.login-page__submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.login-page__submit-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: login-spin 0.6s linear infinite;
+}
+
+@keyframes login-spin {
+  to { transform: rotate(360deg); }
+}
+
+.login-page:focus-visible {
+  outline: 3px solid rgba(41, 37, 36, 0.38);
+  outline-offset: 3px;
+}
+
+/* ── 响应式 ── */
+@media (max-width: 960px) {
+  .login-page {
+    flex-direction: column;
+  }
+
+  .login-page__hero-side {
+    flex: none;
+    padding: 32px 32px 40px;
+    min-height: 280px;
+  }
+
+  .login-page__hero-title {
+    font-size: 26px;
+  }
+
+  .login-page__hero-desc {
+    font-size: 14px;
+  }
+
+  .login-page__features {
+    gap: 16px;
+  }
+
+  .login-page__form-side {
+    padding: 32px 24px 48px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-page__hero-side {
+    padding: 24px 20px 32px;
+    min-height: 220px;
+  }
+
+  .login-page__hero-content {
+    gap: 12px;
+  }
+
+  .login-page__hero-title {
+    font-size: 22px;
+  }
+
+  .login-page__features {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .login-page__form-side {
+    padding: 24px 20px 40px;
+  }
+
+  .login-page__form-title {
+    font-size: 22px;
+  }
+}

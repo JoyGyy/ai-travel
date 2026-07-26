@@ -1,0 +1,387 @@
+'use client'
+
+import type { ItineraryDay } from '@/stores/itinerary'
+import type { ItineraryCache } from '@/utils/storage'
+
+/**
+ * 行程详情页面
+ * 展示 AI 生成的旅行行程，包含天气、住宿、每日景点、预算明细等模块。
+ * 优先从本地缓存读取，缓存未命中时通过 SSE 流式调用推荐接口生成行程。
+ */
+import { ArrowLeftOutlined, CloseOutlined, CompassOutlined, EnvironmentOutlined, ShareAltOutlined } from '@ant-design/icons'
+import { useEffect, useState } from 'react'
+
+import { useRouter, useSearchParams } from 'next/navigation'
+import { AccommodationCard } from '@/components/AccommodationCard'
+import { AgentSteps } from '@/components/AgentSteps'
+import { BudgetTable } from '@/components/BudgetTable'
+import { SpotItem } from '@/components/SpotItem'
+import { WeatherCard } from '@/components/WeatherCard'
+import { useSSE } from '@/hooks/useSSE'
+import { useItineraryStore } from '@/stores/itinerary'
+import { loadItineraryCache, saveItineraryCache } from '@/utils/storage'
+
+import './style.css'
+
+export default function Detail() {
+  /* ---------- 路由参数解析 ---------- */
+
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  const city = searchParams?.get('city') || ''
+  const budget = Number(searchParams?.get('budget')) || 0
+  const days = Number(searchParams?.get('days')) || 1
+
+  const {
+    itinerary,
+    budgetBreakdown,
+    tips,
+    weather,
+    accommodation,
+    nightlife,
+    attractionRefs,
+    agentSteps,
+    currentAgentStep,
+    setItinerary,
+    setBudgetBreakdown,
+    setTips,
+    setWeather,
+    setAccommodation,
+    setNightlife,
+    setAttractionRefs,
+    addAgentStep,
+    setCurrentAgentStep,
+  } = useItineraryStore()
+
+  /* ---------- 本地 UI 状态 ---------- */
+
+  const [activeKeys, setActiveKeys] = useState<string[]>([])
+  const [showLoading, setShowLoading] = useState(true)
+  const [errorMessage, setErrorMessage] = useState('')
+  const { sendRequest, abort } = useSSE()
+  const hasValidParams = Boolean(city && budget > 0 && days > 0)
+
+  function findAttractionRef(spot?: string) {
+    return attractionRefs.find(ref => ref.name === spot)
+  }
+
+  function shareToCommunity() {
+    router.push('/community/new', {
+      // Next.js 不支持 state 传递，改为使用 query 参数或 sessionStorage
+    })
+  }
+
+  /* ---------- 数据加载：优先缓存 → SSE 流式生成 ---------- */
+
+  useEffect(() => {
+    let resetTimer: ReturnType<typeof setTimeout>
+    let cacheTimer: ReturnType<typeof setTimeout>
+
+    if (!hasValidParams) {
+      resetTimer = setTimeout(() => {
+        setShowLoading(false)
+        setErrorMessage('缺少目的地或预算信息，请返回首页重新规划。')
+      }, 0)
+      return () => clearTimeout(resetTimer)
+    }
+
+    resetTimer = setTimeout(() => {
+      setShowLoading(true)
+      setErrorMessage('')
+    }, 0)
+
+    const cached = loadItineraryCache(city, budget, days)
+    if (cached) {
+      useItineraryStore.setState({ agentSteps: [], currentAgentStep: 0 })
+      const cachedItinerary = cached.itinerary || []
+      setItinerary(cachedItinerary)
+      setBudgetBreakdown(cached.budgetBreakdown || null)
+      setTips(cached.tips || [])
+      setWeather(cached.weather || null)
+      setAccommodation(cached.accommodation || [])
+      setNightlife(cached.nightlife || [])
+      setAttractionRefs(cached.attractionRefs || [])
+      cacheTimer = setTimeout(() => {
+        setActiveKeys(cachedItinerary[0]?.day ? [String(cachedItinerary[0].day)] : [])
+        setShowLoading(false)
+      }, 0)
+      return () => {
+        clearTimeout(resetTimer)
+        clearTimeout(cacheTimer)
+      }
+    }
+
+    abort()
+    useItineraryStore.setState({ agentSteps: [], currentAgentStep: 0 })
+
+    let dataReceived = false
+    let showTimer: ReturnType<typeof setTimeout>
+
+    sendRequest('/api/travel/recommend', { city, budget, days }, {
+      onStep: (step) => {
+        setCurrentAgentStep(step.step)
+        if (step.status === 'complete')
+          addAgentStep(step)
+      },
+      onComplete: (data) => {
+        dataReceived = true
+        const result = (data ?? {}) as Partial<ItineraryCache> & { dailyItinerary?: ItineraryDay[] }
+        const dailyItinerary = result.dailyItinerary || result.itinerary || []
+        const bd = result.budgetBreakdown || null
+        const t = result.tips || []
+        const w = result.weather || null
+        const a = result.accommodation || []
+        const n = result.nightlife || []
+        const refs = result.attractionRefs || []
+        setItinerary(dailyItinerary)
+        setBudgetBreakdown(bd)
+        setTips(t)
+        setWeather(w)
+        setAccommodation(a)
+        setNightlife(n)
+        setAttractionRefs(refs)
+        setActiveKeys(dailyItinerary[0]?.day ? [String(dailyItinerary[0].day)] : [])
+        saveItineraryCache(city, budget, days, { itinerary: dailyItinerary, budgetBreakdown: bd, tips: t, weather: w, accommodation: a, nightlife: n, attractionRefs: refs })
+        showTimer = setTimeout(setShowLoading, 500, false)
+      },
+      onError: (err) => {
+        setErrorMessage(err.message || '生成行程失败，请稍后重试')
+      },
+      onFinally: () => {
+        if (!dataReceived)
+          setShowLoading(false)
+      },
+    }).catch((err: unknown) => {
+      setErrorMessage(err instanceof Error ? err.message : '生成行程失败，请稍后重试')
+    })
+
+    return () => {
+      clearTimeout(resetTimer)
+      clearTimeout(showTimer)
+      abort()
+    }
+  }, [
+    abort,
+    addAgentStep,
+    budget,
+    city,
+    days,
+    hasValidParams,
+    sendRequest,
+    setAccommodation,
+    setAttractionRefs,
+    setBudgetBreakdown,
+    setCurrentAgentStep,
+    setItinerary,
+    setNightlife,
+    setTips,
+    setWeather,
+  ])
+
+  /* ========== 渲染 ========== */
+
+  return (
+    <main className="detail-page" aria-labelledby="detail-title">
+      <div className="detail-page__hero travel-route-line">
+        <div className="detail-page__deco" aria-hidden="true" />
+        <button
+          type="button"
+          aria-label="返回上一页"
+          onClick={() => router.back()}
+          className="detail-page__back"
+        >
+          <ArrowLeftOutlined aria-hidden="true" />
+        </button>
+        <p className="detail-page__label">ITINERARY</p>
+        <h1 id="detail-title" className="detail-page__title">{city || '旅行规划'}</h1>
+        {hasValidParams
+          ? (
+              <p className="detail-page__subtitle">
+                {days}
+                {' '}
+                天行程 · 预算 ¥
+                {budget}
+              </p>
+            )
+          : null}
+      </div>
+
+      <div className="detail-page__content">
+        {showLoading
+          ? (
+              <div className="detail-page__loading" role="status" aria-live="polite" aria-label="AI 正在规划行程">
+                <div className="detail-page__loading-card">
+                  <div className="detail-page__loading-header">
+                    <span>AI 规划中</span>
+                    <button
+                      type="button"
+                      aria-label="关闭行程规划并返回"
+                      onClick={() => {
+                        abort()
+                        router.back()
+                      }}
+                    >
+                      <CloseOutlined aria-hidden="true" />
+                    </button>
+                  </div>
+                  <div className="detail-page__loading-steps">
+                    <AgentSteps steps={agentSteps} currentStep={currentAgentStep} />
+                  </div>
+                  <div className="detail-page__loading-spinner">
+                    <div className="detail-page__spinner" aria-hidden="true" />
+                    <CompassOutlined className="detail-page__spinner-icon" aria-hidden="true" />
+                  </div>
+                  <p className="detail-page__loading-text">正在为你规划行程...</p>
+                </div>
+              </div>
+            )
+          : null}
+
+        {!showLoading && errorMessage
+          ? (
+              <div className="detail-page__empty" role="alert">
+                <div className="detail-page__empty-icon"><EnvironmentOutlined aria-hidden="true" /></div>
+                <p>{errorMessage}</p>
+                <button type="button" onClick={() => router.push('/')}>返回首页重新规划</button>
+              </div>
+            )
+          : null}
+
+        {!showLoading && !errorMessage && itinerary.length === 0
+          ? (
+              <div className="detail-page__empty" role="status">
+                <div className="detail-page__empty-icon"><EnvironmentOutlined aria-hidden="true" /></div>
+                <p>暂无行程数据</p>
+                <button type="button" onClick={() => router.push('/chat')}>咨询 AI 生成行程</button>
+              </div>
+            )
+          : null}
+
+        {!showLoading && !errorMessage && itinerary.length > 0
+          ? (
+              <>
+                {/* 摘要卡片 */}
+                <div className="detail-page__summary travel-ticket-edge" aria-label="行程摘要">
+                  <div className="detail-page__summary-item">
+                    <span className="detail-page__summary-label">目的地</span>
+                    <span className="detail-page__summary-value">{city}</span>
+                  </div>
+                  <div className="detail-page__summary-divider" />
+                  <div className="detail-page__summary-item">
+                    <span className="detail-page__summary-label">天数</span>
+                    <span className="detail-page__summary-value">
+                      {days}
+                      天
+                    </span>
+                  </div>
+                  <div className="detail-page__summary-divider" />
+                  <div className="detail-page__summary-item">
+                    <span className="detail-page__summary-label">预算</span>
+                    <span className="detail-page__summary-value detail-page__summary-value--accent">
+                      ¥
+                      {budget}
+                    </span>
+                  </div>
+                </div>
+
+                {/* 天气 */}
+                {weather
+                  ? (
+                      <section className="detail-page__section" aria-labelledby="detail-weather-title">
+                        <h2 id="detail-weather-title" className="detail-page__section-title">
+                          <span className="detail-page__dot" aria-hidden="true" />
+                          实时天气
+                        </h2>
+                        <WeatherCard weather={weather} />
+                      </section>
+                    )
+                  : null}
+
+                {/* 住宿推荐 */}
+                {accommodation.length > 0 || nightlife.length > 0
+                  ? (
+                      <section className="detail-page__section" aria-label="住宿和夜生活推荐">
+                        <AccommodationCard accommodation={accommodation} nightlife={nightlife} />
+                      </section>
+                    )
+                  : null}
+
+                {/* 每日行程 */}
+                <section className="detail-page__section" aria-labelledby="detail-itinerary-title">
+                  <h2 id="detail-itinerary-title" className="detail-page__section-title">
+                    <span className="detail-page__dot" aria-hidden="true" />
+                    每日行程
+                  </h2>
+                  <div className="detail-page__itinerary">
+                    {itinerary.map((item) => {
+                      const dayKey = String(item.day)
+                      const panelId = `detail-day-panel-${dayKey}`
+                      const isOpen = activeKeys.includes(dayKey)
+                      return (
+                        <div key={item.day} className="detail-page__day">
+                          <button
+                            type="button"
+                            aria-expanded={isOpen}
+                            aria-controls={panelId}
+                            onClick={() => setActiveKeys(prev => isOpen ? prev.filter(k => k !== dayKey) : [...prev, dayKey])}
+                            className="detail-page__day-header"
+                          >
+                            <span>{item.date}</span>
+                            <span className={`detail-page__day-arrow ${isOpen ? 'detail-page__day-arrow--open' : ''}`} aria-hidden="true">▼</span>
+                          </button>
+                          {isOpen
+                            ? (
+                                <div id={panelId} className="detail-page__day-body">
+                                  {item.morning && <SpotItem period="上午" data={item.morning} attractionRef={findAttractionRef(item.morning.spot)} />}
+                                  {item.afternoon && <SpotItem period="下午" data={item.afternoon} attractionRef={findAttractionRef(item.afternoon.spot)} />}
+                                  {item.evening && <SpotItem period="晚上" data={item.evening} attractionRef={findAttractionRef(item.evening.spot)} />}
+                                </div>
+                              )
+                            : null}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </section>
+
+                {/* 预算明细 */}
+                {budgetBreakdown
+                  ? <BudgetTable data={budgetBreakdown} />
+                  : null}
+
+                {/* 温馨提示 */}
+                {tips.length > 0
+                  ? (
+                      <section className="detail-page__section" aria-labelledby="detail-tips-title">
+                        <h2 id="detail-tips-title" className="detail-page__section-title">
+                          <span className="detail-page__dot" aria-hidden="true" />
+                          温馨提示
+                        </h2>
+                        <div className="detail-page__tips">
+                          {tips.map(tip => (
+                            <div key={tip} className="detail-page__tip">
+                              <span className="detail-page__tip-dot" aria-hidden="true" />
+                              {tip}
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                    )
+                  : null}
+
+                {/* 分享与咨询操作 */}
+                <div className="detail-page__actions">
+                  <button type="button" onClick={shareToCommunity} className="detail-page__chat-btn" aria-label="分享到社区">
+                    <ShareAltOutlined aria-hidden="true" />
+                    分享到社区
+                  </button>
+                  <button type="button" onClick={() => router.push('/chat')} className="detail-page__chat-btn" aria-label="咨询 AI 优化当前行程">咨询 AI 优化行程</button>
+                </div>
+              </>
+            )
+          : null}
+      </div>
+    </main>
+  )
+}

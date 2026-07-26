@@ -2,7 +2,7 @@
  * 站点合规页脚组件
  * 集中展示版权、ICP备案、公安备案、用户协议和隐私政策入口。
  */
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 
 import { imageUrl } from '@/lib/images'
 
@@ -43,8 +43,8 @@ export function ComplianceFooter({ variant = 'default', showCopyright = true, cl
         <img className="compliance-footer__police-icon" src={imageUrl('/images/beian-gongan.png')} alt="公安备案图标" />
         <span>{policeRecordText}</span>
       </a>
-      <Link className="compliance-footer__link" to="/terms">用户协议</Link>
-      <Link className="compliance-footer__link" to="/privacy">隐私政策</Link>
+      <Link className="compliance-footer__link" href="/terms">用户协议</Link>
+      <Link className="compliance-footer__link" href="/privacy">隐私政策</Link>
     </footer>
   )
 }

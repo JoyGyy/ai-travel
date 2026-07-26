@@ -11,24 +11,12 @@ import { request } from './client'
 /** 将筛选参数对象转换为 URL 查询字符串 */
 function buildQuery(filters: AttractionFilters = {}) {
   const params = new URLSearchParams()
-  if (filters.city) {
-    params.set('city', filters.city)
-  }
-  if (filters.ticketType) {
-    params.set('ticketType', filters.ticketType)
-  }
-  if (filters.keyword) {
-    params.set('keyword', filters.keyword)
-  }
-  if (filters.tag) {
-    params.set('tag', filters.tag)
-  }
-  if (filters.page) {
-    params.set('page', String(filters.page))
-  }
-  if (filters.pageSize) {
-    params.set('pageSize', String(filters.pageSize))
-  }
+  if (filters.city) params.set('city', filters.city)
+  if (filters.ticketType) params.set('ticketType', filters.ticketType)
+  if (filters.keyword) params.set('keyword', filters.keyword)
+  if (filters.tag) params.set('tag', filters.tag)
+  if (filters.page) params.set('page', String(filters.page))
+  if (filters.pageSize) params.set('pageSize', String(filters.pageSize))
   const query = params.toString()
   return query ? `?${query}` : ''
 }

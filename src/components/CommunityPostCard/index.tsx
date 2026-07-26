@@ -1,8 +1,10 @@
+'use client'
+
+import { useState } from 'react'
 import type { CommunityPost } from '@/types/community'
 import { CommentOutlined, DeleteOutlined, EnvironmentOutlined, HeartFilled, HeartOutlined, RetweetOutlined } from '@ant-design/icons'
 import { Avatar, Button, Card, Space, Tag, Typography } from 'antd'
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 
 import { CommunityImageGrid } from '@/components/CommunityImageGrid'
 import { CommunityItineraryPreview } from '@/components/CommunityItineraryPreview'
@@ -34,21 +36,16 @@ function formatTime(value: string) {
   const hours = Math.floor(diff / 3600000)
   const days = Math.floor(diff / 86400000)
 
-  if (minutes < 1)
-    return '刚刚'
-  if (minutes < 60)
-    return `${minutes}分钟前`
-  if (hours < 24)
-    return `${hours}小时前`
-  if (days < 7)
-    return `${days}天前`
+  if (minutes < 1) return '刚刚'
+  if (minutes < 60) return `${minutes}分钟前`
+  if (hours < 24) return `${hours}小时前`
+  if (days < 7) return `${days}天前`
 
   return date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })
 }
 
 function getPostExcerpt(content: string) {
-  if (content.length <= 80)
-    return content
+  if (content.length <= 80) return content
   return `${content.slice(0, 80)}...`
 }
 
@@ -73,7 +70,7 @@ export function CommunityPostCard({
   const handleLike = () => {
     if (!post.likedByMe) {
       setIsLikeAnimating(true)
-      setTimeout(setIsLikeAnimating, 600, false)
+      setTimeout(() => setIsLikeAnimating(false), 600)
     }
     onLike?.(post)
   }
@@ -90,7 +87,7 @@ export function CommunityPostCard({
     >
       {/* 图片区域 - 占主要面积 */}
       {hasImages && (
-        <Link to={`/community/${post.id}`} className="community-post-card__image-wrapper">
+        <Link href={`/community/${post.id}`} className="community-post-card__image-wrapper">
           <CommunityImageGrid images={post.images} compact />
         </Link>
       )}
@@ -99,7 +96,7 @@ export function CommunityPostCard({
       <div className="community-post-card__content">
         {/* 用户信息 */}
         <div className="community-post-card__meta">
-          <Link to={`/community?authorId=${post.author.id}`} className="community-post-card__user">
+          <Link href={`/community?authorId=${post.author.id}`} className="community-post-card__user">
             <Avatar size={28} className="community-post-card__avatar">
               {post.author.username.slice(0, 1).toUpperCase()}
             </Avatar>
@@ -109,7 +106,7 @@ export function CommunityPostCard({
         </div>
 
         {/* 标题和内容 */}
-        <Link to={`/community/${post.id}`} className="community-post-card__body">
+        <Link href={`/community/${post.id}`} className="community-post-card__body">
           {post.title && (
             <Paragraph ellipsis={{ rows: 2 }} className="community-post-card__title">
               {post.title}
@@ -138,7 +135,7 @@ export function CommunityPostCard({
 
         {/* 原帖引用 */}
         {post.originalPost && (
-          <Link to={`/community/${post.originalPost.id}`} className="community-post-card__quote">
+          <Link href={`/community/${post.originalPost.id}`} className="community-post-card__quote">
             <Text type="secondary" className="community-post-card__quote-label">原帖</Text>
             <Text strong ellipsis>{post.originalPost.title || `${post.originalPost.city || '旅行'}分享`}</Text>
           </Link>

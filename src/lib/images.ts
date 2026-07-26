@@ -1,12 +1,12 @@
 /**
  * 图片路径工具模块
  *
- * 通过环境变量 VITE_IMAGE_BASE_URL 配置 CDN 基础地址，
+ * 通过环境变量 NEXT_PUBLIC_IMAGE_BASE_URL 配置 CDN 基础地址，
  * 未配置时回退到本地路径。统一管理项目中所有图片资源的 URL 构建。
  */
 
-// --- 从 Vite 环境变量读取 CDN 基础地址，未配置则为空字符串（使用本地路径）---
-const BASE_URL: string = (import.meta as unknown as { env: Record<string, string> }).env?.VITE_IMAGE_BASE_URL || ''
+// --- 从 Next.js 公共环境变量读取 CDN 基础地址 ---
+const BASE_URL: string = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || ''
 
 /**
  * 构建图片 URL

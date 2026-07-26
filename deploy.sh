@@ -1,25 +1,36 @@
 #!/bin/bash
+# Next.js 项目部署脚本
+# 用法: ./deploy.sh
+
 set -e
 
-echo "========== 1. 构建前端 =========="
-cd /Users/joygy/Documents/react/react-travel
+echo "🚀 开始部署 Travel AI (Next.js)..."
+
+# 1. 安装依赖
+echo "📦 安装依赖..."
+pnpm install --frozen-lockfile
+
+# 2. 构建项目
+echo "🔨 构建项目..."
 pnpm build
 
-echo "========== 2. 上传 dist 到服务器 =========="
-scp -r dist/* ecs:/opt/react-travel/dist/
+# 3. 重启 PM2 服务
+echo "🔄 重启服务..."
+pm2 restart ecosystem.config.cjs || pm2 start ecosystem.config.cjs
 
-echo "========== 3. 上传 server 到服务器 =========="
-COPYFILE_DISABLE=1 tar -czf - --exclude='node_modules' --exclude='data' server/ | ssh ecs "cd /opt/react-travel && tar -xzf - 2>/dev/null"
+# 4. 检查服务状态
+echo "✅ 检查服务状态..."
+pm2 status
 
-echo "========== 3.5 上传 PM2 配置 =========="
-scp ecosystem.config.cjs ecs:/opt/react-travel/
+# 5. 等待服务就绪
+echo "⏳ 等待服务就绪..."
+sleep 3
 
-echo "========== 4. 重启后端 =========="
-# 确保服务器有 pnpm，没有则安装
-ssh ecs 'command -v pnpm >/dev/null 2>&1 || npm install -g pnpm'
-ssh ecs "cd /opt/react-travel/server && pnpm install --prod"
-ssh ecs "cd /opt/react-travel && pm2 restart react-travel-server || pm2 start ecosystem.config.cjs"
+# 6. 健康检查
+echo "🏥 健康检查..."
+curl -s http://localhost:3000/api/health || echo "⚠️ 健康检查失败"
 
 echo ""
-echo "========== 部署完成！=========="
-echo "访问 https://joygytrip.cn 查看更新"
+echo "✅ 部署完成！"
+echo "   访问: http://localhost:3000"
+echo "   日志: pm2 logs react-travel-next"

@@ -72,15 +72,12 @@ const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS'])
 
 /**
  * 获取 CSRF token（从 cookie）
- * Express 的 res.cookie() 会对值做 encodeURIComponent（`:` → `%3A`），
- * 需要 decodeURIComponent 解码后再使用；同时检查是否超过 1 小时有效期。
  */
 function readCsrfToken(): string {
   const raw = document.cookie.match(/csrf_token=([^;]+)/)?.[1] || ''
   if (!raw)
     return ''
 
-  // 解码 Express 自动编码的值（如 %3A → :）
   const token = decodeURIComponent(raw)
 
   // 格式: random:timestamp:signature，检查 timestamp 是否在 1 小时内
@@ -88,7 +85,6 @@ function readCsrfToken(): string {
   if (parts.length === 3) {
     const timestamp = Number(parts[1])
     if (Number.isFinite(timestamp) && Date.now() - timestamp > 60 * 60 * 1000) {
-      // token 已过期，清除 cookie
       document.cookie = 'csrf_token=; max-age=0; path=/'
       return ''
     }

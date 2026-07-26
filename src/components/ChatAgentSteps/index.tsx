@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * Chat Agent 思考过程可视化组件
  * 以可折叠卡片形式展示聊天页中 AI Agent 的推理步骤

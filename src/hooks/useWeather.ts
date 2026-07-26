@@ -11,7 +11,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { getWeatherApi } from '@/api/weather'
 
 export function useWeather() {
-  // --- 状态管理 ---
   const [weather, setWeather] = useState<WeatherResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)

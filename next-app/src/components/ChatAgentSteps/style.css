@@ -1,0 +1,221 @@
+/* Chat Agent 步骤样式 */
+.chat-agent-steps {
+  overflow: hidden;
+  margin: 0 8px 12px;
+  border: 1px solid rgba(28, 25, 23, 0.06);
+  border-radius: 18px;
+  background: var(--travel-surface);
+  box-shadow: var(--shadow-paper);
+}
+
+.chat-agent-steps__header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 16px;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  user-select: none;
+  transition: background 0.2s ease;
+}
+
+.chat-agent-steps__header:hover {
+  background: rgba(249, 224, 189, 0.3);
+}
+
+.chat-agent-steps__header:focus-visible {
+  outline: 3px solid rgba(41, 37, 36, 0.22);
+  outline-offset: -3px;
+}
+
+.chat-agent-steps__header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.chat-agent-steps__icon {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 12px;
+}
+
+.chat-agent-steps__icon--loading {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  animation: pulseGlow 1.5s ease-in-out infinite;
+}
+
+.chat-agent-steps__icon--done {
+  color: #fff;
+  background: linear-gradient(135deg, var(--travel-ocean) 0%, var(--color-secondary) 100%);
+}
+
+.chat-agent-steps__dot {
+  width: 8px;
+  height: 8px;
+  display: block;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.chat-agent-steps__label {
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.chat-agent-steps__count {
+  flex-shrink: 0;
+  color: rgba(41, 37, 36, 0.58);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.chat-agent-steps__arrow {
+  flex-shrink: 0;
+  color: rgba(41, 37, 36, 0.52);
+  font-size: 12px;
+  transition: transform 0.2s ease;
+}
+
+.chat-agent-steps__arrow--expanded {
+  transform: rotate(90deg);
+}
+
+.chat-agent-steps__list {
+  padding: 2px 16px 14px;
+}
+
+.chat-agent-steps__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.chat-agent-steps__line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chat-agent-steps__dot-item {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.chat-agent-steps__dot-item--done {
+  color: #fff;
+  background: linear-gradient(135deg, var(--travel-ocean) 0%, var(--color-secondary) 100%);
+}
+
+.chat-agent-steps__dot-item--running {
+  color: #fff;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  animation: pulseGlow 1.5s ease-in-out infinite;
+}
+
+.chat-agent-steps__dot-item--pending {
+  color: var(--travel-muted);
+  background: rgba(var(--travel-ocean-rgb), 0.1);
+}
+
+.chat-agent-steps__conn {
+  width: 1px;
+  height: 16px;
+  background: rgba(var(--travel-ocean-rgb), 0.1);
+}
+
+.chat-agent-steps__conn--done {
+  background: var(--travel-ocean);
+}
+
+.chat-agent-steps__body {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 5px;
+}
+
+.chat-agent-steps__name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.chat-agent-steps__name {
+  min-width: 0;
+  color: var(--travel-ink);
+  font-size: 12px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.chat-agent-steps__name--pending {
+  color: var(--travel-muted);
+}
+
+.chat-agent-steps__running {
+  flex-shrink: 0;
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.chat-agent-steps__summary {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  color: rgba(41, 37, 36, 0.56);
+}
+
+.chat-agent-steps__summary-arrow {
+  flex-shrink: 0;
+  color: currentColor;
+  font-size: 8px;
+}
+
+.chat-agent-steps__summary span {
+  min-width: 0;
+  color: currentColor;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .chat-agent-steps {
+    margin-right: 4px;
+    margin-left: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-agent-steps__header,
+  .chat-agent-steps__arrow {
+    transition: none;
+  }
+
+  .chat-agent-steps__icon--loading,
+  .chat-agent-steps__dot-item--running {
+    animation: none;
+  }
+}

@@ -1,0 +1,219 @@
+/* 社区帖子卡片 - 紧凑图片优先风格 */
+.community-post-card {
+  overflow: hidden;
+  border-radius: 12px;
+  transition: transform 0.2s var(--ease-standard), box-shadow 0.2s var(--ease-standard);
+}
+
+.community-post-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* 图片区域 */
+.community-post-card__image-wrapper {
+  display: block;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.community-post-card__image-wrapper .community-image-grid {
+  border-radius: 0;
+}
+
+.community-post-card__image-wrapper .community-image-grid__image {
+  transition: transform 0.3s var(--ease-standard);
+}
+
+.community-post-card:hover .community-post-card__image-wrapper .community-image-grid__image {
+  transform: scale(1.03);
+}
+
+/* 内容区域 */
+.community-post-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+}
+
+/* 用户信息 */
+.community-post-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.community-post-card__user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.community-post-card__user:hover .community-post-card__username {
+  color: var(--color-primary);
+}
+
+.community-post-card__avatar {
+  background: linear-gradient(135deg, var(--color-primary), var(--travel-accent));
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.community-post-card__username {
+  font-size: 13px;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+
+.community-post-card__time {
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+/* 标题和内容 */
+.community-post-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.community-post-card__body:hover .community-post-card__title {
+  color: var(--color-primary);
+}
+
+.community-post-card__title {
+  margin: 0 !important;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--travel-ink);
+  transition: color 0.2s;
+}
+
+.community-post-card__excerpt {
+  margin: 0 !important;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* 城市标签 */
+.community-post-card__city {
+  align-self: flex-start;
+  margin: 0;
+  font-size: 12px;
+}
+
+/* 行程预览 */
+.community-post-card__itinerary {
+  margin-top: 4px;
+}
+
+/* 原帖引用 */
+.community-post-card__quote {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  border-radius: 8px;
+  background: var(--travel-surface-muted);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.2s;
+}
+
+.community-post-card__quote:hover {
+  background: var(--travel-frosted);
+}
+
+.community-post-card__quote-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.community-post-card__quote-missing {
+  font-size: 12px;
+  padding: 4px 0;
+}
+
+/* 操作栏 */
+.community-post-card__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid var(--travel-border);
+}
+
+.community-post-card__action-btn {
+  color: var(--travel-muted) !important;
+  transition: color 0.2s, transform 0.15s;
+}
+
+.community-post-card__action-btn:hover {
+  color: var(--travel-ink) !important;
+  transform: scale(1.05);
+}
+
+.community-post-card__action-btn:active {
+  transform: scale(0.95);
+}
+
+/* 点赞状态 */
+.community-post-card__action-btn--liked {
+  color: var(--color-danger) !important;
+}
+
+/* 点赞动画 */
+.community-post-card__action-btn--animating {
+  animation: likeHeartbeat 0.4s var(--ease-spring);
+}
+
+@keyframes likeHeartbeat {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.25); }
+  60% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+/* 响应式 */
+@media (max-width: 640px) {
+  .community-post-card__content {
+    padding: 10px;
+  }
+
+  .community-post-card__title {
+    font-size: 13px;
+  }
+}
+
+/* 尊重减少动画偏好 */
+@media (prefers-reduced-motion: reduce) {
+  .community-post-card,
+  .community-post-card__image-wrapper .community-image-grid__image,
+  .community-post-card__username,
+  .community-post-card__title,
+  .community-post-card__action-btn {
+    transition: none;
+  }
+
+  .community-post-card:hover {
+    transform: none;
+  }
+
+  .community-post-card__action-btn--animating {
+    animation: none;
+  }
+}

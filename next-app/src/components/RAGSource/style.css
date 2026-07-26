@@ -1,0 +1,59 @@
+/* RAG 来源样式 */
+.rag-source {
+  margin: 0 8px 14px;
+  padding: 13px 16px;
+  border: 1px solid rgba(28, 25, 23, 0.06);
+  border-radius: 18px;
+  background: rgba(var(--travel-primary-rgb), 0.04);
+  box-shadow: var(--shadow-paper);
+  animation: fadeUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.rag-source__header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 9px;
+  color: var(--travel-ocean);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.rag-source__icon {
+  flex-shrink: 0;
+  color: var(--color-primary);
+  font-size: 13px;
+}
+
+.rag-source__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.rag-source__tag {
+  max-width: 100%;
+  padding: 5px 10px;
+  border: 1px solid rgba(28, 25, 23, 0.06);
+  border-radius: 999px;
+  color: var(--travel-ocean);
+  background: #FFF;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .rag-source {
+    margin-right: 4px;
+    margin-left: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rag-source {
+    animation: none;
+  }
+}

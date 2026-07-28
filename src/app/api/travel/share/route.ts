@@ -11,6 +11,7 @@ import { getAuthFromHeaders } from '@/lib/services/auth'
 import { createShare } from '@/lib/services/share'
 import { extractCsrfToken, verifyCsrfToken } from '@/lib/utils/csrf'
 import { errorResponse, httpError } from '@/lib/utils/http'
+import { readPositiveInteger, readRequiredString } from '@/lib/utils/validation'
 
 /** 分享内容持久化上限（字节）：100KB */
 const MAX_SHARE_BODY_SIZE = 100 * 1024
@@ -20,28 +21,6 @@ interface SharePayload {
   days: number
   budget: string
   itinerary: unknown
-}
-
-function readRequiredString(value: unknown, fieldName: string, options: { min?: number, max?: number } = {}): string {
-  const { min = 1, max = 2000 } = options
-  if (typeof value !== 'string')
-    throw httpError(400, `${fieldName}必须是文本`)
-
-  const trimmed = value.trim()
-  if (trimmed.length < min)
-    throw httpError(400, `请输入${fieldName}`)
-  if (trimmed.length > max)
-    throw httpError(400, `${fieldName}不能超过 ${max} 个字符`)
-
-  return trimmed
-}
-
-function readPositiveInteger(value: unknown, fieldName: string, options: { min?: number, max?: number } = {}): number {
-  const { min = 1, max = 30 } = options
-  const number = Number(value)
-  if (!Number.isInteger(number) || number < min || number > max)
-    throw httpError(400, `${fieldName}必须是 ${min}-${max} 之间的整数`)
-  return number
 }
 
 function validateSharePayload(payload: unknown): SharePayload {

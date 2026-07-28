@@ -16,6 +16,7 @@ import {
 } from '@/lib/services/community'
 import { httpError, withErrorHandler, withProtected } from '@/lib/utils/http'
 import {
+  ensureArray,
   readBoolean,
   readOptionalString,
   readPositiveInteger,
@@ -30,16 +31,6 @@ const MAX_ITINERARY_SNAPSHOT_SIZE = 100 * 1024
 const PUBLIC_UPLOAD_PREFIX = '/uploads/community'
 
 // ========== 参数校验 ==========
-
-function ensureArray(value: unknown, fieldName: string, options: { max?: number } = {}): unknown[] {
-  const { max = 20 } = options
-  if (value === undefined) return []
-  if (!Array.isArray(value))
-    throw httpError(400, `${fieldName}必须是数组`)
-  if (value.length > max)
-    throw httpError(400, `${fieldName}最多支持 ${max} 条`)
-  return value
-}
 
 function validateItinerarySnapshot(value: unknown): unknown | undefined {
   if (value === undefined || value === null) return undefined

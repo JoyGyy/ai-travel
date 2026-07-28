@@ -49,6 +49,21 @@ export function readPositiveInteger(
   return number
 }
 
+/** 校验数组参数 */
+export function ensureArray(
+  value: unknown,
+  fieldName: string,
+  options: { max?: number } = {},
+): unknown[] {
+  const { max = 20 } = options
+  if (value === undefined) return []
+  if (!Array.isArray(value))
+    throw httpError(400, `${fieldName}必须是数组`)
+  if (value.length > max)
+    throw httpError(400, `${fieldName}最多支持 ${max} 条`)
+  return value
+}
+
 /** 读取布尔值（支持字符串 'true'/'1'） */
 export function readBoolean(value: unknown): boolean {
   return value === true || value === 'true' || value === '1'

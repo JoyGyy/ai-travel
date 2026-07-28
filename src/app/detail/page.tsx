@@ -67,9 +67,7 @@ export default function Detail() {
   }
 
   function shareToCommunity() {
-    router.push('/community/new', {
-      // Next.js 不支持 state 传递，改为使用 query 参数或 sessionStorage
-    })
+    router.push('/community/new')
   }
 
   /* ---------- 数据加载：优先缓存 → SSE 流式生成 ---------- */

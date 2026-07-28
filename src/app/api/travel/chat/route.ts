@@ -14,6 +14,7 @@ import { errorResponse, httpError } from '@/lib/utils/http'
 import { createLogger } from '@/lib/utils/logger'
 import { createSSEStream, sendError } from '@/lib/utils/sse'
 import type { SSEData } from '@/lib/utils/sse'
+import { ensureArray, readRequiredString } from '@/lib/utils/validation'
 
 const log = createLogger('chat')
 
@@ -635,28 +636,3 @@ function delay(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-/** 校验必填字符串参数 */
-function readRequiredString(value: unknown, fieldName: string, options: { min?: number, max?: number } = {}): string {
-  const { min = 1, max = 2000 } = options
-  if (typeof value !== 'string')
-    throw httpError(400, `${fieldName}必须是文本`)
-
-  const trimmed = value.trim()
-  if (trimmed.length < min)
-    throw httpError(400, `请输入${fieldName}`)
-  if (trimmed.length > max)
-    throw httpError(400, `${fieldName}不能超过 ${max} 个字符`)
-
-  return trimmed
-}
-
-/** 校验数组参数 */
-function ensureArray(value: unknown, fieldName: string, options: { max?: number } = {}): unknown[] {
-  const { max = 20 } = options
-  if (value === undefined) return []
-  if (!Array.isArray(value))
-    throw httpError(400, `${fieldName}必须是数组`)
-  if (value.length > max)
-    throw httpError(400, `${fieldName}最多支持 ${max} 条`)
-  return value
-}

@@ -16,10 +16,6 @@ import './style.css'
 
 const PAGE_SIZE = 10
 
-function updatePostLike(post: CommunityPost, likedByMe: boolean, likeCount: number): CommunityPost {
-  return { ...post, likedByMe, likeCount }
-}
-
 export default function Community() {
   const router = useRouter()
   const message = useAppMessage()
@@ -93,7 +89,7 @@ export default function Community() {
     setLikePendingIds(prev => new Set(prev).add(post.id))
     try {
       const result = post.likedByMe ? await unlikeCommunityPost(post.id) : await likeCommunityPost(post.id)
-      setItems(prev => prev.map(item => item.id === post.id ? updatePostLike(item, result.likedByMe, result.likeCount) : item))
+      setItems(prev => prev.map(item => item.id === post.id ? { ...item, likedByMe: result.likedByMe, likeCount: result.likeCount } : item))
       message.success(result.likedByMe ? '已点赞' : '已取消点赞')
     }
     catch (err: unknown) {

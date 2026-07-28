@@ -1,17 +1,17 @@
+import type { Metadata } from 'next'
+import type { ReactNode } from 'react'
+
+import { AntdRegistry } from '@ant-design/nextjs-registry'
+import { AntdProvider } from '@/components/AntdProvider'
+
+import { Navigation } from '@/components/Navigation'
+
 /**
  * 根布局（Server Component）
  * 配置 Ant Design 主题、全局样式
  */
 import '@ant-design/v5-patch-for-react-19'
 import './globals.css'
-
-import type { Metadata } from 'next'
-import type { ReactNode } from 'react'
-
-import { AntdRegistry } from '@ant-design/nextjs-registry'
-
-import { AntdProvider } from '@/components/AntdProvider'
-import { Navigation } from '@/components/Navigation'
 
 export const metadata: Metadata = {
   title: 'Travel AI - 智能旅行规划助手',

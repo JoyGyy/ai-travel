@@ -66,8 +66,6 @@ interface ItineraryState {
   attractionRefs: AttractionRef[]
   agentSteps: Extract<SSEEvent, { type: 'step' }>[]
   currentAgentStep: number
-  isLoading: boolean
-  shareId: string | null
   setItinerary: (data: ItineraryDay[]) => void
   setBudgetBreakdown: (data: BudgetBreakdown | null) => void
   setTips: (tips: string[]) => void
@@ -77,8 +75,6 @@ interface ItineraryState {
   setAttractionRefs: (data: AttractionRef[]) => void
   addAgentStep: (step: Extract<SSEEvent, { type: 'step' }>) => void
   setCurrentAgentStep: (step: number) => void
-  setLoading: (loading: boolean) => void
-  setShareId: (id: string | null) => void
   reset: () => void
 }
 
@@ -94,8 +90,6 @@ const initialState = {
   attractionRefs: [],
   agentSteps: [],
   currentAgentStep: 0,
-  isLoading: false,
-  shareId: null,
 }
 
 // --- 创建 Store ---
@@ -127,7 +121,5 @@ export const useItineraryStore = create<ItineraryState>()(set => ({
   // --- 状态控制和重置 ---
 
   setCurrentAgentStep: step => set({ currentAgentStep: step }),
-  setLoading: loading => set({ isLoading: loading }),
-  setShareId: id => set({ shareId: id }),
   reset: () => set(initialState),
 }))

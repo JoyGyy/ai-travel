@@ -9,13 +9,19 @@
 import type { Attraction, AttractionFilters, AttractionTicketType } from '@/types/attraction'
 import { HeartFilled, HeartOutlined, SearchOutlined } from '@ant-design/icons'
 import { Button, Empty, Input, message, Pagination, Select, Spin, Tag } from 'antd'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import Link from 'next/link'
 
 import { favoriteAttraction, fetchAttractions, unfavoriteAttraction } from '@/api/attractions'
 
 import './style.css'
+
+const ticketOptions = [
+  { value: '', label: '全部' },
+  { value: 'free', label: '免费' },
+  { value: 'paid', label: '收费' },
+]
 
 export default function Attractions() {
   const [items, setItems] = useState<Attraction[]>([])
@@ -98,12 +104,6 @@ export default function Attractions() {
       })
     }
   }
-
-  const ticketOptions = useMemo(() => [
-    { value: '', label: '全部' },
-    { value: 'free', label: '免费' },
-    { value: 'paid', label: '收费' },
-  ], [])
 
   const hasActiveFilters = Boolean(filters.keyword || filters.city || filters.ticketType || filters.tag)
 

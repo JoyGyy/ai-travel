@@ -5,7 +5,7 @@
  * OTA 旅行平台风格的落地页，包含搜索表单、热门目的地、精选推荐、AI 特色介绍等模块。
  * 用户输入目的地/预算/天数后，跳转到行程详情页进行 AI 规划。
  */
-import type { ChangeEvent, KeyboardEvent, FormEvent } from 'react'
+import type { ChangeEvent, FormEvent, KeyboardEvent } from 'react'
 
 import {
   CalendarOutlined,
@@ -22,9 +22,9 @@ import {
   ThunderboltOutlined,
   UserOutlined,
 } from '@ant-design/icons'
-import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
-import { useRouter, usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { allCities } from '@/constants/cities'
 import { useAppMessage } from '@/hooks/useAppMessage'
@@ -103,7 +103,8 @@ const userReviews = [
 /** NavLink 替代：根据当前路径判断是否激活 */
 function useIsActive(href: string) {
   const pathname = usePathname()
-  if (href === '/') return pathname === '/'
+  if (href === '/')
+    return pathname === '/'
   return pathname?.startsWith(href) ?? false
 }
 
@@ -618,7 +619,7 @@ export default function Home() {
 
 /* ========== 内部 NavLink 组件 ========== */
 
-function NavLink({ href, exact, children }: { href: string; exact?: boolean; children: React.ReactNode }) {
+function NavLink({ href, exact, children }: { href: string, exact?: boolean, children: React.ReactNode }) {
   const isActive = useIsActive(href)
   return (
     <Link

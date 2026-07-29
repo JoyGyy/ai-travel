@@ -6,8 +6,8 @@
 import { NextResponse } from 'next/server'
 
 import { repostCommunityPost } from '@/lib/services/community'
-import { readOptionalString, readRequiredString } from '@/lib/utils/validation'
 import { withProtected } from '@/lib/utils/http'
+import { readOptionalString, readRequiredString } from '@/lib/utils/validation'
 
 const MAX_REPOST_CONTENT_LENGTH = 500
 

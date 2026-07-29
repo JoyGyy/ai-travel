@@ -1,3 +1,5 @@
+import type { AuthUser } from '@/lib/utils/http'
+
 /**
  * 社区路由 — 点赞/取消点赞
  * POST /api/community/posts/[id]/like — 点赞帖子
@@ -6,13 +8,12 @@
  */
 import { NextResponse } from 'next/server'
 
-import type { AuthUser } from '@/lib/utils/http'
 import {
   likeCommunityPost,
   unlikeCommunityPost,
 } from '@/lib/services/community'
-import { readRequiredString } from '@/lib/utils/validation'
 import { withProtected } from '@/lib/utils/http'
+import { readRequiredString } from '@/lib/utils/validation'
 
 const RATE_LIMIT = { name: 'community:like', max: 60, windowMs: 60_000 }
 

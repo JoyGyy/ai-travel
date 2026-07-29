@@ -4,15 +4,7 @@
  * 全局导航组件（Client Component）
  * 包含顶部导航栏，根据当前路径决定是否显示
  */
-import {
-  CloudOutlined,
-  CompassOutlined,
-  EnvironmentOutlined,
-  HomeOutlined,
-  RobotOutlined,
-  TeamOutlined,
-  UserOutlined,
-} from '@ant-design/icons'
+import { Bot, Cloud, Compass, Home, MapPin, User, Users } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -23,11 +15,11 @@ import './style.css'
 /* ========== 导航标签配置 ========== */
 
 const tabs = [
-  { key: '/', title: '首页', icon: <HomeOutlined aria-hidden="true" /> },
-  { key: '/weather', title: '天气', icon: <CloudOutlined aria-hidden="true" /> },
-  { key: '/attractions', title: '景点', icon: <EnvironmentOutlined aria-hidden="true" /> },
-  { key: '/community', title: '社区', icon: <TeamOutlined aria-hidden="true" /> },
-  { key: '/chat', title: 'AI咨询', icon: <RobotOutlined aria-hidden="true" /> },
+  { key: '/', title: '首页', icon: <Home aria-hidden="true" size={18} /> },
+  { key: '/weather', title: '天气', icon: <Cloud aria-hidden="true" size={18} /> },
+  { key: '/attractions', title: '景点', icon: <MapPin aria-hidden="true" size={18} /> },
+  { key: '/community', title: '社区', icon: <Users aria-hidden="true" size={18} /> },
+  { key: '/chat', title: 'AI咨询', icon: <Bot aria-hidden="true" size={18} /> },
 ] as const
 
 /** 根据路径判断是否显示导航栏 */
@@ -55,7 +47,7 @@ function TopNav() {
     <nav className="layout-nav" aria-label="主导航">
       <div className="layout-nav__inner">
         <Link className="layout-nav__brand" href="/" aria-label="返回首页">
-          <span className="layout-nav__logo" aria-hidden="true"><CompassOutlined /></span>
+          <span className="layout-nav__logo" aria-hidden="true"><Compass size={20} /></span>
           <span className="layout-nav__title">Travel AI</span>
         </Link>
         <div className="layout-nav__tabs" role="list">
@@ -79,13 +71,13 @@ function TopNav() {
                   className={`layout-nav__username ${pathname === '/profile' ? 'layout-nav__username--active' : ''}`}
                   aria-label={`当前用户：${user.username}，进入个人中心`}
                 >
-                  <UserOutlined aria-hidden="true" />
+                  <User size={16} aria-hidden="true" />
                   <span>{user.username}</span>
                 </Link>
               )
             : (
                 <Link className="layout-nav__login-btn" href="/login">
-                  <UserOutlined aria-hidden="true" />
+                  <User size={16} aria-hidden="true" />
                   登录
                 </Link>
               )}

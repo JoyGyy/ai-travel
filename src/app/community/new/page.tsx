@@ -1,11 +1,12 @@
 'use client'
 
-import type { UploadFile } from 'antd'
 import type { CommunityImage, CommunityItinerarySnapshot } from '@/types/community'
+import type { UploadFile } from 'antd'
+
 import { CloseOutlined, PictureOutlined, SendOutlined } from '@ant-design/icons'
 import { Button, Form, Input, Upload } from 'antd'
-import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useMemo, useState } from 'react'
 
 import { createCommunityPost, uploadCommunityImages } from '@/api/community'
 import { CommunityImageGrid } from '@/components/CommunityImageGrid'

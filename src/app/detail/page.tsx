@@ -9,9 +9,9 @@ import type { ItineraryCache } from '@/utils/storage'
  * 优先从本地缓存读取，缓存未命中时通过 SSE 流式调用推荐接口生成行程。
  */
 import { ArrowLeftOutlined, CloseOutlined, CompassOutlined, EnvironmentOutlined, ShareAltOutlined } from '@ant-design/icons'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-import { useRouter, useSearchParams } from 'next/navigation'
 import { AccommodationCard } from '@/components/AccommodationCard'
 import { AgentSteps } from '@/components/AgentSteps'
 import { BudgetTable } from '@/components/BudgetTable'

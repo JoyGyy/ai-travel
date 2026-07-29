@@ -11,8 +11,8 @@ import {
   deleteCommunityPost,
   getCommunityPostById,
 } from '@/lib/services/community'
-import { readRequiredString } from '@/lib/utils/validation'
 import { httpError, withErrorHandler, withProtected } from '@/lib/utils/http'
+import { readRequiredString } from '@/lib/utils/validation'
 
 type Context = { params: Promise<{ id: string }> }
 

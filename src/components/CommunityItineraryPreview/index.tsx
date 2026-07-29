@@ -1,7 +1,8 @@
 import type { AttractionRef, BudgetBreakdown, ItineraryDay } from '@/stores/itinerary'
 import type { CommunityItinerarySnapshot } from '@/types/community'
-import { CalendarOutlined, EnvironmentOutlined, WalletOutlined } from '@ant-design/icons'
-import { Collapse, Tag } from 'antd'
+
+import { Badge } from '@/components/ui/badge'
+import { Calendar, MapPin, Wallet } from 'lucide-react'
 
 import { BudgetTable } from '@/components/BudgetTable'
 import { SpotItem } from '@/components/SpotItem'
@@ -101,18 +102,21 @@ export function CommunityItineraryPreview({ snapshot, mode = 'compact', removabl
       </div>
 
       <div className="community-itinerary__meta" aria-label="行程概要">
-        <Tag className="travel-tag travel-tag--info" icon={<CalendarOutlined aria-hidden="true" />}>
+        <Badge variant="secondary" className="travel-tag travel-tag--info">
+          <Calendar size={12} className="mr-1" aria-hidden="true" />
           {snapshot.days}
           天
-        </Tag>
-        <Tag className="travel-tag travel-tag--success" icon={<WalletOutlined aria-hidden="true" />}>
+        </Badge>
+        <Badge variant="secondary" className="travel-tag travel-tag--success">
+          <Wallet size={12} className="mr-1" aria-hidden="true" />
           ¥
           {snapshot.budget}
-        </Tag>
-        <Tag className="travel-tag travel-tag--warning" icon={<EnvironmentOutlined aria-hidden="true" />}>
+        </Badge>
+        <Badge variant="secondary" className="travel-tag travel-tag--warning">
+          <MapPin size={12} className="mr-1" aria-hidden="true" />
           {snapshot.itinerary.length}
           段路线
-        </Tag>
+        </Badge>
       </div>
 
       {snapshot.weather && isDetail ? <WeatherCard weather={snapshot.weather} /> : null}
@@ -146,10 +150,10 @@ export function CommunityItineraryPreview({ snapshot, mode = 'compact', removabl
 
       {isDetail && budget
         ? (
-            <Collapse
-              className="community-itinerary__collapse"
-              items={[{ key: 'budget', label: '查看预算明细', children: <BudgetTable data={budget} /> }]}
-            />
+            <details className="community-itinerary__collapse">
+              <summary className="cursor-pointer font-medium">查看预算明细</summary>
+              <BudgetTable data={budget} />
+            </details>
           )
         : null}
 

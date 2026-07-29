@@ -6,8 +6,8 @@
  * 支持链接到景点详情页。
  */
 import type { AttractionRef } from '@/stores/itinerary'
-import { ClockCircleOutlined, CompassOutlined } from '@ant-design/icons'
 
+import { Clock, Compass } from 'lucide-react'
 import Link from 'next/link'
 
 import './style.css'
@@ -52,13 +52,13 @@ export function SpotItem({ period, data, attractionRef }: SpotItemProps) {
         {/* ---- 标签：游玩时长 / 门票 / 交通方式 ---- */}
         <div className="spot-item__tags">
           <span className="spot-item__tag">
-            <ClockCircleOutlined />
+            <Clock size={14} />
             {' '}
             {data.duration}
           </span>
           <span className="spot-item__tag spot-item__tag--price">{data.ticket}</span>
           <span className="spot-item__tag">
-            <CompassOutlined />
+            <Compass size={14} />
             {' '}
             {data.transportation}
           </span>

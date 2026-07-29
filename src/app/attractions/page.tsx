@@ -7,11 +7,11 @@
  * 每个景点卡片可收藏，并链接到详情页。
  */
 import type { Attraction, AttractionFilters, AttractionTicketType } from '@/types/attraction'
+
 import { HeartFilled, HeartOutlined, SearchOutlined } from '@ant-design/icons'
 import { Button, Empty, Input, message, Pagination, Select, Spin, Tag } from 'antd'
-import { useCallback, useEffect, useState } from 'react'
-
 import Link from 'next/link'
+import { useCallback, useEffect, useState } from 'react'
 
 import { favoriteAttraction, fetchAttractions, unfavoriteAttraction } from '@/api/attractions'
 

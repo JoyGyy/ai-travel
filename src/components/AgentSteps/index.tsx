@@ -5,16 +5,7 @@
  */
 import type { SSEEvent } from '@/types/api'
 
-import {
-  CheckCircleOutlined,
-  DollarOutlined,
-  EnvironmentOutlined,
-  FlagOutlined,
-  InfoCircleOutlined,
-  RightOutlined,
-  SearchOutlined,
-  UnorderedListOutlined,
-} from '@ant-design/icons'
+import { CheckCircle2, ChevronRight, CircleDollarSign, Flag, Info, List, MapPin, Search } from 'lucide-react'
 
 import './style.css'
 
@@ -32,12 +23,12 @@ interface AgentStepsProps {
 
 /** 6 个固定步骤的名称和对应图标 */
 const STEP_CONFIG = [
-  { step: 1, name: '解析意图', Icon: SearchOutlined },
-  { step: 2, name: '知识库检索', Icon: UnorderedListOutlined },
-  { step: 3, name: '查询天气', Icon: InfoCircleOutlined },
-  { step: 4, name: '行程规划', Icon: EnvironmentOutlined },
-  { step: 5, name: '预算计算', Icon: DollarOutlined },
-  { step: 6, name: '生成建议', Icon: FlagOutlined },
+  { step: 1, name: '解析意图', Icon: Search },
+  { step: 2, name: '知识库检索', Icon: List },
+  { step: 3, name: '查询天气', Icon: Info },
+  { step: 4, name: '行程规划', Icon: MapPin },
+  { step: 5, name: '预算计算', Icon: CircleDollarSign },
+  { step: 6, name: '生成建议', Icon: Flag },
 ]
 
 /* ========== Agent 步骤组件 ========== */
@@ -92,7 +83,7 @@ export function AgentSteps({ steps, currentStep }: AgentStepsProps) {
               <div className="agent-steps__line" aria-hidden="true">
                 <div className={`agent-steps__dot agent-steps__dot--${status}`}>
                   {status === 'done'
-                    ? <CheckCircleOutlined />
+                    ? <CheckCircle2 size={16} />
                     : <config.Icon />}
                 </div>
                 {index < STEP_CONFIG.length - 1 && (
@@ -108,7 +99,7 @@ export function AgentSteps({ steps, currentStep }: AgentStepsProps) {
                 </div>
                 {summary && (
                   <div className="agent-steps__summary">
-                    <RightOutlined className="agent-steps__arrow" aria-hidden="true" />
+                    <ChevronRight size={14} className="agent-steps__arrow" aria-hidden="true" />
                     <span>{summary}</span>
                   </div>
                 )}

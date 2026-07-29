@@ -1,3 +1,5 @@
+import type { AttractionItem } from './providers/pgAttractionProvider'
+
 /**
  * 景点领域服务
  * 组合景点数据 provider 和收藏数据库函数，提供统一的景点业务接口
@@ -8,7 +10,6 @@ import {
   listFavoriteAttractionIds,
   removeFavoriteAttraction,
 } from '../auth'
-import type { AttractionItem } from './providers/pgAttractionProvider'
 import {
   getAttractionMeta,
   getAttractionById as providerGetAttractionById,

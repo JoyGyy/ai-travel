@@ -1,3 +1,5 @@
+import type { CommunityImageInput, CreateCommunityPostInput } from '@/lib/services/community'
+
 /**
  * 社区路由 — 帖子列表/创建
  * GET /api/community/posts — 获取帖子列表（公开可访问，登录后返回 likedByMe）
@@ -9,7 +11,6 @@ import { NextResponse } from 'next/server'
 
 import { checkRateLimit } from '@/lib/rate-limit'
 import { getAuthFromHeaders } from '@/lib/services/auth'
-import type { CommunityImageInput, CreateCommunityPostInput } from '@/lib/services/community'
 import {
   createCommunityPost,
   listCommunityPosts,

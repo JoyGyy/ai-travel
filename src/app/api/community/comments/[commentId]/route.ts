@@ -6,8 +6,8 @@
 import { NextResponse } from 'next/server'
 
 import { deleteCommunityComment } from '@/lib/services/community'
-import { readRequiredString } from '@/lib/utils/validation'
 import { withProtected } from '@/lib/utils/http'
+import { readRequiredString } from '@/lib/utils/validation'
 
 export const DELETE = withProtected<{ params: Promise<{ commentId: string }> }>(
   async (_req, { user, params }) => {

@@ -1,10 +1,11 @@
 'use client'
 
 import type { CommunityComment, CommunityPost } from '@/types/community'
+
 import { ArrowLeftOutlined, DeleteOutlined, HeartFilled, HeartOutlined, LinkOutlined, RetweetOutlined, SendOutlined, ShareAltOutlined } from '@ant-design/icons'
 import { Button, Empty, Input, Modal, Pagination, Popconfirm, Spin } from 'antd'
-import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 import {
   createCommunityComment,

@@ -4,7 +4,7 @@
  * 以标签形式展示 AI 回答所参考的知识库来源，
  * 用于提升回答的可追溯性和可信度。
  */
-import { EnvironmentOutlined } from '@ant-design/icons'
+import { MapPin } from 'lucide-react'
 
 import './style.css'
 
@@ -21,7 +21,7 @@ export function RAGSource({ sources }: RAGSourceProps) {
     <div className="rag-source">
       {/* ---- 标题栏 ---- */}
       <div className="rag-source__header">
-        <EnvironmentOutlined className="rag-source__icon" aria-hidden="true" />
+        <MapPin size={16} className="rag-source__icon" aria-hidden="true" />
         <span>参考来源</span>
       </div>
       {/* ---- 来源标签列表 ---- */}

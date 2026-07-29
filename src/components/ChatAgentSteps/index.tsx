@@ -6,8 +6,8 @@
  * 加载中自动展开，完成后延迟 800ms 自动收起，也可手动切换
  */
 import type { SSEEvent } from '@/types/api'
-import { CheckCircleOutlined, RightOutlined } from '@ant-design/icons'
 
+import { CheckCircle2, ChevronRight } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 import './style.css'
@@ -91,7 +91,7 @@ export function ChatAgentSteps({ steps, currentStep, isLoading }: ChatAgentSteps
         <span className="chat-agent-steps__header-left">
           {/* 加载中显示动态圆点，完成后显示勾号 */}
           <span className={`chat-agent-steps__icon ${isLoading ? 'chat-agent-steps__icon--loading' : 'chat-agent-steps__icon--done'}`} aria-hidden="true">
-            {isLoading ? <span className="chat-agent-steps__dot" /> : <CheckCircleOutlined />}
+            {isLoading ? <span className="chat-agent-steps__dot" /> : <CheckCircle2 size={16} />}
           </span>
           <span className="chat-agent-steps__label">Agent 思考过程</span>
           <span className="chat-agent-steps__count">
@@ -116,7 +116,7 @@ export function ChatAgentSteps({ steps, currentStep, isLoading }: ChatAgentSteps
                 {/* 左侧时间线：步骤编号圆点 + 连接线 */}
                 <div className="chat-agent-steps__line">
                   <div className={`chat-agent-steps__dot-item chat-agent-steps__dot-item--${status}`}>
-                    {status === 'done' ? <CheckCircleOutlined /> : <span>{step.step}</span>}
+                    {status === 'done' ? <CheckCircle2 size={14} /> : <span>{step.step}</span>}
                   </div>
                   {index < steps.length - 1 && (
                     <div className={`chat-agent-steps__conn ${status === 'done' ? 'chat-agent-steps__conn--done' : ''}`} />
@@ -132,7 +132,7 @@ export function ChatAgentSteps({ steps, currentStep, isLoading }: ChatAgentSteps
                   </div>
                   {summary && (
                     <div className="chat-agent-steps__summary">
-                      <RightOutlined className="chat-agent-steps__summary-arrow" />
+                      <ChevronRight size={14} className="chat-agent-steps__summary-arrow" />
                       <span>{summary}</span>
                     </div>
                   )}

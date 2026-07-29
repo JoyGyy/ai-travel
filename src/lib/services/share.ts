@@ -6,6 +6,7 @@
 import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
+
 import { nanoid } from 'nanoid'
 
 const DATA_PATH = path.join(process.cwd(), 'data/shared_itineraries.json')

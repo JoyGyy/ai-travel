@@ -5,8 +5,8 @@
  */
 import { NextResponse } from 'next/server'
 
-import { getAuthFromHeaders } from '@/lib/services/auth'
 import { getAttractionById } from '@/lib/services/attractions/attractionService'
+import { getAuthFromHeaders } from '@/lib/services/auth'
 import { errorResponse, httpError } from '@/lib/utils/http'
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {

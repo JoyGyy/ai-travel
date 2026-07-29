@@ -10,8 +10,8 @@ import {
   createCommunityComment,
   listCommunityComments,
 } from '@/lib/services/community'
-import { readRequiredString, readPositiveInteger } from '@/lib/utils/validation'
 import { withErrorHandler, withProtected } from '@/lib/utils/http'
+import { readRequiredString, readPositiveInteger } from '@/lib/utils/validation'
 
 const MAX_COMMENT_LENGTH = 500
 

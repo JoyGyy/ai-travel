@@ -7,12 +7,12 @@
  * 游玩亮点、注意事项和购票入口，支持收藏和 AI 行程规划跳转。
  */
 import type { Attraction } from '@/types/attraction'
+
 import { ArrowLeftOutlined, HeartFilled, HeartOutlined } from '@ant-design/icons'
 import { Button, message, Spin, Tag } from 'antd'
-import { useEffect, useState } from 'react'
-
 import Link from 'next/link'
 import { useRouter, useParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 import { favoriteAttraction, fetchAttractionDetail, unfavoriteAttraction } from '@/api/attractions'
 

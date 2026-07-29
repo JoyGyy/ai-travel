@@ -1,10 +1,11 @@
 'use client'
 
 import type { CommunityPost, CommunityPostFilters } from '@/types/community'
+
 import { PlusOutlined, RetweetOutlined, SearchOutlined } from '@ant-design/icons'
 import { Button, Empty, Input, Modal, Pagination, Switch } from 'antd'
-import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useCallback, useEffect, useState } from 'react'
 
 import { fetchCommunityPosts, likeCommunityPost, repostCommunityPost, unlikeCommunityPost } from '@/api/community'
 import { CommunityPostCard } from '@/components/CommunityPostCard'

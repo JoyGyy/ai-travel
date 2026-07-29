@@ -8,6 +8,7 @@
  */
 import type { ProfileData } from '@/types/api'
 import type { Attraction } from '@/types/attraction'
+
 import {
   ClockCircleOutlined,
   HeartOutlined,
@@ -30,10 +31,9 @@ import {
   Skeleton,
   Tag,
 } from 'antd'
-
-import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useCallback, useEffect, useState } from 'react'
 
 import { fetchFavoriteAttractions, unfavoriteAttraction } from '@/api/attractions'
 import { changePasswordApi, getProfileApi } from '@/api/auth'

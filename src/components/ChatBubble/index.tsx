@@ -6,7 +6,7 @@
  * 用户消息纯文本渲染，AI 消息通过 react-markdown 渲染 Markdown
  * react-markdown 使用动态导入（lazy）以减少初始包大小
  */
-import { RobotOutlined } from '@ant-design/icons'
+import { Bot } from 'lucide-react'
 import { lazy, Suspense } from 'react'
 
 import './style.css'
@@ -32,7 +32,7 @@ export function ChatBubble({ role, content }: ChatBubbleProps) {
       {/* AI 消息显示机器人头像 */}
       {!isUser && (
         <div className="chat-bubble__avatar" aria-hidden="true">
-          <RobotOutlined />
+          <Bot size={20} />
         </div>
       )}
       <div className={`chat-bubble__content ${isUser ? 'chat-bubble__content--user' : 'chat-bubble__content--ai'}`}>

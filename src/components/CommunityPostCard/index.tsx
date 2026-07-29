@@ -1,17 +1,19 @@
 'use client'
 
-import { useState } from 'react'
 import type { CommunityPost } from '@/types/community'
-import { CommentOutlined, DeleteOutlined, EnvironmentOutlined, HeartFilled, HeartOutlined, RetweetOutlined } from '@ant-design/icons'
-import { Avatar, Button, Card, Space, Tag, Typography } from 'antd'
+
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Heart, MapPin, MessageCircle, Repeat2, Trash2 } from 'lucide-react'
 import Link from 'next/link'
+import { useState } from 'react'
 
 import { CommunityImageGrid } from '@/components/CommunityImageGrid'
 import { CommunityItineraryPreview } from '@/components/CommunityItineraryPreview'
 
 import './style.css'
-
-const { Text, Paragraph } = Typography
 
 interface CommunityPostCardProps {
   post: CommunityPost
@@ -78,13 +80,8 @@ export function CommunityPostCard({
   const hasImages = post.images && post.images.length > 0
 
   return (
-    <Card
-      className={`community-post-card ${hasImages ? 'community-post-card--has-images' : ''}`}
-      hoverable
-      styles={{
-        body: { padding: 0 },
-      }}
-    >
+    <Card className={`community-post-card ${hasImages ? 'community-post-card--has-images' : ''}`}>
+      <CardContent className="p-0">
       {/* 图片区域 - 占主要面积 */}
       {hasImages && (
         <Link href={`/community/${post.id}`} className="community-post-card__image-wrapper">
@@ -97,33 +94,34 @@ export function CommunityPostCard({
         {/* 用户信息 */}
         <div className="community-post-card__meta">
           <Link href={`/community?authorId=${post.author.id}`} className="community-post-card__user">
-            <Avatar size={28} className="community-post-card__avatar">
-              {post.author.username.slice(0, 1).toUpperCase()}
+            <Avatar className="community-post-card__avatar h-7 w-7">
+              <AvatarFallback>{post.author.username.slice(0, 1).toUpperCase()}</AvatarFallback>
             </Avatar>
-            <Text strong className="community-post-card__username">{displayAuthor}</Text>
+            <span className="community-post-card__username font-semibold">{displayAuthor}</span>
           </Link>
-          <Text type="secondary" className="community-post-card__time">{formatTime(post.createdAt)}</Text>
+          <span className="community-post-card__time text-muted-foreground">{formatTime(post.createdAt)}</span>
         </div>
 
         {/* 标题和内容 */}
         <Link href={`/community/${post.id}`} className="community-post-card__body">
           {post.title && (
-            <Paragraph ellipsis={{ rows: 2 }} className="community-post-card__title">
+            <p className="community-post-card__title line-clamp-2">
               {post.title}
-            </Paragraph>
+            </p>
           )}
           {post.content && (
-            <Paragraph ellipsis={{ rows: 2 }} type="secondary" className="community-post-card__excerpt">
+            <p className="community-post-card__excerpt line-clamp-2 text-muted-foreground">
               {getPostExcerpt(post.content)}
-            </Paragraph>
+            </p>
           )}
         </Link>
 
         {/* 城市标签 */}
         {post.city && (
-          <Tag icon={<EnvironmentOutlined />} color="blue" className="community-post-card__city">
+          <Badge variant="secondary" className="community-post-card__city">
+            <MapPin size={12} className="mr-1" />
             {post.city}
-          </Tag>
+          </Badge>
         )}
 
         {/* 行程预览（紧凑模式） */}
@@ -136,58 +134,60 @@ export function CommunityPostCard({
         {/* 原帖引用 */}
         {post.originalPost && (
           <Link href={`/community/${post.originalPost.id}`} className="community-post-card__quote">
-            <Text type="secondary" className="community-post-card__quote-label">原帖</Text>
-            <Text strong ellipsis>{post.originalPost.title || `${post.originalPost.city || '旅行'}分享`}</Text>
+            <span className="community-post-card__quote-label text-muted-foreground">原帖</span>
+            <span className="font-semibold truncate">{post.originalPost.title || `${post.originalPost.city || '旅行'}分享`}</span>
           </Link>
         )}
         {post.postType === 'repost' && !post.originalPost && (
-          <Text type="secondary" className="community-post-card__quote-missing">原帖已删除</Text>
+          <span className="community-post-card__quote-missing text-muted-foreground">原帖已删除</span>
         )}
 
         {/* 操作栏 */}
         <div className="community-post-card__actions">
-          <Space size={4}>
+          <div className="flex gap-1">
             <Button
-              type="text"
-              size="small"
+              variant="ghost"
+              size="sm"
               className={`community-post-card__action-btn ${post.likedByMe ? 'community-post-card__action-btn--liked' : ''} ${isLikeAnimating ? 'community-post-card__action-btn--animating' : ''}`}
-              icon={post.likedByMe ? <HeartFilled /> : <HeartOutlined />}
-              loading={likePending}
+              disabled={likePending}
               onClick={handleLike}
             >
+              <Heart size={16} className={post.likedByMe ? 'fill-current' : ''} />
               {post.likeCount || ''}
             </Button>
             <Button
-              type="text"
-              size="small"
-              icon={<CommentOutlined />}
+              variant="ghost"
+              size="sm"
               onClick={() => onComment?.(post)}
             >
+              <MessageCircle size={16} />
               {post.commentCount || ''}
             </Button>
             <Button
-              type="text"
-              size="small"
-              icon={<RetweetOutlined />}
-              loading={repostPending}
+              variant="ghost"
+              size="sm"
+              disabled={repostPending}
               onClick={() => onRepost?.(post)}
             >
+              <Repeat2 size={16} />
               {post.repostCount || ''}
             </Button>
-          </Space>
+          </div>
 
           {isAuthor && (
             <Button
-              type="text"
-              size="small"
-              danger
-              icon={<DeleteOutlined />}
-              loading={deletePending}
+              variant="ghost"
+              size="sm"
+              className="text-destructive"
+              disabled={deletePending}
               onClick={() => onDelete?.(post)}
-            />
+            >
+              <Trash2 size={16} />
+            </Button>
           )}
         </div>
       </div>
+      </CardContent>
     </Card>
   )
 }

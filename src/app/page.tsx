@@ -8,26 +8,26 @@
 import type { ChangeEvent, FormEvent, KeyboardEvent } from 'react'
 
 import {
-  CalendarOutlined,
-  CloudOutlined,
-  CompassOutlined,
-  DollarOutlined,
-  EnvironmentOutlined,
-  FireOutlined,
-  HomeOutlined,
-  LoginOutlined,
-  RobotOutlined,
-  StarOutlined,
-  TeamOutlined,
-  ThunderboltOutlined,
-  UserOutlined,
-} from '@ant-design/icons'
+  Calendar,
+  Cloud,
+  Compass,
+  CircleDollarSign,
+  MapPin,
+  Flame,
+  Home,
+  LogIn,
+  Bot,
+  Star,
+  Users,
+  Zap,
+  User,
+} from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { allCities } from '@/constants/cities'
-import { useAppMessage } from '@/hooks/useAppMessage'
+import { useAppToast } from '@/hooks/useAppToast'
 import { useWeather } from '@/hooks/useWeather'
 import { imageUrl } from '@/lib/images'
 import { useAuthStore } from '@/stores/auth'
@@ -38,12 +38,12 @@ import './style.css'
 
 /* 快捷入口 */
 const quickEntries = [
-  { icon: <HomeOutlined />, label: '酒店民宿', color: '#FF6B35' },
-  { icon: <CompassOutlined />, label: 'AI 行程', color: '#F59E0B' },
-  { icon: <EnvironmentOutlined />, label: '精选景点', color: '#10B981' },
-  { icon: <TeamOutlined />, label: '旅友社区', color: '#8B5CF6' },
-  { icon: <CloudOutlined />, label: '天气查询', color: '#3B82F6' },
-  { icon: <RobotOutlined />, label: 'AI 咨询', color: '#E84057' },
+  { icon: <Home />, label: '酒店民宿', color: '#FF6B35' },
+  { icon: <Compass />, label: 'AI 行程', color: '#F59E0B' },
+  { icon: <MapPin />, label: '精选景点', color: '#10B981' },
+  { icon: <Users />, label: '旅友社区', color: '#8B5CF6' },
+  { icon: <Cloud />, label: '天气查询', color: '#3B82F6' },
+  { icon: <Bot />, label: 'AI 咨询', color: '#E84057' },
 ]
 
 /* 热门目的地 */
@@ -111,7 +111,7 @@ function useIsActive(href: string) {
 export default function Home() {
   /* ---------- 路由与全局状态 ---------- */
   const router = useRouter()
-  const message = useAppMessage()
+  const toast = useAppToast()
   const user = useAuthStore(state => state.user)
   const hasHydrated = useAuthStore(state => state._hasHydrated)
   const [city, setCity] = useState('')
@@ -215,7 +215,7 @@ export default function Home() {
 
   function onStart() {
     if (!hasHydrated) {
-      message.loading('加载中...')
+      toast.loading('加载中...')
       return
     }
     if (!user)
@@ -239,7 +239,7 @@ export default function Home() {
       <header className="home__header">
         <div className="home__header-inner">
           <Link className="home__brand" href="/" aria-label="返回首页">
-            <span className="home__brand-icon"><CompassOutlined /></span>
+            <span className="home__brand-icon"><Compass /></span>
             <span className="home__brand-name">TravelAI</span>
           </Link>
           <nav className="home__nav" aria-label="主导航">
@@ -253,14 +253,14 @@ export default function Home() {
             {user
               ? (
                   <Link href="/profile" className="home__user-badge">
-                    <UserOutlined />
+                    <User />
                     {' '}
                     {user.username || '用户'}
                   </Link>
                 )
               : (
                   <Link href="/login" className="home__login-btn">
-                    <LoginOutlined />
+                    <LogIn />
                     {' '}
                     登录 / 注册
                   </Link>
@@ -289,7 +289,7 @@ export default function Home() {
             <div className="home__search-row">
               {/* 目的地 */}
               <div className="home__search-field home__search-field--city" onClick={e => e.stopPropagation()}>
-                <EnvironmentOutlined className="home__search-icon" aria-hidden="true" />
+                <MapPin className="home__search-icon" aria-hidden="true" />
                 <label className="home__search-label" htmlFor="home-city-input">
                   <span className="home__search-label-text">目的地</span>
                   <input
@@ -327,7 +327,7 @@ export default function Home() {
                             role="option"
                             aria-selected={city === name}
                           >
-                            <EnvironmentOutlined aria-hidden="true" />
+                            <MapPin aria-hidden="true" />
                             {name}
                           </button>
                         ))}
@@ -341,7 +341,7 @@ export default function Home() {
 
               {/* 预算 */}
               <div className="home__search-field">
-                <DollarOutlined className="home__search-icon" aria-hidden="true" />
+                <CircleDollarSign className="home__search-icon" aria-hidden="true" />
                 <label className="home__search-label" htmlFor="home-budget-input">
                   <span className="home__search-label-text">预算 (元)</span>
                   <input
@@ -368,7 +368,7 @@ export default function Home() {
 
               {/* 天数 */}
               <div className="home__search-field">
-                <CalendarOutlined className="home__search-icon" aria-hidden="true" />
+                <Calendar className="home__search-icon" aria-hidden="true" />
                 <div className="home__search-label">
                   <span className="home__search-label-text">天数</span>
                   <div className="home__days-picker" aria-label="旅行天数">
@@ -384,7 +384,7 @@ export default function Home() {
 
               {/* 搜索按钮 */}
               <button type="submit" className="home__search-btn">
-                <RobotOutlined aria-hidden="true" />
+                <Bot aria-hidden="true" />
                 <span>AI 规划</span>
               </button>
             </div>
@@ -404,7 +404,7 @@ export default function Home() {
                       : weather
                         ? (
                             <>
-                              <CloudOutlined aria-hidden="true" />
+                              <Cloud aria-hidden="true" />
                               {' '}
                               {weather.city}
                               {' '}
@@ -423,7 +423,7 @@ export default function Home() {
           {/* 热门搜索标签 */}
           <div className="home__hot-tags">
             <span className="home__hot-tag-label">
-              <FireOutlined aria-hidden="true" />
+              <Flame aria-hidden="true" />
               {' '}
               热门：
             </span>
@@ -454,7 +454,7 @@ export default function Home() {
       <section className="home__section" aria-labelledby="hot-dest-title">
         <div className="home__section-head">
           <h2 id="hot-dest-title" className="home__section-title">
-            <FireOutlined aria-hidden="true" />
+            <Flame aria-hidden="true" />
             {' '}
             热门目的地
           </h2>
@@ -481,7 +481,7 @@ export default function Home() {
       <section className="home__section" aria-labelledby="featured-title">
         <div className="home__section-head">
           <h2 id="featured-title" className="home__section-title">
-            <StarOutlined aria-hidden="true" />
+            <Star aria-hidden="true" />
             {' '}
             精选推荐
           </h2>
@@ -499,7 +499,7 @@ export default function Home() {
                 <p className="home__featured-desc">{trip.desc}</p>
                 <div className="home__featured-meta">
                   <span className="home__featured-rating">
-                    <StarOutlined aria-hidden="true" />
+                    <Star aria-hidden="true" />
                     {trip.rating}
                   </span>
                   <span className="home__featured-reviews">
@@ -534,7 +534,7 @@ export default function Home() {
           {/* AI 功能亮点 */}
           <div className="home__ai-card">
             <div className="home__ai-card-header">
-              <ThunderboltOutlined className="home__ai-card-icon" aria-hidden="true" />
+              <Zap className="home__ai-card-icon" aria-hidden="true" />
               <h3 id="ai-feature-title">为什么选择 AI 规划？</h3>
             </div>
             <ul className="home__ai-features">
@@ -574,7 +574,7 @@ export default function Home() {
           {/* 用户评价 */}
           <div className="home__reviews-card">
             <h3 className="home__reviews-title">
-              <TeamOutlined aria-hidden="true" />
+              <Users aria-hidden="true" />
               {' '}
               用户怎么说
             </h3>
@@ -608,7 +608,7 @@ export default function Home() {
           <h2 className="home__cta-title">准备好出发了吗？</h2>
           <p className="home__cta-subtitle">让 AI 为你量身定制下一段旅程</p>
           <button type="button" className="home__cta-btn" onClick={onStart}>
-            <RobotOutlined aria-hidden="true" />
+            <Bot aria-hidden="true" />
             {user ? '立即规划行程' : '登录开始规划'}
           </button>
         </div>

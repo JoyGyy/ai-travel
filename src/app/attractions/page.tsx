@@ -8,8 +8,8 @@
  */
 import type { Attraction, AttractionFilters, AttractionTicketType } from '@/types/attraction'
 
-import { HeartFilled, HeartOutlined, SearchOutlined } from '@ant-design/icons'
-import { Button, Empty, Input, message, Pagination, Select, Spin, Tag } from 'antd'
+import { Heart, Heart, Search } from 'lucide-react'
+// Antd 组件已迁移
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 
@@ -33,7 +33,7 @@ export default function Attractions() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [favoritePendingIds, setFavoritePendingIds] = useState<Set<string>>(() => new Set())
-  const [msg, contextHolder] = message.useMessage()
+  const [msg, contextHolder] = toast.useMessage()
 
   const PAGE_SIZE = 12
 
@@ -128,7 +128,7 @@ export default function Attractions() {
             <Input
               id="attractions-keyword"
               allowClear
-              prefix={<SearchOutlined aria-hidden="true" />}
+              prefix={<Search aria-hidden="true" />}
               placeholder="搜索景点、城市或标签"
               value={keywordInput}
               onChange={event => setKeywordInput(event.target.value)}
@@ -251,7 +251,7 @@ export default function Attractions() {
                               }}
                               className="attractions-page__favorite"
                             >
-                              {item.isFavorite ? <HeartFilled aria-hidden="true" /> : <HeartOutlined aria-hidden="true" />}
+                              {item.isFavorite ? <Heart aria-hidden="true" /> : <Heart aria-hidden="true" />}
                             </button>
                           </div>
                           <p>{item.summary}</p>

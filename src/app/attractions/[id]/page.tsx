@@ -8,8 +8,8 @@
  */
 import type { Attraction } from '@/types/attraction'
 
-import { ArrowLeftOutlined, HeartFilled, HeartOutlined } from '@ant-design/icons'
-import { Button, message, Spin, Tag } from 'antd'
+import { ArrowLeft, Heart, Heart } from 'lucide-react'
+// Antd 组件已迁移
 import Link from 'next/link'
 import { useRouter, useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -47,7 +47,7 @@ export default function AttractionDetail() {
   const [error, setError] = useState('')
   const [favoritePending, setFavoritePending] = useState(false)
   const [reloadKey, setReloadKey] = useState(0)
-  const [msg, contextHolder] = message.useMessage()
+  const [msg, contextHolder] = toast.useMessage()
 
   // ---- 加载景点数据 ----
   useEffect(() => {
@@ -133,7 +133,7 @@ export default function AttractionDetail() {
     <main className="attraction-detail travel-page-shell" aria-labelledby="attraction-detail-title">
       {contextHolder}
       <button type="button" className="attraction-detail__back" onClick={() => router.back()}>
-        <ArrowLeftOutlined aria-hidden="true" />
+        <ArrowLeft aria-hidden="true" />
         <span>返回</span>
       </button>
       {/* ---- 封面与操作区 ---- */}
@@ -166,7 +166,7 @@ export default function AttractionDetail() {
               aria-pressed={Boolean(attraction.isFavorite)}
               disabled={favoritePending}
               loading={favoritePending}
-              icon={attraction.isFavorite ? <HeartFilled aria-hidden="true" /> : <HeartOutlined aria-hidden="true" />}
+              icon={attraction.isFavorite ? <Heart aria-hidden="true" /> : <Heart aria-hidden="true" />}
             >
               {attraction.isFavorite ? '已收藏' : '收藏'}
             </Button>

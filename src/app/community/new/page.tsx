@@ -1,17 +1,17 @@
 'use client'
 
 import type { CommunityImage, CommunityItinerarySnapshot } from '@/types/community'
-import type { UploadFile } from 'antd'
+// Antd 类型已迁移
 
-import { CloseOutlined, PictureOutlined, SendOutlined } from '@ant-design/icons'
-import { Button, Form, Input, Upload } from 'antd'
+import { X, ImageIcon, Send } from 'lucide-react'
+// Antd 组件已迁移
 import { useRouter } from 'next/navigation'
 import { useMemo, useState } from 'react'
 
 import { createCommunityPost, uploadCommunityImages } from '@/api/community'
 import { CommunityImageGrid } from '@/components/CommunityImageGrid'
 import { CommunityItineraryPreview } from '@/components/CommunityItineraryPreview'
-import { useAppMessage } from '@/hooks/useAppMessage'
+import { useAppToast } from '@/hooks/useAppToast'
 
 import './style.css'
 
@@ -27,7 +27,7 @@ function isImageFile(file: File) {
 
 export default function CommunityPostCreate() {
   const router = useRouter()
-  const message = useAppMessage()
+  const toast = useAppToast()
   const [form] = Form.useForm<FormValues>()
   const [images, setImages] = useState<CommunityImage[]>([])
   const [snapshot, setSnapshot] = useState<CommunityItinerarySnapshot | null>(null)
@@ -39,15 +39,15 @@ export default function CommunityPostCreate() {
 
   async function handleUpload(file: File) {
     if (images.length >= 9) {
-      message.warning('每条分享最多上传 9 张图片')
+      toast.warning('每条分享最多上传 9 张图片')
       return Upload.LIST_IGNORE
     }
     if (!isImageFile(file)) {
-      message.error('仅支持 JPG、PNG 或 WebP 图片')
+      toast.error('仅支持 JPG、PNG 或 WebP 图片')
       return Upload.LIST_IGNORE
     }
     if (file.size > 5 * 1024 * 1024) {
-      message.error('单张图片不能超过 5MB')
+      toast.error('单张图片不能超过 5MB')
       return Upload.LIST_IGNORE
     }
 
@@ -55,10 +55,10 @@ export default function CommunityPostCreate() {
     try {
       const uploaded = await uploadCommunityImages([file])
       setImages(prev => [...prev, ...uploaded].slice(0, 9))
-      message.success('图片上传成功')
+      toast.success('图片上传成功')
     }
     catch (err: unknown) {
-      message.error(err instanceof Error ? err.message : '图片上传失败')
+      toast.error(err instanceof Error ? err.message : '图片上传失败')
     }
     finally {
       setUploading(false)
@@ -73,7 +73,7 @@ export default function CommunityPostCreate() {
 
   async function submit(values: FormValues) {
     if (!canSubmit) {
-      message.warning('正文、图片和行程快照至少需要提供一项')
+      toast.warning('正文、图片和行程快照至少需要提供一项')
       return
     }
 
@@ -86,11 +86,11 @@ export default function CommunityPostCreate() {
         images,
         itinerarySnapshot: snapshot,
       })
-      message.success('已发布到社区')
+      toast.success('已发布到社区')
       router.push(`/community/${post.id}`)
     }
     catch (err: unknown) {
-      message.error(err instanceof Error ? err.message : '发布失败')
+      toast.error(err instanceof Error ? err.message : '发布失败')
     }
     finally {
       setSubmitting(false)
@@ -121,7 +121,7 @@ export default function CommunityPostCreate() {
 
           <div className="community-create__upload-block">
             <div className="community-create__section-title">
-              <PictureOutlined aria-hidden="true" />
+              <ImageIcon aria-hidden="true" />
               <span>图片</span>
             </div>
             <Upload accept="image/jpeg,image/png,image/webp" fileList={uploadFileList} beforeUpload={handleUpload} multiple disabled={uploading || images.length >= 9}>
@@ -135,7 +135,7 @@ export default function CommunityPostCreate() {
                     <div className="community-create__image-actions">
                       {images.map(image => (
                         <button key={image.storageKey || image.url} type="button" onClick={() => removeImage(image)}>
-                          <CloseOutlined aria-hidden="true" />
+                          <X aria-hidden="true" />
                           移除图片
                         </button>
                       ))}
@@ -157,7 +157,7 @@ export default function CommunityPostCreate() {
 
           <div className="community-create__actions">
             <Button onClick={() => router.push('/community')}>取消</Button>
-            <Button type="primary" htmlType="submit" icon={<SendOutlined aria-hidden="true" />} loading={submitting} disabled={!canSubmit || uploading}>
+            <Button type="primary" htmlType="submit" icon={<Send aria-hidden="true" />} loading={submitting} disabled={!canSubmit || uploading}>
               发布到社区
             </Button>
           </div>

@@ -2,8 +2,8 @@
 
 import type { CommunityComment, CommunityPost } from '@/types/community'
 
-import { ArrowLeftOutlined, DeleteOutlined, HeartFilled, HeartOutlined, LinkOutlined, RetweetOutlined, SendOutlined, ShareAltOutlined } from '@ant-design/icons'
-import { Button, Empty, Input, Modal, Pagination, Popconfirm, Spin } from 'antd'
+import { ArrowLeft, Trash2, Heart, Heart, Link, Repeat2, Send, Share2 } from 'lucide-react'
+// Antd 组件已迁移
 import { useRouter, useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -20,7 +20,7 @@ import {
 import { CommunityImageGrid } from '@/components/CommunityImageGrid'
 import { CommunityItineraryPreview } from '@/components/CommunityItineraryPreview'
 import { CommunityPostCard } from '@/components/CommunityPostCard'
-import { useAppMessage } from '@/hooks/useAppMessage'
+import { useAppToast } from '@/hooks/useAppToast'
 import { useAuthStore } from '@/stores/auth'
 
 import './style.css'
@@ -38,7 +38,7 @@ export default function CommunityPostDetail() {
   const params = useParams()
   const id = (params?.id as string) || ''
   const router = useRouter()
-  const message = useAppMessage()
+  const toast = useAppToast()
   const user = useAuthStore(state => state.user)
   const hasHydrated = useAuthStore(state => state._hasHydrated)
 
@@ -100,7 +100,7 @@ export default function CommunityPostDetail() {
       }
       catch (err: unknown) {
         if (!cancelled)
-          message.error(err instanceof Error ? err.message : '评论加载失败')
+          toast.error(err instanceof Error ? err.message : '评论加载失败')
       }
       finally {
         if (!cancelled)
@@ -115,11 +115,11 @@ export default function CommunityPostDetail() {
 
   function requireLogin(action: string) {
     if (!hasHydrated) {
-      message.loading('正在恢复登录状态...')
+      toast.loading('正在恢复登录状态...')
       return false
     }
     if (!user) {
-      message.info(`请先登录后${action}`)
+      toast.info(`请先登录后${action}`)
       router.push('/login')
       return false
     }
@@ -139,10 +139,10 @@ export default function CommunityPostDetail() {
     try {
       const result = post.likedByMe ? await unlikeCommunityPost(post.id) : await likeCommunityPost(post.id)
       setPost({ ...post, likedByMe: result.likedByMe, likeCount: result.likeCount })
-      message.success(result.likedByMe ? '已点赞' : '已取消点赞')
+      toast.success(result.likedByMe ? '已点赞' : '已取消点赞')
     }
     catch (err: unknown) {
-      message.error(err instanceof Error ? err.message : '点赞失败')
+      toast.error(err instanceof Error ? err.message : '点赞失败')
     }
     finally {
       setLikePending(false)
@@ -155,7 +155,7 @@ export default function CommunityPostDetail() {
 
     const content = commentInput.trim()
     if (!content) {
-      message.warning('请输入评论内容')
+      toast.warning('请输入评论内容')
       return
     }
 
@@ -166,10 +166,10 @@ export default function CommunityPostDetail() {
       setCommentTotal(result.commentCount)
       setPost({ ...post, commentCount: result.commentCount })
       setCommentInput('')
-      message.success('评论已发布')
+      toast.success('评论已发布')
     }
     catch (err: unknown) {
-      message.error(err instanceof Error ? err.message : '评论发布失败')
+      toast.error(err instanceof Error ? err.message : '评论发布失败')
     }
     finally {
       setCommentSubmitting(false)
@@ -184,10 +184,10 @@ export default function CommunityPostDetail() {
       setCommentTotal(prev => Math.max(0, prev - 1))
       if (post)
         setPost({ ...post, commentCount: Math.max(0, post.commentCount - 1) })
-      message.success('评论已删除')
+      toast.success('评论已删除')
     }
     catch (err: unknown) {
-      message.error(err instanceof Error ? err.message : '删除评论失败')
+      toast.error(err instanceof Error ? err.message : '删除评论失败')
     }
     finally {
       setDeletePendingId('')
@@ -201,11 +201,11 @@ export default function CommunityPostDetail() {
     setPostDeletePending(true)
     try {
       await deleteCommunityPost(post.id)
-      message.success('帖子已删除')
+      toast.success('帖子已删除')
       router.push('/community')
     }
     catch (err: unknown) {
-      message.error(err instanceof Error ? err.message : '删除帖子失败')
+      toast.error(err instanceof Error ? err.message : '删除帖子失败')
     }
     finally {
       setPostDeletePending(false)
@@ -219,12 +219,12 @@ export default function CommunityPostDetail() {
     setRepostPending(true)
     try {
       const repost = await repostCommunityPost(post.id, repostContent.trim())
-      message.success('已转发到社区')
+      toast.success('已转发到社区')
       setRepostOpen(false)
       router.push(`/community/${repost.id}`)
     }
     catch (err: unknown) {
-      message.error(err instanceof Error ? err.message : '转发失败')
+      toast.error(err instanceof Error ? err.message : '转发失败')
     }
     finally {
       setRepostPending(false)
@@ -243,7 +243,7 @@ export default function CommunityPostDetail() {
       }
     }
     await navigator.clipboard.writeText(url)
-    message.success('链接已复制')
+    toast.success('链接已复制')
   }
 
   if (loading) {
@@ -277,7 +277,7 @@ export default function CommunityPostDetail() {
   return (
     <main className="community-detail travel-page-shell" aria-labelledby="community-detail-title">
       <button type="button" className="community-detail__back" onClick={() => router.back()}>
-        <ArrowLeftOutlined aria-hidden="true" />
+        <ArrowLeft aria-hidden="true" />
         返回
       </button>
 
@@ -302,25 +302,25 @@ export default function CommunityPostDetail() {
         <div className="community-detail__actions" aria-label="帖子操作">
           <Button
             className={`community-detail__like-btn ${post.likedByMe ? 'community-detail__like-btn--liked' : ''} ${isLikeAnimating ? 'community-detail__like-btn--animating' : ''}`}
-            icon={post.likedByMe ? <HeartFilled aria-hidden="true" /> : <HeartOutlined aria-hidden="true" />}
+            icon={post.likedByMe ? <Heart aria-hidden="true" /> : <Heart aria-hidden="true" />}
             loading={likePending}
             aria-pressed={post.likedByMe}
             onClick={toggleLike}
           >
             {post.likeCount}
           </Button>
-          <Button icon={<RetweetOutlined aria-hidden="true" />} onClick={() => (requireLogin('转发') ? setRepostOpen(true) : undefined)}>
+          <Button icon={<Repeat2 aria-hidden="true" />} onClick={() => (requireLogin('转发') ? setRepostOpen(true) : undefined)}>
             转发
             {' '}
             ·
             {' '}
             {post.repostCount}
           </Button>
-          <Button icon={<ShareAltOutlined aria-hidden="true" />} onClick={shareLink}>分享链接</Button>
+          <Button icon={<Share2 aria-hidden="true" />} onClick={shareLink}>分享链接</Button>
           {isAuthor
             ? (
                 <Popconfirm title="确认删除这条帖子？" okText="删除" cancelText="取消" onConfirm={removePost}>
-                  <Button danger icon={<DeleteOutlined aria-hidden="true" />} loading={postDeletePending}>删除帖子</Button>
+                  <Button danger icon={<Trash2 aria-hidden="true" />} loading={postDeletePending}>删除帖子</Button>
                 </Popconfirm>
               )
             : null}
@@ -338,7 +338,7 @@ export default function CommunityPostDetail() {
         </div>
         <div className="community-detail__comment-form">
           <Input.TextArea value={commentInput} rows={4} maxLength={500} showCount placeholder="写下你的建议、问题或补充体验" onChange={event => setCommentInput(event.target.value)} />
-          <Button type="primary" icon={<SendOutlined aria-hidden="true" />} loading={commentSubmitting} onClick={submitComment}>发布评论</Button>
+          <Button type="primary" icon={<Send aria-hidden="true" />} loading={commentSubmitting} onClick={submitComment}>发布评论</Button>
         </div>
 
         {commentsLoading
@@ -381,7 +381,7 @@ export default function CommunityPostDetail() {
         <p className="community-detail__modal-intro">可以直接转发，也可以写一句给旅友的补充说明。</p>
         <Input.TextArea value={repostContent} rows={4} maxLength={500} showCount placeholder="写一句转发附言" onChange={event => setRepostContent(event.target.value)} />
         <div className="community-detail__modal-target">
-          <LinkOutlined aria-hidden="true" />
+          <Link aria-hidden="true" />
           <span>{post.title || post.content || `${post.city || '旅行'}分享`}</span>
         </div>
       </Modal>

@@ -2,15 +2,15 @@
 
 import type { CommunityPost, CommunityPostFilters } from '@/types/community'
 
-import { PlusOutlined, RetweetOutlined, SearchOutlined } from '@ant-design/icons'
-import { Button, Empty, Input, Modal, Pagination, Switch } from 'antd'
+import { Plus, Repeat2, Search } from 'lucide-react'
+// Antd 组件已迁移
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
 import { fetchCommunityPosts, likeCommunityPost, repostCommunityPost, unlikeCommunityPost } from '@/api/community'
 import { CommunityPostCard } from '@/components/CommunityPostCard'
 import { CommunityPostCardSkeleton } from '@/components/CommunityPostCard/skeleton'
-import { useAppMessage } from '@/hooks/useAppMessage'
+import { useAppToast } from '@/hooks/useAppToast'
 import { useAuthStore } from '@/stores/auth'
 
 import './style.css'
@@ -19,7 +19,7 @@ const PAGE_SIZE = 10
 
 export default function Community() {
   const router = useRouter()
-  const message = useAppMessage()
+  const toast = useAppToast()
   const user = useAuthStore(state => state.user)
   const hasHydrated = useAuthStore(state => state._hasHydrated)
 
@@ -57,11 +57,11 @@ export default function Community() {
 
   function requireLogin(action: string) {
     if (!hasHydrated) {
-      message.loading('正在恢复登录状态...')
+      toast.loading('正在恢复登录状态...')
       return false
     }
     if (!user) {
-      message.info(`请先登录后${action}`)
+      toast.info(`请先登录后${action}`)
       router.push('/login')
       return false
     }
@@ -91,10 +91,10 @@ export default function Community() {
     try {
       const result = post.likedByMe ? await unlikeCommunityPost(post.id) : await likeCommunityPost(post.id)
       setItems(prev => prev.map(item => item.id === post.id ? { ...item, likedByMe: result.likedByMe, likeCount: result.likeCount } : item))
-      message.success(result.likedByMe ? '已点赞' : '已取消点赞')
+      toast.success(result.likedByMe ? '已点赞' : '已取消点赞')
     }
     catch (err: unknown) {
-      message.error(err instanceof Error ? err.message : '点赞操作失败')
+      toast.error(err instanceof Error ? err.message : '点赞操作失败')
     }
     finally {
       setLikePendingIds((prev) => {
@@ -123,10 +123,10 @@ export default function Community() {
       setTotal(prev => prev + 1)
       setRepostTarget(null)
       setRepostContent('')
-      message.success('已转发到社区')
+      toast.success('已转发到社区')
     }
     catch (err: unknown) {
-      message.error(err instanceof Error ? err.message : '转发失败')
+      toast.error(err instanceof Error ? err.message : '转发失败')
     }
     finally {
       setRepostPendingIds((prev) => {
@@ -147,7 +147,7 @@ export default function Community() {
           <h1 id="community-title">旅友正在路上</h1>
           <p>把 AI 规划、实拍照片和旅行心得做成一张明信片，让下一位出发的人少走弯路。</p>
         </div>
-        <Button type="primary" size="large" icon={<PlusOutlined aria-hidden="true" />} onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}>
+        <Button type="primary" size="large" icon={<Plus aria-hidden="true" />} onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}>
           发布旅行分享
         </Button>
       </section>
@@ -163,7 +163,7 @@ export default function Community() {
             <Input
               id="community-city"
               allowClear
-              prefix={<SearchOutlined aria-hidden="true" />}
+              prefix={<Search aria-hidden="true" />}
               placeholder="输入城市，例如 成都"
               value={cityInput}
               onChange={event => setCityInput(event.target.value)}
@@ -259,7 +259,7 @@ export default function Community() {
         {repostTarget
           ? (
               <div className="community-page__modal-target">
-                <RetweetOutlined aria-hidden="true" />
+                <Repeat2 aria-hidden="true" />
                 <span>{repostTarget.title || repostTarget.content || `${repostTarget.city || '旅行'}分享`}</span>
               </div>
             )

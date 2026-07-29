@@ -10,27 +10,14 @@ import type { ProfileData } from '@/types/api'
 import type { Attraction } from '@/types/attraction'
 
 import {
-  ClockCircleOutlined,
-  HeartOutlined,
-  KeyOutlined,
-  LogoutOutlined,
-  RobotOutlined,
-  SafetyOutlined,
-  UserOutlined,
-} from '@ant-design/icons'
-import {
-  Avatar,
-  Button,
-  Card,
-  Empty,
-  Form,
-  Input,
-  List,
-  message,
-  Progress,
-  Skeleton,
-  Tag,
-} from 'antd'
+  Clock,
+  Heart,
+  Key,
+  LogOut,
+  Bot,
+  Shield,
+  User,
+} from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
@@ -185,14 +172,14 @@ export default function Profile() {
         {/* 用户信息卡 */}
         <Card className="profile-page__card profile-page__user-card travel-surface-card travel-ticket-edge" variant="borderless">
           <div className="profile-page__user-info">
-            <Avatar size={76} icon={<UserOutlined aria-hidden="true" />} className="profile-page__avatar">
+            <Avatar size={76} icon={<User aria-hidden="true" />} className="profile-page__avatar">
               {displayName[0]?.toUpperCase()}
             </Avatar>
             <div className="profile-page__user-detail">
               <p className="profile-page__user-eyebrow">当前旅伴</p>
               <h2 className="profile-page__username">{displayName}</h2>
               <p className="profile-page__meta">
-                <ClockCircleOutlined aria-hidden="true" />
+                <Clock aria-hidden="true" />
                 <span>
                   注册于
                   {' '}
@@ -209,7 +196,7 @@ export default function Profile() {
           variant="borderless"
           title={(
             <>
-              <RobotOutlined aria-hidden="true" />
+              <Bot aria-hidden="true" />
               {' '}
               AI 使用额度
             </>
@@ -248,7 +235,7 @@ export default function Profile() {
           variant="borderless"
           title={(
             <>
-              <KeyOutlined aria-hidden="true" />
+              <Key aria-hidden="true" />
               {' '}
               修改密码
             </>
@@ -265,7 +252,7 @@ export default function Profile() {
               label="当前密码"
               rules={[{ required: true, message: '请输入当前密码' }]}
             >
-              <Input.Password prefix={<SafetyOutlined aria-hidden="true" />} placeholder="请输入当前密码" autoComplete="current-password" />
+              <Input.Password prefix={<Shield aria-hidden="true" />} placeholder="请输入当前密码" autoComplete="current-password" />
             </Form.Item>
             <Form.Item
               name="newPassword"
@@ -275,7 +262,7 @@ export default function Profile() {
                 { min: 6, message: '密码长度至少 6 个字符' },
               ]}
             >
-              <Input.Password prefix={<SafetyOutlined aria-hidden="true" />} placeholder="请输入新密码（至少 6 位）" autoComplete="new-password" />
+              <Input.Password prefix={<Shield aria-hidden="true" />} placeholder="请输入新密码（至少 6 位）" autoComplete="new-password" />
             </Form.Item>
             <Form.Item
               name="confirmPassword"
@@ -292,7 +279,7 @@ export default function Profile() {
                 }),
               ]}
             >
-              <Input.Password prefix={<SafetyOutlined aria-hidden="true" />} placeholder="请再次输入新密码" autoComplete="new-password" />
+              <Input.Password prefix={<Shield aria-hidden="true" />} placeholder="请再次输入新密码" autoComplete="new-password" />
             </Form.Item>
             <Form.Item>
               <Button type="primary" htmlType="submit" loading={changingPassword}>
@@ -308,7 +295,7 @@ export default function Profile() {
           variant="borderless"
           title={(
             <>
-              <HeartOutlined aria-hidden="true" />
+              <Heart aria-hidden="true" />
               {' '}
               我的收藏 (
               {favorites.length}
@@ -363,7 +350,7 @@ export default function Profile() {
           <Button
             block
             danger
-            icon={<LogoutOutlined aria-hidden="true" />}
+            icon={<LogOut aria-hidden="true" />}
             size="large"
             onClick={handleLogout}
           >

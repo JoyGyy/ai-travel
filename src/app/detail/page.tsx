@@ -8,7 +8,7 @@ import type { ItineraryCache } from '@/utils/storage'
  * 展示 AI 生成的旅行行程，包含天气、住宿、每日景点、预算明细等模块。
  * 优先从本地缓存读取，缓存未命中时通过 SSE 流式调用推荐接口生成行程。
  */
-import { ArrowLeftOutlined, CloseOutlined, CompassOutlined, EnvironmentOutlined, ShareAltOutlined } from '@ant-design/icons'
+import { ArrowLeft, X, Compass, MapPin, Share2 } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -17,7 +17,7 @@ import { AgentSteps } from '@/components/AgentSteps'
 import { BudgetTable } from '@/components/BudgetTable'
 import { SpotItem } from '@/components/SpotItem'
 import { WeatherCard } from '@/components/WeatherCard'
-import { useSSE } from '@/hooks/useSSE'
+import { useTravelRecommend } from '@/hooks/useTravelRecommend'
 import { useItineraryStore } from '@/stores/itinerary'
 import { loadItineraryCache, saveItineraryCache } from '@/utils/storage'
 
@@ -59,7 +59,7 @@ export default function Detail() {
   const [activeKeys, setActiveKeys] = useState<string[]>([])
   const [showLoading, setShowLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
-  const { sendRequest, abort } = useSSE()
+  const { content, loading, error, requestRecommend } = useTravelRecommend()
   const hasValidParams = Boolean(city && budget > 0 && days > 0)
 
   function findAttractionRef(spot?: string) {
@@ -189,7 +189,7 @@ export default function Detail() {
           onClick={() => router.back()}
           className="detail-page__back"
         >
-          <ArrowLeftOutlined aria-hidden="true" />
+          <ArrowLeft aria-hidden="true" />
         </button>
         <p className="detail-page__label">ITINERARY</p>
         <h1 id="detail-title" className="detail-page__title">{city || '旅行规划'}</h1>
@@ -220,7 +220,7 @@ export default function Detail() {
                         router.back()
                       }}
                     >
-                      <CloseOutlined aria-hidden="true" />
+                      <X aria-hidden="true" />
                     </button>
                   </div>
                   <div className="detail-page__loading-steps">
@@ -228,7 +228,7 @@ export default function Detail() {
                   </div>
                   <div className="detail-page__loading-spinner">
                     <div className="detail-page__spinner" aria-hidden="true" />
-                    <CompassOutlined className="detail-page__spinner-icon" aria-hidden="true" />
+                    <Compass className="detail-page__spinner-icon" aria-hidden="true" />
                   </div>
                   <p className="detail-page__loading-text">正在为你规划行程...</p>
                 </div>
@@ -239,7 +239,7 @@ export default function Detail() {
         {!showLoading && errorMessage
           ? (
               <div className="detail-page__empty" role="alert">
-                <div className="detail-page__empty-icon"><EnvironmentOutlined aria-hidden="true" /></div>
+                <div className="detail-page__empty-icon"><MapPin aria-hidden="true" /></div>
                 <p>{errorMessage}</p>
                 <button type="button" onClick={() => router.push('/')}>返回首页重新规划</button>
               </div>
@@ -249,7 +249,7 @@ export default function Detail() {
         {!showLoading && !errorMessage && itinerary.length === 0
           ? (
               <div className="detail-page__empty" role="status">
-                <div className="detail-page__empty-icon"><EnvironmentOutlined aria-hidden="true" /></div>
+                <div className="detail-page__empty-icon"><MapPin aria-hidden="true" /></div>
                 <p>暂无行程数据</p>
                 <button type="button" onClick={() => router.push('/chat')}>咨询 AI 生成行程</button>
               </div>
@@ -371,7 +371,7 @@ export default function Detail() {
                 {/* 分享与咨询操作 */}
                 <div className="detail-page__actions">
                   <button type="button" onClick={shareToCommunity} className="detail-page__chat-btn" aria-label="分享到社区">
-                    <ShareAltOutlined aria-hidden="true" />
+                    <Share2 aria-hidden="true" />
                     分享到社区
                   </button>
                   <button type="button" onClick={() => router.push('/chat')} className="detail-page__chat-btn" aria-label="咨询 AI 优化当前行程">咨询 AI 优化行程</button>

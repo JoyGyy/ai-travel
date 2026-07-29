@@ -1,12 +1,6 @@
-/**
- * 行程推荐 API（SSE 流式）
- * POST /api/travel/recommend
- * 请求体：{ city: string, budget: number, days: number }
- */
-import { consumeAiQuota } from '@/lib/services/auth'
-import { createSSEStream } from '@/lib/utils/sse'
+import { createTravelRecommendStream } from '@/lib/ai/recommend'
+import { consumeAiQuota, getAuthFromHeaders } from '@/lib/services/auth'
 import { errorResponse, httpError } from '@/lib/utils/http'
-import { getAuthFromHeaders } from '@/lib/services/auth'
 
 export async function POST(req: Request) {
   try {
@@ -21,7 +15,6 @@ export async function POST(req: Request) {
     const body = await req.json()
     const { city, budget, days } = body
 
-    // 参数校验
     if (!city || typeof city !== 'string' || city.length > 50) {
       throw httpError(400, '请提供有效的目的地城市')
     }
@@ -32,15 +25,8 @@ export async function POST(req: Request) {
       throw httpError(400, '行程天数应为 1-30 的整数')
     }
 
-    // 消耗 AI 配额
-    const quota = await consumeAiQuota(user.id)
-
-    // 动态导入 agent 服务（避免循环依赖）
-    const { executeAgent } = await import('@/lib/services/agent')
-
-    return createSSEStream(async (send) => {
-      await executeAgent(send, { city, budget, days })
-    })
+    await consumeAiQuota(user.id)
+    return createTravelRecommendStream({ city, budget, days })
   }
   catch (err) {
     return errorResponse(err)

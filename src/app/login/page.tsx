@@ -5,12 +5,12 @@
  * 左右分栏布局：左侧品牌展示区，右侧登录/注册表单。
  * 通过 Zustand auth store 管理认证状态，支持登录和注册两种模式切换。
  */
-import { ArrowLeftOutlined, CompassOutlined } from '@ant-design/icons'
+import { ArrowLeft, Compass } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 import { ComplianceFooter } from '@/components/ComplianceFooter'
-import { useAppMessage } from '@/hooks/useAppMessage'
+import { useAppToast } from '@/hooks/useAppToast'
 import { imageUrl } from '@/lib/images'
 import { useAuthStore } from '@/stores/auth'
 
@@ -39,7 +39,7 @@ export default function Login() {
   /* ---------- 状态与 Store ---------- */
 
   const router = useRouter()
-  const message = useAppMessage()
+  const toast = useAppToast()
   const { login, register } = useAuthStore()
   const [tab, setTab] = useState<'login' | 'register'>('login')
   const [username, setUsername] = useState('')
@@ -91,7 +91,7 @@ export default function Login() {
       else {
         await register(username.trim(), password)
       }
-      message.success(tab === 'login' ? '登录成功' : '注册成功')
+      toast.success(tab === 'login' ? '登录成功' : '注册成功')
       router.push('/')
     }
     catch (err: unknown) {
@@ -115,7 +115,7 @@ export default function Login() {
 
         <div className="login-page__brand">
           <span className="login-page__brand-icon">
-            <CompassOutlined />
+            <Compass />
           </span>
           <span className="login-page__brand-name">Travel AI</span>
         </div>
@@ -154,7 +154,7 @@ export default function Login() {
             className="login-page__back"
             aria-label="返回上一页"
           >
-            <ArrowLeftOutlined aria-hidden="true" />
+            <ArrowLeft aria-hidden="true" />
             返回
           </button>
 

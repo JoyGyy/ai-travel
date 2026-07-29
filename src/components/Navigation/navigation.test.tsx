@@ -16,8 +16,9 @@ vi.mock('next/link', () => ({
 
 // Mock auth store
 vi.mock('@/stores/auth', () => ({
-  useAuthStore: () => ({
-    user: { username: '测试用户' },
+  useAuthStore: vi.fn((selector) => {
+    const state = { user: { username: '测试用户' } }
+    return selector ? selector(state) : state
   }),
 }))
 

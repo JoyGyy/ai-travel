@@ -8,9 +8,10 @@
  */
 import type { Attraction } from '@/types/attraction'
 
-import { ArrowLeft, Heart, Heart } from 'lucide-react'
-// Antd 组件已迁移
+import { ArrowLeft, Heart } from 'lucide-react'
 import Link from 'next/link'
+
+import { useAppToast } from '@/hooks/useAppToast'
 import { useRouter, useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -47,7 +48,7 @@ export default function AttractionDetail() {
   const [error, setError] = useState('')
   const [favoritePending, setFavoritePending] = useState(false)
   const [reloadKey, setReloadKey] = useState(0)
-  const [msg, contextHolder] = toast.useMessage()
+  const toast = useAppToast()
 
   // ---- 加载景点数据 ----
   useEffect(() => {
@@ -85,10 +86,10 @@ export default function AttractionDetail() {
         ? await unfavoriteAttraction(attraction.id)
         : await favoriteAttraction(attraction.id)
       setAttraction({ ...attraction, isFavorite: result.isFavorite })
-      msg.success(result.isFavorite ? '已收藏' : '已取消收藏')
+      toast.success(result.isFavorite ? '已收藏' : '已取消收藏')
     }
     catch (err: unknown) {
-      msg.error(err instanceof Error ? err.message : '收藏操作失败')
+      toast.error(err instanceof Error ? err.message : '收藏操作失败')
     }
     finally {
       setFavoritePending(false)
@@ -99,9 +100,8 @@ export default function AttractionDetail() {
   if (loading) {
     return (
       <main className="attraction-detail travel-page-shell" aria-labelledby="attraction-loading-title">
-        {contextHolder}
         <div className="attraction-detail__state travel-surface-card" role="status" aria-live="polite">
-          <Spin />
+          <div className="flex items-center justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>
           <h1 id="attraction-loading-title">加载景点详情中...</h1>
           <p>正在取出这张目的地票根。</p>
         </div>
@@ -112,7 +112,6 @@ export default function AttractionDetail() {
   if (error || !attraction) {
     return (
       <main className="attraction-detail travel-page-shell" aria-labelledby="attraction-error-title">
-        {contextHolder}
         <div className="attraction-detail__state travel-surface-card" role="alert">
           <h1 id="attraction-error-title">景点暂时无法打开</h1>
           <p>{error || '景点不存在或已下架'}</p>
@@ -131,7 +130,6 @@ export default function AttractionDetail() {
 
   return (
     <main className="attraction-detail travel-page-shell" aria-labelledby="attraction-detail-title">
-      {contextHolder}
       <button type="button" className="attraction-detail__back" onClick={() => router.back()}>
         <ArrowLeft aria-hidden="true" />
         <span>返回</span>

@@ -19,6 +19,8 @@ import {
   User,
 } from 'lucide-react'
 import Link from 'next/link'
+
+import { useAppToast } from '@/hooks/useAppToast'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
@@ -41,7 +43,7 @@ export default function Profile() {
   const [loadError, setLoadError] = useState('')
   const [changingPassword, setChangingPassword] = useState(false)
   const [removingFavoriteIds, setRemovingFavoriteIds] = useState<Set<string>>(() => new Set())
-  const [msg, contextHolder] = message.useMessage()
+  const toast = useAppToast()
   const [form] = Form.useForm()
 
   // ---- 加载用户资料与收藏列表 ----
@@ -58,7 +60,7 @@ export default function Profile() {
     }
     catch (err: unknown) {
       if (err instanceof ApiError && err.status === 401) {
-        msg.warning('登录已过期，请重新登录')
+        toast.warning('登录已过期，请重新登录')
         logout()
         router.replace('/login')
         return
@@ -79,7 +81,7 @@ export default function Profile() {
     setChangingPassword(true)
     try {
       await changePasswordApi(values.currentPassword, values.newPassword)
-      msg.success('密码修改成功，请重新登录')
+      toast.success('密码修改成功，请重新登录')
       form.resetFields()
       setTimeout(() => {
         logout()
@@ -88,12 +90,12 @@ export default function Profile() {
     }
     catch (err: unknown) {
       if (err instanceof ApiError && err.status === 401) {
-        msg.warning('登录已过期，请重新登录')
+        toast.warning('登录已过期，请重新登录')
         logout()
         router.replace('/login')
         return
       }
-      msg.error(err instanceof Error ? err.message : '密码修改失败')
+      toast.error(err instanceof Error ? err.message : '密码修改失败')
     }
     finally {
       setChangingPassword(false)
@@ -106,10 +108,10 @@ export default function Profile() {
     try {
       await unfavoriteAttraction(attractionId)
       setFavorites(prev => prev.filter(item => item.id !== attractionId))
-      msg.success('已取消收藏')
+      toast.success('已取消收藏')
     }
     catch (err: unknown) {
-      msg.error(err instanceof Error ? err.message : '取消收藏失败')
+      toast.error(err instanceof Error ? err.message : '取消收藏失败')
     }
     finally {
       setRemovingFavoriteIds((prev) => {
@@ -130,7 +132,6 @@ export default function Profile() {
   if (loading) {
     return (
       <main className="profile-page travel-page-shell">
-        {contextHolder}
         <section className="profile-page__hero travel-page-hero travel-ticket-edge travel-route-line">
           <p className="profile-page__label">PROFILE</p>
           <h1>个人中心</h1>
@@ -151,7 +152,6 @@ export default function Profile() {
 
   return (
     <main className="profile-page travel-page-shell" aria-labelledby="profile-title">
-      {contextHolder}
       <section className="profile-page__hero travel-page-hero travel-ticket-edge travel-route-line">
         <p className="profile-page__label">PROFILE</p>
         <h1 id="profile-title">个人中心</h1>

@@ -8,9 +8,10 @@
  */
 import type { Attraction, AttractionFilters, AttractionTicketType } from '@/types/attraction'
 
-import { Heart, Heart, Search } from 'lucide-react'
-// Antd 组件已迁移
+import { Heart, Search } from 'lucide-react'
 import Link from 'next/link'
+
+import { useAppToast } from '@/hooks/useAppToast'
 import { useCallback, useEffect, useState } from 'react'
 
 import { favoriteAttraction, fetchAttractions, unfavoriteAttraction } from '@/api/attractions'
@@ -33,7 +34,7 @@ export default function Attractions() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [favoritePendingIds, setFavoritePendingIds] = useState<Set<string>>(() => new Set())
-  const [msg, contextHolder] = toast.useMessage()
+  const toast = useAppToast()
 
   const PAGE_SIZE = 12
 
@@ -91,10 +92,10 @@ export default function Attractions() {
         ? await unfavoriteAttraction(item.id)
         : await favoriteAttraction(item.id)
       setItems(prev => prev.map(current => current.id === item.id ? { ...current, isFavorite: result.isFavorite } : current))
-      msg.success(result.isFavorite ? '已收藏' : '已取消收藏')
+      toast.success(result.isFavorite ? '已收藏' : '已取消收藏')
     }
     catch (err: unknown) {
-      msg.error(err instanceof Error ? err.message : '收藏操作失败')
+      toast.error(err instanceof Error ? err.message : '收藏操作失败')
     }
     finally {
       setFavoritePendingIds((prev) => {
@@ -109,7 +110,6 @@ export default function Attractions() {
 
   return (
     <main className="attractions-page travel-page-shell" aria-labelledby="attractions-title">
-      {contextHolder}
       <section className="attractions-page__hero travel-page-hero travel-ticket-edge travel-route-line">
         <p className="attractions-page__label">ATTRACTIONS</p>
         <h1 id="attractions-title">精选景点</h1>

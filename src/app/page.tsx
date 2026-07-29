@@ -108,7 +108,7 @@ function useIsActive(href: string) {
   return pathname?.startsWith(href) ?? false
 }
 
-export default function Home() {
+export default function HomePage() {
   /* ---------- 路由与全局状态 ---------- */
   const router = useRouter()
   const toast = useAppToast()

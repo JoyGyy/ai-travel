@@ -1,6 +1,27 @@
+@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
 
 :root {
+  /* shadcn 变量 */
+  --background: 40 29% 98%;
+  --foreground: 24 10% 10%;
+  --card: 0 0% 100%;
+  --card-foreground: 24 10% 10%;
+  --primary: 17 100% 60%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 38 92% 50%;
+  --secondary-foreground: 24 10% 10%;
+  --muted: 40 18% 94%;
+  --muted-foreground: 24 8% 45%;
+  --accent: 351 79% 58%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 24 12% 88%;
+  --input: 24 12% 88%;
+  --ring: 17 100% 60%;
+  --radius: 0.875rem;
+
   /* 旅行平台暖色调：活力橙 + 珊瑚红 + 琥珀金 */
   --color-primary: #ff6b35;
   --color-primary-strong: #e85d2a;

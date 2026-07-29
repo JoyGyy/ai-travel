@@ -1,16 +1,9 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 
-import { AntdRegistry } from '@ant-design/nextjs-registry'
-import { AntdProvider } from '@/components/AntdProvider'
-
+import { AppProviders } from '@/components/AppProviders'
 import { Navigation } from '@/components/Navigation'
 
-/**
- * 根布局（Server Component）
- * 配置 Ant Design 主题、全局样式
- */
-import '@ant-design/v5-patch-for-react-19'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -22,14 +15,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="zh-CN">
       <body>
-        <AntdRegistry>
-          <AntdProvider>
-            <Navigation />
-            <main id="main-content">
-              {children}
-            </main>
-          </AntdProvider>
-        </AntdRegistry>
+        <AppProviders>
+          <Navigation />
+          <main id="main-content">
+            {children}
+          </main>
+        </AppProviders>
       </body>
     </html>
   )

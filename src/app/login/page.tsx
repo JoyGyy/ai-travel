@@ -6,8 +6,8 @@
  * 通过 Zustand auth store 管理认证状态，支持登录和注册两种模式切换。
  */
 import { ArrowLeftOutlined, CompassOutlined } from '@ant-design/icons'
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 import { ComplianceFooter } from '@/components/ComplianceFooter'
 import { useAppMessage } from '@/hooks/useAppMessage'

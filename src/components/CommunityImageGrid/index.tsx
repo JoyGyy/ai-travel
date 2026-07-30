@@ -2,6 +2,7 @@
 
 import type { CommunityImage } from '@/types/community'
 
+import Image from 'next/image'
 import { useState } from 'react'
 
 import './style.css'
@@ -49,10 +50,13 @@ export function CommunityImageGrid({ images, compact = false }: CommunityImageGr
             className="community-image-grid__image"
             onClick={() => handlePreview(index)}
           >
-            <img
+            <Image
               src={image.url}
               alt={image.altText || '旅行分享图片'}
               loading="lazy"
+              width={200}
+              height={200}
+              unoptimized
             />
           </button>
         ))}
@@ -69,9 +73,12 @@ export function CommunityImageGrid({ images, compact = false }: CommunityImageGr
               &#8249;
             </button>
           )}
-          <img
+          <Image
             src={visibleImages[previewIndex].url}
             alt={visibleImages[previewIndex].altText || '旅行分享图片'}
+            width={800}
+            height={600}
+            unoptimized
           />
           {previewIndex < visibleImages.length - 1 && (
             <button type="button" className="community-image-grid__next" onClick={(e) => { e.stopPropagation(); handleNext() }} aria-label="下一张">

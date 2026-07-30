@@ -9,9 +9,6 @@ import { nanoid } from 'nanoid'
 
 import { query } from '../db'
 import { env } from '../env'
-import { createLogger } from '../utils/logger'
-
-const log = createLogger('auth')
 
 /** bcrypt 加盐轮数 */
 const SALT_ROUNDS = 10

@@ -2,6 +2,7 @@
  * 站点合规页脚组件
  * 集中展示版权、ICP备案、公安备案、用户协议和隐私政策入口。
  */
+import Image from 'next/image'
 import Link from 'next/link'
 
 import { imageUrl } from '@/lib/images'
@@ -40,7 +41,7 @@ export function ComplianceFooter({ variant = 'default', showCopyright = true, cl
         {icpRecordText}
       </a>
       <a className="compliance-footer__link compliance-footer__police" href={policeRecordHref} rel="noreferrer" target="_blank">
-        <img className="compliance-footer__police-icon" src={imageUrl('/images/beian-gongan.png')} alt="公安备案图标" />
+        <Image className="compliance-footer__police-icon" src={imageUrl('/images/beian-gongan.png')} alt="公安备案图标" width={16} height={16} unoptimized />
         <span>{policeRecordText}</span>
       </a>
       <Link className="compliance-footer__link" href="/terms">用户协议</Link>

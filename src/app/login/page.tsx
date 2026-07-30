@@ -6,6 +6,7 @@
  * 通过 Zustand auth store 管理认证状态，支持登录和注册两种模式切换。
  */
 import { ArrowLeft, Compass } from 'lucide-react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
@@ -109,7 +110,7 @@ export default function Login() {
       {/* 左侧品牌区 */}
       <section className="login-page__hero-side" aria-label="品牌介绍">
         <div className="login-page__hero-bg" aria-hidden="true">
-          <img src={imageUrl('/images/home/hero-boat.jpg')} alt="" />
+          <Image src={imageUrl('/images/home/hero-boat.jpg')} alt="" fill style={{ objectFit: 'cover' }} />
         </div>
         <div className="login-page__hero-overlay" aria-hidden="true" />
 

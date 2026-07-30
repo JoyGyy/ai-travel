@@ -9,6 +9,7 @@
 import type { Attraction, AttractionFilters, AttractionTicketType } from '@/types/attraction'
 
 import { Heart } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 
@@ -226,18 +227,14 @@ export default function Attractions() {
                   return (
                     <Link key={item.id} href={`/attractions/${item.id}`} className="attractions-page__card-link" aria-label={`查看${item.name}详情`}>
                       <article className="attractions-page__card travel-surface-card travel-ticket-edge">
-                        <img
+                        <Image
                           src={item.coverImage}
                           alt={`${item.name}，${item.city}景点封面`}
                           className="attractions-page__cover"
                           loading="lazy"
-                          decoding="async"
-                          onError={(e) => {
-                            const target = e.currentTarget
-                            target.onerror = null
-                            target.style.background = 'linear-gradient(135deg, var(--travel-primary) 0%, var(--travel-ocean) 100%)'
-                            target.src = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500"><text x="50%" y="50%" font-size="48" fill="white" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif">📷</text></svg>')}`
-                          }}
+                          width={400}
+                          height={250}
+                          unoptimized
                         />
                         <div className="attractions-page__card-body">
                           <div className="attractions-page__card-title-row">

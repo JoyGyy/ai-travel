@@ -9,6 +9,7 @@
 import type { Attraction } from '@/types/attraction'
 
 import { ArrowLeft, Heart } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter, useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -137,17 +138,13 @@ export default function AttractionDetail() {
       </button>
       {/* ---- 封面与操作区 ---- */}
       <section className="attraction-detail__hero travel-surface-card travel-ticket-edge travel-route-line">
-        <img
+        <Image
           src={attraction.coverImage}
           alt={`${attraction.name}，${attraction.city}景点封面`}
           loading="eager"
-          decoding="async"
-          onError={(e) => {
-            const target = e.currentTarget
-            target.onerror = null
-            target.style.background = 'linear-gradient(135deg, var(--travel-primary) 0%, var(--travel-ocean) 100%)'
-            target.src = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500"><text x="50%" y="50%" font-size="48" fill="white" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif">📷</text></svg>')}`
-          }}
+          width={800}
+          height={500}
+          unoptimized
         />
         <div className="attraction-detail__hero-content">
           <p className="attraction-detail__city">{attraction.city}</p>

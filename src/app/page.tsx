@@ -22,6 +22,7 @@ import {
   Zap,
   User,
 } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -464,7 +465,7 @@ export default function HomePage() {
           {hotDestinations.map(dest => (
             <button key={dest.name} type="button" className="home__dest-card" onClick={() => selectCity(dest.name)}>
               <div className="home__dest-img-wrap">
-                <img src={dest.img} alt={dest.name} className="home__dest-img" loading="lazy" />
+                <Image src={dest.img} alt={dest.name} className="home__dest-img" loading="lazy" width={300} height={200} />
                 <span className="home__dest-tag">{dest.tag}</span>
                 <span className="home__dest-temp">{dest.temp}</span>
               </div>
@@ -491,7 +492,7 @@ export default function HomePage() {
           {featuredTrips.map(trip => (
             <button key={trip.title} type="button" className="home__featured-card" onClick={() => selectCity(trip.city)}>
               <div className="home__featured-img-wrap">
-                <img src={trip.image} alt={trip.title} className="home__featured-img" loading="lazy" />
+                <Image src={trip.image} alt={trip.title} className="home__featured-img" loading="lazy" width={300} height={200} />
                 <span className="home__featured-tag">{trip.tag}</span>
               </div>
               <div className="home__featured-body">

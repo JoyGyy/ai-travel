@@ -12,6 +12,8 @@ import { Heart, Search } from 'lucide-react'
 import Link from 'next/link'
 
 import { useAppToast } from '@/hooks/useAppToast'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { useCallback, useEffect, useState } from 'react'
 
 import { favoriteAttraction, fetchAttractions, unfavoriteAttraction } from '@/api/attractions'
@@ -120,20 +122,20 @@ export default function Attractions() {
       <section className="attractions-page__filters travel-surface-card" aria-labelledby="attractions-filter-title">
         <div className="attractions-page__filters-header">
           <h2 id="attractions-filter-title">筛选景点</h2>
-          {hasActiveFilters ? <Button type="link" onClick={handleClearFilters}>清空筛选</Button> : null}
+          {hasActiveFilters ? <Button variant="link" onClick={handleClearFilters}>清空筛选</Button> : null}
         </div>
         <form className="attractions-page__search" onSubmit={handleSearchSubmit}>
           <label htmlFor="attractions-keyword">搜索关键词</label>
           <div className="attractions-page__search-control">
-            <Input
+            <Input className="flex-1"
               id="attractions-keyword"
-              allowClear
-              prefix={<Search aria-hidden="true" />}
+              
+              placeholder
               placeholder="搜索景点、城市或标签"
               value={keywordInput}
               onChange={event => setKeywordInput(event.target.value)}
             />
-            <Button type="primary" htmlType="submit">搜索</Button>
+            <Button htmlType="submit">搜索</Button>
           </div>
         </form>
         {cities.length > 0
@@ -157,7 +159,7 @@ export default function Attractions() {
           : null}
         <div className="attractions-page__select-group">
           <label htmlFor="attractions-ticket-type">收费类型</label>
-          <Select
+          <select className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
             id="attractions-ticket-type"
             value={filters.ticketType || ''}
             options={ticketOptions}
@@ -208,7 +210,7 @@ export default function Attractions() {
         ? (
             <div className="attractions-page__empty travel-surface-card">
               <Empty description="没有找到符合筛选条件的景点" />
-              {hasActiveFilters ? <Button type="primary" onClick={handleClearFilters}>清空筛选</Button> : null}
+              {hasActiveFilters ? <Button onClick={handleClearFilters}>清空筛选</Button> : null}
             </div>
           )
         : null}

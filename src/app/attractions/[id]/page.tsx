@@ -12,6 +12,8 @@ import { ArrowLeft, Heart } from 'lucide-react'
 import Link from 'next/link'
 
 import { useAppToast } from '@/hooks/useAppToast'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { useRouter, useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -116,8 +118,8 @@ export default function AttractionDetail() {
           <h1 id="attraction-error-title">景点暂时无法打开</h1>
           <p>{error || '景点不存在或已下架'}</p>
           <div className="attraction-detail__state-actions">
-            <Button type="primary" onClick={() => setReloadKey(prev => prev + 1)}>重试</Button>
-            <Button onClick={() => router.push('/attractions')}>返回景点列表</Button>
+            <Button className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => setReloadKey(prev => prev + 1)}>重试</Button>
+            <Button className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => router.push('/attractions')}>返回景点列表</Button>
           </div>
         </div>
       </main>
@@ -153,12 +155,12 @@ export default function AttractionDetail() {
           <h1 id="attraction-detail-title">{attraction.name}</h1>
           <p className="attraction-detail__summary">{attraction.summary}</p>
           <div className="attraction-detail__tags">
-            <Tag className={`travel-tag ${ticketTypeClass}`}>{attraction.ticketType === 'free' ? '免费' : '收费'}</Tag>
-            <Tag className="travel-tag travel-tag--warning">{attraction.priceText}</Tag>
-            {attraction.tags.map(tag => <Tag key={tag} className="travel-tag travel-tag--info">{tag}</Tag>)}
+            <Badge className={`travel-tag ${ticketTypeClass}`}>{attraction.ticketType === 'free' ? '免费' : '收费'}</Badge>
+            <Badge className="travel-tag travel-tag--warning">{attraction.priceText}</Badge>
+            {attraction.tags.map(tag => <Badge key={tag} className="travel-tag travel-tag--info">{tag}</Badge>)}
           </div>
           <div className="attraction-detail__hero-actions">
-            <Button
+            <Button className="bg-primary text-primary-foreground hover:bg-primary/90"
               onClick={toggleFavorite}
               aria-label={`${attraction.isFavorite ? '取消收藏' : '收藏'}${attraction.name}`}
               aria-pressed={Boolean(attraction.isFavorite)}

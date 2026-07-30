@@ -21,6 +21,9 @@ import {
 import Link from 'next/link'
 
 import { useAppToast } from '@/hooks/useAppToast'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
@@ -137,8 +140,8 @@ export default function Profile() {
           <h1>个人中心</h1>
         </section>
         <div className="profile-page__content" role="status" aria-live="polite" aria-label="正在加载个人中心">
-          <Card className="profile-page__card travel-surface-card"><Skeleton active avatar paragraph={{ rows: 2 }} /></Card>
-          <Card className="profile-page__card travel-surface-card"><Skeleton active paragraph={{ rows: 3 }} /></Card>
+          <div className="profile-page__card travel-surface-card"><div className="animate-pulse"><div className="h-4 bg-muted rounded w-3/4 mb-2"></div><div className="h-4 bg-muted rounded w-1/2"></div></div></div>
+          <div className="profile-page__card travel-surface-card"><div className="animate-pulse"><div className="h-4 bg-muted rounded w-full mb-2"></div><div className="h-4 bg-muted rounded w-5/6 mb-2"></div><div className="h-4 bg-muted rounded w-4/6"></div></div></div>
         </div>
       </main>
     )
@@ -161,20 +164,20 @@ export default function Profile() {
       <div className="profile-page__content">
         {loadError
           ? (
-              <Card className="profile-page__card profile-page__error-card travel-surface-card" variant="borderless" role="alert">
+              <div className="profile-page__card profile-page__error-card travel-surface-card"  role="alert">
                 <h2>个人资料加载失败</h2>
                 <p>{loadError}</p>
-                <Button type="primary" onClick={loadProfile}>重试</Button>
-              </Card>
+                <Button onClick={loadProfile}>重试</Button>
+              </div>
             )
           : null}
 
         {/* 用户信息卡 */}
-        <Card className="profile-page__card profile-page__user-card travel-surface-card travel-ticket-edge" variant="borderless">
+        <div className="profile-page__card profile-page__user-card travel-surface-card travel-ticket-edge" >
           <div className="profile-page__user-info">
-            <Avatar size={76} icon={<User aria-hidden="true" />} className="profile-page__avatar">
+            <div className="flex items-center justify-center rounded-full bg-muted" style={{ width: 76, height: 76 }} className="text-3xl" className="profile-page__avatar">
               {displayName[0]?.toUpperCase()}
-            </Avatar>
+            </div>
             <div className="profile-page__user-detail">
               <p className="profile-page__user-eyebrow">当前旅伴</p>
               <h2 className="profile-page__username">{displayName}</h2>
@@ -188,20 +191,15 @@ export default function Profile() {
               </p>
             </div>
           </div>
-        </Card>
+        </div>
 
         {/* AI 使用额度 */}
-        <Card
-          className="profile-page__card travel-surface-card"
-          variant="borderless"
-          title={(
-            <>
-              <Bot aria-hidden="true" />
-              {' '}
-              AI 使用额度
-            </>
-          )}
-        >
+        <div className="profile-page__card travel-surface-card">
+          <h3 className="text-lg font-semibold">
+            <Bot aria-hidden="true" />
+            {' '}
+            AI 使用额度
+          </h3>
           {quota
             ? (
                 <div className="profile-page__quota">
@@ -227,20 +225,15 @@ export default function Profile() {
                 </div>
               )
             : <Empty description="无法获取额度信息" image={Empty.PRESENTED_IMAGE_SIMPLE} />}
-        </Card>
+        </div>
 
         {/* 修改密码 */}
-        <Card
-          className="profile-page__card travel-surface-card"
-          variant="borderless"
-          title={(
-            <>
-              <Key aria-hidden="true" />
-              {' '}
-              修改密码
-            </>
-          )}
-        >
+        <div className="profile-page__card travel-surface-card">
+          <h3 className="text-lg font-semibold">
+            <Key aria-hidden="true" />
+            {' '}
+            修改密码
+          </h3>
           <Form
             form={form}
             layout="vertical"
@@ -282,27 +275,20 @@ export default function Profile() {
               <Input.Password prefix={<Shield aria-hidden="true" />} placeholder="请再次输入新密码" autoComplete="new-password" />
             </Form.Item>
             <Form.Item>
-              <Button type="primary" htmlType="submit" loading={changingPassword}>
+              <Button htmlType="submit" loading={changingPassword}>
                 {changingPassword ? '正在修改...' : '修改密码'}
               </Button>
             </Form.Item>
           </Form>
-        </Card>
+        </div>
 
         {/* 我的收藏 */}
-        <Card
-          className="profile-page__card travel-surface-card"
-          variant="borderless"
-          title={(
-            <>
-              <Heart aria-hidden="true" />
-              {' '}
-              我的收藏 (
-              {favorites.length}
-              )
-            </>
-          )}
-        >
+        <div className="profile-page__card travel-surface-card">
+          <h3 className="text-lg font-semibold">
+            <Heart aria-hidden="true" />
+            {' '}
+            我的收藏 ({favorites.length})
+          </h3>
           {favorites.length > 0
             ? (
                 <List
@@ -323,7 +309,7 @@ export default function Profile() {
                       ]}
                     >
                       <List.Item.Meta
-                        title={<Link className="profile-page__fav-title" href={`/attractions/${item.id}`}>{item.name}</Link>}
+                        <h3 className="text-lg font-semibold"><Link className="profile-page__fav-title" href={`/attractions/${item.id}`}>{item.name}</Link>}
                         description={(
                           <div className="profile-page__fav-meta">
                             {item.city && <Tag className="travel-tag travel-tag--info">{item.city}</Tag>}
@@ -340,13 +326,13 @@ export default function Profile() {
               )
             : (
                 <Empty description="还没有收藏景点" image={Empty.PRESENTED_IMAGE_SIMPLE}>
-                  <Link href="/attractions"><Button type="primary">去逛逛</Button></Link>
+                  <Link href="/attractions"><Button>去逛逛</Button></Link>
                 </Empty>
               )}
-        </Card>
+        </div>
 
         {/* 退出登录 */}
-        <Card className="profile-page__card profile-page__logout-card travel-surface-card" variant="borderless">
+        <div className="profile-page__card profile-page__logout-card travel-surface-card" >
           <Button
             block
             danger
@@ -356,7 +342,7 @@ export default function Profile() {
           >
             退出登录
           </Button>
-        </Card>
+        </div>
       </div>
     </main>
   )

@@ -11,6 +11,9 @@ import { fetchCommunityPosts, likeCommunityPost, repostCommunityPost, unlikeComm
 import { CommunityPostCard } from '@/components/CommunityPostCard'
 import { CommunityPostCardSkeleton } from '@/components/CommunityPostCard/skeleton'
 import { useAppToast } from '@/hooks/useAppToast'
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+import { Input } from "@/components/ui/input"
 import { useAuthStore } from '@/stores/auth'
 
 import './style.css'
@@ -147,7 +150,7 @@ export default function Community() {
           <h1 id="community-title">旅友正在路上</h1>
           <p>把 AI 规划、实拍照片和旅行心得做成一张明信片，让下一位出发的人少走弯路。</p>
         </div>
-        <Button type="primary" size="large" icon={<Plus aria-hidden="true" />} onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}>
+        <Button size="lg" icon={<Plus aria-hidden="true" />} onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}>
           发布旅行分享
         </Button>
       </section>
@@ -155,25 +158,25 @@ export default function Community() {
       <section className="community-page__filters travel-surface-card" aria-labelledby="community-filter-title">
         <div className="community-page__filters-header">
           <h2 id="community-filter-title">筛选分享</h2>
-          {hasActiveFilters ? <Button type="link" onClick={clearFilters}>清空筛选</Button> : null}
+          {hasActiveFilters ? <Button variant="link" onClick={clearFilters}>清空筛选</Button> : null}
         </div>
         <form className="community-page__search" onSubmit={handleSearch}>
           <label htmlFor="community-city">城市</label>
           <div className="community-page__search-control">
-            <Input
+            <Input className="flex-1"
               id="community-city"
-              allowClear
-              prefix={<Search aria-hidden="true" />}
+              
+              placeholder
               placeholder="输入城市，例如 成都"
               value={cityInput}
               onChange={event => setCityInput(event.target.value)}
             />
-            <Button type="primary" htmlType="submit">搜索</Button>
+            <Button htmlType="submit">搜索</Button>
           </div>
         </form>
         <div className="community-page__switch-row">
           <span>只看含行程分享</span>
-          <Switch checked={Boolean(filters.withItinerary)} onChange={checked => updateFilters({ withItinerary: checked })} aria-label="只看含行程分享" />
+          <input type="checkbox" checked={Boolean(filters.withItinerary)} onChange={checked => updateFilters({ withItinerary: checked })} aria-label="只看含行程分享" />
         </div>
         <p className="community-page__result-status" aria-live="polite">
           {loading ? '正在刷新社区...' : `共 ${total} 条旅行分享`}
@@ -203,7 +206,7 @@ export default function Community() {
         ? (
             <div className="community-page__state travel-surface-card">
               <Empty description="还没有符合条件的旅行分享" />
-              <Button type="primary" onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}>发布第一条分享</Button>
+              <Button onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}>发布第一条分享</Button>
             </div>
           )
         : null}
@@ -248,7 +251,7 @@ export default function Community() {
         <p className="community-page__modal-intro">
           可以直接转发，也可以写一句给旅友的补充说明。
         </p>
-        <Input.TextArea
+        <textarea
           value={repostContent}
           maxLength={500}
           showCount

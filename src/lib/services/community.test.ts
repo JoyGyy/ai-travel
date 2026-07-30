@@ -37,6 +37,7 @@ vi.mock('@/lib/db', () => ({
     execute: (...args: unknown[]) => mockExecute(...args),
     transaction: (...args: unknown[]) => mockTransaction(...args),
   },
+  typedQuery: <T>(result: unknown[]) => result as unknown as T[],
 }))
 
 // ========== 辅助函数 ==========
@@ -363,7 +364,7 @@ describe('community 服务', () => {
   describe('createCommunityComment()', () => {
     it('成功创建评论', async () => {
       // arrange
-      // ensurePostExists
+      // ensurePostExists 的 mock
       mockSelect.mockReturnValueOnce(createQueryBuilder([{ id: 'post-1' }]))
       // insert returning
       const insertedComment = {
@@ -380,8 +381,7 @@ describe('community 服务', () => {
         }),
       })
       // 查询用户名
-      mockSelect.mockReturnValueOnce(createQueryBuilder([{ id: 'post-1' }])) // ensurePostExists
-      mockSelect.mockReturnValueOnce(createQueryBuilder([{ username: 'testuser' }])) // get username
+      mockSelect.mockReturnValueOnce(createQueryBuilder([{ username: 'testuser' }]))
 
       // act
       const result = await createCommunityComment('post-1', 'user-1', '评论内容')

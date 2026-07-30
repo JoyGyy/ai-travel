@@ -6,7 +6,7 @@ import { sql } from 'drizzle-orm'
 
 import { attractions, tags } from '@/db/schema'
 
-import { db, query } from '../../../db'
+import { db, query, typedQuery } from '../../../db'
 
 export interface AttractionItem {
   id: string
@@ -154,7 +154,7 @@ async function getAttractionById(id: string): Promise<AttractionItem | null> {
     GROUP BY a.id
   `)
 
-  return result.rows.length > 0 ? mapRow(result.rows[0] as unknown as AttractionRow) : null
+  return result.rows.length > 0 ? mapRow(typedQuery<AttractionRow>(result.rows)[0]) : null
 }
 
 /** 获取所有城市列表（按预设排序）和标签列表 */

@@ -79,4 +79,9 @@ async function getClient(): Promise<PoolClient> {
   return pool.connect()
 }
 
+/** 将 Drizzle sql 查询结果类型安全地转换为指定类型 */
+export function typedQuery<T>(result: unknown[]): T[] {
+  return result as unknown as T[]
+}
+
 export { getClient, query }

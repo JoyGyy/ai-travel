@@ -12,7 +12,7 @@ import {
   users,
 } from '@/db/schema'
 
-import { db } from '../db'
+import { db, typedQuery } from '../db'
 import { httpError } from '../utils/http'
 
 export type CommunityPostType = 'original' | 'repost'
@@ -299,7 +299,7 @@ async function getOriginalSummaryMap(originalIds: string[], viewerId?: string): 
     sql`${basePostSelect(viewerIdValue)} WHERE p.deleted_at IS NULL AND p.id = ANY(${originalIds}::text[])`,
   )
 
-  const postRows = rows.rows as unknown as CommunityPostRow[]
+  const postRows = typedQuery<CommunityPostRow>(rows.rows)
   const imageMap = await getImagesByPostIds(postRows.map(row => row.id))
   for (const row of postRows)
     summaryMap.set(row.id, mapPostSummary(row, imageMap.get(row.id) || []))
@@ -379,7 +379,7 @@ export async function listCommunityPosts(filters: CommunityListFilters, viewerId
   ])
 
   return {
-    items: await hydratePosts(dataResult.rows as unknown as CommunityPostRow[], viewerId),
+    items: await hydratePosts(typedQuery<CommunityPostRow>(dataResult.rows), viewerId),
     total: countResult[0]?.cnt ?? 0,
     page,
     pageSize,
@@ -396,7 +396,7 @@ export async function getCommunityPostById(id: string, viewerId?: string): Promi
   if (result.rows.length === 0)
     return null
 
-  const [post] = await hydratePosts(result.rows as unknown as CommunityPostRow[], viewerId)
+  const [post] = await hydratePosts(typedQuery<CommunityPostRow>(result.rows), viewerId)
   return post
 }
 

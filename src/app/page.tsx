@@ -243,7 +243,7 @@ export default function HomePage() {
             <span className="home__brand-name">TravelAI</span>
           </Link>
           <nav className="home__nav" aria-label="主导航">
-            <NavLink href="/" exact>首页</NavLink>
+            <NavLink href="/">首页</NavLink>
             <NavLink href="/weather">天气</NavLink>
             <NavLink href="/attractions">景点</NavLink>
             <NavLink href="/community">社区</NavLink>
@@ -619,7 +619,7 @@ export default function HomePage() {
 
 /* ========== 内部 NavLink 组件 ========== */
 
-function NavLink({ href, exact, children }: { href: string, exact?: boolean, children: React.ReactNode }) {
+function NavLink({ href, children }: { href: string, children: React.ReactNode }) {
   const isActive = useIsActive(href)
   return (
     <Link

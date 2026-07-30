@@ -20,8 +20,8 @@ import {
 import { CommunityImageGrid } from '@/components/CommunityImageGrid'
 import { CommunityItineraryPreview } from '@/components/CommunityItineraryPreview'
 import { CommunityPostCard } from '@/components/CommunityPostCard'
-import { useAppToast } from '@/hooks/useAppToast'
 import { Button } from "@/components/ui/button"
+import { useAppToast } from '@/hooks/useAppToast'
 import { useAuthStore } from '@/stores/auth'
 
 import './style.css'
@@ -112,7 +112,7 @@ export default function CommunityPostDetail() {
     return () => {
       cancelled = true
     }
-  }, [commentPage, id])
+  }, [commentPage, id, toast])
 
   function requireLogin(action: string) {
     if (!hasHydrated) {

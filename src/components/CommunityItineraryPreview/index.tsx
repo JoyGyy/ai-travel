@@ -1,11 +1,11 @@
 import type { AttractionRef, BudgetBreakdown, ItineraryDay } from '@/stores/itinerary'
 import type { CommunityItinerarySnapshot } from '@/types/community'
 
-import { Badge } from '@/components/ui/badge'
 import { Calendar, MapPin, Wallet } from 'lucide-react'
 
 import { BudgetTable } from '@/components/BudgetTable'
 import { SpotItem } from '@/components/SpotItem'
+import { Badge } from '@/components/ui/badge'
 import { WeatherCard } from '@/components/WeatherCard'
 
 import './style.css'

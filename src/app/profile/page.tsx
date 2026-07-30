@@ -19,18 +19,15 @@ import {
   User,
 } from 'lucide-react'
 import Link from 'next/link'
-
-import { useAppToast } from '@/hooks/useAppToast'
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
 import { fetchFavoriteAttractions, unfavoriteAttraction } from '@/api/attractions'
 import { changePasswordApi, getProfileApi } from '@/api/auth'
 import { ApiError } from '@/api/client'
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { useAppToast } from '@/hooks/useAppToast'
 import { useAuthStore } from '@/stores/auth'
 
 import './style.css'

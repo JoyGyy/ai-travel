@@ -10,14 +10,13 @@ import type { Attraction } from '@/types/attraction'
 
 import { ArrowLeft, Heart } from 'lucide-react'
 import Link from 'next/link'
-
-import { useAppToast } from '@/hooks/useAppToast'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { useRouter, useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 import { favoriteAttraction, fetchAttractionDetail, unfavoriteAttraction } from '@/api/attractions'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { useAppToast } from '@/hooks/useAppToast'
 
 import './style.css'
 

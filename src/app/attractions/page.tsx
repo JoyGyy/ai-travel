@@ -8,16 +8,15 @@
  */
 import type { Attraction, AttractionFilters, AttractionTicketType } from '@/types/attraction'
 
-import { Heart, Search } from 'lucide-react'
+import { Heart } from 'lucide-react'
 import Link from 'next/link'
-
-import { useAppToast } from '@/hooks/useAppToast'
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
 import { useCallback, useEffect, useState } from 'react'
 
 import { favoriteAttraction, fetchAttractions, unfavoriteAttraction } from '@/api/attractions'
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { useAppToast } from '@/hooks/useAppToast'
 
 import './style.css'
 

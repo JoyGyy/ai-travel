@@ -2,18 +2,16 @@
 
 import type { CommunityPost, CommunityPostFilters } from '@/types/community'
 
-import { Plus, Repeat2, Search } from 'lucide-react'
-// Antd 组件已迁移
+import { Plus, Repeat2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
 import { fetchCommunityPosts, likeCommunityPost, repostCommunityPost, unlikeCommunityPost } from '@/api/community'
 import { CommunityPostCard } from '@/components/CommunityPostCard'
 import { CommunityPostCardSkeleton } from '@/components/CommunityPostCard/skeleton'
-import { useAppToast } from '@/hooks/useAppToast'
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
+import { useAppToast } from '@/hooks/useAppToast'
 import { useAuthStore } from '@/stores/auth'
 
 import './style.css'

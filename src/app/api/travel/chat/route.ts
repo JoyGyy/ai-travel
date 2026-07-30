@@ -1,6 +1,6 @@
+import { createTravelChatStream } from '@/lib/ai/stream'
 import { consumeAiQuota, getAuthFromHeaders } from '@/lib/services/auth'
 import { errorResponse } from '@/lib/utils/http'
-import { createTravelChatStream } from '@/lib/ai/stream'
 
 export async function POST(req: Request) {
   try {

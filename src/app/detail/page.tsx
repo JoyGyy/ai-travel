@@ -1,7 +1,5 @@
 'use client'
 
-import type { ItineraryDay } from '@/stores/itinerary'
-import type { ItineraryCache } from '@/utils/storage'
 
 /**
  * 行程详情页面
@@ -19,7 +17,7 @@ import { SpotItem } from '@/components/SpotItem'
 import { WeatherCard } from '@/components/WeatherCard'
 import { useTravelRecommend } from '@/hooks/useTravelRecommend'
 import { useItineraryStore } from '@/stores/itinerary'
-import { loadItineraryCache, saveItineraryCache } from '@/utils/storage'
+import { loadItineraryCache } from '@/utils/storage'
 
 import './style.css'
 
@@ -50,7 +48,6 @@ export default function Detail() {
     setAccommodation,
     setNightlife,
     setAttractionRefs,
-    addAgentStep,
     setCurrentAgentStep,
   } = useItineraryStore()
 
@@ -59,7 +56,7 @@ export default function Detail() {
   const [activeKeys, setActiveKeys] = useState<string[]>([])
   const [showLoading, setShowLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
-  const { content, loading, error, requestRecommend } = useTravelRecommend()
+  const { requestRecommend } = useTravelRecommend()
   const hasValidParams = Boolean(city && budget > 0 && days > 0)
 
   function findAttractionRef(spot?: string) {

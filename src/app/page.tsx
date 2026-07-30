@@ -25,7 +25,7 @@ import {
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { allCities } from '@/constants/cities'
 import { useAppToast } from '@/hooks/useAppToast'
@@ -139,25 +139,25 @@ export default function HomePage() {
 
   /* ---------- 表单交互函数 ---------- */
 
-  function clearFieldError(field: string) {
+  const clearFieldError = useCallback((field: string) => {
     setFieldErrors(prev => ({ ...prev, [field]: '' }))
-  }
+  }, [])
 
-  function selectCity(name: string) {
+  const selectCity = useCallback((name: string) => {
     setCity(name)
     clearFieldError('city')
     setShowDropdown(false)
     fetchWeather(name)
-  }
+  }, [clearFieldError, fetchWeather])
 
-  function handleCityChange(event: ChangeEvent<HTMLInputElement>) {
+  const handleCityChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setCity(event.target.value)
     setActiveCityIndex(0)
     clearFieldError('city')
     setShowDropdown(true)
-  }
+  }, [clearFieldError])
 
-  function handleCityKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+  const handleCityKeyDown = useCallback((event: KeyboardEvent<HTMLInputElement>) => {
     if (!showDropdown && ['ArrowDown', 'ArrowUp'].includes(event.key)) {
       setShowDropdown(true)
       return
@@ -179,7 +179,7 @@ export default function HomePage() {
     else if (event.key === 'Escape') {
       setShowDropdown(false)
     }
-  }
+  }, [showDropdown, filteredCities, activeCityIndex, selectCity])
 
   /* ---------- 防抖天气查询：输入 2 字以上自动查询 ---------- */
 
@@ -201,7 +201,7 @@ export default function HomePage() {
 
   /* ---------- 表单校验与提交 ---------- */
 
-  function validatePlanner() {
+  const validatePlanner = useCallback(() => {
     const errors: Record<string, string> = {}
     if (!city.trim())
       errors.city = '请选择目的地'
@@ -212,9 +212,9 @@ export default function HomePage() {
       errors.budget = '预算需大于 0'
     setFieldErrors(errors)
     return { isValid: Object.keys(errors).length === 0, budgetNum }
-  }
+  }, [city, budget])
 
-  function onStart() {
+  const onStart = useCallback(() => {
     if (!hasHydrated) {
       toast.info('加载中...')
       return
@@ -225,12 +225,12 @@ export default function HomePage() {
     if (!isValid)
       return
     router.push(`/detail?city=${encodeURIComponent(city.trim())}&budget=${budgetNum}&days=${days}`)
-  }
+  }, [hasHydrated, user, router, validatePlanner, city, budget, days, toast])
 
-  function submitPlanner(event: FormEvent<HTMLFormElement>) {
+  const submitPlanner = useCallback((event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     onStart()
-  }
+  }, [onStart])
 
   /* ========== 渲染 ========== */
 

@@ -4,7 +4,7 @@ import type { CommunityPost, CommunityPostFilters } from '@/types/community'
 
 import { Plus, Repeat2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { fetchCommunityPosts, likeCommunityPost, repostCommunityPost, unlikeCommunityPost } from '@/api/community'
 import { CommunityPostCard } from '@/components/CommunityPostCard'
@@ -69,22 +69,22 @@ export default function Community() {
     return true
   }
 
-  function updateFilters(patch: CommunityPostFilters) {
+  const updateFilters = useCallback((patch: CommunityPostFilters) => {
     const next = { ...filters, ...patch, page: patch.page || 1, pageSize: PAGE_SIZE }
     load(next)
-  }
+  }, [filters, load])
 
-  function handleSearch(event: { preventDefault: () => void }) {
+  const handleSearch = useCallback((event: { preventDefault: () => void }) => {
     event.preventDefault()
     updateFilters({ city: cityInput.trim() })
-  }
+  }, [updateFilters, cityInput])
 
-  function clearFilters() {
+  const clearFilters = useCallback(() => {
     setCityInput('')
     load({ page: 1, pageSize: PAGE_SIZE })
-  }
+  }, [load])
 
-  async function toggleLike(post: CommunityPost) {
+  const toggleLike = useCallback(async (post: CommunityPost) => {
     if (!requireLogin('点赞'))
       return
 
@@ -104,16 +104,16 @@ export default function Community() {
         return next
       })
     }
-  }
+  }, [requireLogin, toast])
 
-  function openRepost(post: CommunityPost) {
+  const openRepost = useCallback((post: CommunityPost) => {
     if (!requireLogin('转发'))
       return
     setRepostTarget(post)
     setRepostContent('')
-  }
+  }, [requireLogin])
 
-  async function submitRepost() {
+  const submitRepost = useCallback(async () => {
     if (!repostTarget)
       return
 
@@ -136,9 +136,11 @@ export default function Community() {
         return next
       })
     }
-  }
+  }, [repostTarget, repostContent, toast])
 
-  const hasActiveFilters = Boolean(filters.city || filters.withItinerary || filters.authorId)
+  const hasActiveFilters = useMemo(() =>
+    Boolean(filters.city || filters.withItinerary || filters.authorId),
+  [filters])
 
   return (
     <main className="community-page travel-page-shell" aria-labelledby="community-title">

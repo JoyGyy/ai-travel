@@ -11,7 +11,7 @@ import type { Attraction, AttractionFilters, AttractionTicketType } from '@/type
 import { Heart } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { favoriteAttraction, fetchAttractions, unfavoriteAttraction } from '@/api/attractions'
 import { Badge } from "@/components/ui/badge"
@@ -65,30 +65,30 @@ export default function Attractions() {
   }, [load])
 
   // ---- 筛选条件管理 ----
-  function updateFilters(patch: AttractionFilters) {
+  const updateFilters = useCallback((patch: AttractionFilters) => {
     const next = { ...filters, ...patch, page: patch.page || 1 }
     setFilters(next)
     load(next)
-  }
+  }, [filters, load])
 
-  function handleSearchSubmit(event: { preventDefault: () => void }) {
+  const handleSearchSubmit = useCallback((event: { preventDefault: () => void }) => {
     event.preventDefault()
     updateFilters({ keyword: keywordInput.trim() })
-  }
+  }, [updateFilters, keywordInput])
 
-  function handleClearFilters() {
+  const handleClearFilters = useCallback(() => {
     setKeywordInput('')
     const next: AttractionFilters = {}
     setFilters(next)
     load(next)
-  }
+  }, [load])
 
-  function handlePageChange(page: number) {
+  const handlePageChange = useCallback((page: number) => {
     updateFilters({ page })
-  }
+  }, [updateFilters])
 
   // ---- 收藏切换 ----
-  async function toggleFavorite(item: Attraction) {
+  const toggleFavorite = useCallback(async (item: Attraction) => {
     setFavoritePendingIds(prev => new Set(prev).add(item.id))
     try {
       const result = item.isFavorite
@@ -107,9 +107,11 @@ export default function Attractions() {
         return next
       })
     }
-  }
+  }, [toast])
 
-  const hasActiveFilters = Boolean(filters.keyword || filters.city || filters.ticketType || filters.tag)
+  const hasActiveFilters = useMemo(() =>
+    Boolean(filters.keyword || filters.city || filters.ticketType || filters.tag),
+  [filters])
 
   return (
     <main className="attractions-page travel-page-shell" aria-labelledby="attractions-title">

@@ -5,7 +5,7 @@
  * 展示 AI 生成的旅行行程，包含天气、住宿、每日景点、预算明细等模块。
  * 优先从本地缓存读取，缓存未命中时通过 SSE 流式调用推荐接口生成行程。
  */
-import { ArrowLeft, X, Compass, MapPin, Share2 } from 'lucide-react'
+import { ArrowLeft, Compass, MapPin, Share2, X } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -13,6 +13,8 @@ import { useEffect, useState } from 'react'
 import { useTravelRecommend } from '@/hooks/useTravelRecommend'
 import { useItineraryStore } from '@/stores/itinerary'
 import { loadItineraryCache } from '@/utils/storage'
+
+import './style.css'
 
 // 动态导入重型组件，减少初始包大小
 const AccommodationCard = dynamic(() => import('@/components/AccommodationCard').then(mod => ({ default: mod.AccommodationCard })), {
@@ -30,8 +32,6 @@ const SpotItem = dynamic(() => import('@/components/SpotItem').then(mod => ({ de
 const WeatherCard = dynamic(() => import('@/components/WeatherCard').then(mod => ({ default: mod.WeatherCard })), {
   loading: () => <div className="h-40 animate-pulse bg-muted rounded-xl" />,
 })
-
-import './style.css'
 
 export default function Detail() {
   /* ---------- 路由参数解析 ---------- */
@@ -240,7 +240,10 @@ export default function Detail() {
                       </div>
                       {chatError && (
                         <div className="detail-page__ai-error" role="alert">
-                          <p>生成失败：{chatError.message}</p>
+                          <p>
+                            生成失败：
+                            {chatError.message}
+                          </p>
                         </div>
                       )}
                     </div>

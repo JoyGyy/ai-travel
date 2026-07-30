@@ -2,7 +2,7 @@
 
 import type { CommunityComment, CommunityPost } from '@/types/community'
 
-import { ArrowLeft, Trash2, Heart, Send, Share2 } from 'lucide-react'
+import { ArrowLeft, Trash2, Heart, Repeat2, Send, Share2 } from 'lucide-react'
 import { useRouter, useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 

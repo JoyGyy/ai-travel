@@ -18,6 +18,7 @@ interface UseAttractionFavoriteOptions {
  */
 export function useAttractionFavorite(options: UseAttractionFavoriteOptions = {}) {
   const toast = useAppToast()
+  const { onFavoriteSuccess } = options
 
   /**
    * 切换收藏状态
@@ -30,7 +31,7 @@ export function useAttractionFavorite(options: UseAttractionFavoriteOptions = {}
       const result = currentlyFavorited
         ? await unfavoriteAttraction(attractionId)
         : await favoriteAttraction(attractionId)
-      options.onFavoriteSuccess?.(attractionId, result.isFavorite)
+      onFavoriteSuccess?.(attractionId, result.isFavorite)
       toast.success(result.isFavorite ? '已收藏' : '已取消收藏')
       return result.isFavorite
     }
@@ -38,7 +39,7 @@ export function useAttractionFavorite(options: UseAttractionFavoriteOptions = {}
       toast.error(err instanceof Error ? err.message : '收藏操作失败')
       return currentlyFavorited // 失败时保持原状态
     }
-  }, [toast, options.onFavoriteSuccess])
+  }, [toast, onFavoriteSuccess])
 
   return {
     /** 切换收藏状态 */

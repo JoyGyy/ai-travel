@@ -26,6 +26,7 @@ export function useCommunityActions(options: UseCommunityActionsOptions = {}) {
   const toast = useAppToast()
   const user = useAuthStore(state => state.user)
   const hasHydrated = useAuthStore(state => state._hasHydrated)
+  const { onLikeSuccess, onRepostSuccess } = options
 
   /**
    * 检查登录状态，未登录时提示并跳转
@@ -59,7 +60,7 @@ export function useCommunityActions(options: UseCommunityActionsOptions = {}) {
       const result = currentlyLiked
         ? await unlikeCommunityPost(postId)
         : await likeCommunityPost(postId)
-      options.onLikeSuccess?.(postId, result.likedByMe, result.likeCount)
+      onLikeSuccess?.(postId, result.likedByMe, result.likeCount)
       toast.success(result.likedByMe ? '已点赞' : '已取消点赞')
       return true
     }
@@ -67,7 +68,7 @@ export function useCommunityActions(options: UseCommunityActionsOptions = {}) {
       toast.error(err instanceof Error ? err.message : '点赞操作失败')
       return false
     }
-  }, [requireLogin, toast, options.onLikeSuccess])
+  }, [requireLogin, toast, onLikeSuccess])
 
   /**
    * 提交转发
@@ -82,14 +83,14 @@ export function useCommunityActions(options: UseCommunityActionsOptions = {}) {
     try {
       const repost = await repostCommunityPost(postId, content.trim())
       toast.success('已转发到社区')
-      options.onRepostSuccess?.(repost.id)
+      onRepostSuccess?.(repost.id)
       return true
     }
     catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : '转发失败')
       return false
     }
-  }, [requireLogin, toast, options.onRepostSuccess])
+  }, [requireLogin, toast, onRepostSuccess])
 
   return {
     /** 当前登录用户 */

@@ -27,6 +27,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useAppToast } from '@/hooks/useAppToast'
 import { useAuthStore } from '@/stores/auth'
+import { formatFullDateTime } from '@/lib/utils/date'
 
 import './style.css'
 
@@ -192,7 +193,7 @@ export default function Profile() {
                 <span>
                   注册于
                   {' '}
-                  {profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString('zh-CN') : '未知'}
+                  {profile?.createdAt ? formatFullDateTime(profile.createdAt) : '未知'}
                 </span>
               </p>
             </div>

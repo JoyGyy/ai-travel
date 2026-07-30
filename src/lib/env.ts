@@ -84,6 +84,11 @@ function validateEnv(): void {
   if (env.IS_PRODUCTION && env.JWT_SECRET.length < MIN_JWT_SECRET_LENGTH) {
     throw new Error(`生产环境 JWT_SECRET 长度至少需要 ${MIN_JWT_SECRET_LENGTH} 个字符`)
   }
+
+  // DATABASE_URL 格式校验
+  if (env.DATABASE_URL && !env.DATABASE_URL.startsWith('postgresql://') && !env.DATABASE_URL.startsWith('postgres://')) {
+    throw new Error('DATABASE_URL 必须以 postgresql:// 或 postgres:// 开头')
+  }
 }
 
 // 仅在服务端运行时执行校验（构建时跳过）

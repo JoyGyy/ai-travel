@@ -1,3 +1,5 @@
+import type { UIMessage } from 'ai'
+
 import { convertToModelMessages, createUIMessageStreamResponse, isStepCount, streamText, toUIMessageStream } from 'ai'
 
 import { getTravelModel } from './providers'
@@ -12,11 +14,11 @@ export const TRAVEL_SYSTEM_PROMPT = `你是一个专业的旅行规划师，不�
 - 复杂规划类问题先给结论，再给推荐理由、行程建议、预算与交通、注意事项。
 - 当答案依赖城市、景点、产品景点或注意事项数据时，优先调用工具。`
 
-export async function createTravelChatStream(messages: unknown[]) {
+export async function createTravelChatStream(messages: UIMessage[]) {
   const result = streamText({
     model: getTravelModel(),
     system: TRAVEL_SYSTEM_PROMPT,
-    messages: await convertToModelMessages(messages as never),
+    messages: await convertToModelMessages(messages),
     stopWhen: isStepCount(5),
     tools: travelTools,
   })

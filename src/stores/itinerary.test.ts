@@ -1,6 +1,5 @@
-import type { SSEEvent, WeatherResponse } from '@/types/api'
-
 import type { Accommodation, AttractionRef, BudgetBreakdown, ItineraryDay } from './itinerary'
+import type { SSEEvent, WeatherResponse } from '@/types/api'
 
 import { useItineraryStore } from './itinerary'
 

@@ -57,7 +57,7 @@ describe('useAuthStore', () => {
     })
 
     it('API 返回空值时不更新状态', async () => {
-      vi.mocked(loginApi).mockResolvedValue(null as any)
+      vi.mocked(loginApi).mockResolvedValue(null as never)
 
       await useAuthStore.getState().login('testuser', 'wrong')
 

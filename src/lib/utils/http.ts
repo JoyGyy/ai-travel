@@ -156,3 +156,37 @@ export function withAuth<TContext = unknown>(
     }
   }
 }
+
+/** 包装需要限流但不需要认证的 Route Handler（公开接口） */
+export function withRateLimit(
+  name: string,
+  max: number,
+  windowMs: number,
+  handler: (req: Request) => Promise<Response>,
+) {
+  return async (req: Request): Promise<Response> => {
+    try {
+      const blocked = checkRateLimit(req, name, max, windowMs)
+      if (blocked) return blocked
+      return await handler(req)
+    }
+    catch (err) {
+      return errorResponse(err)
+    }
+  }
+}
+
+/** 包装需要认证且返回原始 Response 的 Route Handler（SSE 流等） */
+export function withAuthRaw(
+  handler: (req: Request, ctx: { user: AuthUser }) => Promise<Response>,
+) {
+  return async (req: Request): Promise<Response> => {
+    try {
+      const user = requireAuth(req)
+      return await handler(req, { user })
+    }
+    catch (err) {
+      return errorResponse(err)
+    }
+  }
+}

@@ -43,25 +43,23 @@ export default function Detail() {
   const budget = Number(searchParams?.get('budget')) || 0
   const days = Number(searchParams?.get('days')) || 1
 
-  const {
-    itinerary,
-    budgetBreakdown,
-    tips,
-    weather,
-    accommodation,
-    nightlife,
-    attractionRefs,
-    agentSteps,
-    currentAgentStep,
-    setItinerary,
-    setBudgetBreakdown,
-    setTips,
-    setWeather,
-    setAccommodation,
-    setNightlife,
-    setAttractionRefs,
-    setCurrentAgentStep,
-  } = useItineraryStore()
+  const itinerary = useItineraryStore(s => s.itinerary)
+  const budgetBreakdown = useItineraryStore(s => s.budgetBreakdown)
+  const tips = useItineraryStore(s => s.tips)
+  const weather = useItineraryStore(s => s.weather)
+  const accommodation = useItineraryStore(s => s.accommodation)
+  const nightlife = useItineraryStore(s => s.nightlife)
+  const attractionRefs = useItineraryStore(s => s.attractionRefs)
+  const agentSteps = useItineraryStore(s => s.agentSteps)
+  const currentAgentStep = useItineraryStore(s => s.currentAgentStep)
+  const setItinerary = useItineraryStore(s => s.setItinerary)
+  const setBudgetBreakdown = useItineraryStore(s => s.setBudgetBreakdown)
+  const setTips = useItineraryStore(s => s.setTips)
+  const setWeather = useItineraryStore(s => s.setWeather)
+  const setAccommodation = useItineraryStore(s => s.setAccommodation)
+  const setNightlife = useItineraryStore(s => s.setNightlife)
+  const setAttractionRefs = useItineraryStore(s => s.setAttractionRefs)
+  const setCurrentAgentStep = useItineraryStore(s => s.setCurrentAgentStep)
 
   /* ---------- 本地 UI 状态 ---------- */
 

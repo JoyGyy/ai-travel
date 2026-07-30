@@ -13,6 +13,8 @@
 import type { SSEEvent, WeatherResponse } from '@/types/api'
 
 import { create } from 'zustand'
+import { devtools } from 'zustand/middleware'
+import { immer } from 'zustand/middleware/immer'
 
 // --- 类型定义 ---
 
@@ -94,32 +96,38 @@ const initialState = {
 
 // --- 创建 Store ---
 
-export const useItineraryStore = create<ItineraryState>()(set => ({
-  ...initialState,
+export const useItineraryStore = create<ItineraryState>()(
+  devtools(
+    immer(set => ({
+      ...initialState,
 
-  // --- 简单 Setter 操作 ---
+      // --- 简单 Setter 操作 ---
 
-  setItinerary: data => set({ itinerary: data }),
-  setBudgetBreakdown: data => set({ budgetBreakdown: data }),
-  setTips: tips => set({ tips }),
-  setWeather: weather => set({ weather }),
-  setAccommodation: data => set({ accommodation: data }),
-  setNightlife: data => set({ nightlife: data }),
-  setAttractionRefs: data => set({ attractionRefs: data }),
+      setItinerary: data => set((state) => { state.itinerary = data }),
+      setBudgetBreakdown: data => set((state) => { state.budgetBreakdown = data }),
+      setTips: tips => set((state) => { state.tips = tips }),
+      setWeather: weather => set((state) => { state.weather = weather }),
+      setAccommodation: data => set((state) => { state.accommodation = data }),
+      setNightlife: data => set((state) => { state.nightlife = data }),
+      setAttractionRefs: data => set((state) => { state.attractionRefs = data }),
 
-  // --- Agent 步骤操作（支持去重更新） ---
+      // --- Agent 步骤操作（支持去重更新） ---
 
-  addAgentStep: step =>
-    set((state) => {
-      const exists = state.agentSteps.find(s => s.step === step.step)
-      if (exists) {
-        return { agentSteps: state.agentSteps.map(s => s.step === step.step ? step : s) }
-      }
-      return { agentSteps: [...state.agentSteps, step] }
-    }),
+      addAgentStep: step =>
+        set((state) => {
+          const idx = state.agentSteps.findIndex(s => s.step === step.step)
+          if (idx >= 0) {
+            state.agentSteps[idx] = step
+          } else {
+            state.agentSteps.push(step)
+          }
+        }),
 
-  // --- 状态控制和重置 ---
+      // --- 状态控制和重置 ---
 
-  setCurrentAgentStep: step => set({ currentAgentStep: step }),
-  reset: () => set(initialState),
-}))
+      setCurrentAgentStep: step => set((state) => { state.currentAgentStep = step }),
+      reset: () => set(() => initialState),
+    })),
+    { name: 'ItineraryStore' },
+  ),
+)

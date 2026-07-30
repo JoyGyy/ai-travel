@@ -12,7 +12,7 @@
 import type { AuthUser } from '@/types/api'
 
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { devtools, persist } from 'zustand/middleware'
 
 import { loginApi, registerApi } from '@/api/auth'
 
@@ -31,44 +31,47 @@ interface AuthState {
 // --- 创建 Store ---
 
 export const useAuthStore = create<AuthState>()(
-  persist(
-    set => ({
-      // --- 初始状态 ---
+  devtools(
+    persist(
+      set => ({
+        // --- 初始状态 ---
 
-      user: null,
-      token: null,
-      _hasHydrated: false,
-      setHasHydrated: v => set({ _hasHydrated: v }),
+        user: null,
+        token: null,
+        _hasHydrated: false,
+        setHasHydrated: v => set({ _hasHydrated: v }),
 
-      // --- 异步操作：登录/注册 ---
+        // --- 异步操作：登录/注册 ---
 
-      async login(username, password) {
-        const data = await loginApi(username, password)
-        if (data) {
-          set({ user: data.user, token: data.token })
-        }
+        async login(username, password) {
+          const data = await loginApi(username, password)
+          if (data) {
+            set({ user: data.user, token: data.token })
+          }
+        },
+
+        async register(username, password) {
+          const data = await registerApi(username, password)
+          if (data) {
+            set({ user: data.user, token: data.token })
+          }
+        },
+
+        // --- 同步操作：登出 ---
+
+        logout() {
+          set({ user: null, token: null })
+        },
+      }),
+      // --- 持久化配置 ---
+
+      {
+        name: 'travel_auth',
+        onRehydrateStorage: () => (state) => {
+          state?.setHasHydrated(true)
+        },
       },
-
-      async register(username, password) {
-        const data = await registerApi(username, password)
-        if (data) {
-          set({ user: data.user, token: data.token })
-        }
-      },
-
-      // --- 同步操作：登出 ---
-
-      logout() {
-        set({ user: null, token: null })
-      },
-    }),
-    // --- 持久化配置 ---
-
-    {
-      name: 'travel_auth',
-      onRehydrateStorage: () => (state) => {
-        state?.setHasHydrated(true)
-      },
-    },
+    ),
+    { name: 'AuthStore' },
   ),
 )

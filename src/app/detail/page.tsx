@@ -110,63 +110,19 @@ export default function Detail() {
       }
     }
 
-    abort()
     useItineraryStore.setState({ agentSteps: [], currentAgentStep: 0 })
 
-    let dataReceived = false
-    let showTimer: ReturnType<typeof setTimeout>
-
-    sendRequest('/api/travel/recommend', { city, budget, days }, {
-      onStep: (step) => {
-        setCurrentAgentStep(step.step)
-        if (step.status === 'complete')
-          addAgentStep(step)
-      },
-      onComplete: (data) => {
-        dataReceived = true
-        const result = (data ?? {}) as Partial<ItineraryCache> & { dailyItinerary?: ItineraryDay[] }
-        const dailyItinerary = result.dailyItinerary || result.itinerary || []
-        const bd = result.budgetBreakdown || null
-        const t = result.tips || []
-        const w = result.weather || null
-        const a = result.accommodation || []
-        const n = result.nightlife || []
-        const refs = result.attractionRefs || []
-        setItinerary(dailyItinerary)
-        setBudgetBreakdown(bd)
-        setTips(t)
-        setWeather(w)
-        setAccommodation(a)
-        setNightlife(n)
-        setAttractionRefs(refs)
-        setActiveKeys(dailyItinerary[0]?.day ? [String(dailyItinerary[0].day)] : [])
-        saveItineraryCache(city, budget, days, { itinerary: dailyItinerary, budgetBreakdown: bd, tips: t, weather: w, accommodation: a, nightlife: n, attractionRefs: refs })
-        showTimer = setTimeout(setShowLoading, 500, false)
-      },
-      onError: (err) => {
-        setErrorMessage(err.message || '生成行程失败，请稍后重试')
-      },
-      onFinally: () => {
-        if (!dataReceived)
-          setShowLoading(false)
-      },
-    }).catch((err: unknown) => {
-      setErrorMessage(err instanceof Error ? err.message : '生成行程失败，请稍后重试')
-    })
+    requestRecommend({ city, budget, days })
 
     return () => {
       clearTimeout(resetTimer)
-      clearTimeout(showTimer)
-      abort()
     }
   }, [
-    abort,
-    addAgentStep,
     budget,
     city,
     days,
     hasValidParams,
-    sendRequest,
+    requestRecommend,
     setAccommodation,
     setAttractionRefs,
     setBudgetBreakdown,
@@ -215,10 +171,7 @@ export default function Detail() {
                     <button
                       type="button"
                       aria-label="关闭行程规划并返回"
-                      onClick={() => {
-                        abort()
-                        router.back()
-                      }}
+                      onClick={() => router.back()}
                     >
                       <X aria-hidden="true" />
                     </button>

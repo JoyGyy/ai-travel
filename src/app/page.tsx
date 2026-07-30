@@ -215,7 +215,7 @@ export default function HomePage() {
 
   function onStart() {
     if (!hasHydrated) {
-      toast.loading('加载中...')
+      toast.info('加载中...')
       return
     }
     if (!user)

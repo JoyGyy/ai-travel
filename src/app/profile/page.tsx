@@ -216,18 +216,25 @@ export default function Profile() {
                 <div className="profile-page__quota">
                   <div className="profile-page__quota-header">
                     <span>今日已使用</span>
-                    <Tag className={`travel-tag ${quota.remaining > 0 ? 'travel-tag--success' : 'travel-tag--danger'}`}>
+                    <Badge className={`travel-tag ${quota.remaining > 0 ? 'travel-tag--success' : 'travel-tag--danger'}`}>
                       {quota.used}
                       {' / '}
                       {quota.limit}
-                    </Tag>
+                    </Badge>
                   </div>
-                  <Progress
-                    percent={quotaPercent}
-                    strokeColor={quotaDanger ? 'var(--color-danger)' : 'var(--color-primary)'}
-                    showInfo={false}
+                  <div
+                    className="h-2 w-full rounded-full bg-muted"
+                    role="progressbar"
+                    aria-valuenow={quotaPercent}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
                     aria-label={`AI 额度已使用 ${quota.used} 次，共 ${quota.limit} 次`}
-                  />
+                  >
+                    <div
+                      className={`h-full rounded-full transition-all ${quotaDanger ? 'bg-destructive' : 'bg-primary'}`}
+                      style={{ width: `${quotaPercent}%` }}
+                    />
+                  </div>
                   <p className="profile-page__quota-tip">
                     {quota.remaining > 0
                       ? `剩余 ${quota.remaining} 次，每日 ${quota.limit} 次重置`
@@ -235,7 +242,7 @@ export default function Profile() {
                   </p>
                 </div>
               )
-            : <Empty description="无法获取额度信息" image={Empty.PRESENTED_IMAGE_SIMPLE} />}
+            : <div className="text-center py-4 text-muted-foreground"><p>无法获取额度信息</p></div>}
         </div>
 
         {/* 修改密码 */}

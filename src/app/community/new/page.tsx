@@ -1,25 +1,18 @@
 'use client'
 
 import type { CommunityImage, CommunityItinerarySnapshot } from '@/types/community'
-// Antd 类型已迁移
 
 import { X, ImageIcon, Send } from 'lucide-react'
-// Antd 组件已迁移
 import { useRouter } from 'next/navigation'
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 
 import { createCommunityPost, uploadCommunityImages } from '@/api/community'
 import { CommunityImageGrid } from '@/components/CommunityImageGrid'
 import { CommunityItineraryPreview } from '@/components/CommunityItineraryPreview'
+import { Button } from '@/components/ui/button'
 import { useAppToast } from '@/hooks/useAppToast'
 
 import './style.css'
-
-interface FormValues {
-  title?: string
-  content?: string
-  city?: string
-}
 
 function isImageFile(file: File) {
   return ['image/jpeg', 'image/png', 'image/webp'].includes(file.type)
@@ -28,27 +21,32 @@ function isImageFile(file: File) {
 export default function CommunityPostCreate() {
   const router = useRouter()
   const toast = useAppToast()
-  const [form] = Form.useForm<FormValues>()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [title, setTitle] = useState('')
+  const [content, setContent] = useState('')
+  const [city, setCity] = useState('')
   const [images, setImages] = useState<CommunityImage[]>([])
   const [snapshot, setSnapshot] = useState<CommunityItinerarySnapshot | null>(null)
   const [uploading, setUploading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
-  const hasContent = Form.useWatch('content', form)
-  const canSubmit = useMemo(() => Boolean(hasContent?.trim() || images.length > 0 || snapshot), [hasContent, images.length, snapshot])
+  const canSubmit = useMemo(() => Boolean(content.trim() || images.length > 0 || snapshot), [content, images.length, snapshot])
 
-  async function handleUpload(file: File) {
+  async function handleUpload(files: FileList | null) {
+    if (!files || files.length === 0) return
+
+    const file = files[0]
     if (images.length >= 9) {
-      toast.warning('每条分享最多上传 9 张图片')
-      return Upload.LIST_IGNORE
+      toast.info('每条分享最多上传 9 张图片')
+      return
     }
     if (!isImageFile(file)) {
       toast.error('仅支持 JPG、PNG 或 WebP 图片')
-      return Upload.LIST_IGNORE
+      return
     }
     if (file.size > 5 * 1024 * 1024) {
       toast.error('单张图片不能超过 5MB')
-      return Upload.LIST_IGNORE
+      return
     }
 
     setUploading(true)
@@ -62,27 +60,29 @@ export default function CommunityPostCreate() {
     }
     finally {
       setUploading(false)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
     }
-
-    return Upload.LIST_IGNORE
   }
 
   function removeImage(image: CommunityImage) {
     setImages(prev => prev.filter(item => (item.storageKey || item.url) !== (image.storageKey || image.url)))
   }
 
-  async function submit(values: FormValues) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
     if (!canSubmit) {
-      toast.warning('正文、图片和行程快照至少需要提供一项')
+      toast.info('正文、图片和行程快照至少需要提供一项')
       return
     }
 
     setSubmitting(true)
     try {
       const post = await createCommunityPost({
-        title: values.title?.trim(),
-        content: values.content?.trim(),
-        city: values.city?.trim() || snapshot?.city,
+        title: title.trim() || undefined,
+        content: content.trim() || undefined,
+        city: city.trim() || snapshot?.city,
         images,
         itinerarySnapshot: snapshot,
       })
@@ -97,8 +97,6 @@ export default function CommunityPostCreate() {
     }
   }
 
-  const uploadFileList: UploadFile[] = []
-
   return (
     <main className="community-create travel-page-shell" aria-labelledby="community-create-title">
       <section className="community-create__hero travel-page-hero travel-ticket-edge travel-route-line">
@@ -108,25 +106,66 @@ export default function CommunityPostCreate() {
       </section>
 
       <section className="community-create__panel travel-surface-card">
-        <Form form={form} layout="vertical" onFinish={submit} initialValues={{ city: snapshot?.city || '' }}>
-          <Form.Item label="标题" name="title" rules={[{ max: 80, message: '标题不能超过 80 个字符' }]}>
-            <Input maxLength={80} showCount placeholder="例如：成都三天两晚松弛路线" />
-          </Form.Item>
-          <Form.Item label="正文" name="content" rules={[{ max: 2000, message: '正文不能超过 2000 个字符' }]}>
-            <Input.TextArea maxLength={2000} showCount rows={7} placeholder="分享你的路线、体验、避坑提醒或适合的人群" />
-          </Form.Item>
-          <Form.Item label="城市" name="city" rules={[{ max: 50, message: '城市不能超过 50 个字符' }]}>
-            <Input maxLength={50} placeholder="例如：成都" />
-          </Form.Item>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <label htmlFor="title" className="text-sm font-medium">标题</label>
+            <input
+              id="title"
+              type="text"
+              maxLength={80}
+              placeholder="例如：成都三天两晚松弛路线"
+              value={title}
+              onChange={event => setTitle(event.target.value)}
+              className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="content" className="text-sm font-medium">正文</label>
+            <textarea
+              id="content"
+              maxLength={2000}
+              rows={7}
+              placeholder="分享你的路线、体验、避坑提醒或适合的人群"
+              value={content}
+              onChange={event => setContent(event.target.value)}
+              className="flex min-h-[80px] w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="city" className="text-sm font-medium">城市</label>
+            <input
+              id="city"
+              type="text"
+              maxLength={50}
+              placeholder="例如：成都"
+              value={city}
+              onChange={event => setCity(event.target.value)}
+              className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
+            />
+          </div>
 
           <div className="community-create__upload-block">
             <div className="community-create__section-title">
               <ImageIcon aria-hidden="true" />
               <span>图片</span>
             </div>
-            <Upload accept="image/jpeg,image/png,image/webp" fileList={uploadFileList} beforeUpload={handleUpload} multiple disabled={uploading || images.length >= 9}>
-              <Button loading={uploading}>上传图片</Button>
-            </Upload>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={event => handleUpload(event.target.files)}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              disabled={uploading || images.length >= 9}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {uploading ? '上传中...' : '上传图片'}
+            </Button>
             <p className="community-create__hint">最多 9 张，支持 JPG、PNG、WebP，单张不超过 5MB。</p>
             {images.length > 0
               ? (
@@ -156,12 +195,13 @@ export default function CommunityPostCreate() {
           {!canSubmit ? <p className="community-create__requirement">正文、图片和行程快照至少需要提供一项。</p> : null}
 
           <div className="community-create__actions">
-            <Button onClick={() => router.push('/community')}>取消</Button>
-            <Button type="primary" htmlType="submit" icon={<Send aria-hidden="true" />} loading={submitting} disabled={!canSubmit || uploading}>
-              发布到社区
+            <Button type="button" variant="outline" onClick={() => router.push('/community')}>取消</Button>
+            <Button type="submit" disabled={!canSubmit || uploading || submitting}>
+              <Send aria-hidden="true" className="mr-2 h-4 w-4" />
+              {submitting ? '发布中...' : '发布到社区'}
             </Button>
           </div>
-        </Form>
+        </form>
       </section>
     </main>
   )

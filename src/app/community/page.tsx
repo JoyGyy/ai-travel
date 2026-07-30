@@ -60,7 +60,7 @@ export default function Community() {
 
   function requireLogin(action: string) {
     if (!hasHydrated) {
-      toast.loading('正在恢复登录状态...')
+      toast.info('正在恢复登录状态...')
       return false
     }
     if (!user) {
@@ -150,7 +150,8 @@ export default function Community() {
           <h1 id="community-title">旅友正在路上</h1>
           <p>把 AI 规划、实拍照片和旅行心得做成一张明信片，让下一位出发的人少走弯路。</p>
         </div>
-        <Button size="lg" icon={<Plus aria-hidden="true" />} onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}>
+        <Button size="lg" onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}>
+          <Plus aria-hidden="true" className="mr-2 h-4 w-4" />
           发布旅行分享
         </Button>
       </section>
@@ -165,18 +166,21 @@ export default function Community() {
           <div className="community-page__search-control">
             <Input className="flex-1"
               id="community-city"
-              
-              placeholder
               placeholder="输入城市，例如 成都"
               value={cityInput}
               onChange={event => setCityInput(event.target.value)}
             />
-            <Button htmlType="submit">搜索</Button>
+            <Button type="submit">搜索</Button>
           </div>
         </form>
         <div className="community-page__switch-row">
           <span>只看含行程分享</span>
-          <input type="checkbox" checked={Boolean(filters.withItinerary)} onChange={checked => updateFilters({ withItinerary: checked })} aria-label="只看含行程分享" />
+          <input
+            type="checkbox"
+            checked={Boolean(filters.withItinerary)}
+            onChange={event => updateFilters({ withItinerary: event.target.checked })}
+            aria-label="只看含行程分享"
+          />
         </div>
         <p className="community-page__result-status" aria-live="polite">
           {loading ? '正在刷新社区...' : `共 ${total} 条旅行分享`}
@@ -205,7 +209,7 @@ export default function Community() {
       {!loading && !error && items.length === 0
         ? (
             <div className="community-page__state travel-surface-card">
-              <Empty description="还没有符合条件的旅行分享" />
+              <div className="text-center py-8 text-muted-foreground"><p>还没有符合条件的旅行分享</p></div>
               <Button onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}>发布第一条分享</Button>
             </div>
           )
@@ -230,8 +234,24 @@ export default function Community() {
               </section>
               {total > PAGE_SIZE
                 ? (
-                    <div className="community-page__pagination">
-                      <Pagination current={filters.page || 1} pageSize={PAGE_SIZE} total={total} onChange={page => updateFilters({ page })} />
+                    <div className="community-page__pagination flex items-center justify-center gap-4">
+                      <Button
+                        variant="outline"
+                        disabled={(filters.page || 1) <= 1}
+                        onClick={() => updateFilters({ page: (filters.page || 1) - 1 })}
+                      >
+                        上一页
+                      </Button>
+                      <span className="text-sm text-muted-foreground">
+                        第 {filters.page || 1} 页，共 {Math.ceil(total / PAGE_SIZE)} 页
+                      </span>
+                      <Button
+                        variant="outline"
+                        disabled={(filters.page || 1) >= Math.ceil(total / PAGE_SIZE)}
+                        onClick={() => updateFilters({ page: (filters.page || 1) + 1 })}
+                      >
+                        下一页
+                      </Button>
                     </div>
                   )
                 : null}
@@ -239,35 +259,34 @@ export default function Community() {
           )
         : null}
 
-      <Modal
-        title="转发旅行分享"
-        open={Boolean(repostTarget)}
-        okText="转发"
-        cancelText="取消"
-        confirmLoading={Boolean(repostTarget && repostPendingIds.has(repostTarget.id))}
-        onOk={submitRepost}
-        onCancel={() => setRepostTarget(null)}
-      >
-        <p className="community-page__modal-intro">
-          可以直接转发，也可以写一句给旅友的补充说明。
-        </p>
-        <textarea
-          value={repostContent}
-          maxLength={500}
-          showCount
-          rows={4}
-          placeholder="例如：这条路线适合第一次去成都的朋友"
-          onChange={event => setRepostContent(event.target.value)}
-        />
-        {repostTarget
-          ? (
-              <div className="community-page__modal-target">
-                <Repeat2 aria-hidden="true" />
-                <span>{repostTarget.title || repostTarget.content || `${repostTarget.city || '旅行'}分享`}</span>
-              </div>
-            )
-          : null}
-      </Modal>
+      {repostTarget && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
+          <div className="bg-background rounded-2xl p-6 max-w-lg w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">转发旅行分享</h3>
+            <p className="community-page__modal-intro mb-4">
+              可以直接转发，也可以写一句给旅友的补充说明。
+            </p>
+            <textarea
+              className="flex min-h-[80px] w-full rounded-xl border border-input bg-background px-3 py-2 text-sm mb-4"
+              value={repostContent}
+              maxLength={500}
+              rows={4}
+              placeholder="例如：这条路线适合第一次去成都的朋友"
+              onChange={event => setRepostContent(event.target.value)}
+            />
+            <div className="community-page__modal-target mb-4">
+              <Repeat2 aria-hidden="true" />
+              <span>{repostTarget.title || repostTarget.content || `${repostTarget.city || '旅行'}分享`}</span>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setRepostTarget(null)}>取消</Button>
+              <Button disabled={repostPendingIds.has(repostTarget.id)} onClick={submitRepost}>
+                {repostPendingIds.has(repostTarget.id) ? '转发中...' : '转发'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   )
 }

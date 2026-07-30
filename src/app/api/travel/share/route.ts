@@ -6,11 +6,8 @@ import { Buffer } from 'node:buffer'
 
 import { NextResponse } from 'next/server'
 
-import { checkRateLimit } from '@/lib/rate-limit'
-import { getAuthFromHeaders } from '@/lib/services/auth'
 import { createShare } from '@/lib/services/share'
-import { extractCsrfToken, verifyCsrfToken } from '@/lib/utils/csrf'
-import { errorResponse, httpError } from '@/lib/utils/http'
+import { httpError, withProtected } from '@/lib/utils/http'
 import { readPositiveInteger, readRequiredString } from '@/lib/utils/validation'
 
 /** 分享内容持久化上限（字节）：100KB */
@@ -42,30 +39,12 @@ function validateSharePayload(payload: unknown): SharePayload {
   return { city, days, budget, itinerary: p.itinerary }
 }
 
-export async function POST(req: Request) {
-  try {
-    // 认证
-    const user = getAuthFromHeaders(req.headers)
-    if (!user) {
-      return NextResponse.json({ success: false, message: '未登录' }, { status: 401 })
-    }
-
-    // CSRF 验证
-    const csrfToken = extractCsrfToken(req.headers, req.headers.get('cookie') || undefined)
-    if (!csrfToken || !verifyCsrfToken(csrfToken)) {
-      throw httpError(403, 'CSRF token 无效')
-    }
-
-    // 限流
-    const rateLimited = checkRateLimit(req, 'share:post', 10, 60_000)
-    if (rateLimited) return rateLimited
-
+export const POST = withProtected(
+  async (req) => {
     const payload = validateSharePayload(await req.json())
     const shareId = createShare(payload)
 
     return NextResponse.json({ success: true, shareId, shareUrl: `/share/${shareId}` })
-  }
-  catch (err) {
-    return errorResponse(err)
-  }
-}
+  },
+  { rateLimit: { name: 'share:post', max: 10, windowMs: 60_000 } },
+)

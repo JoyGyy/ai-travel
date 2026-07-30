@@ -1,30 +1,14 @@
 import { createTravelChatStream } from '@/lib/ai/stream'
-import { consumeAiQuota, getAuthFromHeaders } from '@/lib/services/auth'
-import { errorResponse } from '@/lib/utils/http'
+import { consumeAiQuota } from '@/lib/services/auth'
+import { httpError, withAuthRaw } from '@/lib/utils/http'
 
-export async function POST(req: Request) {
-  try {
-    const user = getAuthFromHeaders(req.headers)
-    if (!user) {
-      return new Response(JSON.stringify({ success: false, message: '未登录' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' },
-      })
-    }
-
-    const body = await req.json()
-    const messages = Array.isArray(body.messages) ? body.messages : []
-    if (!messages.length) {
-      return new Response(JSON.stringify({ success: false, message: '消息不能为空' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      })
-    }
-
-    await consumeAiQuota(user.id)
-    return createTravelChatStream(messages)
+export const POST = withAuthRaw(async (req, { user }) => {
+  const body = await req.json()
+  const messages = Array.isArray(body.messages) ? body.messages : []
+  if (!messages.length) {
+    throw httpError(400, '消息不能为空')
   }
-  catch (err) {
-    return errorResponse(err)
-  }
-}
+
+  await consumeAiQuota(user.id)
+  return createTravelChatStream(messages)
+})

@@ -4,7 +4,7 @@ import type { CommunityPost } from '@/types/community'
 
 import { Heart, MapPin, MessageCircle, Repeat2, Trash2 } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import React, { useState } from 'react'
 
 import { CommunityImageGrid } from '@/components/CommunityImageGrid'
 import { CommunityItineraryPreview } from '@/components/CommunityItineraryPreview'
@@ -51,7 +51,7 @@ function getPostExcerpt(content: string) {
   return `${content.slice(0, 80)}...`
 }
 
-export function CommunityPostCard({
+export const CommunityPostCard = React.memo(function CommunityPostCard({
   post,
   currentUserId,
   likePending = false,
@@ -190,4 +190,4 @@ export function CommunityPostCard({
       </CardContent>
     </Card>
   )
-}
+})

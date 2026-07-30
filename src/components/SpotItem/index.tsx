@@ -9,6 +9,7 @@ import type { AttractionRef } from '@/stores/itinerary'
 
 import { Clock, Compass } from 'lucide-react'
 import Link from 'next/link'
+import React from 'react'
 
 import './style.css'
 
@@ -26,7 +27,7 @@ interface SpotItemProps {
   attractionRef?: AttractionRef
 }
 
-export function SpotItem({ period, data, attractionRef }: SpotItemProps) {
+export const SpotItem = React.memo(function SpotItem({ period, data, attractionRef }: SpotItemProps) {
   // 根据时段（上午/下午/晚上）映射不同的主题色和背景色
   const periodColorMap: Record<string, string> = {
     上午: 'var(--travel-period-morning)',
@@ -74,4 +75,4 @@ export function SpotItem({ period, data, attractionRef }: SpotItemProps) {
       </div>
     </div>
   )
-}
+})

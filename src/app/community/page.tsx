@@ -2,17 +2,18 @@
 
 import type { CommunityPost, CommunityPostFilters } from '@/types/community'
 
-import { Plus, Repeat2 } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { fetchCommunityPosts, likeCommunityPost, repostCommunityPost, unlikeCommunityPost } from '@/api/community'
+import { fetchCommunityPosts } from '@/api/community'
 import { CommunityPostCard } from '@/components/CommunityPostCard'
 import { CommunityPostCardSkeleton } from '@/components/CommunityPostCard/skeleton'
+import { Pagination } from '@/components/Pagination'
+import { RepostModal } from '@/components/RepostModal'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useAppToast } from '@/hooks/useAppToast'
-import { useAuthStore } from '@/stores/auth'
+import { useCommunityActions } from '@/hooks/useCommunityActions'
 
 import './style.css'
 
@@ -20,9 +21,6 @@ const PAGE_SIZE = 10
 
 export default function Community() {
   const router = useRouter()
-  const toast = useAppToast()
-  const user = useAuthStore(state => state.user)
-  const hasHydrated = useAuthStore(state => state._hasHydrated)
 
   const [items, setItems] = useState<CommunityPost[]>([])
   const [total, setTotal] = useState(0)
@@ -33,7 +31,14 @@ export default function Community() {
   const [likePendingIds, setLikePendingIds] = useState<Set<string>>(() => new Set())
   const [repostPendingIds, setRepostPendingIds] = useState<Set<string>>(() => new Set())
   const [repostTarget, setRepostTarget] = useState<CommunityPost | null>(null)
-  const [repostContent, setRepostContent] = useState('')
+
+  const { user, requireLogin, toggleLike, submitRepost } = useCommunityActions({
+    onLikeSuccess: (postId, likedByMe, likeCount) => {
+      setItems(prev => prev.map(item =>
+        item.id === postId ? { ...item, likedByMe, likeCount } : item,
+      ))
+    },
+  })
 
   const load = useCallback(async (nextFilters: CommunityPostFilters) => {
     setLoading(true)
@@ -56,18 +61,7 @@ export default function Community() {
     queueMicrotask(() => load({ page: 1, pageSize: PAGE_SIZE }))
   }, [load])
 
-  const requireLogin = useCallback((action: string) => {
-    if (!hasHydrated) {
-      toast.info('正在恢复登录状态...')
-      return false
-    }
-    if (!user) {
-      toast.info(`请先登录后${action}`)
-      router.push('/login')
-      return false
-    }
-    return true
-  }, [hasHydrated, user, router, toast])
+  // requireLogin 已从 useCommunityActions hook 获取
 
   const updateFilters = useCallback((patch: CommunityPostFilters) => {
     const next = { ...filters, ...patch, page: patch.page || 1, pageSize: PAGE_SIZE }
@@ -84,18 +78,10 @@ export default function Community() {
     load({ page: 1, pageSize: PAGE_SIZE })
   }, [load])
 
-  const toggleLike = useCallback(async (post: CommunityPost) => {
-    if (!requireLogin('点赞'))
-      return
-
+  const handleLike = useCallback(async (post: CommunityPost) => {
     setLikePendingIds(prev => new Set(prev).add(post.id))
     try {
-      const result = post.likedByMe ? await unlikeCommunityPost(post.id) : await likeCommunityPost(post.id)
-      setItems(prev => prev.map(item => item.id === post.id ? { ...item, likedByMe: result.likedByMe, likeCount: result.likeCount } : item))
-      toast.success(result.likedByMe ? '已点赞' : '已取消点赞')
-    }
-    catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : '点赞操作失败')
+      await toggleLike(post.id, post.likedByMe)
     }
     finally {
       setLikePendingIds((prev) => {
@@ -104,30 +90,29 @@ export default function Community() {
         return next
       })
     }
-  }, [requireLogin, toast])
+  }, [toggleLike])
 
   const openRepost = useCallback((post: CommunityPost) => {
     if (!requireLogin('转发'))
       return
     setRepostTarget(post)
-    setRepostContent('')
   }, [requireLogin])
 
-  const submitRepost = useCallback(async () => {
+  const handleSubmitRepost = useCallback(async (content: string) => {
     if (!repostTarget)
-      return
+      return false
 
     setRepostPendingIds(prev => new Set(prev).add(repostTarget.id))
     try {
-      const repost = await repostCommunityPost(repostTarget.id, repostContent.trim())
-      setItems(prev => [repost, ...prev])
-      setTotal(prev => prev + 1)
-      setRepostTarget(null)
-      setRepostContent('')
-      toast.success('已转发到社区')
-    }
-    catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : '转发失败')
+      const success = await submitRepost(repostTarget.id, content)
+      if (success) {
+        // 刷新列表以显示新转发
+        const data = await fetchCommunityPosts({ ...filters, pageSize: PAGE_SIZE })
+        setItems(data.items)
+        setTotal(data.total)
+        setRepostTarget(null)
+      }
+      return success
     }
     finally {
       setRepostPendingIds((prev) => {
@@ -136,7 +121,7 @@ export default function Community() {
         return next
       })
     }
-  }, [repostTarget, repostContent, toast])
+  }, [repostTarget, submitRepost, filters])
 
   const hasActiveFilters = useMemo(() =>
     Boolean(filters.city || filters.withItinerary || filters.authorId),
@@ -226,67 +211,30 @@ export default function Community() {
                     currentUserId={user?.id}
                     likePending={likePendingIds.has(post.id)}
                     repostPending={repostPendingIds.has(post.id)}
-                    onLike={toggleLike}
+                    onLike={handleLike}
                     onComment={item => router.push(`/community/${item.id}`)}
                     onRepost={openRepost}
                   />
                 ))}
               </section>
-              {total > PAGE_SIZE
-                ? (
-                    <div className="community-page__pagination flex items-center justify-center gap-4">
-                      <Button
-                        variant="outline"
-                        disabled={(filters.page || 1) <= 1}
-                        onClick={() => updateFilters({ page: (filters.page || 1) - 1 })}
-                      >
-                        上一页
-                      </Button>
-                      <span className="text-sm text-muted-foreground">
-                        第 {filters.page || 1} 页，共 {Math.ceil(total / PAGE_SIZE)} 页
-                      </span>
-                      <Button
-                        variant="outline"
-                        disabled={(filters.page || 1) >= Math.ceil(total / PAGE_SIZE)}
-                        onClick={() => updateFilters({ page: (filters.page || 1) + 1 })}
-                      >
-                        下一页
-                      </Button>
-                    </div>
-                  )
-                : null}
+              <Pagination
+                className="community-page__pagination"
+                page={filters.page || 1}
+                total={total}
+                pageSize={PAGE_SIZE}
+                onPageChange={page => updateFilters({ page })}
+              />
             </>
           )
         : null}
 
-      {repostTarget && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
-          <div className="bg-background rounded-2xl p-6 max-w-lg w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">转发旅行分享</h3>
-            <p className="community-page__modal-intro mb-4">
-              可以直接转发，也可以写一句给旅友的补充说明。
-            </p>
-            <textarea
-              className="flex min-h-[80px] w-full rounded-xl border border-input bg-background px-3 py-2 text-sm mb-4"
-              value={repostContent}
-              maxLength={500}
-              rows={4}
-              placeholder="例如：这条路线适合第一次去成都的朋友"
-              onChange={event => setRepostContent(event.target.value)}
-            />
-            <div className="community-page__modal-target mb-4">
-              <Repeat2 aria-hidden="true" />
-              <span>{repostTarget.title || repostTarget.content || `${repostTarget.city || '旅行'}分享`}</span>
-            </div>
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setRepostTarget(null)}>取消</Button>
-              <Button disabled={repostPendingIds.has(repostTarget.id)} onClick={submitRepost}>
-                {repostPendingIds.has(repostTarget.id) ? '转发中...' : '转发'}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <RepostModal
+        open={Boolean(repostTarget)}
+        targetTitle={repostTarget?.title || repostTarget?.content || `${repostTarget?.city || '旅行'}分享`}
+        pending={repostTarget ? repostPendingIds.has(repostTarget.id) : false}
+        onClose={() => setRepostTarget(null)}
+        onSubmit={handleSubmitRepost}
+      />
     </main>
   )
 }

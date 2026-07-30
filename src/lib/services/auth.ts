@@ -171,10 +171,9 @@ async function getAiQuotaStatus(userId: string | undefined, date = getTodayKey()
 }
 
 /** 消耗一次 AI 配额（单条 SQL UPSERT + RETURNING），超限抛出 429 错误 */
-async function consumeAiQuota(userId: string | undefined, date = getTodayKey()): Promise<AiQuotaStatus> {
-  if (!userId) {
-    return { used: 0, limit: DAILY_AI_LIMIT, remaining: DAILY_AI_LIMIT }
-  }
+async function consumeAiQuota(userId: string, date = getTodayKey()): Promise<AiQuotaStatus> {
+  if (!userId)
+    throw new Error('用户信息无效')
 
   const updatedAt = new Date().toISOString()
 

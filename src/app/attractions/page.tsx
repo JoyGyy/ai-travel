@@ -13,11 +13,12 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { favoriteAttraction, fetchAttractions, unfavoriteAttraction } from '@/api/attractions'
+import { fetchAttractions } from '@/api/attractions'
+import { Pagination } from '@/components/Pagination'
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useAppToast } from '@/hooks/useAppToast'
+import { useAttractionFavorite } from '@/hooks/useAttractionFavorite'
 
 import './style.css'
 
@@ -37,7 +38,14 @@ export default function Attractions() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [favoritePendingIds, setFavoritePendingIds] = useState<Set<string>>(() => new Set())
-  const toast = useAppToast()
+
+  const { toggleFavorite } = useAttractionFavorite({
+    onFavoriteSuccess: (attractionId, isFavorite) => {
+      setItems(prev => prev.map(current =>
+        current.id === attractionId ? { ...current, isFavorite } : current,
+      ))
+    },
+  })
 
   const PAGE_SIZE = 12
 
@@ -88,17 +96,10 @@ export default function Attractions() {
   }, [updateFilters])
 
   // ---- 收藏切换 ----
-  const toggleFavorite = useCallback(async (item: Attraction) => {
+  const handleToggleFavorite = useCallback(async (item: Attraction) => {
     setFavoritePendingIds(prev => new Set(prev).add(item.id))
     try {
-      const result = item.isFavorite
-        ? await unfavoriteAttraction(item.id)
-        : await favoriteAttraction(item.id)
-      setItems(prev => prev.map(current => current.id === item.id ? { ...current, isFavorite: result.isFavorite } : current))
-      toast.success(result.isFavorite ? '已收藏' : '已取消收藏')
-    }
-    catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : '收藏操作失败')
+      await toggleFavorite(item.id, item.isFavorite)
     }
     finally {
       setFavoritePendingIds((prev) => {
@@ -107,7 +108,7 @@ export default function Attractions() {
         return next
       })
     }
-  }, [toast])
+  }, [toggleFavorite])
 
   const hasActiveFilters = useMemo(() =>
     Boolean(filters.keyword || filters.city || filters.ticketType || filters.tag),
@@ -249,7 +250,7 @@ export default function Attractions() {
                               onClick={(e) => {
                                 e.preventDefault()
                                 e.stopPropagation()
-                                toggleFavorite(item)
+                                handleToggleFavorite(item)
                               }}
                               className="attractions-page__favorite"
                             >
@@ -273,27 +274,13 @@ export default function Attractions() {
                 })}
               </section>
               {/* ---- 分页 ---- */}
-              {total > PAGE_SIZE && (
-                <div className="attractions-page__pagination flex items-center justify-center gap-4">
-                  <Button
-                    variant="outline"
-                    disabled={(filters.page || 1) <= 1}
-                    onClick={() => handlePageChange((filters.page || 1) - 1)}
-                  >
-                    上一页
-                  </Button>
-                  <span className="text-sm text-muted-foreground">
-                    第 {filters.page || 1} 页，共 {Math.ceil(total / PAGE_SIZE)} 页
-                  </span>
-                  <Button
-                    variant="outline"
-                    disabled={(filters.page || 1) >= Math.ceil(total / PAGE_SIZE)}
-                    onClick={() => handlePageChange((filters.page || 1) + 1)}
-                  >
-                    下一页
-                  </Button>
-                </div>
-              )}
+              <Pagination
+                className="attractions-page__pagination"
+                page={filters.page || 1}
+                total={total}
+                pageSize={PAGE_SIZE}
+                onPageChange={handlePageChange}
+              />
             </>
           )
         : null}

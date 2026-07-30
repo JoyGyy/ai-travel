@@ -176,6 +176,17 @@ export function withRateLimit(
   }
 }
 
+/** 设置认证 cookie 的统一配置 */
+export function setAuthCookie(response: NextResponse, token: string): void {
+  response.cookies.set('token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 7 * 24 * 60 * 60, // 7 天
+    path: '/',
+  })
+}
+
 /** 包装需要认证且返回原始 Response 的 Route Handler（SSE 流等） */
 export function withAuthRaw(
   handler: (req: Request, ctx: { user: AuthUser }) => Promise<Response>,

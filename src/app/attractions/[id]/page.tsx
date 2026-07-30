@@ -14,10 +14,10 @@ import Link from 'next/link'
 import { useRouter, useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-import { favoriteAttraction, fetchAttractionDetail, unfavoriteAttraction } from '@/api/attractions'
+import { fetchAttractionDetail } from '@/api/attractions'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { useAppToast } from '@/hooks/useAppToast'
+import { useAttractionFavorite } from '@/hooks/useAttractionFavorite'
 
 import './style.css'
 
@@ -50,7 +50,14 @@ export default function AttractionDetail() {
   const [error, setError] = useState('')
   const [favoritePending, setFavoritePending] = useState(false)
   const [reloadKey, setReloadKey] = useState(0)
-  const toast = useAppToast()
+
+  const { toggleFavorite } = useAttractionFavorite({
+    onFavoriteSuccess: (_attractionId, isFavorite) => {
+      if (attraction) {
+        setAttraction({ ...attraction, isFavorite })
+      }
+    },
+  })
 
   // ---- 加载景点数据 ----
   useEffect(() => {
@@ -79,19 +86,12 @@ export default function AttractionDetail() {
   }, [id, reloadKey])
 
   /** 切换收藏状态 */
-  async function toggleFavorite() {
+  async function handleToggleFavorite() {
     if (!attraction)
       return
     setFavoritePending(true)
     try {
-      const result = attraction.isFavorite
-        ? await unfavoriteAttraction(attraction.id)
-        : await favoriteAttraction(attraction.id)
-      setAttraction({ ...attraction, isFavorite: result.isFavorite })
-      toast.success(result.isFavorite ? '已收藏' : '已取消收藏')
-    }
-    catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : '收藏操作失败')
+      await toggleFavorite(attraction.id, attraction.isFavorite)
     }
     finally {
       setFavoritePending(false)
@@ -157,7 +157,7 @@ export default function AttractionDetail() {
           </div>
           <div className="attraction-detail__hero-actions">
             <Button
-              onClick={toggleFavorite}
+              onClick={handleToggleFavorite}
               aria-label={`${attraction.isFavorite ? '取消收藏' : '收藏'}${attraction.name}`}
               aria-pressed={Boolean(attraction.isFavorite)}
               disabled={favoritePending}

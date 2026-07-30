@@ -2,8 +2,7 @@
 
 import type { CommunityComment, CommunityPost } from '@/types/community'
 
-import { ArrowLeft, Trash2, Heart, Link, Repeat2, Send, Share2 } from 'lucide-react'
-// Antd 组件已迁移
+import { ArrowLeft, Trash2, Heart, Send, Share2 } from 'lucide-react'
 import { useRouter, useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -13,35 +12,26 @@ import {
   deleteCommunityPost,
   fetchCommunityComments,
   fetchCommunityPost,
-  likeCommunityPost,
-  repostCommunityPost,
-  unlikeCommunityPost,
 } from '@/api/community'
 import { CommunityImageGrid } from '@/components/CommunityImageGrid'
 import { CommunityItineraryPreview } from '@/components/CommunityItineraryPreview'
 import { CommunityPostCard } from '@/components/CommunityPostCard'
+import { Pagination } from '@/components/Pagination'
+import { RepostModal } from '@/components/RepostModal'
 import { Button } from "@/components/ui/button"
 import { useAppToast } from '@/hooks/useAppToast'
-import { useAuthStore } from '@/stores/auth'
+import { useCommunityActions } from '@/hooks/useCommunityActions'
+import { formatRelativeTime } from '@/lib/utils/date'
 
 import './style.css'
 
 const COMMENT_PAGE_SIZE = 20
-
-function formatTime(value: string) {
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime()))
-    return value
-  return date.toLocaleString('zh-CN')
-}
 
 export default function CommunityPostDetail() {
   const params = useParams()
   const id = (params?.id as string) || ''
   const router = useRouter()
   const toast = useAppToast()
-  const user = useAuthStore(state => state.user)
-  const hasHydrated = useAuthStore(state => state._hasHydrated)
 
   const [post, setPost] = useState<CommunityPost | null>(null)
   const [comments, setComments] = useState<CommunityComment[]>([])
@@ -57,9 +47,16 @@ export default function CommunityPostDetail() {
   const [deletePendingId, setDeletePendingId] = useState('')
   const [postDeletePending, setPostDeletePending] = useState(false)
   const [repostOpen, setRepostOpen] = useState(false)
-  const [repostContent, setRepostContent] = useState('')
   const [repostPending, setRepostPending] = useState(false)
   const [isLikeAnimating, setIsLikeAnimating] = useState(false)
+
+  const { user, requireLogin, toggleLike, submitRepost } = useCommunityActions({
+    onLikeSuccess: (_postId, likedByMe, likeCount) => {
+      if (post) {
+        setPost({ ...post, likedByMe, likeCount })
+      }
+    },
+  })
 
   useEffect(() => {
     let cancelled = false
@@ -114,21 +111,10 @@ export default function CommunityPostDetail() {
     }
   }, [commentPage, id, toast])
 
-  function requireLogin(action: string) {
-    if (!hasHydrated) {
-      toast.info('正在恢复登录状态...')
-      return false
-    }
-    if (!user) {
-      toast.info(`请先登录后${action}`)
-      router.push('/login')
-      return false
-    }
-    return true
-  }
+  // requireLogin, toggleLike, submitRepost 已从 useCommunityActions hook 获取
 
-  async function toggleLike() {
-    if (!post || !requireLogin('点赞'))
+  async function handleLike() {
+    if (!post)
       return
 
     if (!post.likedByMe) {
@@ -138,12 +124,7 @@ export default function CommunityPostDetail() {
 
     setLikePending(true)
     try {
-      const result = post.likedByMe ? await unlikeCommunityPost(post.id) : await likeCommunityPost(post.id)
-      setPost({ ...post, likedByMe: result.likedByMe, likeCount: result.likeCount })
-      toast.success(result.likedByMe ? '已点赞' : '已取消点赞')
-    }
-    catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : '点赞失败')
+      await toggleLike(post.id, post.likedByMe)
     }
     finally {
       setLikePending(false)
@@ -213,19 +194,18 @@ export default function CommunityPostDetail() {
     }
   }
 
-  async function submitRepost() {
-    if (!post || !requireLogin('转发'))
-      return
+  async function handleSubmitRepost(content: string) {
+    if (!post)
+      return false
 
     setRepostPending(true)
     try {
-      const repost = await repostCommunityPost(post.id, repostContent.trim())
-      toast.success('已转发到社区')
-      setRepostOpen(false)
-      router.push(`/community/${repost.id}`)
-    }
-    catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : '转发失败')
+      const success = await submitRepost(post.id, content)
+      if (success) {
+        setRepostOpen(false)
+        router.push('/community')
+      }
+      return success
     }
     finally {
       setRepostPending(false)
@@ -287,7 +267,7 @@ export default function CommunityPostDetail() {
           <div className="community-detail__avatar" aria-hidden="true">{post.author.username.slice(0, 1).toUpperCase()}</div>
           <div>
             <p>{post.author.username}</p>
-            <span>{formatTime(post.createdAt)}</span>
+            <span>{formatRelativeTime(post.createdAt)}</span>
           </div>
         </header>
         <h1 id="community-detail-title">{post.title || `${post.city || '旅行'}分享`}</h1>
@@ -305,7 +285,7 @@ export default function CommunityPostDetail() {
             className={`community-detail__like-btn ${post.likedByMe ? 'community-detail__like-btn--liked' : ''} ${isLikeAnimating ? 'community-detail__like-btn--animating' : ''}`}
             aria-pressed={post.likedByMe}
             disabled={likePending}
-            onClick={toggleLike}
+            onClick={handleLike}
           >
             <Heart aria-hidden="true" className={`mr-1 h-4 w-4 ${post.likedByMe ? 'fill-current' : ''}`} />
             {likePending ? '...' : post.likeCount}
@@ -373,7 +353,7 @@ export default function CommunityPostDetail() {
                   <article key={comment.id} className="community-detail__comment">
                     <div>
                       <strong>{comment.author.username}</strong>
-                      <span>{formatTime(comment.createdAt)}</span>
+                      <span>{formatRelativeTime(comment.createdAt)}</span>
                     </div>
                     <p>{comment.content}</p>
                     {comment.author.id === user?.id
@@ -388,43 +368,22 @@ export default function CommunityPostDetail() {
               </div>
             )
           : null}
-        {commentTotal > COMMENT_PAGE_SIZE
-          ? (
-            <div className="flex items-center justify-center gap-4">
-              <Button variant="outline" disabled={commentPage <= 1} onClick={() => setCommentPage(commentPage - 1)}>上一页</Button>
-              <span className="text-sm text-muted-foreground">第 {commentPage} 页</span>
-              <Button variant="outline" disabled={commentPage >= Math.ceil(commentTotal / COMMENT_PAGE_SIZE)} onClick={() => setCommentPage(commentPage + 1)}>下一页</Button>
-            </div>
-          )
-          : null}
+        <Pagination
+          page={commentPage}
+          total={commentTotal}
+          pageSize={COMMENT_PAGE_SIZE}
+          onPageChange={setCommentPage}
+        />
       </section>
 
-      {repostOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
-          <div className="bg-background rounded-2xl p-6 max-w-lg w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">转发旅行分享</h3>
-            <p className="community-detail__modal-intro mb-4">可以直接转发，也可以写一句给旅友的补充说明。</p>
-            <textarea
-              className="flex min-h-[80px] w-full rounded-xl border border-input bg-background px-3 py-2 text-sm mb-4"
-              value={repostContent}
-              rows={4}
-              maxLength={500}
-              placeholder="写一句转发附言"
-              onChange={event => setRepostContent(event.target.value)}
-            />
-            <div className="community-detail__modal-target mb-4">
-              <Link aria-hidden="true" />
-              <span>{post.title || post.content || `${post.city || '旅行'}分享`}</span>
-            </div>
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setRepostOpen(false)}>取消</Button>
-              <Button disabled={repostPending} onClick={submitRepost}>
-                {repostPending ? '转发中...' : '转发'}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <RepostModal
+        open={repostOpen}
+        targetTitle={post.title || post.content || `${post.city || '旅行'}分享`}
+        pending={repostPending}
+        onClose={() => setRepostOpen(false)}
+        onSubmit={handleSubmitRepost}
+        icon="link"
+      />
     </main>
   )
 }

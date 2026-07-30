@@ -3,7 +3,11 @@
  * 混合检索：向量语义搜索 + 关键词匹配
  * 当 embedding 不可用时降级为 TF-IDF
  */
-import { query } from '../db'
+import { sql } from 'drizzle-orm'
+
+import { attractionKnowledge } from '@/db/schema'
+
+import { db } from '../db'
 import { createLogger } from '../utils/logger'
 import { formatEmbeddingForPg, generateEmbedding } from './embedding'
 import { TFIDFIndex } from './tfidf'
@@ -46,19 +50,34 @@ async function loadKnowledge(): Promise<CityKnowledge[]> {
   if (knowledgeCache)
     return knowledgeCache
 
-  const result = await query(
-    'SELECT city, name, description, ticket, duration, tips, indoor, tags, food, transport, best_season, accommodation, nightlife FROM attraction_knowledge ORDER BY city, name',
-  )
+  const rows = await db
+    .select({
+      city: attractionKnowledge.city,
+      name: attractionKnowledge.name,
+      description: attractionKnowledge.description,
+      ticket: attractionKnowledge.ticket,
+      duration: attractionKnowledge.duration,
+      tips: attractionKnowledge.tips,
+      indoor: attractionKnowledge.indoor,
+      tags: attractionKnowledge.tags,
+      food: attractionKnowledge.food,
+      transport: attractionKnowledge.transport,
+      bestSeason: attractionKnowledge.bestSeason,
+      accommodation: attractionKnowledge.accommodation,
+      nightlife: attractionKnowledge.nightlife,
+    })
+    .from(attractionKnowledge)
+    .orderBy(attractionKnowledge.city, attractionKnowledge.name)
 
   const cityMap = new Map<string, CityKnowledge>()
-  for (const row of result.rows) {
+  for (const row of rows) {
     if (!cityMap.has(row.city)) {
       cityMap.set(row.city, {
         city: row.city,
         attractions: [],
         food: row.food || [],
         transport: row.transport || '',
-        bestSeason: row.best_season || '',
+        bestSeason: row.bestSeason || '',
         accommodation: typeof row.accommodation === 'string' ? JSON.parse(row.accommodation) : (row.accommodation || []),
         nightlife: typeof row.nightlife === 'string' ? JSON.parse(row.nightlife) : (row.nightlife || []),
       })
@@ -91,8 +110,8 @@ async function loadKnowledge(): Promise<CityKnowledge[]> {
 }
 
 async function getCityData(cityName: string): Promise<CityKnowledge | null> {
-  const db = await loadKnowledge()
-  return db.find(c => c.city === cityName) || null
+  const data = await loadKnowledge()
+  return data.find(c => c.city === cityName) || null
 }
 
 /** 关键词匹配：根据标签和文本匹配景点，返回带关键词得分的结果 */
@@ -124,10 +143,6 @@ function matchByKeyword(tags: string[], queryText: string, attractions: Attracti
 }
 
 /**
- * 混合检索：向量 + 关键词
- */
-
-/**
  * 向量搜索：使用 pgvector 进行语义相似度搜索
  */
 async function vectorSearch(queryText: string, city: string): Promise<Map<string, number>> {
@@ -140,14 +155,13 @@ async function vectorSearch(queryText: string, city: string): Promise<Map<string
   const vectorStr = formatEmbeddingForPg(embedding)
 
   try {
-    const result = await query(
-      `SELECT name, 1 - (embedding <=> $1::vector) AS similarity
-       FROM attraction_knowledge
-       WHERE city = $2 AND embedding IS NOT NULL
-       ORDER BY embedding <=> $1::vector
-       LIMIT 10`,
-      [vectorStr, city],
-    )
+    const result = await db.execute<{ name: string, similarity: number }>(sql`
+      SELECT name, 1 - (embedding <=> ${vectorStr}::vector) AS similarity
+      FROM attraction_knowledge
+      WHERE city = ${city} AND embedding IS NOT NULL
+      ORDER BY embedding <=> ${vectorStr}::vector
+      LIMIT 10
+    `)
 
     for (const row of result.rows) {
       scoreMap.set(row.name, Number(row.similarity))
@@ -224,8 +238,8 @@ async function retrieve(city: string, preferenceTags: string[] = [], queryText =
 }
 
 async function getAllCities(): Promise<string[]> {
-  const db = await loadKnowledge()
-  return db.map(c => c.city)
+  const data = await loadKnowledge()
+  return data.map(c => c.city)
 }
 
 export { getAllCities, getCityData, retrieve }

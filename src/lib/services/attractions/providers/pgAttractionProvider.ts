@@ -2,7 +2,11 @@
  * PostgreSQL 景点数据 Provider
  * 实现与 localAttractionProvider 相同的接口，数据来自 PostgreSQL
  */
-import { query } from '../../../db'
+import { eq, sql } from 'drizzle-orm'
+
+import { attractionTags, attractions, tags } from '@/db/schema'
+
+import { db, query } from '../../../db'
 
 export interface AttractionItem {
   id: string
@@ -141,26 +145,26 @@ async function listAttractions(filters: ListFilters = {}): Promise<{ items: Attr
 
 /** 根据 ID 获取景点详情 */
 async function getAttractionById(id: string): Promise<AttractionItem | null> {
-  const result = await query(
-    `SELECT a.*, COALESCE(ARRAY_AGG(t.name ORDER BY t.name) FILTER (WHERE t.name IS NOT NULL), '{}') AS tags
-     FROM attractions a
-     LEFT JOIN attraction_tags at2 ON at2.attraction_id = a.id
-     LEFT JOIN tags t ON t.id = at2.tag_id
-     WHERE a.id = $1
-     GROUP BY a.id`,
-    [id],
-  )
-  return result.rows.length > 0 ? mapRow(result.rows[0] as AttractionRow) : null
+  const result = await db.execute(sql`
+    SELECT a.*, COALESCE(ARRAY_AGG(t.name ORDER BY t.name) FILTER (WHERE t.name IS NOT NULL), '{}') AS tags
+    FROM attractions a
+    LEFT JOIN attraction_tags at2 ON at2.attraction_id = a.id
+    LEFT JOIN tags t ON t.id = at2.tag_id
+    WHERE a.id = ${id}
+    GROUP BY a.id
+  `)
+
+  return result.rows.length > 0 ? mapRow(result.rows[0] as unknown as AttractionRow) : null
 }
 
 /** 获取所有城市列表（按预设排序）和标签列表 */
 async function getAttractionMeta(): Promise<{ cities: string[], tags: string[] }> {
   const [cityResult, tagResult] = await Promise.all([
-    query('SELECT DISTINCT city FROM attractions ORDER BY city'),
-    query('SELECT name FROM tags ORDER BY name'),
+    db.selectDistinct({ city: attractions.city }).from(attractions).orderBy(attractions.city),
+    db.select({ name: tags.name }).from(tags).orderBy(tags.name),
   ])
 
-  const dbCities = cityResult.rows.map(r => r.city)
+  const dbCities = cityResult.map(r => r.city)
   const orderedCities = [
     ...CITY_ORDER.filter(c => dbCities.includes(c)),
     ...dbCities.filter(c => !CITY_ORDER.includes(c)),
@@ -168,7 +172,7 @@ async function getAttractionMeta(): Promise<{ cities: string[], tags: string[] }
 
   return {
     cities: orderedCities,
-    tags: tagResult.rows.map(r => r.name),
+    tags: tagResult.map(r => r.name),
   }
 }
 

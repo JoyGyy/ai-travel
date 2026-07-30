@@ -34,7 +34,7 @@ async function currentUploadFolder() {
 }
 
 export const POST = withProtected(
-  async (req, { user }) => {
+  async (req) => {
     const formData = await req.formData()
     const files = formData.getAll('files').filter((f): f is File => f instanceof File)
 
@@ -48,7 +48,7 @@ export const POST = withProtected(
     const images: Array<{ url: string, storageKey: string, altText: string }> = []
 
     // 并行写入所有文件，用 map 返回结果保证顺序与用户选择一致
-    const results = await Promise.all(files.map(async (file, index) => {
+    const results = await Promise.all(files.map(async (file) => {
       const ext = allowedMimeTypes.get(file.type)
       if (!ext)
         throw httpError(400, '仅支持 JPG、PNG 或 WebP 图片')

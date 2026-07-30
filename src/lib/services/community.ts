@@ -2,7 +2,7 @@
  * 社区领域服务
  * 负责帖子、图片、点赞、评论和转发的 PostgreSQL 数据访问。
  */
-import { and, asc, count, desc, eq, sql } from 'drizzle-orm'
+import { and, asc, count, eq, sql } from 'drizzle-orm'
 
 import {
   communityPostComments,
@@ -401,7 +401,7 @@ export async function getCommunityPostById(id: string, viewerId?: string): Promi
 }
 
 /** 插入帖子（在事务内使用） */
-async function insertPost(tx: any, authorId: string, input: CreateCommunityPostInput & { postType: CommunityPostType, originalPostId?: string | null }): Promise<string> {
+async function insertPost(tx: Parameters<Parameters<typeof db.transaction>[0]>[0], authorId: string, input: CreateCommunityPostInput & { postType: CommunityPostType, originalPostId?: string | null }): Promise<string> {
   const { nanoid } = await import('nanoid')
   const id = nanoid(12)
   const itinerarySnapshot = input.itinerarySnapshot === undefined || input.itinerarySnapshot === null

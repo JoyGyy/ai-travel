@@ -3,8 +3,8 @@
  * 提供用户注册、登录、JWT 验证功能
  * 使用 PostgreSQL 存储用户数据
  */
-import { eq, sql } from 'drizzle-orm'
 import bcrypt from 'bcryptjs'
+import { eq, sql } from 'drizzle-orm'
 import jwt from 'jsonwebtoken'
 import { nanoid } from 'nanoid'
 

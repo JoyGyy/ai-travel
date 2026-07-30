@@ -131,6 +131,7 @@ export const communityPosts = pgTable('community_posts', {
   id: text('id').primaryKey(),
   authorId: varchar('author_id', { length: 64 }).notNull().references(() => users.id, { onDelete: 'cascade' }),
   postType: text('post_type').notNull().default('original'),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- 自引用表需要 any 打破循环类型
   originalPostId: text('original_post_id').references((): any => communityPosts.id, { onDelete: 'set null' }),
   title: text('title').notNull().default(''),
   content: text('content').notNull().default(''),

@@ -56,7 +56,7 @@ export default function Community() {
     queueMicrotask(() => load({ page: 1, pageSize: PAGE_SIZE }))
   }, [load])
 
-  function requireLogin(action: string) {
+  const requireLogin = useCallback((action: string) => {
     if (!hasHydrated) {
       toast.info('正在恢复登录状态...')
       return false
@@ -67,7 +67,7 @@ export default function Community() {
       return false
     }
     return true
-  }
+  }, [hasHydrated, user, router, toast])
 
   const updateFilters = useCallback((patch: CommunityPostFilters) => {
     const next = { ...filters, ...patch, page: patch.page || 1, pageSize: PAGE_SIZE }

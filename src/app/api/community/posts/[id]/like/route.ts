@@ -1,5 +1,3 @@
-import type { AuthUser } from '@/lib/utils/http'
-
 /**
  * 社区路由 — 点赞/取消点赞
  * POST /api/community/posts/[id]/like — 点赞帖子

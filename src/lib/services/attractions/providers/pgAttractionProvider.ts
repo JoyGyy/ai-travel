@@ -2,9 +2,9 @@
  * PostgreSQL 景点数据 Provider
  * 实现与 localAttractionProvider 相同的接口，数据来自 PostgreSQL
  */
-import { eq, sql } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 
-import { attractionTags, attractions, tags } from '@/db/schema'
+import { attractions, tags } from '@/db/schema'
 
 import { db, query } from '../../../db'
 

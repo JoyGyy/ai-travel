@@ -225,7 +225,7 @@ export default function HomePage() {
     if (!isValid)
       return
     router.push(`/detail?city=${encodeURIComponent(city.trim())}&budget=${budgetNum}&days=${days}`)
-  }, [hasHydrated, user, router, validatePlanner, city, budget, days, toast])
+  }, [hasHydrated, user, router, validatePlanner, city, days, toast])
 
   const submitPlanner = useCallback((event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()

@@ -160,15 +160,14 @@ export default function AttractionDetail() {
             {attraction.tags.map(tag => <Badge key={tag} className="travel-tag travel-tag--info">{tag}</Badge>)}
           </div>
           <div className="attraction-detail__hero-actions">
-            <Button className="bg-primary text-primary-foreground hover:bg-primary/90"
+            <Button
               onClick={toggleFavorite}
               aria-label={`${attraction.isFavorite ? '取消收藏' : '收藏'}${attraction.name}`}
               aria-pressed={Boolean(attraction.isFavorite)}
               disabled={favoritePending}
-              loading={favoritePending}
-              icon={attraction.isFavorite ? <Heart aria-hidden="true" /> : <Heart aria-hidden="true" />}
             >
-              {attraction.isFavorite ? '已收藏' : '收藏'}
+              <Heart aria-hidden="true" className={`mr-2 h-4 w-4 ${attraction.isFavorite ? 'fill-current' : ''}`} />
+              {favoritePending ? '处理中...' : attraction.isFavorite ? '已收藏' : '收藏'}
             </Button>
             <Link className="attraction-detail__primary-action" href={`/chat?prompt=${prompt}`}>让 AI 规划这站</Link>
           </div>

@@ -21,6 +21,7 @@ import {
 import Link from 'next/link'
 
 import { useAppToast } from '@/hooks/useAppToast'
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -47,7 +48,6 @@ export default function Profile() {
   const [changingPassword, setChangingPassword] = useState(false)
   const [removingFavoriteIds, setRemovingFavoriteIds] = useState<Set<string>>(() => new Set())
   const toast = useAppToast()
-  const [form] = Form.useForm()
 
   // ---- 加载用户资料与收藏列表 ----
   const loadProfile = useCallback(async () => {
@@ -63,7 +63,7 @@ export default function Profile() {
     }
     catch (err: unknown) {
       if (err instanceof ApiError && err.status === 401) {
-        toast.warning('登录已过期，请重新登录')
+        toast.info('登录已过期，请重新登录')
         logout()
         router.replace('/login')
         return
@@ -73,19 +73,30 @@ export default function Profile() {
     finally {
       setLoading(false)
     }
-  }, [msg, logout, router])
+  }, [toast, logout, router])
 
   useEffect(() => {
     queueMicrotask(() => loadProfile())
   }, [loadProfile])
 
   // ---- 密码修改 ----
-  async function handlePasswordChange(values: { currentPassword: string, newPassword: string }) {
+  async function handlePasswordChange(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const formData = new FormData(event.currentTarget)
+    const currentPassword = formData.get('currentPassword') as string
+    const newPassword = formData.get('newPassword') as string
+    const confirmPassword = formData.get('confirmPassword') as string
+
+    if (newPassword !== confirmPassword) {
+      toast.error('两次输入的新密码不一致')
+      return
+    }
+
     setChangingPassword(true)
     try {
-      await changePasswordApi(values.currentPassword, values.newPassword)
+      await changePasswordApi(currentPassword, newPassword)
       toast.success('密码修改成功，请重新登录')
-      form.resetFields()
+      event.currentTarget.reset()
       setTimeout(() => {
         logout()
         router.replace('/login')
@@ -93,7 +104,7 @@ export default function Profile() {
     }
     catch (err: unknown) {
       if (err instanceof ApiError && err.status === 401) {
-        toast.warning('登录已过期，请重新登录')
+        toast.info('登录已过期，请重新登录')
         logout()
         router.replace('/login')
         return
@@ -173,9 +184,9 @@ export default function Profile() {
           : null}
 
         {/* 用户信息卡 */}
-        <div className="profile-page__card profile-page__user-card travel-surface-card travel-ticket-edge" >
+        <div className="profile-page__card profile-page__user-card travel-surface-card travel-ticket-edge">
           <div className="profile-page__user-info">
-            <div className="flex items-center justify-center rounded-full bg-muted" style={{ width: 76, height: 76 }} className="text-3xl" className="profile-page__avatar">
+            <div className="profile-page__avatar flex items-center justify-center rounded-full bg-muted text-3xl" style={{ width: 76, height: 76 }}>
               {displayName[0]?.toUpperCase()}
             </div>
             <div className="profile-page__user-detail">
@@ -234,52 +245,51 @@ export default function Profile() {
             {' '}
             修改密码
           </h3>
-          <Form
-            form={form}
-            layout="vertical"
-            onFinish={handlePasswordChange}
-            className="profile-page__password-form"
+          <form
+            onSubmit={handlePasswordChange}
+            className="profile-page__password-form space-y-4"
           >
-            <Form.Item
-              name="currentPassword"
-              label="当前密码"
-              rules={[{ required: true, message: '请输入当前密码' }]}
-            >
-              <Input.Password prefix={<Shield aria-hidden="true" />} placeholder="请输入当前密码" autoComplete="current-password" />
-            </Form.Item>
-            <Form.Item
-              name="newPassword"
-              label="新密码"
-              rules={[
-                { required: true, message: '请输入新密码' },
-                { min: 6, message: '密码长度至少 6 个字符' },
-              ]}
-            >
-              <Input.Password prefix={<Shield aria-hidden="true" />} placeholder="请输入新密码（至少 6 位）" autoComplete="new-password" />
-            </Form.Item>
-            <Form.Item
-              name="confirmPassword"
-              label="确认新密码"
-              dependencies={['newPassword']}
-              rules={[
-                { required: true, message: '请再次输入新密码' },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue('newPassword') === value)
-                      return Promise.resolve()
-                    return Promise.reject(new Error('两次输入的新密码不一致'))
-                  },
-                }),
-              ]}
-            >
-              <Input.Password prefix={<Shield aria-hidden="true" />} placeholder="请再次输入新密码" autoComplete="new-password" />
-            </Form.Item>
-            <Form.Item>
-              <Button htmlType="submit" loading={changingPassword}>
-                {changingPassword ? '正在修改...' : '修改密码'}
-              </Button>
-            </Form.Item>
-          </Form>
+            <div className="space-y-2">
+              <label htmlFor="currentPassword" className="text-sm font-medium">当前密码</label>
+              <input
+                id="currentPassword"
+                name="currentPassword"
+                type="password"
+                placeholder="请输入当前密码"
+                autoComplete="current-password"
+                required
+                className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="newPassword" className="text-sm font-medium">新密码</label>
+              <input
+                id="newPassword"
+                name="newPassword"
+                type="password"
+                placeholder="请输入新密码（至少 6 位）"
+                autoComplete="new-password"
+                required
+                minLength={6}
+                className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="confirmPassword" className="text-sm font-medium">确认新密码</label>
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                placeholder="请再次输入新密码"
+                autoComplete="new-password"
+                required
+                className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
+              />
+            </div>
+            <Button type="submit" disabled={changingPassword}>
+              {changingPassword ? '正在修改...' : '修改密码'}
+            </Button>
+          </form>
         </div>
 
         {/* 我的收藏 */}
@@ -291,55 +301,48 @@ export default function Profile() {
           </h3>
           {favorites.length > 0
             ? (
-                <List
-                  className="profile-page__favorites-list"
-                  dataSource={favorites}
-                  renderItem={item => (
-                    <List.Item
-                      actions={[
-                        <Button
-                          key="remove"
-                          danger
-                          loading={removingFavoriteIds.has(item.id)}
-                          disabled={removingFavoriteIds.has(item.id)}
-                          onClick={() => handleRemoveFavorite(item.id)}
-                        >
-                          取消收藏
-                        </Button>,
-                      ]}
-                    >
-                      <List.Item.Meta
-                        <h3 className="text-lg font-semibold"><Link className="profile-page__fav-title" href={`/attractions/${item.id}`}>{item.name}</Link>}
-                        description={(
-                          <div className="profile-page__fav-meta">
-                            {item.city && <Tag className="travel-tag travel-tag--info">{item.city}</Tag>}
-                            {item.ticketType === 'free'
-                              ? <Tag className="travel-tag travel-tag--free">免费</Tag>
-                              : item.priceText && <Tag className="travel-tag travel-tag--paid">{item.priceText}</Tag>}
-                            {item.tags?.slice(0, 3).map(tag => <Tag key={tag} className="travel-tag travel-tag--info">{tag}</Tag>)}
-                          </div>
-                        )}
-                      />
-                    </List.Item>
-                  )}
-                />
+                <div className="profile-page__favorites-list space-y-4">
+                  {favorites.map(item => (
+                    <div key={item.id} className="flex items-center justify-between p-4 border rounded-xl">
+                      <div>
+                        <Link className="profile-page__fav-title font-medium" href={`/attractions/${item.id}`}>{item.name}</Link>
+                        <div className="profile-page__fav-meta mt-2 flex gap-2">
+                          {item.city && <Badge variant="secondary">{item.city}</Badge>}
+                          {item.ticketType === 'free'
+                            ? <Badge variant="secondary" className="bg-green-100 text-green-800">免费</Badge>
+                            : item.priceText && <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">{item.priceText}</Badge>}
+                          {item.tags?.slice(0, 3).map(tag => <Badge key={tag} variant="outline">{tag}</Badge>)}
+                        </div>
+                      </div>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        disabled={removingFavoriteIds.has(item.id)}
+                        onClick={() => handleRemoveFavorite(item.id)}
+                      >
+                        取消收藏
+                      </Button>
+                    </div>
+                  ))}
+                </div>
               )
             : (
-                <Empty description="还没有收藏景点" image={Empty.PRESENTED_IMAGE_SIMPLE}>
+                <div className="text-center py-8 text-muted-foreground">
+                  <p className="mb-4">还没有收藏景点</p>
                   <Link href="/attractions"><Button>去逛逛</Button></Link>
-                </Empty>
+                </div>
               )}
         </div>
 
         {/* 退出登录 */}
-        <div className="profile-page__card profile-page__logout-card travel-surface-card" >
+        <div className="profile-page__card profile-page__logout-card travel-surface-card">
           <Button
-            block
-            danger
-            icon={<LogOut aria-hidden="true" />}
-            size="large"
+            variant="destructive"
+            className="w-full"
+            size="lg"
             onClick={handleLogout}
           >
+            <LogOut aria-hidden="true" className="mr-2" />
             退出登录
           </Button>
         </div>

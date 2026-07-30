@@ -13,6 +13,7 @@ import Link from 'next/link'
 
 import { useAppToast } from '@/hooks/useAppToast'
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { useCallback, useEffect, useState } from 'react'
 
@@ -129,13 +130,11 @@ export default function Attractions() {
           <div className="attractions-page__search-control">
             <Input className="flex-1"
               id="attractions-keyword"
-              
-              placeholder
               placeholder="搜索景点、城市或标签"
               value={keywordInput}
               onChange={event => setKeywordInput(event.target.value)}
             />
-            <Button htmlType="submit">搜索</Button>
+            <Button type="submit">搜索</Button>
           </div>
         </form>
         {cities.length > 0
@@ -146,7 +145,7 @@ export default function Attractions() {
                   {cities.map(city => (
                     <Button
                       key={city}
-                      type={filters.city === city ? 'primary' : 'default'}
+                      variant={filters.city === city ? 'default' : 'outline'}
                       aria-pressed={filters.city === city}
                       onClick={() => updateFilters({ city: filters.city === city ? '' : city })}
                     >
@@ -162,9 +161,12 @@ export default function Attractions() {
           <select className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
             id="attractions-ticket-type"
             value={filters.ticketType || ''}
-            options={ticketOptions}
-            onChange={ticketType => updateFilters({ ticketType: ticketType as AttractionTicketType | '' })}
-          />
+            onChange={event => updateFilters({ ticketType: event.target.value as AttractionTicketType | '' })}
+          >
+            {ticketOptions.map(option => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
+          </select>
         </div>
         {tags.length > 0
           ? (
@@ -174,7 +176,7 @@ export default function Attractions() {
                   {tags.map(tag => (
                     <Button
                       key={tag}
-                      type={filters.tag === tag ? 'primary' : 'default'}
+                      variant={filters.tag === tag ? "default" : "outline"}
                       aria-pressed={filters.tag === tag}
                       onClick={() => updateFilters({ tag: filters.tag === tag ? '' : tag })}
                     >
@@ -193,7 +195,7 @@ export default function Attractions() {
       {loading
         ? (
             <div className="attractions-page__loading" role="status" aria-live="polite">
-              <Spin />
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               <span>加载景点中...</span>
             </div>
           )
@@ -209,7 +211,7 @@ export default function Attractions() {
       {!loading && !error && items.length === 0
         ? (
             <div className="attractions-page__empty travel-surface-card">
-              <Empty description="没有找到符合筛选条件的景点" />
+              <div className="text-center py-8 text-muted-foreground"><p>没有找到符合筛选条件的景点</p></div>
               {hasActiveFilters ? <Button onClick={handleClearFilters}>清空筛选</Button> : null}
             </div>
           )
@@ -258,12 +260,12 @@ export default function Attractions() {
                           </div>
                           <p>{item.summary}</p>
                           <div className="attractions-page__meta">
-                            <Tag className={`travel-tag ${item.ticketType === 'free' ? 'travel-tag--free' : 'travel-tag--paid'}`}>{item.ticketType === 'free' ? '免费' : '收费'}</Tag>
+                            <Badge className={`travel-tag ${item.ticketType === 'free' ? 'travel-tag--free' : 'travel-tag--paid'}`}>{item.ticketType === 'free' ? '免费' : '收费'}</Badge>
                             <span>{item.city}</span>
                             <span>{item.priceText}</span>
                           </div>
                           <div className="attractions-page__tags">
-                            {item.tags.map(tag => <Tag key={tag} className="travel-tag travel-tag--info">{tag}</Tag>)}
+                            {item.tags.map(tag => <Badge key={tag} className="travel-tag travel-tag--info">{tag}</Badge>)}
                           </div>
                           <span className="attractions-page__detail-link" aria-hidden="true">查看详情</span>
                         </div>
@@ -274,15 +276,24 @@ export default function Attractions() {
               </section>
               {/* ---- 分页 ---- */}
               {total > PAGE_SIZE && (
-                <div className="attractions-page__pagination">
-                  <Pagination
-                    current={filters.page || 1}
-                    total={total}
-                    pageSize={PAGE_SIZE}
-                    showSizeChanger={false}
-                    showTotal={t => `共 ${t} 个景点`}
-                    onChange={handlePageChange}
-                  />
+                <div className="attractions-page__pagination flex items-center justify-center gap-4">
+                  <Button
+                    variant="outline"
+                    disabled={(filters.page || 1) <= 1}
+                    onClick={() => handlePageChange((filters.page || 1) - 1)}
+                  >
+                    上一页
+                  </Button>
+                  <span className="text-sm text-muted-foreground">
+                    第 {filters.page || 1} 页，共 {Math.ceil(total / PAGE_SIZE)} 页
+                  </span>
+                  <Button
+                    variant="outline"
+                    disabled={(filters.page || 1) >= Math.ceil(total / PAGE_SIZE)}
+                    onClick={() => handlePageChange((filters.page || 1) + 1)}
+                  >
+                    下一页
+                  </Button>
                 </div>
               )}
             </>

@@ -21,6 +21,7 @@ import { CommunityImageGrid } from '@/components/CommunityImageGrid'
 import { CommunityItineraryPreview } from '@/components/CommunityItineraryPreview'
 import { CommunityPostCard } from '@/components/CommunityPostCard'
 import { useAppToast } from '@/hooks/useAppToast'
+import { Button } from "@/components/ui/button"
 import { useAuthStore } from '@/stores/auth'
 
 import './style.css'
@@ -111,11 +112,11 @@ export default function CommunityPostDetail() {
     return () => {
       cancelled = true
     }
-  }, [commentPage, id, message])
+  }, [commentPage, id])
 
   function requireLogin(action: string) {
     if (!hasHydrated) {
-      toast.loading('正在恢复登录状态...')
+      toast.info('正在恢复登录状态...')
       return false
     }
     if (!user) {
@@ -155,7 +156,7 @@ export default function CommunityPostDetail() {
 
     const content = commentInput.trim()
     if (!content) {
-      toast.warning('请输入评论内容')
+      toast.info('请输入评论内容')
       return
     }
 
@@ -250,7 +251,7 @@ export default function CommunityPostDetail() {
     return (
       <main className="community-detail travel-page-shell" aria-labelledby="community-detail-loading">
         <div className="community-detail__state travel-surface-card" role="status" aria-live="polite">
-          <Spin />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           <h1 id="community-detail-loading">加载旅行分享中...</h1>
         </div>
       </main>
@@ -264,7 +265,7 @@ export default function CommunityPostDetail() {
           <h1 id="community-detail-error">帖子暂时无法打开</h1>
           <p>{error || '帖子不存在或已删除'}</p>
           <div className="community-detail__state-actions">
-            <Button type="primary" onClick={() => setReloadKey(prev => prev + 1)}>重试</Button>
+            <Button onClick={() => setReloadKey(prev => prev + 1)}>重试</Button>
             <Button onClick={() => router.push('/community')}>返回社区</Button>
           </div>
         </div>
@@ -302,26 +303,31 @@ export default function CommunityPostDetail() {
         <div className="community-detail__actions" aria-label="帖子操作">
           <Button
             className={`community-detail__like-btn ${post.likedByMe ? 'community-detail__like-btn--liked' : ''} ${isLikeAnimating ? 'community-detail__like-btn--animating' : ''}`}
-            icon={post.likedByMe ? <Heart aria-hidden="true" /> : <Heart aria-hidden="true" />}
-            loading={likePending}
             aria-pressed={post.likedByMe}
+            disabled={likePending}
             onClick={toggleLike}
           >
-            {post.likeCount}
+            <Heart aria-hidden="true" className={`mr-1 h-4 w-4 ${post.likedByMe ? 'fill-current' : ''}`} />
+            {likePending ? '...' : post.likeCount}
           </Button>
-          <Button icon={<Repeat2 aria-hidden="true" />} onClick={() => (requireLogin('转发') ? setRepostOpen(true) : undefined)}>
+          <Button onClick={() => (requireLogin('转发') ? setRepostOpen(true) : undefined)}>
+            <Repeat2 aria-hidden="true" className="mr-1 h-4 w-4" />
             转发
             {' '}
             ·
             {' '}
             {post.repostCount}
           </Button>
-          <Button icon={<Share2 aria-hidden="true" />} onClick={shareLink}>分享链接</Button>
+          <Button onClick={shareLink}>
+            <Share2 aria-hidden="true" className="mr-1 h-4 w-4" />
+            分享链接
+          </Button>
           {isAuthor
             ? (
-                <Popconfirm title="确认删除这条帖子？" okText="删除" cancelText="取消" onConfirm={removePost}>
-                  <Button danger icon={<Trash2 aria-hidden="true" />} loading={postDeletePending}>删除帖子</Button>
-                </Popconfirm>
+                <Button variant="destructive" disabled={postDeletePending} onClick={removePost}>
+                  <Trash2 aria-hidden="true" className="mr-1 h-4 w-4" />
+                  {postDeletePending ? '删除中...' : '删除帖子'}
+                </Button>
               )
             : null}
         </div>
@@ -337,19 +343,29 @@ export default function CommunityPostDetail() {
           </span>
         </div>
         <div className="community-detail__comment-form">
-          <Input.TextArea value={commentInput} rows={4} maxLength={500} showCount placeholder="写下你的建议、问题或补充体验" onChange={event => setCommentInput(event.target.value)} />
-          <Button type="primary" icon={<Send aria-hidden="true" />} loading={commentSubmitting} onClick={submitComment}>发布评论</Button>
+          <textarea
+            className="flex min-h-[80px] w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
+            value={commentInput}
+            rows={4}
+            maxLength={500}
+            placeholder="写下你的建议、问题或补充体验"
+            onChange={event => setCommentInput(event.target.value)}
+          />
+          <Button disabled={commentSubmitting} onClick={submitComment}>
+            <Send aria-hidden="true" className="mr-1 h-4 w-4" />
+            {commentSubmitting ? '发布中...' : '发布评论'}
+          </Button>
         </div>
 
         {commentsLoading
           ? (
               <div className="community-detail__comments-loading">
-                <Spin />
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 加载评论中...
               </div>
             )
           : null}
-        {!commentsLoading && comments.length === 0 ? <Empty description="还没有评论，来写第一条吧" /> : null}
+        {!commentsLoading && comments.length === 0 ? <div className="text-center py-8 text-muted-foreground"><p>还没有评论，来写第一条吧</p></div> : null}
         {!commentsLoading && comments.length > 0
           ? (
               <div className="community-detail__comment-list">
@@ -362,8 +378,8 @@ export default function CommunityPostDetail() {
                     <p>{comment.content}</p>
                     {comment.author.id === user?.id
                       ? (
-                          <Button type="link" danger loading={deletePendingId === comment.id} onClick={() => removeComment(comment)}>
-                            删除
+                          <Button variant="link" className="text-destructive" disabled={deletePendingId === comment.id} onClick={() => removeComment(comment)}>
+                            {deletePendingId === comment.id ? '删除中...' : '删除'}
                           </Button>
                         )
                       : null}
@@ -373,18 +389,42 @@ export default function CommunityPostDetail() {
             )
           : null}
         {commentTotal > COMMENT_PAGE_SIZE
-          ? <Pagination current={commentPage} pageSize={COMMENT_PAGE_SIZE} total={commentTotal} onChange={setCommentPage} />
+          ? (
+            <div className="flex items-center justify-center gap-4">
+              <Button variant="outline" disabled={commentPage <= 1} onClick={() => setCommentPage(commentPage - 1)}>上一页</Button>
+              <span className="text-sm text-muted-foreground">第 {commentPage} 页</span>
+              <Button variant="outline" disabled={commentPage >= Math.ceil(commentTotal / COMMENT_PAGE_SIZE)} onClick={() => setCommentPage(commentPage + 1)}>下一页</Button>
+            </div>
+          )
           : null}
       </section>
 
-      <Modal title="转发旅行分享" open={repostOpen} okText="转发" cancelText="取消" confirmLoading={repostPending} onOk={submitRepost} onCancel={() => setRepostOpen(false)}>
-        <p className="community-detail__modal-intro">可以直接转发，也可以写一句给旅友的补充说明。</p>
-        <Input.TextArea value={repostContent} rows={4} maxLength={500} showCount placeholder="写一句转发附言" onChange={event => setRepostContent(event.target.value)} />
-        <div className="community-detail__modal-target">
-          <Link aria-hidden="true" />
-          <span>{post.title || post.content || `${post.city || '旅行'}分享`}</span>
+      {repostOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
+          <div className="bg-background rounded-2xl p-6 max-w-lg w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">转发旅行分享</h3>
+            <p className="community-detail__modal-intro mb-4">可以直接转发，也可以写一句给旅友的补充说明。</p>
+            <textarea
+              className="flex min-h-[80px] w-full rounded-xl border border-input bg-background px-3 py-2 text-sm mb-4"
+              value={repostContent}
+              rows={4}
+              maxLength={500}
+              placeholder="写一句转发附言"
+              onChange={event => setRepostContent(event.target.value)}
+            />
+            <div className="community-detail__modal-target mb-4">
+              <Link aria-hidden="true" />
+              <span>{post.title || post.content || `${post.city || '旅行'}分享`}</span>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setRepostOpen(false)}>取消</Button>
+              <Button disabled={repostPending} onClick={submitRepost}>
+                {repostPending ? '转发中...' : '转发'}
+              </Button>
+            </div>
+          </div>
         </div>
-      </Modal>
+      )}
     </main>
   )
 }

@@ -420,6 +420,63 @@
   box-shadow: 0 0 0 5px rgba(var(--travel-sand-rgb), 0.16);
 }
 
+/* AI 生成内容 */
+.detail-page__ai-content {
+  width: min(560px, 100%);
+  margin: -36px auto 0;
+  overflow: hidden;
+  border-radius: 26px;
+  background: var(--travel-surface);
+  border: 1px solid var(--travel-frosted-border);
+  box-shadow: var(--shadow-paper);
+}
+
+.detail-page__ai-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 8px;
+}
+
+.detail-page__ai-header span {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--travel-ocean);
+}
+
+.detail-page__ai-messages {
+  padding: 0 20px 20px;
+}
+
+.detail-page__ai-message {
+  margin-bottom: 16px;
+}
+
+.detail-page__ai-message:last-child {
+  margin-bottom: 0;
+}
+
+.detail-page__ai-text {
+  font-size: 14px;
+  line-height: 1.8;
+  color: rgba(var(--travel-ink-rgb), 0.85);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.detail-page__ai-error {
+  padding: 16px 20px;
+  background: rgba(239, 68, 68, 0.05);
+  border-top: 1px solid rgba(239, 68, 68, 0.1);
+}
+
+.detail-page__ai-error p {
+  font-size: 13px;
+  color: #ef4444;
+  text-align: center;
+}
+
 /* 按钮 */
 .detail-page__actions {
   display: grid;

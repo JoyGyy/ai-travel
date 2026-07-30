@@ -68,7 +68,7 @@ export default function Detail() {
   const [activeKeys, setActiveKeys] = useState<string[]>([])
   const [showLoading, setShowLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
-  const { requestRecommend } = useTravelRecommend()
+  const { messages, sendMessage, status, error: chatError } = useTravelRecommend()
   const hasValidParams = Boolean(city && budget > 0 && days > 0)
 
   function findAttractionRef(spot?: string) {
@@ -121,17 +121,22 @@ export default function Detail() {
 
     useItineraryStore.setState({ agentSteps: [], currentAgentStep: 0 })
 
-    requestRecommend({ city, budget, days })
+    cacheTimer = setTimeout(() => {
+      setShowLoading(false)
+    }, 0)
+
+    sendMessage({ text: `请为我规划 ${city} ${days} 天旅行，预算 ${budget} 元` })
 
     return () => {
       clearTimeout(resetTimer)
+      clearTimeout(cacheTimer)
     }
   }, [
     budget,
     city,
     days,
     hasValidParams,
-    requestRecommend,
+    sendMessage,
     setAccommodation,
     setAttractionRefs,
     setBudgetBreakdown,
@@ -210,11 +215,45 @@ export default function Detail() {
 
         {!showLoading && !errorMessage && itinerary.length === 0
           ? (
-              <div className="detail-page__empty" role="status">
-                <div className="detail-page__empty-icon"><MapPin aria-hidden="true" /></div>
-                <p>暂无行程数据</p>
-                <button type="button" onClick={() => router.push('/chat')}>咨询 AI 生成行程</button>
-              </div>
+              messages.length > 0
+                ? (
+                    <div className="detail-page__ai-content">
+                      <div className="detail-page__ai-header">
+                        <span>AI 生成的行程规划</span>
+                        {status !== 'ready' && (
+                          <div className="detail-page__spinner" aria-hidden="true" />
+                        )}
+                      </div>
+                      <div className="detail-page__ai-messages">
+                        {messages.map(message => (
+                          <div key={message.id} className="detail-page__ai-message">
+                            {message.parts.map((part, index) => {
+                              if (part.type === 'text') {
+                                return (
+                                  <div key={index} className="detail-page__ai-text">
+                                    {part.text}
+                                  </div>
+                                )
+                              }
+                              return null
+                            })}
+                          </div>
+                        ))}
+                      </div>
+                      {chatError && (
+                        <div className="detail-page__ai-error" role="alert">
+                          <p>生成失败：{chatError.message}</p>
+                        </div>
+                      )}
+                    </div>
+                  )
+                : (
+                    <div className="detail-page__empty" role="status">
+                      <div className="detail-page__empty-icon"><MapPin aria-hidden="true" /></div>
+                      <p>暂无行程数据</p>
+                      <button type="button" onClick={() => router.push('/chat')}>咨询 AI 生成行程</button>
+                    </div>
+                  )
             )
           : null}
 

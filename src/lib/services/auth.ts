@@ -3,11 +3,14 @@
  * 提供用户注册、登录、JWT 验证功能
  * 使用 PostgreSQL 存储用户数据
  */
+import { eq, sql } from 'drizzle-orm'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { nanoid } from 'nanoid'
 
-import { query } from '../db'
+import { aiUsage, userFavoriteAttractions, users } from '@/db/schema'
+
+import { db } from '../db'
 import { env } from '../env'
 
 /** bcrypt 加盐轮数 */
@@ -57,8 +60,8 @@ async function register(username: string, password: string, email?: string): Pro
   if (password.length < 6)
     throw new Error('密码长度至少 6 个字符')
 
-  const existing = await query('SELECT id FROM users WHERE username = $1', [username])
-  if (existing.rows.length > 0)
+  const existing = await db.select({ id: users.id }).from(users).where(eq(users.username, username))
+  if (existing.length > 0)
     throw new Error('用户名已存在')
 
   const hashed = await bcrypt.hash(password, SALT_ROUNDS)
@@ -66,10 +69,13 @@ async function register(username: string, password: string, email?: string): Pro
   const createdAt = new Date().toISOString()
   const userEmail = email || `${username}@travel.local`
 
-  await query(
-    'INSERT INTO users (id, username, email, password_hash, created_at) VALUES ($1, $2, $3, $4, $5)',
-    [id, username, userEmail, hashed, createdAt],
-  )
+  await db.insert(users).values({
+    id,
+    username,
+    email: userEmail,
+    passwordHash: hashed,
+    createdAt: new Date(createdAt),
+  })
 
   const token = jwt.sign({ id, username }, env.JWT_SECRET, { expiresIn: '7d' })
   return { token, user: { id, username, createdAt } }
@@ -80,15 +86,16 @@ async function login(username: string, password: string): Promise<AuthResult> {
   if (!username || !password)
     throw new Error('用户名和密码不能为空')
 
-  const result = await query(
-    'SELECT id, username, password_hash, created_at FROM users WHERE username = $1',
-    [username],
-  )
-  if (result.rows.length === 0)
+  const result = await db
+    .select({ id: users.id, username: users.username, passwordHash: users.passwordHash, createdAt: users.createdAt })
+    .from(users)
+    .where(eq(users.username, username))
+
+  if (result.length === 0)
     throw new Error('用户名或密码错误')
 
-  const user = result.rows[0]
-  const match = await bcrypt.compare(password, user.password_hash)
+  const user = result[0]
+  const match = await bcrypt.compare(password, user.passwordHash)
   if (!match)
     throw new Error('用户名或密码错误')
 
@@ -98,7 +105,7 @@ async function login(username: string, password: string): Promise<AuthResult> {
     user: {
       id: user.id,
       username: user.username,
-      createdAt: user.created_at,
+      createdAt: user.createdAt.toISOString(),
     },
   }
 }
@@ -149,11 +156,12 @@ async function getAiQuotaStatus(userId: string | undefined, date = getTodayKey()
   if (!userId)
     throw new Error('用户信息无效')
 
-  const result = await query(
-    'SELECT used_count FROM ai_usage WHERE user_id = $1 AND usage_date = $2',
-    [userId, date],
-  )
-  const used = result.rows.length > 0 ? Number(result.rows[0].used_count) : 0
+  const result = await db
+    .select({ usedCount: aiUsage.usedCount })
+    .from(aiUsage)
+    .where(sql`${aiUsage.userId} = ${userId} AND ${aiUsage.usageDate} = ${date}`)
+
+  const used = result.length > 0 ? result[0].usedCount : 0
 
   return {
     used,
@@ -171,15 +179,14 @@ async function consumeAiQuota(userId: string | undefined, date = getTodayKey()):
   const updatedAt = new Date().toISOString()
 
   // 单条 SQL：原子递增并返回结果，避免先 SELECT 再 INSERT 的两次往返
-  const result = await query(
-    `INSERT INTO ai_usage (user_id, usage_date, used_count, updated_at)
-     VALUES ($1, $2, 1, $3)
-     ON CONFLICT(user_id, usage_date)
-     DO UPDATE SET used_count = ai_usage.used_count + 1, updated_at = $3
-     WHERE ai_usage.used_count < $4
-     RETURNING used_count`,
-    [userId, date, updatedAt, DAILY_AI_LIMIT],
-  )
+  const result = await db.execute<{ used_count: number }>(sql`
+    INSERT INTO ai_usage (user_id, usage_date, used_count, updated_at)
+    VALUES (${userId}, ${date}, 1, ${updatedAt})
+    ON CONFLICT(user_id, usage_date)
+    DO UPDATE SET used_count = ai_usage.used_count + 1, updated_at = ${updatedAt}
+    WHERE ai_usage.used_count < ${DAILY_AI_LIMIT}
+    RETURNING used_count
+  `)
 
   // RETURNING 为空说明 WHERE 条件不满足（已达上限）
   if (result.rows.length === 0) {
@@ -202,33 +209,28 @@ async function listFavoriteAttractionIds(userId: string): Promise<string[]> {
   if (!userId)
     throw new Error('用户信息无效')
 
-  const result = await query(
-    'SELECT attraction_id FROM user_favorite_attractions WHERE user_id = $1 ORDER BY created_at DESC',
-    [userId],
-  )
+  const result = await db
+    .select({ attractionId: userFavoriteAttractions.attractionId })
+    .from(userFavoriteAttractions)
+    .where(eq(userFavoriteAttractions.userId, userId))
+    .orderBy(sql`${userFavoriteAttractions.createdAt} DESC`)
 
-  return result.rows.map(row => row.attraction_id as string)
+  return result.map(row => row.attractionId)
 }
 
 async function addFavoriteAttraction(userId: string, attractionId: string): Promise<void> {
   if (!userId) throw new Error('用户信息无效')
   if (!attractionId) throw new Error('景点信息无效')
 
-  await query(
-    `INSERT INTO user_favorite_attractions (user_id, attraction_id)
-     VALUES ($1, $2)
-     ON CONFLICT (user_id, attraction_id) DO NOTHING`,
-    [userId, attractionId],
-  )
+  await db.insert(userFavoriteAttractions).values({ userId, attractionId }).onConflictDoNothing()
 }
 
 async function removeFavoriteAttraction(userId: string, attractionId: string): Promise<void> {
   if (!userId) throw new Error('用户信息无效')
   if (!attractionId) throw new Error('景点信息无效')
 
-  await query(
-    'DELETE FROM user_favorite_attractions WHERE user_id = $1 AND attraction_id = $2',
-    [userId, attractionId],
+  await db.delete(userFavoriteAttractions).where(
+    sql`${userFavoriteAttractions.userId} = ${userId} AND ${userFavoriteAttractions.attractionId} = ${attractionId}`,
   )
 }
 
@@ -236,21 +238,22 @@ async function getProfile(userId: string): Promise<UserProfile> {
   if (!userId)
     throw new Error('用户信息无效')
 
-  const result = await query(
-    'SELECT id, username, created_at FROM users WHERE id = $1',
-    [userId],
-  )
-  if (result.rows.length === 0)
+  const result = await db
+    .select({ id: users.id, username: users.username, createdAt: users.createdAt })
+    .from(users)
+    .where(eq(users.id, userId))
+
+  if (result.length === 0)
     throw new Error('用户不存在')
 
-  const user = result.rows[0]
+  const user = result[0]
   const aiQuota = await getAiQuotaStatus(userId)
   const favoriteIds = await listFavoriteAttractionIds(userId)
 
   return {
     id: user.id,
     username: user.username,
-    createdAt: user.created_at,
+    createdAt: user.createdAt.toISOString(),
     aiQuota,
     favoriteIds,
   }
@@ -261,16 +264,20 @@ async function changePassword(userId: string, currentPassword: string, newPasswo
   if (!currentPassword || !newPassword) throw new Error('当前密码和新密码不能为空')
   if (newPassword.length < 6) throw new Error('新密码长度至少 6 个字符')
 
-  const result = await query('SELECT password_hash FROM users WHERE id = $1', [userId])
-  if (result.rows.length === 0)
+  const result = await db
+    .select({ passwordHash: users.passwordHash })
+    .from(users)
+    .where(eq(users.id, userId))
+
+  if (result.length === 0)
     throw new Error('用户不存在')
 
-  const match = await bcrypt.compare(currentPassword, result.rows[0].password_hash)
+  const match = await bcrypt.compare(currentPassword, result[0].passwordHash)
   if (!match)
     throw new Error('当前密码错误')
 
   const newHashed = await bcrypt.hash(newPassword, SALT_ROUNDS)
-  await query('UPDATE users SET password_hash = $1 WHERE id = $2', [newHashed, userId])
+  await db.update(users).set({ passwordHash: newHashed }).where(eq(users.id, userId))
 }
 
 export {

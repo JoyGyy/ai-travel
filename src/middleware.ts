@@ -23,7 +23,8 @@ export function middleware(request: NextRequest) {
     p => pathname === p || pathname.startsWith(`${p}/`),
   )
 
-  if (!isProtected) return NextResponse.next()
+  if (!isProtected)
+    return NextResponse.next()
 
   // 检查认证 token（从 cookie 或 Authorization header）
   const token = request.cookies.get('token')?.value

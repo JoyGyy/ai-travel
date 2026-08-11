@@ -4,7 +4,7 @@
  */
 import Link from 'next/link'
 
-import '@/pages/Legal/style.css'
+import '../legal.css'
 
 const contactEmail = 'joygyzhi@outlook.com'
 

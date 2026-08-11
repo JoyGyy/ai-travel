@@ -104,12 +104,6 @@ const eslintConfig = defineConfig([
       ],
       '@typescript-eslint/no-empty-function': 'error',
 
-      // 解构优先（放宽：只警告，不报错）
-      'prefer-destructuring': [
-        'warn',
-        { array: true, object: true },
-      ],
-
       // React 安全
       'react/display-name': 'off',
       'react/jsx-no-target-blank': ['error', { enforceDynamicLinks: 'always' }],
@@ -118,7 +112,6 @@ const eslintConfig = defineConfig([
       'react-hooks/exhaustive-deps': 'warn',
 
       // TypeScript 强化（养成好习惯）
-      '@typescript-eslint/no-floating-promises': 'warn', // 放宽：只警告
       '@typescript-eslint/no-require-imports': 'error',
     },
   },

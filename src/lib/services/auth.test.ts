@@ -26,18 +26,30 @@ vi.mock('@/lib/env', () => ({
   },
 }))
 
-// Mock jose 库
-const mockSignJwt = vi.fn()
-const mockJwtVerify = vi.fn()
-
-vi.mock('jose', () => ({
-  SignJWT: vi.fn().mockImplementation(() => ({
-    setProtectedHeader: vi.fn().mockReturnThis(),
-    setExpirationTime: vi.fn().mockReturnThis(),
-    sign: mockSignJwt,
-  })),
-  jwtVerify: mockJwtVerify,
+// Mock jose 库（使用 vi.hoisted 确保变量在 mock 之前初始化）
+const { mockSignJwt, mockJwtVerify } = vi.hoisted(() => ({
+  mockSignJwt: vi.fn(),
+  mockJwtVerify: vi.fn(),
 }))
+
+vi.mock('jose', () => {
+  // 创建一个可链式调用的 SignJWT mock 类
+  class MockSignJWT {
+    setProtectedHeader = vi.fn().mockReturnThis()
+    setExpirationTime = vi.fn().mockReturnThis()
+    sign = mockSignJwt
+  }
+
+  // 使用 function 声明使其可作为构造函数
+  const MockSignJWTConstructor = vi.fn(function () {
+    return new MockSignJWT()
+  })
+
+  return {
+    SignJWT: MockSignJWTConstructor,
+    jwtVerify: mockJwtVerify,
+  }
+})
 
 const mockSelect = vi.fn()
 const mockInsert = vi.fn()
@@ -91,7 +103,7 @@ describe('auth 服务', () => {
       mockSignJwt.mockResolvedValue('mock-jwt-token')
 
       // act
-      const result = await register('testuser', 'password123')
+      const result = await register('testuser', 'Password123')
 
       // assert
       expect(result.token).toBe('mock-jwt-token')
@@ -100,7 +112,7 @@ describe('auth 服务', () => {
     })
 
     it('用户名为空时抛出错误', async () => {
-      await expect(register('', 'password123')).rejects.toThrow('用户名和密码不能为空')
+      await expect(register('', 'Password123')).rejects.toThrow('用户名和密码不能为空')
     })
 
     it('密码为空时抛出错误', async () => {
@@ -108,17 +120,17 @@ describe('auth 服务', () => {
     })
 
     it('用户名过短时抛出错误', async () => {
-      await expect(register('a', 'password123')).rejects.toThrow('用户名长度为 2-20 个字符')
+      await expect(register('a', 'Password123')).rejects.toThrow('用户名长度为 2-20 个字符')
     })
 
     it('用户名过长时抛出错误', async () => {
-      await expect(register('a'.repeat(21), 'password123')).rejects.toThrow(
+      await expect(register('a'.repeat(21), 'Password123')).rejects.toThrow(
         '用户名长度为 2-20 个字符',
       )
     })
 
     it('密码过短时抛出错误', async () => {
-      await expect(register('testuser', '12345')).rejects.toThrow('密码长度至少 6 个字符')
+      await expect(register('testuser', 'Ab1')).rejects.toThrow('密码长度至少 8 个字符')
     })
 
     it('用户名已存在时抛出错误', async () => {
@@ -126,7 +138,7 @@ describe('auth 服务', () => {
       mockSelect.mockReturnValue(createQueryBuilder([{ id: 'existing-id' }]))
 
       // act & assert
-      await expect(register('existinguser', 'password123')).rejects.toThrow('用户名已存在')
+      await expect(register('existinguser', 'Password123')).rejects.toThrow('用户名已存在')
     })
   })
 
@@ -150,7 +162,7 @@ describe('auth 服务', () => {
       mockSignJwt.mockResolvedValue('login-token')
 
       // act
-      const result = await login('testuser', 'password123')
+      const result = await login('testuser', 'Password123')
 
       // assert
       expect(result.token).toBe('login-token')
@@ -160,7 +172,7 @@ describe('auth 服务', () => {
     })
 
     it('用户名为空时抛出错误', async () => {
-      await expect(login('', 'password123')).rejects.toThrow('用户名和密码不能为空')
+      await expect(login('', 'Password123')).rejects.toThrow('用户名和密码不能为空')
     })
 
     it('密码为空时抛出错误', async () => {
@@ -172,7 +184,7 @@ describe('auth 服务', () => {
       mockSelect.mockReturnValue(createQueryBuilder([]))
 
       // act & assert
-      await expect(login('nonexistent', 'password123')).rejects.toThrow('用户名或密码错误')
+      await expect(login('nonexistent', 'Password123')).rejects.toThrow('用户名或密码错误')
     })
 
     it('密码错误时抛出错误', async () => {
@@ -190,7 +202,7 @@ describe('auth 服务', () => {
       vi.spyOn(bcrypt, 'compare').mockResolvedValue(false as never)
 
       // act & assert
-      await expect(login('testuser', 'wrongpassword')).rejects.toThrow('用户名或密码错误')
+      await expect(login('testuser', 'WrongPassword1')).rejects.toThrow('用户名或密码错误')
     })
   })
 
@@ -257,11 +269,7 @@ describe('auth 服务', () => {
 
       // assert
       expect(result).toEqual(payload)
-      expect(mockJwtVerify).toHaveBeenCalledWith(
-        'cookie-token',
-        expect.any(Uint8Array),
-        expect.any(Object),
-      )
+      expect(mockJwtVerify).toHaveBeenCalledWith('cookie-token', expect.anything())
     })
 
     it('无认证信息返回 null', async () => {
@@ -275,7 +283,7 @@ describe('auth 服务', () => {
       expect(result).toBeNull()
     })
 
-    it('Authorization header token 无效时返回 null', async () => {
+    it('authorization header token 无效时返回 null', async () => {
       // arrange
       mockJwtVerify.mockRejectedValue(new Error('invalid'))
       const headers = new Headers({ authorization: 'Bearer bad-token' })
@@ -309,11 +317,7 @@ describe('auth 服务', () => {
       const result = await getAuthFromHeaders(headers)
 
       // assert
-      expect(mockJwtVerify).toHaveBeenCalledWith(
-        'real-token',
-        expect.any(Uint8Array),
-        expect.any(Object),
-      )
+      expect(mockJwtVerify).toHaveBeenCalledWith('real-token', expect.anything())
       expect(result).toEqual(payload)
     })
   })
@@ -341,7 +345,7 @@ describe('auth 服务', () => {
       mockSelect.mockReturnValue(createQueryBuilder([{ usedCount: 10 }]))
 
       // act & assert
-      const err = (await consumeAiQuota('user-1', '2024-01-15').catch((e) => e)) as Error & {
+      const err = (await consumeAiQuota('user-1', '2024-01-15').catch(e => e)) as Error & {
         status: number
       }
       expect(err.message).toBe('今日 AI 使用次数已达上限，请明天再试')
@@ -413,7 +417,7 @@ describe('auth 服务', () => {
       })
 
       // act & assert
-      await expect(changePassword('user-1', 'oldpassword', 'newpassword')).resolves.toBeUndefined()
+      await expect(changePassword('user-1', 'OldPassword1', 'NewPassword1')).resolves.toBeUndefined()
     })
 
     it('当前密码错误时抛出错误', async () => {
@@ -422,7 +426,7 @@ describe('auth 服务', () => {
       vi.spyOn(bcrypt, 'compare').mockResolvedValue(false as never)
 
       // act & assert
-      await expect(changePassword('user-1', 'wrongpassword', 'newpassword')).rejects.toThrow(
+      await expect(changePassword('user-1', 'WrongPassword1', 'NewPassword1')).rejects.toThrow(
         '当前密码错误',
       )
     })
@@ -432,7 +436,7 @@ describe('auth 服务', () => {
       mockSelect.mockReturnValue(createQueryBuilder([]))
 
       // act & assert
-      await expect(changePassword('nonexistent', 'oldpassword', 'newpassword')).rejects.toThrow(
+      await expect(changePassword('nonexistent', 'OldPassword1', 'NewPassword1')).rejects.toThrow(
         '用户不存在',
       )
     })
@@ -442,20 +446,20 @@ describe('auth 服务', () => {
     })
 
     it('当前密码为空时抛出错误', async () => {
-      await expect(changePassword('user-1', '', 'newpassword')).rejects.toThrow(
+      await expect(changePassword('user-1', '', 'NewPassword1')).rejects.toThrow(
         '当前密码和新密码不能为空',
       )
     })
 
     it('新密码为空时抛出错误', async () => {
-      await expect(changePassword('user-1', 'oldpassword', '')).rejects.toThrow(
+      await expect(changePassword('user-1', 'OldPassword1', '')).rejects.toThrow(
         '当前密码和新密码不能为空',
       )
     })
 
     it('新密码过短时抛出错误', async () => {
-      await expect(changePassword('user-1', 'oldpassword', '12345')).rejects.toThrow(
-        '新密码长度至少 6 个字符',
+      await expect(changePassword('user-1', 'OldPassword1', 'Ab1')).rejects.toThrow(
+        '密码长度至少 8 个字符',
       )
     })
   })

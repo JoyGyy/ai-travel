@@ -36,7 +36,8 @@ export default function CommunityPostCreate() {
   )
 
   async function handleUpload(files: FileList | null) {
-    if (!files || files.length === 0) return
+    if (!files || files.length === 0)
+      return
 
     const file = files[0]
     if (images.length >= 9) {
@@ -55,11 +56,13 @@ export default function CommunityPostCreate() {
     setUploading(true)
     try {
       const uploaded = await uploadCommunityImages([file])
-      setImages((prev) => [...prev, ...uploaded].slice(0, 9))
+      setImages(prev => [...prev, ...uploaded].slice(0, 9))
       toast.success('图片上传成功')
-    } catch (err: unknown) {
+    }
+    catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : '图片上传失败')
-    } finally {
+    }
+    finally {
       setUploading(false)
       if (fileInputRef.current) {
         fileInputRef.current.value = ''
@@ -68,8 +71,8 @@ export default function CommunityPostCreate() {
   }
 
   function removeImage(image: CommunityImage) {
-    setImages((prev) =>
-      prev.filter((item) => (item.storageKey || item.url) !== (image.storageKey || image.url)),
+    setImages(prev =>
+      prev.filter(item => (item.storageKey || item.url) !== (image.storageKey || image.url)),
     )
   }
 
@@ -91,9 +94,11 @@ export default function CommunityPostCreate() {
       })
       toast.success('已发布到社区')
       router.push(`/community/${post.id}`)
-    } catch (err: unknown) {
+    }
+    catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : '发布失败')
-    } finally {
+    }
+    finally {
       setSubmitting(false)
     }
   }
@@ -118,7 +123,7 @@ export default function CommunityPostCreate() {
               maxLength={80}
               placeholder="例如：成都三天两晚松弛路线"
               value={title}
-              onChange={(event) => setTitle(event.target.value)}
+              onChange={event => setTitle(event.target.value)}
               className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
             />
           </div>
@@ -133,8 +138,8 @@ export default function CommunityPostCreate() {
               rows={7}
               placeholder="分享你的路线、体验、避坑提醒或适合的人群"
               value={content}
-              onChange={(event) => setContent(event.target.value)}
-              className="flex min-h-[80px] w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
+              onChange={event => setContent(event.target.value)}
+              className="flex min-h-20 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
             />
           </div>
 
@@ -148,7 +153,7 @@ export default function CommunityPostCreate() {
               maxLength={50}
               placeholder="例如：成都"
               value={city}
-              onChange={(event) => setCity(event.target.value)}
+              onChange={event => setCity(event.target.value)}
               className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
             />
           </div>
@@ -163,7 +168,7 @@ export default function CommunityPostCreate() {
               type="file"
               accept="image/jpeg,image/png,image/webp"
               className="hidden"
-              onChange={(event) => handleUpload(event.target.files)}
+              onChange={event => handleUpload(event.target.files)}
             />
             <Button
               type="button"
@@ -176,38 +181,44 @@ export default function CommunityPostCreate() {
             <p className="community-create__hint">
               最多 9 张，支持 JPG、PNG、WebP，单张不超过 5MB。
             </p>
-            {images.length > 0 ? (
-              <div className="community-create__image-preview">
-                <CommunityImageGrid images={images} />
-                <div className="community-create__image-actions">
-                  {images.map((image) => (
-                    <button
-                      key={image.storageKey || image.url}
-                      type="button"
-                      onClick={() => removeImage(image)}
-                    >
-                      <X aria-hidden="true" />
-                      移除图片
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ) : null}
+            {images.length > 0
+              ? (
+                  <div className="community-create__image-preview">
+                    <CommunityImageGrid images={images} />
+                    <div className="community-create__image-actions">
+                      {images.map(image => (
+                        <button
+                          key={image.storageKey || image.url}
+                          type="button"
+                          onClick={() => removeImage(image)}
+                        >
+                          <X aria-hidden="true" />
+                          移除图片
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )
+              : null}
           </div>
 
-          {snapshot ? (
-            <div className="community-create__itinerary">
-              <CommunityItineraryPreview
-                snapshot={snapshot}
-                removable
-                onRemove={() => setSnapshot(null)}
-              />
-            </div>
-          ) : null}
+          {snapshot
+            ? (
+                <div className="community-create__itinerary">
+                  <CommunityItineraryPreview
+                    snapshot={snapshot}
+                    removable
+                    onRemove={() => setSnapshot(null)}
+                  />
+                </div>
+              )
+            : null}
 
-          {!canSubmit ? (
-            <p className="community-create__requirement">正文、图片和行程快照至少需要提供一项。</p>
-          ) : null}
+          {!canSubmit
+            ? (
+                <p className="community-create__requirement">正文、图片和行程快照至少需要提供一项。</p>
+              )
+            : null}
 
           <div className="community-create__actions">
             <Button type="button" variant="outline" onClick={() => router.push('/community')}>

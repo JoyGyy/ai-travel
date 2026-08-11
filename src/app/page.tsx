@@ -4,7 +4,7 @@
  * 首页（行程推荐）
  * OTA 旅行平台风格的落地页，包含搜索表单、热门目的地、精选推荐、AI 特色介绍等模块。
  */
-import { Compass, Flame, LogIn, Star, User, Users, Zap } from 'lucide-react'
+import { Bot, Cloud, Compass, Flame, Home, LogIn, MapPin, Star, User, Users, Zap } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -13,7 +13,16 @@ import { HeroSearch } from '@/components/home/HeroSearch'
 import { useAppToast } from '@/hooks/useAppToast'
 import { useAuthStore } from '@/stores/auth'
 
-import { featuredTrips, hotDestinations, quickEntries, userReviews } from './home-data'
+import { featuredTrips, hotDestinations, userReviews } from './home-data'
+
+const quickEntries = [
+  { icon: <Home />, label: '酒店民宿', color: '#FF6B35', href: '/' },
+  { icon: <Compass />, label: 'AI 行程', color: '#F59E0B', href: '/detail' },
+  { icon: <MapPin />, label: '精选景点', color: '#10B981', href: '/attractions' },
+  { icon: <Users />, label: '旅友社区', color: '#8B5CF6', href: '/community' },
+  { icon: <Cloud />, label: '天气查询', color: '#3B82F6', href: '/weather' },
+  { icon: <Bot />, label: 'AI 咨询', color: '#E84057', href: '/chat' },
+]
 
 import './style.css'
 

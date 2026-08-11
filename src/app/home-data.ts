@@ -1,28 +1,7 @@
 /**
  * 首页静态数据
  */
-import type { ReactNode } from 'react'
-
-import { Cloud, Compass, Home, MapPin, Bot, Users } from 'lucide-react'
-
 import { imageUrl } from '@/lib/images'
-
-/** 快捷入口 */
-export interface QuickEntry {
-  icon: ReactNode
-  label: string
-  color: string
-  href: string
-}
-
-export const quickEntries: QuickEntry[] = [
-  { icon: Home({}), label: '酒店民宿', color: '#FF6B35', href: '/' },
-  { icon: Compass({}), label: 'AI 行程', color: '#F59E0B', href: '/detail' },
-  { icon: MapPin({}), label: '精选景点', color: '#10B981', href: '/attractions' },
-  { icon: Users({}), label: '旅友社区', color: '#8B5CF6', href: '/community' },
-  { icon: Cloud({}), label: '天气查询', color: '#3B82F6', href: '/weather' },
-  { icon: Bot({}), label: 'AI 咨询', color: '#E84057', href: '/chat' },
-]
 
 /** 热门目的地 */
 export const hotDestinations = [

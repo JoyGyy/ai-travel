@@ -35,17 +35,19 @@ export function ChatBubble({ role, content }: ChatBubbleProps) {
           <Bot size={20} />
         </div>
       )}
-      <div className={`chat-bubble__content ${isUser ? 'chat-bubble__content--user' : 'chat-bubble__content--ai'}`}>
+      <div
+        className={`chat-bubble__content ${isUser ? 'chat-bubble__content--user' : 'chat-bubble__content--ai'}`}
+      >
         {/* 用户消息纯文本，AI 消息走 Markdown 渲染 */}
-        {isUser
-          ? content
-          : (
-              <div className="markdown-body">
-                <Suspense fallback={<span className="chat-bubble__loading">加载中...</span>}>
-                  <Markdown>{content}</Markdown>
-                </Suspense>
-              </div>
-            )}
+        {isUser ? (
+          content
+        ) : (
+          <div className="markdown-body">
+            <Suspense fallback={<span className="chat-bubble__loading">加载中...</span>}>
+              <Markdown>{content}</Markdown>
+            </Suspense>
+          </div>
+        )}
       </div>
     </div>
   )

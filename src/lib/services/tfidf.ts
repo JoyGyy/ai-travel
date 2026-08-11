@@ -8,8 +8,7 @@
  * 例如 "故宫" → ["故", "宫", "故宫"]
  */
 export function tokenize(text: string): string[] {
-  if (!text)
-    return []
+  if (!text) return []
   const cleaned = text.replace(/[，。！？、；："'（）《》【】\s\-.]/g, '').toLowerCase()
   const tokens: string[] = []
 
@@ -20,7 +19,7 @@ export function tokenize(text: string): string[] {
     }
   }
 
-  return tokens.filter(t => t.length > 0)
+  return tokens.filter((t) => t.length > 0)
 }
 
 /** 计算词频（TF）：每个 token 出现次数除以总 token 数 */
@@ -50,7 +49,7 @@ class TFIDFIndex {
   /** 构建索引：计算所有文档的 TF 并统计 DF 以计算 IDF */
   buildIndex(documents: Document[]): void {
     this.totalDocs = documents.length
-    this.docIds = documents.map(d => d.id)
+    this.docIds = documents.map((d) => d.id)
 
     const docTokenSets: Set<string>[] = []
     for (const doc of documents) {
@@ -77,8 +76,7 @@ class TFIDFIndex {
     const queryTokens = tokenize(query)
     const queryTF = computeTF(queryTokens)
     const docTF = this.docTFs.get(docId)
-    if (!docTF)
-      return 0
+    if (!docTF) return 0
 
     let dotProduct = 0
     let queryNorm = 0
@@ -100,8 +98,8 @@ class TFIDFIndex {
   }
 
   /** 搜索所有文档并按相似度降序返回 */
-  search(query: string): Array<{ id: string, score: number }> {
-    const results = this.docIds.map(id => ({
+  search(query: string): Array<{ id: string; score: number }> {
+    const results = this.docIds.map((id) => ({
       id,
       score: this.similarity(query, id),
     }))

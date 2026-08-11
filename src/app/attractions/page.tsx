@@ -15,9 +15,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { fetchAttractions } from '@/api/attractions'
 import { Pagination } from '@/components/Pagination'
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { useAttractionFavorite } from '@/hooks/useAttractionFavorite'
 
 import './style.css'
@@ -41,9 +41,9 @@ export default function Attractions() {
 
   const { toggleFavorite } = useAttractionFavorite({
     onFavoriteSuccess: (attractionId, isFavorite) => {
-      setItems(prev => prev.map(current =>
-        current.id === attractionId ? { ...current, isFavorite } : current,
-      ))
+      setItems((prev) =>
+        prev.map((current) => (current.id === attractionId ? { ...current, isFavorite } : current)),
+      )
     },
   })
 
@@ -59,11 +59,9 @@ export default function Attractions() {
       setTotal(data.total)
       setCities(data.cities)
       setTags(data.tags)
-    }
-    catch (err: unknown) {
+    } catch (err: unknown) {
       setError(err instanceof Error ? err.message : '景点加载失败')
-    }
-    finally {
+    } finally {
       setLoading(false)
     }
   }, [])
@@ -73,16 +71,22 @@ export default function Attractions() {
   }, [load])
 
   // ---- 筛选条件管理 ----
-  const updateFilters = useCallback((patch: AttractionFilters) => {
-    const next = { ...filters, ...patch, page: patch.page || 1 }
-    setFilters(next)
-    load(next)
-  }, [filters, load])
+  const updateFilters = useCallback(
+    (patch: AttractionFilters) => {
+      const next = { ...filters, ...patch, page: patch.page || 1 }
+      setFilters(next)
+      load(next)
+    },
+    [filters, load],
+  )
 
-  const handleSearchSubmit = useCallback((event: { preventDefault: () => void }) => {
-    event.preventDefault()
-    updateFilters({ keyword: keywordInput.trim() })
-  }, [updateFilters, keywordInput])
+  const handleSearchSubmit = useCallback(
+    (event: { preventDefault: () => void }) => {
+      event.preventDefault()
+      updateFilters({ keyword: keywordInput.trim() })
+    },
+    [updateFilters, keywordInput],
+  )
 
   const handleClearFilters = useCallback(() => {
     setKeywordInput('')
@@ -91,28 +95,34 @@ export default function Attractions() {
     load(next)
   }, [load])
 
-  const handlePageChange = useCallback((page: number) => {
-    updateFilters({ page })
-  }, [updateFilters])
+  const handlePageChange = useCallback(
+    (page: number) => {
+      updateFilters({ page })
+    },
+    [updateFilters],
+  )
 
   // ---- 收藏切换 ----
-  const handleToggleFavorite = useCallback(async (item: Attraction) => {
-    setFavoritePendingIds(prev => new Set(prev).add(item.id))
-    try {
-      await toggleFavorite(item.id, item.isFavorite ?? false)
-    }
-    finally {
-      setFavoritePendingIds((prev) => {
-        const next = new Set(prev)
-        next.delete(item.id)
-        return next
-      })
-    }
-  }, [toggleFavorite])
+  const handleToggleFavorite = useCallback(
+    async (item: Attraction) => {
+      setFavoritePendingIds((prev) => new Set(prev).add(item.id))
+      try {
+        await toggleFavorite(item.id, item.isFavorite ?? false)
+      } finally {
+        setFavoritePendingIds((prev) => {
+          const next = new Set(prev)
+          next.delete(item.id)
+          return next
+        })
+      }
+    },
+    [toggleFavorite],
+  )
 
-  const hasActiveFilters = useMemo(() =>
-    Boolean(filters.keyword || filters.city || filters.ticketType || filters.tag),
-  [filters])
+  const hasActiveFilters = useMemo(
+    () => Boolean(filters.keyword || filters.city || filters.ticketType || filters.tag),
+    [filters],
+  )
 
   return (
     <main className="attractions-page travel-page-shell" aria-labelledby="attractions-title">
@@ -123,167 +133,189 @@ export default function Attractions() {
       </section>
 
       {/* ---- 筛选面板 ---- */}
-      <section className="attractions-page__filters travel-surface-card" aria-labelledby="attractions-filter-title">
+      <section
+        className="attractions-page__filters travel-surface-card"
+        aria-labelledby="attractions-filter-title"
+      >
         <div className="attractions-page__filters-header">
           <h2 id="attractions-filter-title">筛选景点</h2>
-          {hasActiveFilters ? <Button variant="link" onClick={handleClearFilters}>清空筛选</Button> : null}
+          {hasActiveFilters ? (
+            <Button variant="link" onClick={handleClearFilters}>
+              清空筛选
+            </Button>
+          ) : null}
         </div>
         <form className="attractions-page__search" onSubmit={handleSearchSubmit}>
           <label htmlFor="attractions-keyword">搜索关键词</label>
           <div className="attractions-page__search-control">
-            <Input className="flex-1"
+            <Input
+              className="flex-1"
               id="attractions-keyword"
               placeholder="搜索景点、城市或标签"
               value={keywordInput}
-              onChange={event => setKeywordInput(event.target.value)}
+              onChange={(event) => setKeywordInput(event.target.value)}
             />
             <Button type="submit">搜索</Button>
           </div>
         </form>
-        {cities.length > 0
-          ? (
-              <div className="attractions-page__filter-group" aria-labelledby="attractions-city-filter">
-                <p id="attractions-city-filter">城市</p>
-                <div className="attractions-page__filter-row">
-                  {cities.map(city => (
-                    <Button
-                      key={city}
-                      variant={filters.city === city ? 'default' : 'outline'}
-                      aria-pressed={filters.city === city}
-                      onClick={() => updateFilters({ city: filters.city === city ? '' : city })}
-                    >
-                      {city}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            )
-          : null}
+        {cities.length > 0 ? (
+          <div className="attractions-page__filter-group" aria-labelledby="attractions-city-filter">
+            <p id="attractions-city-filter">城市</p>
+            <div className="attractions-page__filter-row">
+              {cities.map((city) => (
+                <Button
+                  key={city}
+                  variant={filters.city === city ? 'default' : 'outline'}
+                  aria-pressed={filters.city === city}
+                  onClick={() => updateFilters({ city: filters.city === city ? '' : city })}
+                >
+                  {city}
+                </Button>
+              ))}
+            </div>
+          </div>
+        ) : null}
         <div className="attractions-page__select-group">
           <label htmlFor="attractions-ticket-type">收费类型</label>
-          <select className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
+          <select
+            className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
             id="attractions-ticket-type"
             value={filters.ticketType || ''}
-            onChange={event => updateFilters({ ticketType: event.target.value as AttractionTicketType | '' })}
+            onChange={(event) =>
+              updateFilters({ ticketType: event.target.value as AttractionTicketType | '' })
+            }
           >
-            {ticketOptions.map(option => (
-              <option key={option.value} value={option.value}>{option.label}</option>
+            {ticketOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
             ))}
           </select>
         </div>
-        {tags.length > 0
-          ? (
-              <div className="attractions-page__filter-group" aria-labelledby="attractions-tag-filter">
-                <p id="attractions-tag-filter">标签</p>
-                <div className="attractions-page__filter-row">
-                  {tags.map(tag => (
-                    <Button
-                      key={tag}
-                      variant={filters.tag === tag ? "default" : "outline"}
-                      aria-pressed={filters.tag === tag}
-                      onClick={() => updateFilters({ tag: filters.tag === tag ? '' : tag })}
-                    >
-                      {tag}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            )
-          : null}
+        {tags.length > 0 ? (
+          <div className="attractions-page__filter-group" aria-labelledby="attractions-tag-filter">
+            <p id="attractions-tag-filter">标签</p>
+            <div className="attractions-page__filter-row">
+              {tags.map((tag) => (
+                <Button
+                  key={tag}
+                  variant={filters.tag === tag ? 'default' : 'outline'}
+                  aria-pressed={filters.tag === tag}
+                  onClick={() => updateFilters({ tag: filters.tag === tag ? '' : tag })}
+                >
+                  {tag}
+                </Button>
+              ))}
+            </div>
+          </div>
+        ) : null}
         <p className="attractions-page__result-status" aria-live="polite">
           {loading ? '正在应用筛选...' : `共找到 ${total} 个景点`}
         </p>
       </section>
 
-      {loading
-        ? (
-            <div className="attractions-page__loading" role="status" aria-live="polite">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              <span>加载景点中...</span>
-            </div>
-          )
-        : null}
-      {!loading && error
-        ? (
-            <div className="attractions-page__error travel-surface-card" role="alert">
-              <span>{error}</span>
-              <Button onClick={() => load(filters)}>重试</Button>
-            </div>
-          )
-        : null}
-      {!loading && !error && items.length === 0
-        ? (
-            <div className="attractions-page__empty travel-surface-card">
-              <div className="text-center py-8 text-muted-foreground"><p>没有找到符合筛选条件的景点</p></div>
-              {hasActiveFilters ? <Button onClick={handleClearFilters}>清空筛选</Button> : null}
-            </div>
-          )
-        : null}
+      {loading ? (
+        <div className="attractions-page__loading" role="status" aria-live="polite">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <span>加载景点中...</span>
+        </div>
+      ) : null}
+      {!loading && error ? (
+        <div className="attractions-page__error travel-surface-card" role="alert">
+          <span>{error}</span>
+          <Button onClick={() => load(filters)}>重试</Button>
+        </div>
+      ) : null}
+      {!loading && !error && items.length === 0 ? (
+        <div className="attractions-page__empty travel-surface-card">
+          <div className="text-center py-8 text-muted-foreground">
+            <p>没有找到符合筛选条件的景点</p>
+          </div>
+          {hasActiveFilters ? <Button onClick={handleClearFilters}>清空筛选</Button> : null}
+        </div>
+      ) : null}
 
       {/* ---- 景点卡片网格 ---- */}
-      {!loading && !error && items.length > 0
-        ? (
-            <>
-              <section className="attractions-page__grid" aria-label="景点列表">
-                {items.map((item) => {
-                  const isFavoritePending = favoritePendingIds.has(item.id)
-                  return (
-                    <Link key={item.id} href={`/attractions/${item.id}`} className="attractions-page__card-link" aria-label={`查看${item.name}详情`}>
-                      <article className="attractions-page__card travel-surface-card travel-ticket-edge">
-                        <Image
-                          src={item.coverImage}
-                          alt={`${item.name}，${item.city}景点封面`}
-                          className="attractions-page__cover"
-                          loading="lazy"
-                          width={400}
-                          height={250}
-                          unoptimized
-                        />
-                        <div className="attractions-page__card-body">
-                          <div className="attractions-page__card-title-row">
-                            <h2>{item.name}</h2>
-                            <button
-                              type="button"
-                              aria-label={`${item.isFavorite ? '取消收藏' : '收藏'}${item.name}`}
-                              aria-pressed={!!item.isFavorite}
-                              disabled={isFavoritePending}
-                              onClick={(e) => {
-                                e.preventDefault()
-                                e.stopPropagation()
-                                handleToggleFavorite(item)
-                              }}
-                              className="attractions-page__favorite"
-                            >
-                              {item.isFavorite ? <Heart aria-hidden="true" /> : <Heart aria-hidden="true" />}
-                            </button>
-                          </div>
-                          <p>{item.summary}</p>
-                          <div className="attractions-page__meta">
-                            <Badge className={`travel-tag ${item.ticketType === 'free' ? 'travel-tag--free' : 'travel-tag--paid'}`}>{item.ticketType === 'free' ? '免费' : '收费'}</Badge>
-                            <span>{item.city}</span>
-                            <span>{item.priceText}</span>
-                          </div>
-                          <div className="attractions-page__tags">
-                            {item.tags.map(tag => <Badge key={tag} className="travel-tag travel-tag--info">{tag}</Badge>)}
-                          </div>
-                          <span className="attractions-page__detail-link" aria-hidden="true">查看详情</span>
-                        </div>
-                      </article>
-                    </Link>
-                  )
-                })}
-              </section>
-              {/* ---- 分页 ---- */}
-              <Pagination
-                className="attractions-page__pagination"
-                page={filters.page || 1}
-                total={total}
-                pageSize={PAGE_SIZE}
-                onPageChange={handlePageChange}
-              />
-            </>
-          )
-        : null}
+      {!loading && !error && items.length > 0 ? (
+        <>
+          <section className="attractions-page__grid" aria-label="景点列表">
+            {items.map((item) => {
+              const isFavoritePending = favoritePendingIds.has(item.id)
+              return (
+                <Link
+                  key={item.id}
+                  href={`/attractions/${item.id}`}
+                  className="attractions-page__card-link"
+                  aria-label={`查看${item.name}详情`}
+                >
+                  <article className="attractions-page__card travel-surface-card travel-ticket-edge">
+                    <Image
+                      src={item.coverImage}
+                      alt={`${item.name}，${item.city}景点封面`}
+                      className="attractions-page__cover"
+                      loading="lazy"
+                      width={400}
+                      height={250}
+                      unoptimized
+                    />
+                    <div className="attractions-page__card-body">
+                      <div className="attractions-page__card-title-row">
+                        <h2>{item.name}</h2>
+                        <button
+                          type="button"
+                          aria-label={`${item.isFavorite ? '取消收藏' : '收藏'}${item.name}`}
+                          aria-pressed={!!item.isFavorite}
+                          disabled={isFavoritePending}
+                          onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            handleToggleFavorite(item)
+                          }}
+                          className="attractions-page__favorite"
+                        >
+                          {item.isFavorite ? (
+                            <Heart aria-hidden="true" />
+                          ) : (
+                            <Heart aria-hidden="true" />
+                          )}
+                        </button>
+                      </div>
+                      <p>{item.summary}</p>
+                      <div className="attractions-page__meta">
+                        <Badge
+                          className={`travel-tag ${item.ticketType === 'free' ? 'travel-tag--free' : 'travel-tag--paid'}`}
+                        >
+                          {item.ticketType === 'free' ? '免费' : '收费'}
+                        </Badge>
+                        <span>{item.city}</span>
+                        <span>{item.priceText}</span>
+                      </div>
+                      <div className="attractions-page__tags">
+                        {item.tags.map((tag) => (
+                          <Badge key={tag} className="travel-tag travel-tag--info">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                      <span className="attractions-page__detail-link" aria-hidden="true">
+                        查看详情
+                      </span>
+                    </div>
+                  </article>
+                </Link>
+              )
+            })}
+          </section>
+          {/* ---- 分页 ---- */}
+          <Pagination
+            className="attractions-page__pagination"
+            page={filters.page || 1}
+            total={total}
+            pageSize={PAGE_SIZE}
+            onPageChange={handlePageChange}
+          />
+        </>
+      ) : null}
     </main>
   )
 }

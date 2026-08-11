@@ -21,8 +21,7 @@ interface SharePayload {
 }
 
 function validateSharePayload(payload: unknown): SharePayload {
-  if (!payload || typeof payload !== 'object')
-    throw httpError(400, '缺少分享数据')
+  if (!payload || typeof payload !== 'object') throw httpError(400, '缺少分享数据')
 
   const p = payload as Record<string, unknown>
 
@@ -33,8 +32,7 @@ function validateSharePayload(payload: unknown): SharePayload {
   const days = readPositiveInteger(p.days, '行程天数', { min: 1, max: 30 })
   const budget = readRequiredString(String(p.budget ?? ''), '预算', { min: 1, max: 50 })
 
-  if (!p.itinerary)
-    throw httpError(400, '缺少行程数据')
+  if (!p.itinerary) throw httpError(400, '缺少行程数据')
 
   return { city, days, budget, itinerary: p.itinerary }
 }

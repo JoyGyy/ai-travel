@@ -84,7 +84,9 @@ interface ListFilters {
 }
 
 /** 分页查询景点列表，支持城市、关键词、票型、标签等多条件过滤 */
-async function listAttractions(filters: ListFilters = {}): Promise<{ items: AttractionItem[], total: number }> {
+async function listAttractions(
+  filters: ListFilters = {},
+): Promise<{ items: AttractionItem[]; total: number }> {
   const conditions: string[] = []
   const params: unknown[] = []
   let paramIndex = 1
@@ -100,13 +102,17 @@ async function listAttractions(filters: ListFilters = {}): Promise<{ items: Attr
   }
 
   if (filters.tag) {
-    conditions.push(`EXISTS (SELECT 1 FROM attraction_tags at2 JOIN tags t ON t.id = at2.tag_id WHERE at2.attraction_id = a.id AND t.name = $${paramIndex++})`)
+    conditions.push(
+      `EXISTS (SELECT 1 FROM attraction_tags at2 JOIN tags t ON t.id = at2.tag_id WHERE at2.attraction_id = a.id AND t.name = $${paramIndex++})`,
+    )
     params.push(filters.tag)
   }
 
   if (filters.keyword) {
     const kw = `%${filters.keyword}%`
-    conditions.push(`(a.name ILIKE $${paramIndex} OR a.city ILIKE $${paramIndex} OR a.summary ILIKE $${paramIndex} OR a.description ILIKE $${paramIndex} OR $${paramIndex} = ANY(a.aliases))`)
+    conditions.push(
+      `(a.name ILIKE $${paramIndex} OR a.city ILIKE $${paramIndex} OR a.summary ILIKE $${paramIndex} OR a.description ILIKE $${paramIndex} OR $${paramIndex} = ANY(a.aliases))`,
+    )
     params.push(kw)
     paramIndex++
   }
@@ -158,31 +164,28 @@ async function getAttractionById(id: string): Promise<AttractionItem | null> {
 }
 
 /** 获取所有城市列表（按预设排序）和标签列表 */
-async function getAttractionMeta(): Promise<{ cities: string[], tags: string[] }> {
+async function getAttractionMeta(): Promise<{ cities: string[]; tags: string[] }> {
   const [cityResult, tagResult] = await Promise.all([
     db.selectDistinct({ city: attractions.city }).from(attractions).orderBy(attractions.city),
     db.select({ name: tags.name }).from(tags).orderBy(tags.name),
   ])
 
-  const dbCities = cityResult.map(r => r.city)
+  const dbCities = cityResult.map((r) => r.city)
   const orderedCities = [
-    ...CITY_ORDER.filter(c => dbCities.includes(c)),
-    ...dbCities.filter(c => !CITY_ORDER.includes(c)),
+    ...CITY_ORDER.filter((c) => dbCities.includes(c)),
+    ...dbCities.filter((c) => !CITY_ORDER.includes(c)),
   ]
 
   return {
     cities: orderedCities,
-    tags: tagResult.map(r => r.name),
+    tags: tagResult.map((r) => r.name),
   }
 }
 
-async function searchAttractions(filters: ListFilters = {}): Promise<{ items: AttractionItem[], total: number }> {
+async function searchAttractions(
+  filters: ListFilters = {},
+): Promise<{ items: AttractionItem[]; total: number }> {
   return listAttractions(filters)
 }
 
-export {
-  getAttractionById,
-  getAttractionMeta,
-  listAttractions,
-  searchAttractions,
-}
+export { getAttractionById, getAttractionMeta, listAttractions, searchAttractions }

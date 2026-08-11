@@ -37,7 +37,7 @@ const barColors: Record<keyof BudgetData, string> = {
 export function BudgetTable({ data }: BudgetTableProps) {
   // 计算预算总和与最大单项值（用于柱状图宽度归一化）
   const total = Object.values(data).reduce((sum, v) => sum + (v || 0), 0)
-  const max = Math.max(...Object.values(data).map(v => v || 0), 1)
+  const max = Math.max(...Object.values(data).map((v) => v || 0), 1)
 
   const budgetKeys = Object.keys(labels) as Array<keyof BudgetData>
 
@@ -52,20 +52,19 @@ export function BudgetTable({ data }: BudgetTableProps) {
         <table className="budget-table__table">
           <caption className="sr-only">旅行预算分类明细</caption>
           <tbody>
-            {budgetKeys.map(key => (
+            {budgetKeys.map((key) => (
               <tr key={key} className="budget-table__row">
-                <th scope="row" className="budget-table__label">{labels[key]}</th>
-                <td className="budget-table__value">
-                  ¥
-                  {data[key] || 0}
-                </td>
+                <th scope="row" className="budget-table__label">
+                  {labels[key]}
+                </th>
+                <td className="budget-table__value">¥{data[key] || 0}</td>
               </tr>
             ))}
           </tbody>
         </table>
         {/* ---- 柱状图可视化 ---- */}
         <div className="budget-table__bars" aria-label="预算占比可视化">
-          {budgetKeys.map(key => (
+          {budgetKeys.map((key) => (
             <div key={key} className="budget-table__bar-row">
               <span className="budget-table__bar-label">{labels[key]}</span>
               <div
@@ -75,7 +74,10 @@ export function BudgetTable({ data }: BudgetTableProps) {
               >
                 <div
                   className="budget-table__bar-fill"
-                  style={{ width: `${((data[key] || 0) / max) * 100}%`, background: barColors[key] }}
+                  style={{
+                    width: `${((data[key] || 0) / max) * 100}%`,
+                    background: barColors[key],
+                  }}
                 />
               </div>
             </div>
@@ -84,10 +86,7 @@ export function BudgetTable({ data }: BudgetTableProps) {
         {/* ---- 总计行 ---- */}
         <div className="budget-table__total">
           <span>总计</span>
-          <span className="budget-table__total-value">
-            ¥
-            {total}
-          </span>
+          <span className="budget-table__total-value">¥{total}</span>
         </div>
       </div>
     </section>

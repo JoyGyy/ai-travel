@@ -18,11 +18,13 @@ const { Pool } = pg
 
 // ========== 全局单例连接池 ==========
 
-const globalForDb = globalThis as unknown as { _pgPool: pg.Pool | null, _drizzleDb: ReturnType<typeof drizzle<typeof schema>> | null }
+const globalForDb = globalThis as unknown as {
+  _pgPool: pg.Pool | null
+  _drizzleDb: ReturnType<typeof drizzle<typeof schema>> | null
+}
 
 function getPool(): pg.Pool | null {
-  if (!env.DATABASE_URL)
-    return null
+  if (!env.DATABASE_URL) return null
 
   if (!globalForDb._pgPool) {
     globalForDb._pgPool = new Pool({
@@ -44,8 +46,7 @@ function getPool(): pg.Pool | null {
 function getDb() {
   if (!globalForDb._drizzleDb) {
     const pool = getPool()
-    if (!pool)
-      throw new Error('数据库未配置，请设置 DATABASE_URL 环境变量')
+    if (!pool) throw new Error('数据库未配置，请设置 DATABASE_URL 环境变量')
     globalForDb._drizzleDb = drizzle(pool, { schema })
   }
   return globalForDb._drizzleDb
@@ -67,15 +68,13 @@ export const db = new Proxy({} as ReturnType<typeof drizzle<typeof schema>>, {
 /** 执行 SQL 查询（保留用于 pgvector 等原生查询场景） */
 async function query(text: string, params?: unknown[]): Promise<QueryResult> {
   const pool = getPool()
-  if (!pool)
-    throw new Error('数据库未配置，请设置 DATABASE_URL 环境变量')
+  if (!pool) throw new Error('数据库未配置，请设置 DATABASE_URL 环境变量')
   return pool.query(text, params)
 }
 
 async function getClient(): Promise<PoolClient> {
   const pool = getPool()
-  if (!pool)
-    throw new Error('数据库未配置，请设置 DATABASE_URL 环境变量')
+  if (!pool) throw new Error('数据库未配置，请设置 DATABASE_URL 环境变量')
   return pool.connect()
 }
 

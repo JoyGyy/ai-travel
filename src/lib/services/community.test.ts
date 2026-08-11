@@ -60,20 +60,22 @@ function createQueryBuilder(finalResult: unknown[]) {
 }
 
 /** 生成社区帖子原始行数据 */
-function makePostRow(overrides: Partial<{
-  id: string
-  author_id: string
-  author_username: string
-  post_type: 'original' | 'repost'
-  original_post_id: string | null
-  title: string
-  content: string
-  city: string
-  like_count: number
-  comment_count: number
-  repost_count: number
-  liked_by_me: boolean
-}> = {}) {
+function makePostRow(
+  overrides: Partial<{
+    id: string
+    author_id: string
+    author_username: string
+    post_type: 'original' | 'repost'
+    original_post_id: string | null
+    title: string
+    content: string
+    city: string
+    like_count: number
+    comment_count: number
+    repost_count: number
+    liked_by_me: boolean
+  }> = {},
+) {
   return {
     id: overrides.id ?? 'post-1',
     author_id: overrides.author_id ?? 'author-1',
@@ -110,13 +112,16 @@ describe('community 服务', () => {
       mockExecute.mockResolvedValue({ rows: [postRow] })
 
       // act
-      const result = await listCommunityPosts({
-        page: 1,
-        pageSize: 10,
-        city: '',
-        withItinerary: false,
-        authorId: '',
-      }, 'viewer-1')
+      const result = await listCommunityPosts(
+        {
+          page: 1,
+          pageSize: 10,
+          city: '',
+          withItinerary: false,
+          authorId: '',
+        },
+        'viewer-1',
+      )
 
       // assert
       expect(result.total).toBe(1)
@@ -229,9 +234,11 @@ describe('community 服务', () => {
       mockTransaction.mockRejectedValue(new Error('事务失败'))
 
       // act & assert
-      await expect(createCommunityPost('author-1', {
-        title: '新帖子',
-      })).rejects.toThrow('事务失败')
+      await expect(
+        createCommunityPost('author-1', {
+          title: '新帖子',
+        }),
+      ).rejects.toThrow('事务失败')
     })
   })
 
@@ -256,7 +263,9 @@ describe('community 服务', () => {
       mockSelect.mockReturnValue(createQueryBuilder([]))
 
       // act & assert
-      const err = await deleteCommunityPost('nonexistent', 'author-1').catch(e => e) as Error & { status: number }
+      const err = (await deleteCommunityPost('nonexistent', 'author-1').catch(
+        (e) => e,
+      )) as Error & { status: number }
       expect(err.status).toBe(404)
       expect(err.message).toBe('帖子不存在或已删除')
     })
@@ -266,7 +275,9 @@ describe('community 服务', () => {
       mockSelect.mockReturnValue(createQueryBuilder([{ authorId: 'other-author' }]))
 
       // act & assert
-      const err = await deleteCommunityPost('post-1', 'author-1').catch(e => e) as Error & { status: number }
+      const err = (await deleteCommunityPost('post-1', 'author-1').catch((e) => e)) as Error & {
+        status: number
+      }
       expect(err.status).toBe(403)
       expect(err.message).toBe('只能删除自己的帖子')
     })
@@ -298,7 +309,9 @@ describe('community 服务', () => {
       mockSelect.mockReturnValue(createQueryBuilder([]))
 
       // act & assert
-      const err = await likeCommunityPost('nonexistent', 'user-1').catch(e => e) as Error & { status: number }
+      const err = (await likeCommunityPost('nonexistent', 'user-1').catch((e) => e)) as Error & {
+        status: number
+      }
       expect(err.status).toBe(404)
     })
   })
@@ -325,7 +338,9 @@ describe('community 服务', () => {
       mockSelect.mockReturnValue(createQueryBuilder([]))
 
       // act & assert
-      const err = await unlikeCommunityPost('nonexistent', 'user-1').catch(e => e) as Error & { status: number }
+      const err = (await unlikeCommunityPost('nonexistent', 'user-1').catch((e) => e)) as Error & {
+        status: number
+      }
       expect(err.status).toBe(404)
     })
   })
@@ -338,15 +353,19 @@ describe('community 服务', () => {
       // ensurePostExists
       mockSelect
         .mockReturnValueOnce(createQueryBuilder([{ id: 'post-1' }])) // ensurePostExists
-        .mockReturnValueOnce(createQueryBuilder([{
-          id: 'comment-1',
-          postId: 'post-1',
-          authorId: 'user-1',
-          authorUsername: 'commenter',
-          content: '好帖子',
-          createdAt: new Date('2024-01-15T12:00:00Z'),
-          updatedAt: new Date('2024-01-15T12:00:00Z'),
-        }])) // data
+        .mockReturnValueOnce(
+          createQueryBuilder([
+            {
+              id: 'comment-1',
+              postId: 'post-1',
+              authorId: 'user-1',
+              authorUsername: 'commenter',
+              content: '好帖子',
+              createdAt: new Date('2024-01-15T12:00:00Z'),
+              updatedAt: new Date('2024-01-15T12:00:00Z'),
+            },
+          ]),
+        ) // data
         .mockReturnValueOnce(createQueryBuilder([{ cnt: 1 }])) // count
 
       // act
@@ -413,7 +432,9 @@ describe('community 服务', () => {
       mockSelect.mockReturnValue(createQueryBuilder([]))
 
       // act & assert
-      const err = await deleteCommunityComment('nonexistent', 'user-1').catch(e => e) as Error & { status: number }
+      const err = (await deleteCommunityComment('nonexistent', 'user-1').catch(
+        (e) => e,
+      )) as Error & { status: number }
       expect(err.status).toBe(404)
       expect(err.message).toBe('评论不存在或已删除')
     })
@@ -423,7 +444,9 @@ describe('community 服务', () => {
       mockSelect.mockReturnValue(createQueryBuilder([{ authorId: 'other-user' }]))
 
       // act & assert
-      const err = await deleteCommunityComment('comment-1', 'user-1').catch(e => e) as Error & { status: number }
+      const err = (await deleteCommunityComment('comment-1', 'user-1').catch((e) => e)) as Error & {
+        status: number
+      }
       expect(err.status).toBe(403)
       expect(err.message).toBe('只能删除自己的评论')
     })
@@ -435,12 +458,16 @@ describe('community 服务', () => {
     it('成功转发帖子', async () => {
       // arrange
       // getRepostTarget
-      mockSelect.mockReturnValueOnce(createQueryBuilder([{
-        id: 'post-1',
-        postType: 'original',
-        originalPostId: null,
-        city: '北京',
-      }]))
+      mockSelect.mockReturnValueOnce(
+        createQueryBuilder([
+          {
+            id: 'post-1',
+            postType: 'original',
+            originalPostId: null,
+            city: '北京',
+          },
+        ]),
+      )
       // ensurePostExists (originalPostId = post-1)
       mockSelect.mockReturnValueOnce(createQueryBuilder([{ id: 'post-1' }]))
 
@@ -475,7 +502,9 @@ describe('community 服务', () => {
       mockSelect.mockReturnValue(createQueryBuilder([]))
 
       // act & assert
-      const err = await repostCommunityPost('nonexistent', 'author-1').catch(e => e) as Error & { status: number }
+      const err = (await repostCommunityPost('nonexistent', 'author-1').catch(
+        (e) => e,
+      )) as Error & { status: number }
       expect(err.status).toBe(404)
     })
   })

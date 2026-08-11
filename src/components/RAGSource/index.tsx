@@ -14,8 +14,7 @@ interface RAGSourceProps {
 
 export function RAGSource({ sources }: RAGSourceProps) {
   // 无来源时不渲染
-  if (!sources || sources.length === 0)
-    return null
+  if (!sources || sources.length === 0) return null
 
   return (
     <div className="rag-source">
@@ -26,8 +25,10 @@ export function RAGSource({ sources }: RAGSourceProps) {
       </div>
       {/* ---- 来源标签列表 ---- */}
       <div className="rag-source__list">
-        {sources.map(source => (
-          <span key={source} className="rag-source__tag">{source}</span>
+        {sources.map((source) => (
+          <span key={source} className="rag-source__tag">
+            {source}
+          </span>
         ))}
       </div>
     </div>

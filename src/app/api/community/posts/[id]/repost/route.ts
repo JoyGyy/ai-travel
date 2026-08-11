@@ -16,7 +16,7 @@ export const POST = withProtected<{ params: Promise<{ id: string }> }>(
     const { id } = await params
     readRequiredString(id, '帖子ID', { min: 1, max: 100 })
 
-    const body = await req.json().catch(() => ({})) as { content?: unknown }
+    const body = (await req.json().catch(() => ({}))) as { content?: unknown }
     const content = readOptionalString(body?.content, '转发附言', MAX_REPOST_CONTENT_LENGTH)
 
     const data = await repostCommunityPost(id, user.id, content)

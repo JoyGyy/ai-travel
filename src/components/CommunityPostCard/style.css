@@ -2,7 +2,9 @@
 .community-post-card {
   overflow: hidden;
   border-radius: 12px;
-  transition: transform 0.2s var(--ease-standard), box-shadow 0.2s var(--ease-standard);
+  transition:
+    transform 0.2s var(--ease-standard),
+    box-shadow 0.2s var(--ease-standard);
 }
 
 .community-post-card:hover {
@@ -159,7 +161,9 @@
 
 .community-post-card__action-btn {
   color: var(--travel-muted) !important;
-  transition: color 0.2s, transform 0.15s;
+  transition:
+    color 0.2s,
+    transform 0.15s;
 }
 
 .community-post-card__action-btn:hover {
@@ -182,10 +186,18 @@
 }
 
 @keyframes likeHeartbeat {
-  0% { transform: scale(1); }
-  30% { transform: scale(1.25); }
-  60% { transform: scale(0.95); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.25);
+  }
+  60% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* 响应式 */

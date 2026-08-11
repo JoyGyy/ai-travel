@@ -36,7 +36,9 @@ export interface CityKnowledge {
 
 export interface SearchResult {
   city: string
-  attractions: Array<AttractionKnowledge & { score: number, keywordScore: number, tfidfScore: number }>
+  attractions: Array<
+    AttractionKnowledge & { score: number; keywordScore: number; tfidfScore: number }
+  >
   food: string[]
   transport: string
   bestSeason: string
@@ -47,8 +49,7 @@ const globalIndex = new TFIDFIndex()
 
 /** 从数据库加载景点知识库并构建 TF-IDF 索引（带缓存） */
 async function loadKnowledge(): Promise<CityKnowledge[]> {
-  if (knowledgeCache)
-    return knowledgeCache
+  if (knowledgeCache) return knowledgeCache
 
   const rows = await db
     .select({
@@ -78,8 +79,12 @@ async function loadKnowledge(): Promise<CityKnowledge[]> {
         food: row.food || [],
         transport: row.transport || '',
         bestSeason: row.bestSeason || '',
-        accommodation: typeof row.accommodation === 'string' ? JSON.parse(row.accommodation) : (row.accommodation || []),
-        nightlife: typeof row.nightlife === 'string' ? JSON.parse(row.nightlife) : (row.nightlife || []),
+        accommodation:
+          typeof row.accommodation === 'string'
+            ? JSON.parse(row.accommodation)
+            : row.accommodation || [],
+        nightlife:
+          typeof row.nightlife === 'string' ? JSON.parse(row.nightlife) : row.nightlife || [],
       })
     }
     cityMap.get(row.city)!.attractions.push({
@@ -96,7 +101,7 @@ async function loadKnowledge(): Promise<CityKnowledge[]> {
   knowledgeCache = [...cityMap.values()]
 
   // 构建 TF-IDF 索引文档：将景点名称、描述、标签拼接为文本
-  const docs: Array<{ id: string, text: string }> = []
+  const docs: Array<{ id: string; text: string }> = []
   for (const cityData of knowledgeCache) {
     for (const attr of cityData.attractions) {
       const id = `${cityData.city}:${attr.name}`
@@ -111,7 +116,7 @@ async function loadKnowledge(): Promise<CityKnowledge[]> {
 
 async function getCityData(cityName: string): Promise<CityKnowledge | null> {
   const data = await loadKnowledge()
-  return data.find(c => c.city === cityName) || null
+  return data.find((c) => c.city === cityName) || null
 }
 
 /** 关键词匹配：根据标签和文本匹配景点，返回带关键词得分的结果 */
@@ -121,22 +126,17 @@ function matchByKeyword(tags: string[], queryText: string, attractions: Attracti
     const queryLower = queryText.toLowerCase()
 
     for (const tag of tags) {
-      if (attr.tags.includes(tag))
-        score += 3
+      if (attr.tags.includes(tag)) score += 3
     }
 
-    if (queryLower && attr.description.toLowerCase().includes(queryLower))
-      score += 2
-    if (queryLower && attr.name.toLowerCase().includes(queryLower))
-      score += 5
+    if (queryLower && attr.description.toLowerCase().includes(queryLower)) score += 2
+    if (queryLower && attr.name.toLowerCase().includes(queryLower)) score += 5
 
     for (const tag of tags) {
-      if (attr.name.includes(tag) || attr.description.includes(tag))
-        score += 1
+      if (attr.name.includes(tag) || attr.description.includes(tag)) score += 1
     }
 
-    if (attr.tags.includes('必去'))
-      score += 2
+    if (attr.tags.includes('必去')) score += 2
 
     return { ...attr, keywordScore: score }
   })
@@ -149,13 +149,12 @@ async function vectorSearch(queryText: string, city: string): Promise<Map<string
   const scoreMap = new Map<string, number>()
 
   const embedding = await generateEmbedding(queryText)
-  if (!embedding)
-    return scoreMap
+  if (!embedding) return scoreMap
 
   const vectorStr = formatEmbeddingForPg(embedding)
 
   try {
-    const result = await db.execute<{ name: string, similarity: number }>(sql`
+    const result = await db.execute<{ name: string; similarity: number }>(sql`
       SELECT name, 1 - (embedding <=> ${vectorStr}::vector) AS similarity
       FROM attraction_knowledge
       WHERE city = ${city} AND embedding IS NOT NULL
@@ -166,8 +165,7 @@ async function vectorSearch(queryText: string, city: string): Promise<Map<string
     for (const row of result.rows) {
       scoreMap.set(row.name, Number(row.similarity))
     }
-  }
-  catch (err) {
+  } catch (err) {
     log.warn('向量搜索失败，降级到 TF-IDF:', (err as Error).message)
   }
 
@@ -177,7 +175,12 @@ async function vectorSearch(queryText: string, city: string): Promise<Map<string
 /**
  * 混合检索：向量 + 关键词
  */
-async function matchAttractions(tags: string[], queryText: string, attractions: AttractionKnowledge[], city: string) {
+async function matchAttractions(
+  tags: string[],
+  queryText: string,
+  attractions: AttractionKnowledge[],
+  city: string,
+) {
   const keywordResults = matchByKeyword(tags, queryText, attractions)
 
   // 尝试向量搜索
@@ -195,7 +198,7 @@ async function matchAttractions(tags: string[], queryText: string, attractions: 
     }
   }
 
-  const maxKeyword = Math.max(...keywordResults.map(a => a.keywordScore), 1)
+  const maxKeyword = Math.max(...keywordResults.map((a) => a.keywordScore), 1)
   const scoreSource = hasVector ? vectorScores : tfidfScores
   const maxScore = Math.max(...scoreSource.values(), 0.01)
   const hasKeywords = tags.length > 0 || queryText.length > 0
@@ -216,17 +219,23 @@ async function matchAttractions(tags: string[], queryText: string, attractions: 
     }
   })
 
-  return scored
-    .filter(a => !hasKeywords || a.score > 0)
-    .sort((a, b) => b.score - a.score)
+  return scored.filter((a) => !hasKeywords || a.score > 0).sort((a, b) => b.score - a.score)
 }
 
-async function retrieve(city: string, preferenceTags: string[] = [], queryText = ''): Promise<SearchResult | null> {
+async function retrieve(
+  city: string,
+  preferenceTags: string[] = [],
+  queryText = '',
+): Promise<SearchResult | null> {
   const cityData = await getCityData(city)
-  if (!cityData)
-    return null
+  if (!cityData) return null
 
-  const matchedAttractions = await matchAttractions(preferenceTags, queryText, cityData.attractions, city)
+  const matchedAttractions = await matchAttractions(
+    preferenceTags,
+    queryText,
+    cityData.attractions,
+    city,
+  )
 
   return {
     city: cityData.city,
@@ -239,7 +248,7 @@ async function retrieve(city: string, preferenceTags: string[] = [], queryText =
 
 async function getAllCities(): Promise<string[]> {
   const data = await loadKnowledge()
-  return data.map(c => c.city)
+  return data.map((c) => c.city)
 }
 
 export { getAllCities, getCityData, retrieve }

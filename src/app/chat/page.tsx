@@ -23,18 +23,31 @@ export default function ChatPage() {
     <section className="mx-auto flex min-h-[calc(100vh-72px)] max-w-5xl flex-col px-4 py-8">
       <div className="mb-6 rounded-3xl bg-[var(--travel-hero-gradient)] p-6 shadow-[var(--travel-shadow-card)]">
         <h1 className="text-3xl font-extrabold text-foreground">AI 旅行规划师</h1>
-        <p className="mt-2 text-muted-foreground">告诉我目的地、天数、预算和偏好，我会帮你规划路线。</p>
+        <p className="mt-2 text-muted-foreground">
+          告诉我目的地、天数、预算和偏好，我会帮你规划路线。
+        </p>
       </div>
 
       <div className="flex-1 space-y-4">
-        {messages.map(message => (
+        {messages.map((message) => (
           <div key={message.id} className={message.role === 'user' ? 'text-right' : 'text-left'}>
             {message.parts.map((part, index) => {
               if (part.type === 'text') {
-                return <p key={index} className="inline-block rounded-3xl bg-card px-4 py-3 shadow-[var(--shadow-paper)]">{part.text}</p>
+                return (
+                  <p
+                    key={index}
+                    className="inline-block rounded-3xl bg-card px-4 py-3 shadow-[var(--shadow-paper)]"
+                  >
+                    {part.text}
+                  </p>
+                )
               }
               if (part.type.startsWith('tool-') || part.type === 'dynamic-tool') {
-                return <pre key={index} className="overflow-auto rounded-2xl bg-muted p-3 text-xs">{JSON.stringify(part, null, 2)}</pre>
+                return (
+                  <pre key={index} className="overflow-auto rounded-2xl bg-muted p-3 text-xs">
+                    {JSON.stringify(part, null, 2)}
+                  </pre>
+                )
               }
               return null
             })}
@@ -44,12 +57,24 @@ export default function ChatPage() {
 
       {error && <p className="mt-4 text-sm text-destructive">{error.message}</p>}
 
-      <form onSubmit={handleSubmit} className="mt-6 flex gap-3 rounded-3xl border bg-card p-3 shadow-[var(--travel-shadow-floating)]">
-        <Textarea value={input} onChange={event => setInput(event.target.value)} placeholder="例如：帮我规划杭州 3 天 2 晚，预算 3000 元" />
+      <form
+        onSubmit={handleSubmit}
+        className="mt-6 flex gap-3 rounded-3xl border bg-card p-3 shadow-[var(--travel-shadow-floating)]"
+      >
+        <Textarea
+          value={input}
+          onChange={(event) => setInput(event.target.value)}
+          placeholder="例如：帮我规划杭州 3 天 2 晚，预算 3000 元"
+        />
         <Button type="submit" disabled={!input.trim() || status !== 'ready'}>
-          <Send className="mr-2 h-4 w-4" />发送
+          <Send className="mr-2 h-4 w-4" />
+          发送
         </Button>
-        {status !== 'ready' && <Button type="button" variant="outline" onClick={stop}>停止</Button>}
+        {status !== 'ready' && (
+          <Button type="button" variant="outline" onClick={stop}>
+            停止
+          </Button>
+        )}
         <Button type="button" variant="ghost" onClick={() => setMessages([])}>
           <Trash2 className="h-4 w-4" />
         </Button>

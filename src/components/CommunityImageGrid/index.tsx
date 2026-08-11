@@ -15,8 +15,7 @@ interface CommunityImageGridProps {
 export function CommunityImageGrid({ images, compact = false }: CommunityImageGridProps) {
   const [previewIndex, setPreviewIndex] = useState<number | null>(null)
 
-  if (images.length === 0)
-    return null
+  if (images.length === 0) return null
 
   const visibleImages = images.slice(0, 9)
 
@@ -42,7 +41,9 @@ export function CommunityImageGrid({ images, compact = false }: CommunityImageGr
 
   return (
     <>
-      <div className={`community-image-grid community-image-grid--count-${visibleImages.length} ${compact ? 'community-image-grid--compact' : ''}`}>
+      <div
+        className={`community-image-grid community-image-grid--count-${visibleImages.length} ${compact ? 'community-image-grid--compact' : ''}`}
+      >
         {visibleImages.map((image, index) => (
           <button
             key={image.id || image.storageKey || image.url}
@@ -65,11 +66,24 @@ export function CommunityImageGrid({ images, compact = false }: CommunityImageGr
       {/* 图片预览模态框 */}
       {previewIndex !== null && (
         <div className="community-image-grid__preview" onClick={handleClose}>
-          <button type="button" className="community-image-grid__close" onClick={handleClose} aria-label="关闭预览">
+          <button
+            type="button"
+            className="community-image-grid__close"
+            onClick={handleClose}
+            aria-label="关闭预览"
+          >
             &times;
           </button>
           {previewIndex > 0 && (
-            <button type="button" className="community-image-grid__prev" onClick={(e) => { e.stopPropagation(); handlePrev() }} aria-label="上一张">
+            <button
+              type="button"
+              className="community-image-grid__prev"
+              onClick={(e) => {
+                e.stopPropagation()
+                handlePrev()
+              }}
+              aria-label="上一张"
+            >
               &#8249;
             </button>
           )}
@@ -81,7 +95,15 @@ export function CommunityImageGrid({ images, compact = false }: CommunityImageGr
             unoptimized
           />
           {previewIndex < visibleImages.length - 1 && (
-            <button type="button" className="community-image-grid__next" onClick={(e) => { e.stopPropagation(); handleNext() }} aria-label="下一张">
+            <button
+              type="button"
+              className="community-image-grid__next"
+              onClick={(e) => {
+                e.stopPropagation()
+                handleNext()
+              }}
+              aria-label="下一张"
+            >
               &#8250;
             </button>
           )}

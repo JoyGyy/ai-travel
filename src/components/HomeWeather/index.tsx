@@ -10,18 +10,12 @@ import './style.css'
 
 /** 根据天气描述文本匹配对应的图标类型 */
 function getWeatherIconType(desc = ''): string {
-  if (desc.includes('雷') || desc.includes('暴雨'))
-    return 'storm'
-  if (desc.includes('雨'))
-    return 'rain'
-  if (desc.includes('雪'))
-    return 'snow'
-  if (desc.includes('雾'))
-    return 'fog'
-  if (desc.includes('云') || desc.includes('阴'))
-    return 'cloudy'
-  if (desc.includes('晴'))
-    return 'sunny'
+  if (desc.includes('雷') || desc.includes('暴雨')) return 'storm'
+  if (desc.includes('雨')) return 'rain'
+  if (desc.includes('雪')) return 'snow'
+  if (desc.includes('雾')) return 'fog'
+  if (desc.includes('云') || desc.includes('阴')) return 'cloudy'
+  if (desc.includes('晴')) return 'sunny'
   return 'default'
 }
 
@@ -32,7 +26,12 @@ interface WeatherIconProps {
 
 function WeatherIcon({ desc, className = '' }: WeatherIconProps) {
   const type = getWeatherIconType(desc)
-  return <span className={`travel-weather-icon travel-weather-icon--${type} ${className}`} aria-hidden="true" />
+  return (
+    <span
+      className={`travel-weather-icon travel-weather-icon--${type} ${className}`}
+      aria-hidden="true"
+    />
+  )
 }
 
 interface HomeWeatherProps {
@@ -63,9 +62,7 @@ export function HomeWeather({ weather, loading }: HomeWeatherProps) {
               <span className="home-weather__unit">°C</span>
             </div>
             <p className="home-weather__desc">
-              {weather.weatherDesc}
-              {' '}
-              · 体感
+              {weather.weatherDesc} · 体感
               {weather.feelsLike}
               °C
             </p>
@@ -75,8 +72,7 @@ export function HomeWeather({ weather, loading }: HomeWeatherProps) {
           <p className="home-weather__city">{weather.city}</p>
           <p className="home-weather__humidity">
             湿度
-            {weather.humidity}
-            %
+            {weather.humidity}%
           </p>
         </div>
       </div>
@@ -85,13 +81,12 @@ export function HomeWeather({ weather, loading }: HomeWeatherProps) {
         <div className="home-weather__forecast" aria-label="未来三天天气预报">
           {weather.forecast.map((day, i) => (
             <div key={day.date} className="home-weather__forecast-item">
-              <span className="home-weather__forecast-label">{i === 0 ? '今天' : i === 1 ? '明天' : '后天'}</span>
+              <span className="home-weather__forecast-label">
+                {i === 0 ? '今天' : i === 1 ? '明天' : '后天'}
+              </span>
               <WeatherIcon desc={day.weatherDesc} className="home-weather__forecast-icon" />
               <span className="home-weather__forecast-temp">
-                {day.minTemp}
-                ~
-                {day.maxTemp}
-                °
+                {day.minTemp}~{day.maxTemp}°
               </span>
             </div>
           ))}

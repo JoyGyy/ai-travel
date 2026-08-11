@@ -17,9 +17,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <AppProviders>
           <Navigation />
-          <main id="main-content">
-            {children}
-          </main>
+          <main id="main-content">{children}</main>
         </AppProviders>
       </body>
     </html>

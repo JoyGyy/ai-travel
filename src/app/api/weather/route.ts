@@ -22,8 +22,7 @@ export async function GET(req: Request) {
     }
 
     return NextResponse.json(weather)
-  }
-  catch (err) {
+  } catch (err) {
     return errorResponse(err)
   }
 }

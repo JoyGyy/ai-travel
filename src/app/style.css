@@ -86,8 +86,9 @@
   font-size: 14px;
   font-weight: 600;
   position: relative;
-  transition: color var(--motion-fast) var(--ease-standard),
-              background var(--motion-fast) var(--ease-standard);
+  transition:
+    color var(--motion-fast) var(--ease-standard),
+    background var(--motion-fast) var(--ease-standard);
 }
 
 .home__nav-link::after {
@@ -99,8 +100,9 @@
   height: 2px;
   background: var(--color-primary);
   border-radius: 999px;
-  transition: width var(--motion-base) var(--ease-spring),
-              left var(--motion-base) var(--ease-spring);
+  transition:
+    width var(--motion-base) var(--ease-spring),
+    left var(--motion-base) var(--ease-spring);
 }
 
 .home__nav-link:hover {
@@ -145,9 +147,10 @@
   box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
   font-size: 13px;
   font-weight: 700;
-  transition: transform var(--motion-fast) var(--ease-spring),
-              box-shadow var(--motion-fast) var(--ease-standard),
-              background var(--motion-fast) var(--ease-standard);
+  transition:
+    transform var(--motion-fast) var(--ease-spring),
+    box-shadow var(--motion-fast) var(--ease-standard),
+    background var(--motion-fast) var(--ease-standard);
 }
 
 .home__login-btn:hover {
@@ -191,7 +194,7 @@
   inset: 0;
   background:
     var(--texture-dots) var(--texture-dots-size),
-    linear-gradient(170deg, var(--color-background) 0%, #F5F3EF 100%);
+    linear-gradient(170deg, var(--color-background) 0%, #f5f3ef 100%);
 }
 
 .home__hero-pattern {
@@ -202,7 +205,10 @@
     radial-gradient(circle at 20% 50%, var(--color-primary) 1px, transparent 1px),
     radial-gradient(circle at 80% 20%, var(--color-primary) 1px, transparent 1px),
     radial-gradient(circle at 60% 80%, var(--color-sand) 1.5px, transparent 1.5px);
-  background-size: 60px 60px, 80px 80px, 100px 100px;
+  background-size:
+    60px 60px,
+    80px 80px,
+    100px 100px;
   animation: float 6s ease-in-out infinite;
 }
 
@@ -282,7 +288,9 @@
   border: 1.5px solid rgba(28, 25, 23, 0.08);
   border-radius: 12px;
   background: #fafafa;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .home__search-field:focus-within {
@@ -348,9 +356,10 @@
   font-size: 15px;
   font-weight: 800;
   white-space: nowrap;
-  transition: transform var(--motion-fast) var(--ease-spring),
-              box-shadow var(--motion-fast) var(--ease-standard),
-              background var(--motion-fast) var(--ease-standard);
+  transition:
+    transform var(--motion-fast) var(--ease-spring),
+    box-shadow var(--motion-fast) var(--ease-standard),
+    background var(--motion-fast) var(--ease-standard);
 }
 
 .home__search-btn:hover {
@@ -381,9 +390,10 @@
   color: var(--color-primary);
   font-size: 16px;
   font-weight: 800;
-  transition: background var(--motion-fast) var(--ease-standard),
-              border-color var(--motion-fast) var(--ease-standard),
-              transform var(--motion-fast) var(--ease-spring);
+  transition:
+    background var(--motion-fast) var(--ease-standard),
+    border-color var(--motion-fast) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-spring);
 }
 
 .home__days-btn:hover:not(:disabled) {
@@ -417,7 +427,7 @@
   padding: 6px 12px;
   border-radius: 8px;
   background: rgba(59, 130, 246, 0.06);
-  color: #3B82F6;
+  color: #3b82f6;
   font-size: 13px;
   font-weight: 600;
 }
@@ -426,7 +436,7 @@
   width: 14px;
   height: 14px;
   border: 2px solid rgba(59, 130, 246, 0.2);
-  border-top-color: #3B82F6;
+  border-top-color: #3b82f6;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -461,9 +471,10 @@
   background: transparent;
   font-size: 14px;
   font-weight: 500;
-  transition: background var(--motion-fast) var(--ease-standard),
-              color var(--motion-fast) var(--ease-standard),
-              transform var(--motion-fast) var(--ease-spring);
+  transition:
+    background var(--motion-fast) var(--ease-standard),
+    color var(--motion-fast) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-spring);
 }
 
 .home__dropdown-item:hover,
@@ -512,10 +523,11 @@
   color: var(--travel-ink);
   font-size: 13px;
   font-weight: 600;
-  transition: background var(--motion-fast) var(--ease-standard),
-              color var(--motion-fast) var(--ease-standard),
-              transform var(--motion-fast) var(--ease-spring),
-              box-shadow var(--motion-fast) var(--ease-standard);
+  transition:
+    background var(--motion-fast) var(--ease-standard),
+    color var(--motion-fast) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-spring),
+    box-shadow var(--motion-fast) var(--ease-standard);
 }
 
 .home__hot-tag:hover {
@@ -554,9 +566,10 @@
   padding: 16px 8px;
   border-radius: 12px;
   text-decoration: none;
-  transition: background var(--motion-fast) var(--ease-standard),
-              transform var(--motion-fast) var(--ease-spring),
-              box-shadow var(--motion-fast) var(--ease-standard);
+  transition:
+    background var(--motion-fast) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-spring),
+    box-shadow var(--motion-fast) var(--ease-standard);
 }
 
 .home__quick-item:hover {
@@ -575,8 +588,9 @@
   color: #fff;
   font-size: 22px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  transition: transform var(--motion-fast) var(--ease-spring),
-              box-shadow var(--motion-fast) var(--ease-standard);
+  transition:
+    transform var(--motion-fast) var(--ease-spring),
+    box-shadow var(--motion-fast) var(--ease-standard);
 }
 
 .home__quick-item:hover .home__quick-icon {
@@ -623,8 +637,9 @@
   color: rgba(28, 25, 23, 0.45);
   font-weight: 600;
   cursor: pointer;
-  transition: color var(--motion-fast) var(--ease-standard),
-              transform var(--motion-fast) var(--ease-spring);
+  transition:
+    color var(--motion-fast) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-spring);
 }
 
 .home__section-more:hover {
@@ -646,17 +661,30 @@
   background: var(--travel-surface);
   box-shadow: var(--shadow-paper);
   text-align: left;
-  transition: transform var(--motion-base) var(--ease-spring),
-              box-shadow var(--motion-base) var(--ease-standard);
+  transition:
+    transform var(--motion-base) var(--ease-spring),
+    box-shadow var(--motion-base) var(--ease-standard);
   animation: popIn var(--motion-choreography) var(--ease-spring) both;
 }
 
-.home__dest-card:nth-child(1) { animation-delay: 0.1s; }
-.home__dest-card:nth-child(2) { animation-delay: 0.16s; }
-.home__dest-card:nth-child(3) { animation-delay: 0.22s; }
-.home__dest-card:nth-child(4) { animation-delay: 0.28s; }
-.home__dest-card:nth-child(5) { animation-delay: 0.34s; }
-.home__dest-card:nth-child(6) { animation-delay: 0.4s; }
+.home__dest-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.home__dest-card:nth-child(2) {
+  animation-delay: 0.16s;
+}
+.home__dest-card:nth-child(3) {
+  animation-delay: 0.22s;
+}
+.home__dest-card:nth-child(4) {
+  animation-delay: 0.28s;
+}
+.home__dest-card:nth-child(5) {
+  animation-delay: 0.34s;
+}
+.home__dest-card:nth-child(6) {
+  animation-delay: 0.4s;
+}
 
 .home__dest-card:hover {
   transform: translateY(-6px) scale(1.02);
@@ -737,14 +765,21 @@
   background: var(--travel-surface);
   box-shadow: var(--shadow-paper);
   text-align: left;
-  transition: transform var(--motion-base) var(--ease-spring),
-              box-shadow var(--motion-base) var(--ease-standard);
+  transition:
+    transform var(--motion-base) var(--ease-spring),
+    box-shadow var(--motion-base) var(--ease-standard);
   animation: popIn var(--motion-choreography) var(--ease-spring) both;
 }
 
-.home__featured-card:nth-child(1) { animation-delay: 0.1s; }
-.home__featured-card:nth-child(2) { animation-delay: 0.18s; }
-.home__featured-card:nth-child(3) { animation-delay: 0.26s; }
+.home__featured-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.home__featured-card:nth-child(2) {
+  animation-delay: 0.18s;
+}
+.home__featured-card:nth-child(3) {
+  animation-delay: 0.26s;
+}
 
 .home__featured-card:hover {
   transform: translateY(-6px) scale(1.01);
@@ -1047,7 +1082,7 @@
   padding: 48px 24px;
   background:
     var(--texture-dots) 20px 20px,
-    #FFF8F0;
+    #fff8f0;
   border-top: 1px solid rgba(28, 25, 23, 0.06);
   border-bottom: 1px solid rgba(28, 25, 23, 0.06);
   text-align: center;
@@ -1086,9 +1121,10 @@
   box-shadow: 0 4px 20px rgba(255, 107, 53, 0.2);
   font-size: 16px;
   font-weight: 800;
-  transition: transform var(--motion-fast) var(--ease-spring),
-              box-shadow var(--motion-fast) var(--ease-standard),
-              background var(--motion-fast) var(--ease-standard);
+  transition:
+    transform var(--motion-fast) var(--ease-spring),
+    box-shadow var(--motion-fast) var(--ease-standard),
+    background var(--motion-fast) var(--ease-standard);
 }
 
 .home__cta-btn:hover {

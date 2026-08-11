@@ -26,20 +26,22 @@ export function useAttractionFavorite(options: UseAttractionFavoriteOptions = {}
    * @param currentlyFavorited 当前是否已收藏
    * @returns Promise，成功时返回新的收藏状态
    */
-  const toggleFavorite = useCallback(async (attractionId: string, currentlyFavorited: boolean): Promise<boolean> => {
-    try {
-      const result = currentlyFavorited
-        ? await unfavoriteAttraction(attractionId)
-        : await favoriteAttraction(attractionId)
-      onFavoriteSuccess?.(attractionId, result.isFavorite)
-      toast.success(result.isFavorite ? '已收藏' : '已取消收藏')
-      return result.isFavorite
-    }
-    catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : '收藏操作失败')
-      return currentlyFavorited // 失败时保持原状态
-    }
-  }, [toast, onFavoriteSuccess])
+  const toggleFavorite = useCallback(
+    async (attractionId: string, currentlyFavorited: boolean): Promise<boolean> => {
+      try {
+        const result = currentlyFavorited
+          ? await unfavoriteAttraction(attractionId)
+          : await favoriteAttraction(attractionId)
+        onFavoriteSuccess?.(attractionId, result.isFavorite)
+        toast.success(result.isFavorite ? '已收藏' : '已取消收藏')
+        return result.isFavorite
+      } catch (err: unknown) {
+        toast.error(err instanceof Error ? err.message : '收藏操作失败')
+        return currentlyFavorited // 失败时保持原状态
+      }
+    },
+    [toast, onFavoriteSuccess],
+  )
 
   return {
     /** 切换收藏状态 */

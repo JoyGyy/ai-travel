@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
-@import "tailwindcss";
+@import 'tailwindcss';
 @config "../../tailwind.config.ts";
 
 :root {
@@ -188,7 +188,8 @@
   --c-paper-dark: rgba(28, 25, 23, 0.08);
   --c-white: var(--travel-white);
 
-  --font-display: 'Plus Jakarta Sans', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display:
+    'Plus Jakarta Sans', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-serif: 'Playfair Display', 'Noto Serif SC', Georgia, 'Times New Roman', serif;
   --font-sans: 'Plus Jakarta Sans', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
 
@@ -304,8 +305,16 @@ a:focus-visible {
   content: '';
   border-radius: 999px;
   background:
-    radial-gradient(circle at 18px 50%, rgba(var(--travel-primary-rgb), 0.32) 0 4px, transparent 5px),
-    linear-gradient(90deg, rgba(var(--travel-primary-rgb), 0.18), rgba(var(--travel-secondary-rgb), 0.02));
+    radial-gradient(
+      circle at 18px 50%,
+      rgba(var(--travel-primary-rgb), 0.32) 0 4px,
+      transparent 5px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(var(--travel-primary-rgb), 0.18),
+      rgba(var(--travel-secondary-rgb), 0.02)
+    );
   background-size:
     28px 28px,
     auto;
@@ -347,7 +356,8 @@ a:focus-visible {
   bottom: 18px;
   width: 16px;
   content: '';
-  background: radial-gradient(circle, var(--travel-bg) 0 6px, transparent 6.5px) center / 16px 28px repeat-y;
+  background: radial-gradient(circle, var(--travel-bg) 0 6px, transparent 6.5px) center / 16px 28px
+    repeat-y;
   pointer-events: none;
 }
 

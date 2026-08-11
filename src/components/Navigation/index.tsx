@@ -24,34 +24,37 @@ const tabs = [
 
 /** 根据路径判断是否显示导航栏 */
 function shouldShowNav(pathname: string) {
-  if (pathname === '/' || pathname === '/login')
-    return false
+  if (pathname === '/' || pathname === '/login') return false
 
-  return pathname === '/weather'
-    || pathname === '/chat'
-    || pathname === '/profile'
-    || pathname === '/detail'
-    || pathname === '/attractions'
-    || pathname.startsWith('/attractions/')
-    || pathname === '/community'
-    || pathname.startsWith('/community/')
+  return (
+    pathname === '/weather' ||
+    pathname === '/chat' ||
+    pathname === '/profile' ||
+    pathname === '/detail' ||
+    pathname === '/attractions' ||
+    pathname.startsWith('/attractions/') ||
+    pathname === '/community' ||
+    pathname.startsWith('/community/')
+  )
 }
 
 /* ========== 顶部导航栏 ========== */
 
 function TopNav() {
-  const user = useAuthStore(state => state.user)
+  const user = useAuthStore((state) => state.user)
   const pathname = usePathname()
 
   return (
     <nav className="layout-nav" aria-label="主导航">
       <div className="layout-nav__inner">
         <Link className="layout-nav__brand" href="/" aria-label="返回首页">
-          <span className="layout-nav__logo" aria-hidden="true"><Compass size={20} /></span>
+          <span className="layout-nav__logo" aria-hidden="true">
+            <Compass size={20} />
+          </span>
           <span className="layout-nav__title">Travel AI</span>
         </Link>
         <div className="layout-nav__tabs" role="list">
-          {tabs.map(tab => (
+          {tabs.map((tab) => (
             <Link
               key={tab.key}
               href={tab.key}
@@ -64,23 +67,21 @@ function TopNav() {
           ))}
         </div>
         <div className="layout-nav__user">
-          {user
-            ? (
-                <Link
-                  href="/profile"
-                  className={`layout-nav__username ${pathname === '/profile' ? 'layout-nav__username--active' : ''}`}
-                  aria-label={`当前用户：${user.username}，进入个人中心`}
-                >
-                  <User size={16} aria-hidden="true" />
-                  <span>{user.username}</span>
-                </Link>
-              )
-            : (
-                <Link className="layout-nav__login-btn" href="/login">
-                  <User size={16} aria-hidden="true" />
-                  登录
-                </Link>
-              )}
+          {user ? (
+            <Link
+              href="/profile"
+              className={`layout-nav__username ${pathname === '/profile' ? 'layout-nav__username--active' : ''}`}
+              aria-label={`当前用户：${user.username}，进入个人中心`}
+            >
+              <User size={16} aria-hidden="true" />
+              <span>{user.username}</span>
+            </Link>
+          ) : (
+            <Link className="layout-nav__login-btn" href="/login">
+              <User size={16} aria-hidden="true" />
+              登录
+            </Link>
+          )}
         </div>
       </div>
     </nav>

@@ -9,8 +9,7 @@
  */
 export function formatRelativeTime(value: string | Date): string {
   const date = typeof value === 'string' ? new Date(value) : value
-  if (Number.isNaN(date.getTime()))
-    return String(value)
+  if (Number.isNaN(date.getTime())) return String(value)
 
   const now = new Date()
   const diffMs = now.getTime() - date.getTime()
@@ -19,18 +18,12 @@ export function formatRelativeTime(value: string | Date): string {
   const diffHours = Math.floor(diffMinutes / 60)
   const diffDays = Math.floor(diffHours / 24)
 
-  if (diffSeconds < 60)
-    return '刚刚'
-  if (diffMinutes < 60)
-    return `${diffMinutes}分钟前`
-  if (diffHours < 24)
-    return `${diffHours}小时前`
-  if (diffDays === 1)
-    return '昨天'
-  if (diffDays === 2)
-    return '前天'
-  if (diffDays < 7)
-    return `${diffDays}天前`
+  if (diffSeconds < 60) return '刚刚'
+  if (diffMinutes < 60) return `${diffMinutes}分钟前`
+  if (diffHours < 24) return `${diffHours}小时前`
+  if (diffDays === 1) return '昨天'
+  if (diffDays === 2) return '前天'
+  if (diffDays < 7) return `${diffDays}天前`
 
   // 超过 7 天显示绝对日期
   const year = date.getFullYear()
@@ -38,8 +31,7 @@ export function formatRelativeTime(value: string | Date): string {
   const day = String(date.getDate()).padStart(2, '0')
 
   // 同年不显示年份
-  if (year === now.getFullYear())
-    return `${month}-${day}`
+  if (year === now.getFullYear()) return `${month}-${day}`
 
   return `${year}-${month}-${day}`
 }
@@ -49,8 +41,7 @@ export function formatRelativeTime(value: string | Date): string {
  */
 export function formatFullDateTime(value: string | Date): string {
   const date = typeof value === 'string' ? new Date(value) : value
-  if (Number.isNaN(date.getTime()))
-    return String(value)
+  if (Number.isNaN(date.getTime())) return String(value)
 
   return date.toLocaleString('zh-CN', {
     year: 'numeric',
@@ -66,8 +57,7 @@ export function formatFullDateTime(value: string | Date): string {
  */
 export function formatDate(value: string | Date): string {
   const date = typeof value === 'string' ? new Date(value) : value
-  if (Number.isNaN(date.getTime()))
-    return String(value)
+  if (Number.isNaN(date.getTime())) return String(value)
 
   return date.toLocaleDateString('zh-CN')
 }

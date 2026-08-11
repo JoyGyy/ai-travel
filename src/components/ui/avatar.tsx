@@ -15,14 +15,25 @@ function Avatar({ className, ...props }: ComponentPropsWithoutRef<typeof AvatarP
   )
 }
 
-function AvatarImage({ className, ...props }: ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>) {
-  return <AvatarPrimitive.Image className={cn('aspect-square h-full w-full', className)} {...props} />
+function AvatarImage({
+  className,
+  ...props
+}: ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>) {
+  return (
+    <AvatarPrimitive.Image className={cn('aspect-square h-full w-full', className)} {...props} />
+  )
 }
 
-function AvatarFallback({ className, ...props }: ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback>) {
+function AvatarFallback({
+  className,
+  ...props
+}: ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback>) {
   return (
     <AvatarPrimitive.Fallback
-      className={cn('flex h-full w-full items-center justify-center rounded-full bg-muted', className)}
+      className={cn(
+        'flex h-full w-full items-center justify-center rounded-full bg-muted',
+        className,
+      )}
       {...props}
     />
   )

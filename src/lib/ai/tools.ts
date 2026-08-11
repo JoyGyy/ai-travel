@@ -40,20 +40,22 @@ export const travelTools = {
     execute: async ({ city }) => retrieve(city, [], `${city} 注意事项 旅行贴士 最佳季节`),
   }),
   searchProductAttractions: tool({
-    description: '当用户询问免费景点、收费景点、亲子景点、夜游景点或购票信息时调用，返回可进入详情页的产品景点。',
+    description:
+      '当用户询问免费景点、收费景点、亲子景点、夜游景点或购票信息时调用，返回可进入详情页的产品景点。',
     inputSchema: z.object({
       city: z.string().optional(),
       keyword: z.string().optional(),
       ticketType: z.enum(['free', 'paid']).optional(),
       tag: z.string().optional(),
     }),
-    execute: async input => searchAttractions({
-      city: input.city,
-      keyword: input.keyword,
-      ticketType: input.ticketType,
-      tag: input.tag,
-      page: 1,
-      pageSize: 6,
-    }),
+    execute: async (input) =>
+      searchAttractions({
+        city: input.city,
+        keyword: input.keyword,
+        ticketType: input.ticketType,
+        tag: input.tag,
+        page: 1,
+        pageSize: 6,
+      }),
   }),
 }

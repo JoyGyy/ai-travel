@@ -20,7 +20,10 @@ function TabsList({ className, ...props }: ComponentPropsWithoutRef<typeof TabsP
   )
 }
 
-function TabsTrigger({ className, ...props }: ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>) {
+function TabsTrigger({
+  className,
+  ...props
+}: ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>) {
   return (
     <TabsPrimitive.Trigger
       className={cn(
@@ -32,7 +35,10 @@ function TabsTrigger({ className, ...props }: ComponentPropsWithoutRef<typeof Ta
   )
 }
 
-function TabsContent({ className, ...props }: ComponentPropsWithoutRef<typeof TabsPrimitive.Content>) {
+function TabsContent({
+  className,
+  ...props
+}: ComponentPropsWithoutRef<typeof TabsPrimitive.Content>) {
   return (
     <TabsPrimitive.Content
       className={cn(

@@ -8,13 +8,7 @@ import { jwtVerify } from 'jose'
 import { NextResponse } from 'next/server'
 
 // 受保护的路由前缀
-const PROTECTED_PATHS = [
-  '/detail',
-  '/chat',
-  '/attractions',
-  '/profile',
-  '/community/new',
-]
+const PROTECTED_PATHS = ['/detail', '/chat', '/attractions', '/profile', '/community/new']
 
 // 从环境变量获取 JWT_SECRET（middleware 中无法使用 env.ts）
 function getJwtSecret(): Uint8Array {
@@ -27,12 +21,9 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // 检查是否为受保护路由
-  const isProtected = PROTECTED_PATHS.some(
-    p => pathname === p || pathname.startsWith(`${p}/`),
-  )
+  const isProtected = PROTECTED_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`))
 
-  if (!isProtected)
-    return NextResponse.next()
+  if (!isProtected) return NextResponse.next()
 
   // 从 cookie 或 Authorization header 获取 token
   const token = request.cookies.get('token')?.value
@@ -50,8 +41,7 @@ export async function middleware(request: NextRequest) {
   try {
     await jwtVerify(jwt, getJwtSecret())
     return NextResponse.next()
-  }
-  catch {
+  } catch {
     // token 无效或过期，清除 cookie 并重定向到登录页
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('from', pathname)

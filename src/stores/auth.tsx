@@ -33,13 +33,13 @@ interface AuthState {
 export const useAuthStore = create<AuthState>()(
   devtools(
     persist(
-      set => ({
+      (set) => ({
         // --- 初始状态 ---
 
         user: null,
         token: null,
         _hasHydrated: false,
-        setHasHydrated: v => set({ _hasHydrated: v }),
+        setHasHydrated: (v) => set({ _hasHydrated: v }),
 
         // --- 异步操作：登录/注册 ---
 

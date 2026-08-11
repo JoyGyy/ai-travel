@@ -17,21 +17,37 @@ import { loadItineraryCache } from '@/utils/storage'
 import './style.css'
 
 // 动态导入重型组件，减少初始包大小
-const AccommodationCard = dynamic(() => import('@/components/AccommodationCard').then(mod => ({ default: mod.AccommodationCard })), {
-  loading: () => <div className="h-32 animate-pulse bg-muted rounded-xl" />,
-})
-const AgentSteps = dynamic(() => import('@/components/AgentSteps').then(mod => ({ default: mod.AgentSteps })), {
-  loading: () => <div className="h-48 animate-pulse bg-muted rounded-xl" />,
-})
-const BudgetTable = dynamic(() => import('@/components/BudgetTable').then(mod => ({ default: mod.BudgetTable })), {
-  loading: () => <div className="h-64 animate-pulse bg-muted rounded-xl" />,
-})
-const SpotItem = dynamic(() => import('@/components/SpotItem').then(mod => ({ default: mod.SpotItem })), {
-  loading: () => <div className="h-24 animate-pulse bg-muted rounded-xl" />,
-})
-const WeatherCard = dynamic(() => import('@/components/WeatherCard').then(mod => ({ default: mod.WeatherCard })), {
-  loading: () => <div className="h-40 animate-pulse bg-muted rounded-xl" />,
-})
+const AccommodationCard = dynamic(
+  () =>
+    import('@/components/AccommodationCard').then((mod) => ({ default: mod.AccommodationCard })),
+  {
+    loading: () => <div className="h-32 animate-pulse bg-muted rounded-xl" />,
+  },
+)
+const AgentSteps = dynamic(
+  () => import('@/components/AgentSteps').then((mod) => ({ default: mod.AgentSteps })),
+  {
+    loading: () => <div className="h-48 animate-pulse bg-muted rounded-xl" />,
+  },
+)
+const BudgetTable = dynamic(
+  () => import('@/components/BudgetTable').then((mod) => ({ default: mod.BudgetTable })),
+  {
+    loading: () => <div className="h-64 animate-pulse bg-muted rounded-xl" />,
+  },
+)
+const SpotItem = dynamic(
+  () => import('@/components/SpotItem').then((mod) => ({ default: mod.SpotItem })),
+  {
+    loading: () => <div className="h-24 animate-pulse bg-muted rounded-xl" />,
+  },
+)
+const WeatherCard = dynamic(
+  () => import('@/components/WeatherCard').then((mod) => ({ default: mod.WeatherCard })),
+  {
+    loading: () => <div className="h-40 animate-pulse bg-muted rounded-xl" />,
+  },
+)
 
 export default function Detail() {
   /* ---------- 路由参数解析 ---------- */
@@ -43,23 +59,23 @@ export default function Detail() {
   const budget = Number(searchParams?.get('budget')) || 0
   const days = Number(searchParams?.get('days')) || 1
 
-  const itinerary = useItineraryStore(s => s.itinerary)
-  const budgetBreakdown = useItineraryStore(s => s.budgetBreakdown)
-  const tips = useItineraryStore(s => s.tips)
-  const weather = useItineraryStore(s => s.weather)
-  const accommodation = useItineraryStore(s => s.accommodation)
-  const nightlife = useItineraryStore(s => s.nightlife)
-  const attractionRefs = useItineraryStore(s => s.attractionRefs)
-  const agentSteps = useItineraryStore(s => s.agentSteps)
-  const currentAgentStep = useItineraryStore(s => s.currentAgentStep)
-  const setItinerary = useItineraryStore(s => s.setItinerary)
-  const setBudgetBreakdown = useItineraryStore(s => s.setBudgetBreakdown)
-  const setTips = useItineraryStore(s => s.setTips)
-  const setWeather = useItineraryStore(s => s.setWeather)
-  const setAccommodation = useItineraryStore(s => s.setAccommodation)
-  const setNightlife = useItineraryStore(s => s.setNightlife)
-  const setAttractionRefs = useItineraryStore(s => s.setAttractionRefs)
-  const setCurrentAgentStep = useItineraryStore(s => s.setCurrentAgentStep)
+  const itinerary = useItineraryStore((s) => s.itinerary)
+  const budgetBreakdown = useItineraryStore((s) => s.budgetBreakdown)
+  const tips = useItineraryStore((s) => s.tips)
+  const weather = useItineraryStore((s) => s.weather)
+  const accommodation = useItineraryStore((s) => s.accommodation)
+  const nightlife = useItineraryStore((s) => s.nightlife)
+  const attractionRefs = useItineraryStore((s) => s.attractionRefs)
+  const agentSteps = useItineraryStore((s) => s.agentSteps)
+  const currentAgentStep = useItineraryStore((s) => s.currentAgentStep)
+  const setItinerary = useItineraryStore((s) => s.setItinerary)
+  const setBudgetBreakdown = useItineraryStore((s) => s.setBudgetBreakdown)
+  const setTips = useItineraryStore((s) => s.setTips)
+  const setWeather = useItineraryStore((s) => s.setWeather)
+  const setAccommodation = useItineraryStore((s) => s.setAccommodation)
+  const setNightlife = useItineraryStore((s) => s.setNightlife)
+  const setAttractionRefs = useItineraryStore((s) => s.setAttractionRefs)
+  const setCurrentAgentStep = useItineraryStore((s) => s.setCurrentAgentStep)
 
   /* ---------- 本地 UI 状态 ---------- */
 
@@ -70,7 +86,7 @@ export default function Detail() {
   const hasValidParams = Boolean(city && budget > 0 && days > 0)
 
   function findAttractionRef(spot?: string) {
-    return attractionRefs.find(ref => ref.name === spot)
+    return attractionRefs.find((ref) => ref.name === spot)
   }
 
   function shareToCommunity() {
@@ -160,227 +176,246 @@ export default function Detail() {
           <ArrowLeft aria-hidden="true" />
         </button>
         <p className="detail-page__label">ITINERARY</p>
-        <h1 id="detail-title" className="detail-page__title">{city || '旅行规划'}</h1>
-        {hasValidParams
-          ? (
-              <p className="detail-page__subtitle">
-                {days}
-                {' '}
-                天行程 · 预算 ¥
-                {budget}
-              </p>
-            )
-          : null}
+        <h1 id="detail-title" className="detail-page__title">
+          {city || '旅行规划'}
+        </h1>
+        {hasValidParams ? (
+          <p className="detail-page__subtitle">
+            {days} 天行程 · 预算 ¥{budget}
+          </p>
+        ) : null}
       </div>
 
       <div className="detail-page__content">
-        {showLoading
-          ? (
-              <div className="detail-page__loading" role="status" aria-live="polite" aria-label="AI 正在规划行程">
-                <div className="detail-page__loading-card">
-                  <div className="detail-page__loading-header">
-                    <span>AI 规划中</span>
-                    <button
-                      type="button"
-                      aria-label="关闭行程规划并返回"
-                      onClick={() => router.back()}
-                    >
-                      <X aria-hidden="true" />
-                    </button>
-                  </div>
-                  <div className="detail-page__loading-steps">
-                    <AgentSteps steps={agentSteps} currentStep={currentAgentStep} />
-                  </div>
-                  <div className="detail-page__loading-spinner">
-                    <div className="detail-page__spinner" aria-hidden="true" />
-                    <Compass className="detail-page__spinner-icon" aria-hidden="true" />
-                  </div>
-                  <p className="detail-page__loading-text">正在为你规划行程...</p>
-                </div>
+        {showLoading ? (
+          <div
+            className="detail-page__loading"
+            role="status"
+            aria-live="polite"
+            aria-label="AI 正在规划行程"
+          >
+            <div className="detail-page__loading-card">
+              <div className="detail-page__loading-header">
+                <span>AI 规划中</span>
+                <button type="button" aria-label="关闭行程规划并返回" onClick={() => router.back()}>
+                  <X aria-hidden="true" />
+                </button>
               </div>
-            )
-          : null}
-
-        {!showLoading && errorMessage
-          ? (
-              <div className="detail-page__empty" role="alert">
-                <div className="detail-page__empty-icon"><MapPin aria-hidden="true" /></div>
-                <p>{errorMessage}</p>
-                <button type="button" onClick={() => router.push('/')}>返回首页重新规划</button>
+              <div className="detail-page__loading-steps">
+                <AgentSteps steps={agentSteps} currentStep={currentAgentStep} />
               </div>
-            )
-          : null}
+              <div className="detail-page__loading-spinner">
+                <div className="detail-page__spinner" aria-hidden="true" />
+                <Compass className="detail-page__spinner-icon" aria-hidden="true" />
+              </div>
+              <p className="detail-page__loading-text">正在为你规划行程...</p>
+            </div>
+          </div>
+        ) : null}
 
-        {!showLoading && !errorMessage && itinerary.length === 0
-          ? (
-              messages.length > 0
-                ? (
-                    <div className="detail-page__ai-content">
-                      <div className="detail-page__ai-header">
-                        <span>AI 生成的行程规划</span>
-                        {status !== 'ready' && (
-                          <div className="detail-page__spinner" aria-hidden="true" />
-                        )}
-                      </div>
-                      <div className="detail-page__ai-messages">
-                        {messages.map(message => (
-                          <div key={message.id} className="detail-page__ai-message">
-                            {message.parts.map((part, index) => {
-                              if (part.type === 'text') {
-                                return (
-                                  <div key={index} className="detail-page__ai-text">
-                                    {part.text}
-                                  </div>
-                                )
-                              }
-                              return null
-                            })}
+        {!showLoading && errorMessage ? (
+          <div className="detail-page__empty" role="alert">
+            <div className="detail-page__empty-icon">
+              <MapPin aria-hidden="true" />
+            </div>
+            <p>{errorMessage}</p>
+            <button type="button" onClick={() => router.push('/')}>
+              返回首页重新规划
+            </button>
+          </div>
+        ) : null}
+
+        {!showLoading && !errorMessage && itinerary.length === 0 ? (
+          messages.length > 0 ? (
+            <div className="detail-page__ai-content">
+              <div className="detail-page__ai-header">
+                <span>AI 生成的行程规划</span>
+                {status !== 'ready' && <div className="detail-page__spinner" aria-hidden="true" />}
+              </div>
+              <div className="detail-page__ai-messages">
+                {messages.map((message) => (
+                  <div key={message.id} className="detail-page__ai-message">
+                    {message.parts.map((part, index) => {
+                      if (part.type === 'text') {
+                        return (
+                          <div key={index} className="detail-page__ai-text">
+                            {part.text}
                           </div>
-                        ))}
-                      </div>
-                      {chatError && (
-                        <div className="detail-page__ai-error" role="alert">
-                          <p>
-                            生成失败：
-                            {chatError.message}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  )
-                : (
-                    <div className="detail-page__empty" role="status">
-                      <div className="detail-page__empty-icon"><MapPin aria-hidden="true" /></div>
-                      <p>暂无行程数据</p>
-                      <button type="button" onClick={() => router.push('/chat')}>咨询 AI 生成行程</button>
-                    </div>
-                  )
-            )
-          : null}
-
-        {!showLoading && !errorMessage && itinerary.length > 0
-          ? (
-              <>
-                {/* 摘要卡片 */}
-                <div className="detail-page__summary travel-ticket-edge" aria-label="行程摘要">
-                  <div className="detail-page__summary-item">
-                    <span className="detail-page__summary-label">目的地</span>
-                    <span className="detail-page__summary-value">{city}</span>
-                  </div>
-                  <div className="detail-page__summary-divider" />
-                  <div className="detail-page__summary-item">
-                    <span className="detail-page__summary-label">天数</span>
-                    <span className="detail-page__summary-value">
-                      {days}
-                      天
-                    </span>
-                  </div>
-                  <div className="detail-page__summary-divider" />
-                  <div className="detail-page__summary-item">
-                    <span className="detail-page__summary-label">预算</span>
-                    <span className="detail-page__summary-value detail-page__summary-value--accent">
-                      ¥
-                      {budget}
-                    </span>
-                  </div>
-                </div>
-
-                {/* 天气 */}
-                {weather
-                  ? (
-                      <section className="detail-page__section" aria-labelledby="detail-weather-title">
-                        <h2 id="detail-weather-title" className="detail-page__section-title">
-                          <span className="detail-page__dot" aria-hidden="true" />
-                          实时天气
-                        </h2>
-                        <WeatherCard weather={weather} />
-                      </section>
-                    )
-                  : null}
-
-                {/* 住宿推荐 */}
-                {accommodation.length > 0 || nightlife.length > 0
-                  ? (
-                      <section className="detail-page__section" aria-label="住宿和夜生活推荐">
-                        <AccommodationCard accommodation={accommodation} nightlife={nightlife} />
-                      </section>
-                    )
-                  : null}
-
-                {/* 每日行程 */}
-                <section className="detail-page__section" aria-labelledby="detail-itinerary-title">
-                  <h2 id="detail-itinerary-title" className="detail-page__section-title">
-                    <span className="detail-page__dot" aria-hidden="true" />
-                    每日行程
-                  </h2>
-                  <div className="detail-page__itinerary">
-                    {itinerary.map((item) => {
-                      const dayKey = String(item.day)
-                      const panelId = `detail-day-panel-${dayKey}`
-                      const isOpen = activeKeys.includes(dayKey)
-                      return (
-                        <div key={item.day} className="detail-page__day">
-                          <button
-                            type="button"
-                            aria-expanded={isOpen}
-                            aria-controls={panelId}
-                            onClick={() => setActiveKeys(prev => isOpen ? prev.filter(k => k !== dayKey) : [...prev, dayKey])}
-                            className="detail-page__day-header"
-                          >
-                            <span>{item.date}</span>
-                            <span className={`detail-page__day-arrow ${isOpen ? 'detail-page__day-arrow--open' : ''}`} aria-hidden="true">▼</span>
-                          </button>
-                          {isOpen
-                            ? (
-                                <div id={panelId} className="detail-page__day-body">
-                                  {item.morning && <SpotItem period="上午" data={item.morning} attractionRef={findAttractionRef(item.morning.spot)} />}
-                                  {item.afternoon && <SpotItem period="下午" data={item.afternoon} attractionRef={findAttractionRef(item.afternoon.spot)} />}
-                                  {item.evening && <SpotItem period="晚上" data={item.evening} attractionRef={findAttractionRef(item.evening.spot)} />}
-                                </div>
-                              )
-                            : null}
-                        </div>
-                      )
+                        )
+                      }
+                      return null
                     })}
                   </div>
-                </section>
-
-                {/* 预算明细 */}
-                {budgetBreakdown
-                  ? <BudgetTable data={budgetBreakdown} />
-                  : null}
-
-                {/* 温馨提示 */}
-                {tips.length > 0
-                  ? (
-                      <section className="detail-page__section" aria-labelledby="detail-tips-title">
-                        <h2 id="detail-tips-title" className="detail-page__section-title">
-                          <span className="detail-page__dot" aria-hidden="true" />
-                          温馨提示
-                        </h2>
-                        <div className="detail-page__tips">
-                          {tips.map(tip => (
-                            <div key={tip} className="detail-page__tip">
-                              <span className="detail-page__tip-dot" aria-hidden="true" />
-                              {tip}
-                            </div>
-                          ))}
-                        </div>
-                      </section>
-                    )
-                  : null}
-
-                {/* 分享与咨询操作 */}
-                <div className="detail-page__actions">
-                  <button type="button" onClick={shareToCommunity} className="detail-page__chat-btn" aria-label="分享到社区">
-                    <Share2 aria-hidden="true" />
-                    分享到社区
-                  </button>
-                  <button type="button" onClick={() => router.push('/chat')} className="detail-page__chat-btn" aria-label="咨询 AI 优化当前行程">咨询 AI 优化行程</button>
+                ))}
+              </div>
+              {chatError && (
+                <div className="detail-page__ai-error" role="alert">
+                  <p>
+                    生成失败：
+                    {chatError.message}
+                  </p>
                 </div>
-              </>
-            )
-          : null}
+              )}
+            </div>
+          ) : (
+            <div className="detail-page__empty" role="status">
+              <div className="detail-page__empty-icon">
+                <MapPin aria-hidden="true" />
+              </div>
+              <p>暂无行程数据</p>
+              <button type="button" onClick={() => router.push('/chat')}>
+                咨询 AI 生成行程
+              </button>
+            </div>
+          )
+        ) : null}
+
+        {!showLoading && !errorMessage && itinerary.length > 0 ? (
+          <>
+            {/* 摘要卡片 */}
+            <div className="detail-page__summary travel-ticket-edge" aria-label="行程摘要">
+              <div className="detail-page__summary-item">
+                <span className="detail-page__summary-label">目的地</span>
+                <span className="detail-page__summary-value">{city}</span>
+              </div>
+              <div className="detail-page__summary-divider" />
+              <div className="detail-page__summary-item">
+                <span className="detail-page__summary-label">天数</span>
+                <span className="detail-page__summary-value">{days}天</span>
+              </div>
+              <div className="detail-page__summary-divider" />
+              <div className="detail-page__summary-item">
+                <span className="detail-page__summary-label">预算</span>
+                <span className="detail-page__summary-value detail-page__summary-value--accent">
+                  ¥{budget}
+                </span>
+              </div>
+            </div>
+
+            {/* 天气 */}
+            {weather ? (
+              <section className="detail-page__section" aria-labelledby="detail-weather-title">
+                <h2 id="detail-weather-title" className="detail-page__section-title">
+                  <span className="detail-page__dot" aria-hidden="true" />
+                  实时天气
+                </h2>
+                <WeatherCard weather={weather} />
+              </section>
+            ) : null}
+
+            {/* 住宿推荐 */}
+            {accommodation.length > 0 || nightlife.length > 0 ? (
+              <section className="detail-page__section" aria-label="住宿和夜生活推荐">
+                <AccommodationCard accommodation={accommodation} nightlife={nightlife} />
+              </section>
+            ) : null}
+
+            {/* 每日行程 */}
+            <section className="detail-page__section" aria-labelledby="detail-itinerary-title">
+              <h2 id="detail-itinerary-title" className="detail-page__section-title">
+                <span className="detail-page__dot" aria-hidden="true" />
+                每日行程
+              </h2>
+              <div className="detail-page__itinerary">
+                {itinerary.map((item) => {
+                  const dayKey = String(item.day)
+                  const panelId = `detail-day-panel-${dayKey}`
+                  const isOpen = activeKeys.includes(dayKey)
+                  return (
+                    <div key={item.day} className="detail-page__day">
+                      <button
+                        type="button"
+                        aria-expanded={isOpen}
+                        aria-controls={panelId}
+                        onClick={() =>
+                          setActiveKeys((prev) =>
+                            isOpen ? prev.filter((k) => k !== dayKey) : [...prev, dayKey],
+                          )
+                        }
+                        className="detail-page__day-header"
+                      >
+                        <span>{item.date}</span>
+                        <span
+                          className={`detail-page__day-arrow ${isOpen ? 'detail-page__day-arrow--open' : ''}`}
+                          aria-hidden="true"
+                        >
+                          ▼
+                        </span>
+                      </button>
+                      {isOpen ? (
+                        <div id={panelId} className="detail-page__day-body">
+                          {item.morning && (
+                            <SpotItem
+                              period="上午"
+                              data={item.morning}
+                              attractionRef={findAttractionRef(item.morning.spot)}
+                            />
+                          )}
+                          {item.afternoon && (
+                            <SpotItem
+                              period="下午"
+                              data={item.afternoon}
+                              attractionRef={findAttractionRef(item.afternoon.spot)}
+                            />
+                          )}
+                          {item.evening && (
+                            <SpotItem
+                              period="晚上"
+                              data={item.evening}
+                              attractionRef={findAttractionRef(item.evening.spot)}
+                            />
+                          )}
+                        </div>
+                      ) : null}
+                    </div>
+                  )
+                })}
+              </div>
+            </section>
+
+            {/* 预算明细 */}
+            {budgetBreakdown ? <BudgetTable data={budgetBreakdown} /> : null}
+
+            {/* 温馨提示 */}
+            {tips.length > 0 ? (
+              <section className="detail-page__section" aria-labelledby="detail-tips-title">
+                <h2 id="detail-tips-title" className="detail-page__section-title">
+                  <span className="detail-page__dot" aria-hidden="true" />
+                  温馨提示
+                </h2>
+                <div className="detail-page__tips">
+                  {tips.map((tip) => (
+                    <div key={tip} className="detail-page__tip">
+                      <span className="detail-page__tip-dot" aria-hidden="true" />
+                      {tip}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
+            {/* 分享与咨询操作 */}
+            <div className="detail-page__actions">
+              <button
+                type="button"
+                onClick={shareToCommunity}
+                className="detail-page__chat-btn"
+                aria-label="分享到社区"
+              >
+                <Share2 aria-hidden="true" />
+                分享到社区
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push('/chat')}
+                className="detail-page__chat-btn"
+                aria-label="咨询 AI 优化当前行程"
+              >
+                咨询 AI 优化行程
+              </button>
+            </div>
+          </>
+        ) : null}
       </div>
     </main>
   )

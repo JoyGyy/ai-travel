@@ -21,7 +21,7 @@ if (typeof setInterval !== 'undefined') {
   setInterval(() => {
     const now = Date.now()
     for (const [key, timestamps] of requestLog) {
-      const valid = timestamps.filter(t => now - t < MAX_RECORD_AGE)
+      const valid = timestamps.filter((t) => now - t < MAX_RECORD_AGE)
       if (valid.length === 0) requestLog.delete(key)
       else requestLog.set(key, valid)
     }
@@ -41,15 +41,16 @@ export async function checkRateLimit(
 ): Promise<NextResponse | null> {
   // 如果调用方已传入 userId，直接使用；否则从 header 解析
   const uid = userId ?? (await getAuthFromHeaders(req.headers))?.id
-  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-    || req.headers.get('x-real-ip')
-    || 'unknown'
+  const ip =
+    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    req.headers.get('x-real-ip') ||
+    'unknown'
 
   const identity = uid ? `user:${uid}` : `ip:${ip}`
   const key = `${name}:${identity}`
 
   const now = Date.now()
-  const timestamps = (requestLog.get(key) || []).filter(t => now - t < windowMs)
+  const timestamps = (requestLog.get(key) || []).filter((t) => now - t < windowMs)
 
   if (timestamps.length >= maxRequests) {
     const retryAfter = Math.ceil((timestamps[0] + windowMs - now) / 1000)

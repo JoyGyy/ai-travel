@@ -27,12 +27,14 @@ const policeRecordText = `浙公网安备${policeRecordCode}号`
 const policeRecordHref = `https://beian.mps.gov.cn/#/query/webSearch?code=${policeRecordCode}`
 
 /** 站点合规页脚：统一维护备案和协议入口 */
-export function ComplianceFooter({ variant = 'default', showCopyright = true, className = '' }: ComplianceFooterProps) {
-  const classes = [
-    'compliance-footer',
-    `compliance-footer--${variant}`,
-    className,
-  ].filter(Boolean).join(' ')
+export function ComplianceFooter({
+  variant = 'default',
+  showCopyright = true,
+  className = '',
+}: ComplianceFooterProps) {
+  const classes = ['compliance-footer', `compliance-footer--${variant}`, className]
+    .filter(Boolean)
+    .join(' ')
 
   return (
     <footer className={classes} aria-label="网站备案与协议信息">
@@ -40,12 +42,28 @@ export function ComplianceFooter({ variant = 'default', showCopyright = true, cl
       <a className="compliance-footer__link" href={icpRecordHref} rel="noreferrer" target="_blank">
         {icpRecordText}
       </a>
-      <a className="compliance-footer__link compliance-footer__police" href={policeRecordHref} rel="noreferrer" target="_blank">
-        <Image className="compliance-footer__police-icon" src={imageUrl('/images/beian-gongan.png')} alt="公安备案图标" width={16} height={16} unoptimized />
+      <a
+        className="compliance-footer__link compliance-footer__police"
+        href={policeRecordHref}
+        rel="noreferrer"
+        target="_blank"
+      >
+        <Image
+          className="compliance-footer__police-icon"
+          src={imageUrl('/images/beian-gongan.png')}
+          alt="公安备案图标"
+          width={16}
+          height={16}
+          unoptimized
+        />
         <span>{policeRecordText}</span>
       </a>
-      <Link className="compliance-footer__link" href="/terms">用户协议</Link>
-      <Link className="compliance-footer__link" href="/privacy">隐私政策</Link>
+      <Link className="compliance-footer__link" href="/terms">
+        用户协议
+      </Link>
+      <Link className="compliance-footer__link" href="/privacy">
+        隐私政策
+      </Link>
     </footer>
   )
 }

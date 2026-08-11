@@ -2,7 +2,6 @@
  * 认证服务单元测试
  */
 import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
 
 import {
   addFavoriteAttraction,
@@ -25,6 +24,19 @@ vi.mock('@/lib/env', () => ({
   env: {
     JWT_SECRET: 'test-jwt-secret-for-unit-tests',
   },
+}))
+
+// Mock jose 库
+const mockSignJwt = vi.fn()
+const mockJwtVerify = vi.fn()
+
+vi.mock('jose', () => ({
+  SignJWT: vi.fn().mockImplementation(() => ({
+    setProtectedHeader: vi.fn().mockReturnThis(),
+    setExpirationTime: vi.fn().mockReturnThis(),
+    sign: mockSignJwt,
+  })),
+  jwtVerify: mockJwtVerify,
 }))
 
 const mockSelect = vi.fn()
@@ -76,7 +88,7 @@ describe('auth 服务', () => {
         values: vi.fn().mockResolvedValue(undefined),
       })
       vi.spyOn(bcrypt, 'hash').mockResolvedValue('hashed-password' as never)
-      vi.spyOn(jwt, 'sign').mockReturnValue('mock-jwt-token' as never)
+      mockSignJwt.mockResolvedValue('mock-jwt-token')
 
       // act
       const result = await register('testuser', 'password123')
@@ -100,7 +112,9 @@ describe('auth 服务', () => {
     })
 
     it('用户名过长时抛出错误', async () => {
-      await expect(register('a'.repeat(21), 'password123')).rejects.toThrow('用户名长度为 2-20 个字符')
+      await expect(register('a'.repeat(21), 'password123')).rejects.toThrow(
+        '用户名长度为 2-20 个字符',
+      )
     })
 
     it('密码过短时抛出错误', async () => {
@@ -122,14 +136,18 @@ describe('auth 服务', () => {
     it('成功登录', async () => {
       // arrange
       const createdAt = new Date('2024-01-01T00:00:00Z')
-      mockSelect.mockReturnValue(createQueryBuilder([{
-        id: 'user-1',
-        username: 'testuser',
-        passwordHash: 'hashed-pw',
-        createdAt,
-      }]))
+      mockSelect.mockReturnValue(
+        createQueryBuilder([
+          {
+            id: 'user-1',
+            username: 'testuser',
+            passwordHash: 'hashed-pw',
+            createdAt,
+          },
+        ]),
+      )
       vi.spyOn(bcrypt, 'compare').mockResolvedValue(true as never)
-      vi.spyOn(jwt, 'sign').mockReturnValue('login-token' as never)
+      mockSignJwt.mockResolvedValue('login-token')
 
       // act
       const result = await login('testuser', 'password123')
@@ -159,12 +177,16 @@ describe('auth 服务', () => {
 
     it('密码错误时抛出错误', async () => {
       // arrange
-      mockSelect.mockReturnValue(createQueryBuilder([{
-        id: 'user-1',
-        username: 'testuser',
-        passwordHash: 'hashed-pw',
-        createdAt: new Date(),
-      }]))
+      mockSelect.mockReturnValue(
+        createQueryBuilder([
+          {
+            id: 'user-1',
+            username: 'testuser',
+            passwordHash: 'hashed-pw',
+            createdAt: new Date(),
+          },
+        ]),
+      )
       vi.spyOn(bcrypt, 'compare').mockResolvedValue(false as never)
 
       // act & assert
@@ -175,119 +197,123 @@ describe('auth 服务', () => {
   // ---------- verifyToken ----------
 
   describe('verifyToken()', () => {
-    it('有效 token 返回 payload', () => {
+    it('有效 token 返回 payload', async () => {
       // arrange
       const payload = { id: 'user-1', username: 'testuser' }
-      vi.spyOn(jwt, 'verify').mockReturnValue(payload as never)
+      mockJwtVerify.mockResolvedValue({ payload })
 
       // act
-      const result = verifyToken('valid-token')
+      const result = await verifyToken('valid-token')
 
       // assert
       expect(result).toEqual(payload)
     })
 
-    it('过期 token 抛出 TokenExpiredError', () => {
+    it('过期 token 抛出 TokenExpiredError', async () => {
       // arrange
-      vi.spyOn(jwt, 'verify').mockImplementation(() => {
-        const err = new Error('jwt expired')
-        err.name = 'TokenExpiredError'
-        throw err
-      })
+      const err = new Error('jwt expired')
+      err.name = 'TokenExpiredError'
+      mockJwtVerify.mockRejectedValue(err)
 
       // act & assert
-      expect(() => verifyToken('expired-token')).toThrow('jwt expired')
+      await expect(verifyToken('expired-token')).rejects.toThrow('jwt expired')
     })
 
-    it('无效 token 抛出 JsonWebTokenError', () => {
+    it('无效 token 抛出 JsonWebTokenError', async () => {
       // arrange
-      vi.spyOn(jwt, 'verify').mockImplementation(() => {
-        const err = new Error('invalid token')
-        err.name = 'JsonWebTokenError'
-        throw err
-      })
+      const err = new Error('invalid token')
+      err.name = 'JWSSignatureVerificationFailed'
+      mockJwtVerify.mockRejectedValue(err)
 
       // act & assert
-      expect(() => verifyToken('invalid-token')).toThrow('invalid token')
+      await expect(verifyToken('invalid-token')).rejects.toThrow('invalid token')
     })
   })
 
   // ---------- getAuthFromHeaders ----------
 
   describe('getAuthFromHeaders()', () => {
-    it('从 Authorization header 提取用户', () => {
+    it('从 Authorization header 提取用户', async () => {
       // arrange
       const payload = { id: 'user-1', username: 'testuser' }
-      vi.spyOn(jwt, 'verify').mockReturnValue(payload as never)
+      mockJwtVerify.mockResolvedValue({ payload })
       const headers = new Headers({ authorization: 'Bearer valid-token' })
 
       // act
-      const result = getAuthFromHeaders(headers)
+      const result = await getAuthFromHeaders(headers)
 
       // assert
       expect(result).toEqual(payload)
     })
 
-    it('从 cookie 提取用户', () => {
+    it('从 cookie 提取用户', async () => {
       // arrange
       const payload = { id: 'user-1', username: 'testuser' }
-      vi.spyOn(jwt, 'verify').mockReturnValue(payload as never)
+      mockJwtVerify.mockResolvedValue({ payload })
       const headers = new Headers({ cookie: 'token=cookie-token; other=value' })
 
       // act
-      const result = getAuthFromHeaders(headers)
+      const result = await getAuthFromHeaders(headers)
 
       // assert
       expect(result).toEqual(payload)
-      expect(jwt.verify).toHaveBeenCalledWith('cookie-token', expect.any(String))
+      expect(mockJwtVerify).toHaveBeenCalledWith(
+        'cookie-token',
+        expect.any(Uint8Array),
+        expect.any(Object),
+      )
     })
 
-    it('无认证信息返回 null', () => {
+    it('无认证信息返回 null', async () => {
       // arrange
       const headers = new Headers()
 
       // act
-      const result = getAuthFromHeaders(headers)
+      const result = await getAuthFromHeaders(headers)
 
       // assert
       expect(result).toBeNull()
     })
 
-    it('Authorization header token 无效时返回 null', () => {
+    it('Authorization header token 无效时返回 null', async () => {
       // arrange
-      vi.spyOn(jwt, 'verify').mockImplementation(() => { throw new Error('invalid') })
+      mockJwtVerify.mockRejectedValue(new Error('invalid'))
       const headers = new Headers({ authorization: 'Bearer bad-token' })
 
       // act
-      const result = getAuthFromHeaders(headers)
+      const result = await getAuthFromHeaders(headers)
 
       // assert
       expect(result).toBeNull()
     })
 
-    it('cookie 中 token 无效时返回 null', () => {
+    it('cookie 中 token 无效时返回 null', async () => {
       // arrange
-      vi.spyOn(jwt, 'verify').mockImplementation(() => { throw new Error('invalid') })
+      mockJwtVerify.mockRejectedValue(new Error('invalid'))
       const headers = new Headers({ cookie: 'token=bad-token' })
 
       // act
-      const result = getAuthFromHeaders(headers)
+      const result = await getAuthFromHeaders(headers)
 
       // assert
       expect(result).toBeNull()
     })
 
-    it('不误匹配 csrf_token 等类似 cookie 名', () => {
+    it('不误匹配 csrf_token 等类似 cookie 名', async () => {
       // arrange
       const payload = { id: 'user-1', username: 'testuser' }
-      vi.spyOn(jwt, 'verify').mockReturnValue(payload as never)
+      mockJwtVerify.mockResolvedValue({ payload })
       const headers = new Headers({ cookie: 'csrf_token=abc123; token=real-token' })
 
       // act
-      const result = getAuthFromHeaders(headers)
+      const result = await getAuthFromHeaders(headers)
 
       // assert
-      expect(jwt.verify).toHaveBeenCalledWith('real-token', expect.any(String))
+      expect(mockJwtVerify).toHaveBeenCalledWith(
+        'real-token',
+        expect.any(Uint8Array),
+        expect.any(Object),
+      )
       expect(result).toEqual(payload)
     })
   })
@@ -315,18 +341,16 @@ describe('auth 服务', () => {
       mockSelect.mockReturnValue(createQueryBuilder([{ usedCount: 10 }]))
 
       // act & assert
-      const err = await consumeAiQuota('user-1', '2024-01-15').catch(e => e) as Error & { status: number }
+      const err = (await consumeAiQuota('user-1', '2024-01-15').catch((e) => e)) as Error & {
+        status: number
+      }
       expect(err.message).toBe('今日 AI 使用次数已达上限，请明天再试')
       expect(err.status).toBe(429)
     })
 
-    it('userId 为空时返回默认配额', async () => {
-      // act
-      const result = await consumeAiQuota(undefined)
-
-      // assert
-      expect(result.used).toBe(0)
-      expect(result.remaining).toBe(10)
+    it('userId 为空时抛出错误', async () => {
+      // act & assert
+      await expect(consumeAiQuota('')).rejects.toThrow('用户信息无效')
     })
   })
 
@@ -398,7 +422,9 @@ describe('auth 服务', () => {
       vi.spyOn(bcrypt, 'compare').mockResolvedValue(false as never)
 
       // act & assert
-      await expect(changePassword('user-1', 'wrongpassword', 'newpassword')).rejects.toThrow('当前密码错误')
+      await expect(changePassword('user-1', 'wrongpassword', 'newpassword')).rejects.toThrow(
+        '当前密码错误',
+      )
     })
 
     it('用户不存在时抛出错误', async () => {
@@ -406,7 +432,9 @@ describe('auth 服务', () => {
       mockSelect.mockReturnValue(createQueryBuilder([]))
 
       // act & assert
-      await expect(changePassword('nonexistent', 'oldpassword', 'newpassword')).rejects.toThrow('用户不存在')
+      await expect(changePassword('nonexistent', 'oldpassword', 'newpassword')).rejects.toThrow(
+        '用户不存在',
+      )
     })
 
     it('userId 为空时抛出错误', async () => {
@@ -414,15 +442,21 @@ describe('auth 服务', () => {
     })
 
     it('当前密码为空时抛出错误', async () => {
-      await expect(changePassword('user-1', '', 'newpassword')).rejects.toThrow('当前密码和新密码不能为空')
+      await expect(changePassword('user-1', '', 'newpassword')).rejects.toThrow(
+        '当前密码和新密码不能为空',
+      )
     })
 
     it('新密码为空时抛出错误', async () => {
-      await expect(changePassword('user-1', 'oldpassword', '')).rejects.toThrow('当前密码和新密码不能为空')
+      await expect(changePassword('user-1', 'oldpassword', '')).rejects.toThrow(
+        '当前密码和新密码不能为空',
+      )
     })
 
     it('新密码过短时抛出错误', async () => {
-      await expect(changePassword('user-1', 'oldpassword', '12345')).rejects.toThrow('新密码长度至少 6 个字符')
+      await expect(changePassword('user-1', 'oldpassword', '12345')).rejects.toThrow(
+        '新密码长度至少 6 个字符',
+      )
     })
   })
 })

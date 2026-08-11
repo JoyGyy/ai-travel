@@ -10,18 +10,12 @@ import './style.css'
 
 /** 根据天气描述文本匹配对应的图标类型 */
 function getWeatherIconType(desc = ''): string {
-  if (desc.includes('雷') || desc.includes('暴雨'))
-    return 'storm'
-  if (desc.includes('雨'))
-    return 'rain'
-  if (desc.includes('雪'))
-    return 'snow'
-  if (desc.includes('雾'))
-    return 'fog'
-  if (desc.includes('云') || desc.includes('阴'))
-    return 'cloudy'
-  if (desc.includes('晴'))
-    return 'sunny'
+  if (desc.includes('雷') || desc.includes('暴雨')) return 'storm'
+  if (desc.includes('雨')) return 'rain'
+  if (desc.includes('雪')) return 'snow'
+  if (desc.includes('雾')) return 'fog'
+  if (desc.includes('云') || desc.includes('阴')) return 'cloudy'
+  if (desc.includes('晴')) return 'sunny'
   return 'default'
 }
 
@@ -32,7 +26,12 @@ interface WeatherIconProps {
 
 function WeatherIcon({ desc, className = '' }: WeatherIconProps) {
   const type = getWeatherIconType(desc)
-  return <span className={`travel-weather-icon travel-weather-icon--${type} ${className}`} aria-hidden="true" />
+  return (
+    <span
+      className={`travel-weather-icon travel-weather-icon--${type} ${className}`}
+      aria-hidden="true"
+    />
+  )
 }
 
 interface WeatherCardProps {
@@ -41,8 +40,7 @@ interface WeatherCardProps {
 
 export function WeatherCard({ weather }: WeatherCardProps) {
   // 无天气数据时不渲染
-  if (!weather)
-    return null
+  if (!weather) return null
 
   return (
     <section className="weather-card" aria-label={`${weather.city} 实时天气`}>
@@ -57,23 +55,16 @@ export function WeatherCard({ weather }: WeatherCardProps) {
             </span>
           </div>
           <p className="weather-card__desc">
-            {weather.weatherDesc}
-            {' '}
-            · 体感
+            {weather.weatherDesc} · 体感
             {weather.feelsLike}
             °C
           </p>
         </div>
         <div className="weather-card__info">
-          <p className="weather-card__city">
-            {weather.city}
-            {' '}
-            · 实时天气
-          </p>
+          <p className="weather-card__city">{weather.city} · 实时天气</p>
           <p className="weather-card__humidity">
             湿度
-            {weather.humidity}
-            %
+            {weather.humidity}%
           </p>
         </div>
       </div>
@@ -82,12 +73,12 @@ export function WeatherCard({ weather }: WeatherCardProps) {
         <div className="weather-card__forecast" aria-label="未来三天天气预报">
           {weather.forecast.map((day, i) => (
             <div key={day.date} className="weather-card__forecast-item">
-              <p className="weather-card__forecast-label">{i === 0 ? '今天' : i === 1 ? '明天' : '后天'}</p>
+              <p className="weather-card__forecast-label">
+                {i === 0 ? '今天' : i === 1 ? '明天' : '后天'}
+              </p>
               <WeatherIcon desc={day.weatherDesc} className="weather-card__forecast-icon" />
               <p className="weather-card__forecast-temp">
-                {day.minTemp}
-                ~
-                {day.maxTemp}
+                {day.minTemp}~{day.maxTemp}
                 °C
               </p>
               <p className="weather-card__forecast-desc">{day.weatherDesc}</p>

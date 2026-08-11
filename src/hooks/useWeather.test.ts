@@ -63,7 +63,10 @@ describe('useWeather', () => {
 
       expect(result.current.weather).toEqual(mockWeatherData)
       expect(result.current.error).toBeNull()
-      expect(getWeatherApi).toHaveBeenCalledWith('北京', expect.objectContaining({ signal: expect.any(AbortSignal) }))
+      expect(getWeatherApi).toHaveBeenCalledWith(
+        '北京',
+        expect.objectContaining({ signal: expect.any(AbortSignal) }),
+      )
     })
   })
 

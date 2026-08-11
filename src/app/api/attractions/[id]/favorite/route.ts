@@ -6,7 +6,10 @@
  */
 import { NextResponse } from 'next/server'
 
-import { favoriteAttraction, unfavoriteAttraction } from '@/lib/services/attractions/attractionService'
+import {
+  favoriteAttraction,
+  unfavoriteAttraction,
+} from '@/lib/services/attractions/attractionService'
 import { withProtected } from '@/lib/utils/http'
 
 export const POST = withProtected<{ params: Promise<{ id: string }> }>(

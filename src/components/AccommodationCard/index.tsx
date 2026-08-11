@@ -20,8 +20,7 @@ interface AccommodationCardProps {
 
 export function AccommodationCard({ accommodation, nightlife }: AccommodationCardProps) {
   // 两项均为空时不渲染
-  if (!accommodation.length && !nightlife.length)
-    return null
+  if (!accommodation.length && !nightlife.length) return null
 
   return (
     <div className="accommodation-card">
@@ -35,7 +34,9 @@ export function AccommodationCard({ accommodation, nightlife }: AccommodationCar
           <div className="accommodation-card__list">
             {accommodation.map((item, i) => (
               <div key={item.name} className="accommodation-card__item">
-                <div className="accommodation-card__index" aria-hidden="true">{i + 1}</div>
+                <div className="accommodation-card__index" aria-hidden="true">
+                  {i + 1}
+                </div>
                 <div className="accommodation-card__body">
                   <div className="accommodation-card__name-row">
                     <span className="accommodation-card__name">{item.name}</span>
@@ -60,7 +61,12 @@ export function AccommodationCard({ accommodation, nightlife }: AccommodationCar
           <div className="accommodation-card__list">
             {nightlife.map((item, i) => (
               <div key={item} className="accommodation-card__item">
-                <div className="accommodation-card__index accommodation-card__index--light" aria-hidden="true">{i + 1}</div>
+                <div
+                  className="accommodation-card__index accommodation-card__index--light"
+                  aria-hidden="true"
+                >
+                  {i + 1}
+                </div>
                 <div className="accommodation-card__body">
                   <div className="accommodation-card__name-row">
                     <span className="accommodation-card__name">{item}</span>

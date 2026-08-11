@@ -61,12 +61,9 @@ export default function Login() {
   /* ---------- 表单校验 ---------- */
 
   function validateForm() {
-    if (!username.trim())
-      return '请输入用户名'
-    if (!password)
-      return '请输入密码'
-    if (tab === 'register' && password.length < 6)
-      return '密码长度至少 6 位'
+    if (!username.trim()) return '请输入用户名'
+    if (!password) return '请输入密码'
+    if (tab === 'register' && password.length < 6) return '密码长度至少 6 位'
     return ''
   }
 
@@ -74,8 +71,7 @@ export default function Login() {
 
   async function handleSubmit(event: { preventDefault: () => void }) {
     event.preventDefault()
-    if (loading)
-      return
+    if (loading) return
 
     const validationError = validateForm()
     if (validationError) {
@@ -88,17 +84,14 @@ export default function Login() {
     try {
       if (tab === 'login') {
         await login(username.trim(), password)
-      }
-      else {
+      } else {
         await register(username.trim(), password)
       }
       toast.success(tab === 'login' ? '登录成功' : '注册成功')
       router.push('/')
-    }
-    catch (err: unknown) {
+    } catch (err: unknown) {
       setFormError(err instanceof Error ? err.message : '操作失败，请检查信息后重试')
-    }
-    finally {
+    } finally {
       setLoading(false)
     }
   }
@@ -110,7 +103,12 @@ export default function Login() {
       {/* 左侧品牌区 */}
       <section className="login-page__hero-side" aria-label="品牌介绍">
         <div className="login-page__hero-bg" aria-hidden="true">
-          <Image src={imageUrl('/images/home/hero-boat.jpg')} alt="" fill style={{ objectFit: 'cover' }} />
+          <Image
+            src={imageUrl('/images/home/hero-boat.jpg')}
+            alt=""
+            fill
+            style={{ objectFit: 'cover' }}
+          />
         </div>
         <div className="login-page__hero-overlay" aria-hidden="true" />
 
@@ -147,7 +145,10 @@ export default function Login() {
       </section>
 
       {/* 右侧表单区 */}
-      <section className="login-page__form-side" aria-label={tab === 'login' ? '登录表单' : '注册表单'}>
+      <section
+        className="login-page__form-side"
+        aria-label={tab === 'login' ? '登录表单' : '注册表单'}
+      >
         <div className="login-page__form-wrapper">
           <button
             type="button"
@@ -160,12 +161,14 @@ export default function Login() {
           </button>
 
           <div className="login-page__form-head">
-            <h2 id="login-title" className="login-page__form-title">{currentCopy.title}</h2>
+            <h2 id="login-title" className="login-page__form-title">
+              {currentCopy.title}
+            </h2>
             <p className="login-page__form-subtitle">{currentCopy.subtitle}</p>
           </div>
 
           <div className="login-page__tabs" role="group" aria-label="选择登录或注册">
-            {(['login', 'register'] as const).map(t => (
+            {(['login', 'register'] as const).map((t) => (
               <button
                 key={t}
                 type="button"
@@ -178,7 +181,11 @@ export default function Login() {
             ))}
           </div>
 
-          {formError && <div className="login-page__error" role="alert">{formError}</div>}
+          {formError && (
+            <div className="login-page__error" role="alert">
+              {formError}
+            </div>
+          )}
 
           <form className="login-page__form" onSubmit={handleSubmit} noValidate aria-busy={loading}>
             <div className="login-page__field">
@@ -212,15 +219,13 @@ export default function Login() {
                 }}
                 placeholder={currentCopy.passwordPlaceholder}
                 autoComplete={tab === 'register' ? 'new-password' : 'current-password'}
-                aria-invalid={Boolean(formError && (!password || (tab === 'register' && password.length < 6)))}
+                aria-invalid={Boolean(
+                  formError && (!password || (tab === 'register' && password.length < 6)),
+                )}
               />
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="login-page__submit"
-            >
+            <button type="submit" disabled={loading} className="login-page__submit">
               {loading && <span className="login-page__submit-spinner" aria-hidden="true" />}
               {loading ? currentCopy.loading : currentCopy.submit}
             </button>

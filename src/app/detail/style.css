@@ -29,8 +29,7 @@
   inset: 0;
   z-index: -1;
   content: '';
-  background:
-    radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
   background-size: 24px 24px;
   pointer-events: none;
 }
@@ -57,7 +56,9 @@
   background: rgba(255, 255, 255, 0.1);
   color: #f1f5f9;
   font-size: 17px;
-  transition: transform 0.2s ease, background 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
 }
 
 .detail-page__back:hover {
@@ -151,7 +152,10 @@
   background: rgba(var(--travel-white-rgb), 0.72);
   color: rgba(var(--travel-ink-rgb), 0.72);
   font-size: 14px;
-  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 .detail-page__loading-header button:hover {
@@ -243,7 +247,9 @@
   color: #fff;
   background: var(--color-primary);
   box-shadow: 0 14px 30px rgba(var(--travel-primary-rgb), 0.28);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .detail-page__empty button:hover {
@@ -360,7 +366,9 @@
   font-size: 15px;
   font-weight: 800;
   color: var(--travel-ocean);
-  transition: background 0.2s ease, color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 .detail-page__day-header:hover {
@@ -378,7 +386,9 @@
   background: rgba(var(--travel-ocean-rgb), 0.08);
   font-size: 10px;
   color: var(--travel-ocean);
-  transition: transform 0.2s ease, background 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
 }
 
 .detail-page__day-arrow--open {
@@ -499,7 +509,9 @@
   box-shadow: 0 4px 16px rgba(255, 107, 53, 0.25);
   font-size: 15px;
   font-weight: 900;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .detail-page__chat-btn:hover {
@@ -531,7 +543,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   .detail-page__back,
   .detail-page__loading-header button,
   .detail-page__empty button,

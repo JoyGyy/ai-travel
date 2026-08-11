@@ -23,9 +23,7 @@ export default function Error({
       <div className="error-boundary__content">
         <div className="error-boundary__icon">⚠️</div>
         <h2 className="error-boundary__title">页面出了点问题</h2>
-        <p className="error-boundary__message">
-          {error.message || '发生了未知错误'}
-        </p>
+        <p className="error-boundary__message">{error.message || '发生了未知错误'}</p>
         <div className="error-boundary__actions">
           <button
             type="button"

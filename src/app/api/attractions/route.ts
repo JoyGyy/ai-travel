@@ -12,7 +12,9 @@ function readFilters(query: URLSearchParams): Record<string, unknown> {
   return {
     city: query.get('city')?.trim() || '',
     keyword: query.get('keyword')?.trim() || '',
-    ticketType: ['free', 'paid'].includes(query.get('ticketType') || '') ? query.get('ticketType') : '',
+    ticketType: ['free', 'paid'].includes(query.get('ticketType') || '')
+      ? query.get('ticketType')
+      : '',
     tag: query.get('tag')?.trim() || '',
     page: Number(query.get('page')) || 1,
     pageSize: Number(query.get('pageSize')) || 20,

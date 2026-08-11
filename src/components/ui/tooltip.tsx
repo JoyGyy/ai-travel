@@ -10,7 +10,11 @@ const TooltipProvider = TooltipPrimitive.Provider
 const Tooltip = TooltipPrimitive.Root
 const TooltipTrigger = TooltipPrimitive.Trigger
 
-function TooltipContent({ className, sideOffset = 4, ...props }: ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>) {
+function TooltipContent({
+  className,
+  sideOffset = 4,
+  ...props
+}: ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>) {
   return (
     <TooltipPrimitive.Content
       sideOffset={sideOffset}

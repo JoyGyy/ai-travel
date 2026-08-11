@@ -28,7 +28,8 @@ const toastVariants = cva(
     variants: {
       variant: {
         default: 'border bg-background text-foreground',
-        destructive: 'destructive group border-destructive bg-destructive text-destructive-foreground',
+        destructive:
+          'destructive group border-destructive bg-destructive text-destructive-foreground',
       },
     },
     defaultVariants: {
@@ -37,7 +38,11 @@ const toastVariants = cva(
   },
 )
 
-function Toast({ className, variant, ...props }: ToastPrimitives.ToastProps & VariantProps<typeof toastVariants>) {
+function Toast({
+  className,
+  variant,
+  ...props
+}: ToastPrimitives.ToastProps & VariantProps<typeof toastVariants>) {
   return <ToastPrimitives.Root className={cn(toastVariants({ variant }), className)} {...props} />
 }
 

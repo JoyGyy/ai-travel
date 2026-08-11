@@ -23,7 +23,9 @@ describe('POST /api/travel/chat', () => {
   it('有消息时返回流响应', async () => {
     const req = new Request('http://localhost/api/travel/chat', {
       method: 'POST',
-      body: JSON.stringify({ messages: [{ role: 'user', parts: [{ type: 'text', text: '北京三日游' }] }] }),
+      body: JSON.stringify({
+        messages: [{ role: 'user', parts: [{ type: 'text', text: '北京三日游' }] }],
+      }),
     })
 
     const res = await POST(req)

@@ -18,7 +18,7 @@ import { CommunityItineraryPreview } from '@/components/CommunityItineraryPrevie
 import { CommunityPostCard } from '@/components/CommunityPostCard'
 import { Pagination } from '@/components/Pagination'
 import { RepostModal } from '@/components/RepostModal'
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button'
 import { useAppToast } from '@/hooks/useAppToast'
 import { useCommunityActions } from '@/hooks/useCommunityActions'
 import { formatRelativeTime } from '@/lib/utils/date'
@@ -65,16 +65,11 @@ export default function CommunityPostDetail() {
       setError('')
       try {
         const data = await fetchCommunityPost(id)
-        if (!cancelled)
-          setPost(data)
-      }
-      catch (err: unknown) {
-        if (!cancelled)
-          setError(err instanceof Error ? err.message : '帖子加载失败')
-      }
-      finally {
-        if (!cancelled)
-          setLoading(false)
+        if (!cancelled) setPost(data)
+      } catch (err: unknown) {
+        if (!cancelled) setError(err instanceof Error ? err.message : '帖子加载失败')
+      } finally {
+        if (!cancelled) setLoading(false)
       }
     }
     loadPost()
@@ -86,23 +81,21 @@ export default function CommunityPostDetail() {
   useEffect(() => {
     let cancelled = false
     async function loadComments() {
-      if (!id)
-        return
+      if (!id) return
       setCommentsLoading(true)
       try {
-        const data = await fetchCommunityComments(id, { page: commentPage, pageSize: COMMENT_PAGE_SIZE })
+        const data = await fetchCommunityComments(id, {
+          page: commentPage,
+          pageSize: COMMENT_PAGE_SIZE,
+        })
         if (!cancelled) {
           setComments(data.items)
           setCommentTotal(data.total)
         }
-      }
-      catch (err: unknown) {
-        if (!cancelled)
-          toast.error(err instanceof Error ? err.message : '评论加载失败')
-      }
-      finally {
-        if (!cancelled)
-          setCommentsLoading(false)
+      } catch (err: unknown) {
+        if (!cancelled) toast.error(err instanceof Error ? err.message : '评论加载失败')
+      } finally {
+        if (!cancelled) setCommentsLoading(false)
       }
     }
     loadComments()
@@ -114,8 +107,7 @@ export default function CommunityPostDetail() {
   // requireLogin, toggleLike, submitRepost 已从 useCommunityActions hook 获取
 
   async function handleLike() {
-    if (!post)
-      return
+    if (!post) return
 
     if (!post.likedByMe) {
       setIsLikeAnimating(true)
@@ -125,15 +117,13 @@ export default function CommunityPostDetail() {
     setLikePending(true)
     try {
       await toggleLike(post.id, post.likedByMe)
-    }
-    finally {
+    } finally {
       setLikePending(false)
     }
   }
 
   async function submitComment() {
-    if (!post || !requireLogin('评论'))
-      return
+    if (!post || !requireLogin('评论')) return
 
     const content = commentInput.trim()
     if (!content) {
@@ -144,16 +134,14 @@ export default function CommunityPostDetail() {
     setCommentSubmitting(true)
     try {
       const result = await createCommunityComment(post.id, { content })
-      setComments(prev => commentPage === 1 ? [...prev, result.comment] : prev)
+      setComments((prev) => (commentPage === 1 ? [...prev, result.comment] : prev))
       setCommentTotal(result.commentCount)
       setPost({ ...post, commentCount: result.commentCount })
       setCommentInput('')
       toast.success('评论已发布')
-    }
-    catch (err: unknown) {
+    } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : '评论发布失败')
-    }
-    finally {
+    } finally {
       setCommentSubmitting(false)
     }
   }
@@ -162,41 +150,34 @@ export default function CommunityPostDetail() {
     setDeletePendingId(comment.id)
     try {
       await deleteCommunityComment(comment.id)
-      setComments(prev => prev.filter(item => item.id !== comment.id))
-      setCommentTotal(prev => Math.max(0, prev - 1))
-      if (post)
-        setPost({ ...post, commentCount: Math.max(0, post.commentCount - 1) })
+      setComments((prev) => prev.filter((item) => item.id !== comment.id))
+      setCommentTotal((prev) => Math.max(0, prev - 1))
+      if (post) setPost({ ...post, commentCount: Math.max(0, post.commentCount - 1) })
       toast.success('评论已删除')
-    }
-    catch (err: unknown) {
+    } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : '删除评论失败')
-    }
-    finally {
+    } finally {
       setDeletePendingId('')
     }
   }
 
   async function removePost() {
-    if (!post)
-      return
+    if (!post) return
 
     setPostDeletePending(true)
     try {
       await deleteCommunityPost(post.id)
       toast.success('帖子已删除')
       router.push('/community')
-    }
-    catch (err: unknown) {
+    } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : '删除帖子失败')
-    }
-    finally {
+    } finally {
       setPostDeletePending(false)
     }
   }
 
   async function handleSubmitRepost(content: string) {
-    if (!post)
-      return false
+    if (!post) return false
 
     setRepostPending(true)
     try {
@@ -206,8 +187,7 @@ export default function CommunityPostDetail() {
         router.push('/community')
       }
       return success
-    }
-    finally {
+    } finally {
       setRepostPending(false)
     }
   }
@@ -216,10 +196,13 @@ export default function CommunityPostDetail() {
     const url = window.location.href
     if (navigator.share) {
       try {
-        await navigator.share({ title: post?.title || '旅行社区分享', text: post?.content || '看看这条旅行分享', url })
+        await navigator.share({
+          title: post?.title || '旅行社区分享',
+          text: post?.content || '看看这条旅行分享',
+          url,
+        })
         return
-      }
-      catch {
+      } catch {
         // 用户取消系统分享时降级复制链接
       }
     }
@@ -229,8 +212,15 @@ export default function CommunityPostDetail() {
 
   if (loading) {
     return (
-      <main className="community-detail travel-page-shell" aria-labelledby="community-detail-loading">
-        <div className="community-detail__state travel-surface-card" role="status" aria-live="polite">
+      <main
+        className="community-detail travel-page-shell"
+        aria-labelledby="community-detail-loading"
+      >
+        <div
+          className="community-detail__state travel-surface-card"
+          role="status"
+          aria-live="polite"
+        >
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           <h1 id="community-detail-loading">加载旅行分享中...</h1>
         </div>
@@ -245,7 +235,7 @@ export default function CommunityPostDetail() {
           <h1 id="community-detail-error">帖子暂时无法打开</h1>
           <p>{error || '帖子不存在或已删除'}</p>
           <div className="community-detail__state-actions">
-            <Button onClick={() => setReloadKey(prev => prev + 1)}>重试</Button>
+            <Button onClick={() => setReloadKey((prev) => prev + 1)}>重试</Button>
             <Button onClick={() => router.push('/community')}>返回社区</Button>
           </div>
         </div>
@@ -264,7 +254,9 @@ export default function CommunityPostDetail() {
 
       <section className="community-detail__post travel-surface-card travel-ticket-edge">
         <header className="community-detail__header">
-          <div className="community-detail__avatar" aria-hidden="true">{post.author.username.slice(0, 1).toUpperCase()}</div>
+          <div className="community-detail__avatar" aria-hidden="true">
+            {post.author.username.slice(0, 1).toUpperCase()}
+          </div>
           <div>
             <p>{post.author.username}</p>
             <span>{formatRelativeTime(post.createdAt)}</span>
@@ -273,12 +265,14 @@ export default function CommunityPostDetail() {
         <h1 id="community-detail-title">{post.title || `${post.city || '旅行'}分享`}</h1>
         {post.content ? <p className="community-detail__content">{post.content}</p> : null}
         <CommunityImageGrid images={post.images} />
-        {post.itinerarySnapshot ? <CommunityItineraryPreview snapshot={post.itinerarySnapshot} mode="detail" /> : null}
-        {post.originalPost
-          ? <CommunityPostCard post={{ ...post.originalPost, originalPost: null }} />
-          : post.postType === 'repost'
-            ? <div className="community-detail__missing travel-surface-card">原帖已删除</div>
-            : null}
+        {post.itinerarySnapshot ? (
+          <CommunityItineraryPreview snapshot={post.itinerarySnapshot} mode="detail" />
+        ) : null}
+        {post.originalPost ? (
+          <CommunityPostCard post={{ ...post.originalPost, originalPost: null }} />
+        ) : post.postType === 'repost' ? (
+          <div className="community-detail__missing travel-surface-card">原帖已删除</div>
+        ) : null}
 
         <div className="community-detail__actions" aria-label="帖子操作">
           <Button
@@ -287,7 +281,10 @@ export default function CommunityPostDetail() {
             disabled={likePending}
             onClick={handleLike}
           >
-            <Heart aria-hidden="true" className={`mr-1 h-4 w-4 ${post.likedByMe ? 'fill-current' : ''}`} />
+            <Heart
+              aria-hidden="true"
+              className={`mr-1 h-4 w-4 ${post.likedByMe ? 'fill-current' : ''}`}
+            />
             {likePending ? '...' : post.likeCount}
           </Button>
           <Button
@@ -301,25 +298,22 @@ export default function CommunityPostDetail() {
             <Share2 aria-hidden="true" className="mr-1 h-4 w-4" />
             分享链接
           </Button>
-          {isAuthor
-            ? (
-                <Button variant="destructive" disabled={postDeletePending} onClick={removePost}>
-                  <Trash2 aria-hidden="true" className="mr-1 h-4 w-4" />
-                  {postDeletePending ? '删除中...' : '删除帖子'}
-                </Button>
-              )
-            : null}
+          {isAuthor ? (
+            <Button variant="destructive" disabled={postDeletePending} onClick={removePost}>
+              <Trash2 aria-hidden="true" className="mr-1 h-4 w-4" />
+              {postDeletePending ? '删除中...' : '删除帖子'}
+            </Button>
+          ) : null}
         </div>
       </section>
 
-      <section className="community-detail__comments travel-surface-card" aria-labelledby="community-comments-title">
+      <section
+        className="community-detail__comments travel-surface-card"
+        aria-labelledby="community-comments-title"
+      >
         <div className="community-detail__comments-header">
           <h2 id="community-comments-title">评论</h2>
-          <span>
-            {commentTotal}
-            {' '}
-            条
-          </span>
+          <span>{commentTotal} 条</span>
         </div>
         <div className="community-detail__comment-form">
           <textarea
@@ -328,7 +322,7 @@ export default function CommunityPostDetail() {
             rows={4}
             maxLength={500}
             placeholder="写下你的建议、问题或补充体验"
-            onChange={event => setCommentInput(event.target.value)}
+            onChange={(event) => setCommentInput(event.target.value)}
           />
           <Button disabled={!hasHydrated || commentSubmitting} onClick={submitComment}>
             <Send aria-hidden="true" className="mr-1 h-4 w-4" />
@@ -336,37 +330,40 @@ export default function CommunityPostDetail() {
           </Button>
         </div>
 
-        {commentsLoading
-          ? (
-              <div className="community-detail__comments-loading">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                加载评论中...
-              </div>
-            )
-          : null}
-        {!commentsLoading && comments.length === 0 ? <div className="text-center py-8 text-muted-foreground"><p>还没有评论，来写第一条吧</p></div> : null}
-        {!commentsLoading && comments.length > 0
-          ? (
-              <div className="community-detail__comment-list">
-                {comments.map(comment => (
-                  <article key={comment.id} className="community-detail__comment">
-                    <div>
-                      <strong>{comment.author.username}</strong>
-                      <span>{formatRelativeTime(comment.createdAt)}</span>
-                    </div>
-                    <p>{comment.content}</p>
-                    {comment.author.id === user?.id
-                      ? (
-                          <Button variant="link" className="text-destructive" disabled={deletePendingId === comment.id} onClick={() => removeComment(comment)}>
-                            {deletePendingId === comment.id ? '删除中...' : '删除'}
-                          </Button>
-                        )
-                      : null}
-                  </article>
-                ))}
-              </div>
-            )
-          : null}
+        {commentsLoading ? (
+          <div className="community-detail__comments-loading">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            加载评论中...
+          </div>
+        ) : null}
+        {!commentsLoading && comments.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            <p>还没有评论，来写第一条吧</p>
+          </div>
+        ) : null}
+        {!commentsLoading && comments.length > 0 ? (
+          <div className="community-detail__comment-list">
+            {comments.map((comment) => (
+              <article key={comment.id} className="community-detail__comment">
+                <div>
+                  <strong>{comment.author.username}</strong>
+                  <span>{formatRelativeTime(comment.createdAt)}</span>
+                </div>
+                <p>{comment.content}</p>
+                {comment.author.id === user?.id ? (
+                  <Button
+                    variant="link"
+                    className="text-destructive"
+                    disabled={deletePendingId === comment.id}
+                    onClick={() => removeComment(comment)}
+                  >
+                    {deletePendingId === comment.id ? '删除中...' : '删除'}
+                  </Button>
+                ) : null}
+              </article>
+            ))}
+          </div>
+        ) : null}
         <Pagination
           page={commentPage}
           total={commentTotal}

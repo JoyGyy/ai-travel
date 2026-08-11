@@ -4,7 +4,19 @@
  * 首页（行程推荐）
  * OTA 旅行平台风格的落地页，包含搜索表单、热门目的地、精选推荐、AI 特色介绍等模块。
  */
-import { Bot, Cloud, Compass, Flame, Home, LogIn, MapPin, Star, User, Users, Zap } from 'lucide-react'
+import {
+  Bot,
+  Cloud,
+  Compass,
+  Flame,
+  Home,
+  LogIn,
+  MapPin,
+  Star,
+  User,
+  Users,
+  Zap,
+} from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -15,6 +27,8 @@ import { useAuthStore } from '@/stores/auth'
 
 import { featuredTrips, hotDestinations, userReviews } from './home-data'
 
+import './style.css'
+
 const quickEntries = [
   { icon: <Home />, label: '酒店民宿', color: '#FF6B35', href: '/' },
   { icon: <Compass />, label: 'AI 行程', color: '#F59E0B', href: '/detail' },
@@ -24,8 +38,6 @@ const quickEntries = [
   { icon: <Bot />, label: 'AI 咨询', color: '#E84057', href: '/chat' },
 ]
 
-import './style.css'
-
 /** NavLink 替代：根据当前路径判断是否激活 */
 function useIsActive(href: string) {
   const pathname = usePathname()
@@ -33,7 +45,7 @@ function useIsActive(href: string) {
   return pathname?.startsWith(href) ?? false
 }
 
-function NavLink({ href, children }: { href: string, children: React.ReactNode }) {
+function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
   const isActive = useIsActive(href)
   return (
     <Link
@@ -49,11 +61,14 @@ function NavLink({ href, children }: { href: string, children: React.ReactNode }
 export default function HomePage() {
   const router = useRouter()
   const toast = useAppToast()
-  const user = useAuthStore(state => state.user)
-  const hasHydrated = useAuthStore(state => state._hasHydrated)
+  const user = useAuthStore((state) => state.user)
+  const hasHydrated = useAuthStore((state) => state._hasHydrated)
 
   const onStart = () => {
-    if (!hasHydrated) { toast.info('加载中...'); return }
+    if (!hasHydrated) {
+      toast.info('加载中...')
+      return
+    }
     if (!user) return router.push('/login')
     router.push('/detail')
   }
@@ -64,7 +79,9 @@ export default function HomePage() {
       <header className="home__header">
         <div className="home__header-inner">
           <Link className="home__brand" href="/" aria-label="返回首页">
-            <span className="home__brand-icon"><Compass /></span>
+            <span className="home__brand-icon">
+              <Compass />
+            </span>
             <span className="home__brand-name">TravelAI</span>
           </Link>
           <nav className="home__nav" aria-label="主导航">
@@ -75,17 +92,15 @@ export default function HomePage() {
             <NavLink href="/chat">AI 咨询</NavLink>
           </nav>
           <div className="home__header-right">
-            {user
-              ? (
-                  <Link href="/profile" className="home__user-badge">
-                    <User /> {user.username || '用户'}
-                  </Link>
-                )
-              : (
-                  <Link href="/login" className="home__login-btn">
-                    <LogIn /> 登录 / 注册
-                  </Link>
-                )}
+            {user ? (
+              <Link href="/profile" className="home__user-badge">
+                <User /> {user.username || '用户'}
+              </Link>
+            ) : (
+              <Link href="/login" className="home__login-btn">
+                <LogIn /> 登录 / 注册
+              </Link>
+            )}
           </div>
         </div>
       </header>
@@ -96,9 +111,15 @@ export default function HomePage() {
       {/* 快捷入口 */}
       <section className="home__quick-section" aria-label="快捷服务">
         <div className="home__quick-grid">
-          {quickEntries.map(entry => (
+          {quickEntries.map((entry) => (
             <Link key={entry.label} href={entry.href} className="home__quick-item">
-              <span className="home__quick-icon" style={{ background: entry.color }} aria-hidden="true">{entry.icon}</span>
+              <span
+                className="home__quick-icon"
+                style={{ background: entry.color }}
+                aria-hidden="true"
+              >
+                {entry.icon}
+              </span>
               <span className="home__quick-label">{entry.label}</span>
             </Link>
           ))}
@@ -114,10 +135,21 @@ export default function HomePage() {
           <span className="home__section-more">查看更多 &gt;</span>
         </div>
         <div className="home__dest-grid">
-          {hotDestinations.map(dest => (
-            <Link key={dest.name} href={`/detail?city=${encodeURIComponent(dest.name)}`} className="home__dest-card">
+          {hotDestinations.map((dest) => (
+            <Link
+              key={dest.name}
+              href={`/detail?city=${encodeURIComponent(dest.name)}`}
+              className="home__dest-card"
+            >
               <div className="home__dest-img-wrap">
-                <Image src={dest.img} alt={dest.name} className="home__dest-img" loading="lazy" width={300} height={200} />
+                <Image
+                  src={dest.img}
+                  alt={dest.name}
+                  className="home__dest-img"
+                  loading="lazy"
+                  width={300}
+                  height={200}
+                />
                 <span className="home__dest-tag">{dest.tag}</span>
                 <span className="home__dest-temp">{dest.temp}</span>
               </div>
@@ -139,10 +171,21 @@ export default function HomePage() {
           <span className="home__section-more">更多行程 &gt;</span>
         </div>
         <div className="home__featured-grid">
-          {featuredTrips.map(trip => (
-            <Link key={trip.title} href={`/detail?city=${encodeURIComponent(trip.city)}`} className="home__featured-card">
+          {featuredTrips.map((trip) => (
+            <Link
+              key={trip.title}
+              href={`/detail?city=${encodeURIComponent(trip.city)}`}
+              className="home__featured-card"
+            >
               <div className="home__featured-img-wrap">
-                <Image src={trip.image} alt={trip.title} className="home__featured-img" loading="lazy" width={300} height={200} />
+                <Image
+                  src={trip.image}
+                  alt={trip.title}
+                  className="home__featured-img"
+                  loading="lazy"
+                  width={300}
+                  height={200}
+                />
                 <span className="home__featured-tag">{trip.tag}</span>
               </div>
               <div className="home__featured-body">
@@ -150,7 +193,8 @@ export default function HomePage() {
                 <p className="home__featured-desc">{trip.desc}</p>
                 <div className="home__featured-meta">
                   <span className="home__featured-rating">
-                    <Star aria-hidden="true" />{trip.rating}
+                    <Star aria-hidden="true" />
+                    {trip.rating}
                   </span>
                   <span className="home__featured-reviews">{trip.reviews} 条评价</span>
                 </div>
@@ -176,7 +220,12 @@ export default function HomePage() {
               <h3 id="ai-feature-title">为什么选择 AI 规划？</h3>
             </div>
             <ul className="home__ai-features">
-              {['实时天气 + 预算智能匹配', '景点、酒店、交通一站式规划', '支持 300+ 国内城市', '行程可随时调整优化'].map(text => (
+              {[
+                '实时天气 + 预算智能匹配',
+                '景点、酒店、交通一站式规划',
+                '支持 300+ 国内城市',
+                '行程可随时调整优化',
+              ].map((text) => (
                 <li key={text}>
                   <span className="home__ai-feature-dot" aria-hidden="true" />
                   <span>{text}</span>
@@ -188,7 +237,7 @@ export default function HomePage() {
                 { num: '50,000+', label: '行程已生成' },
                 { num: '300+', label: '覆盖城市' },
                 { num: '98%', label: '满意率' },
-              ].map(stat => (
+              ].map((stat) => (
                 <div key={stat.label} className="home__ai-stat">
                   <span className="home__ai-stat-num">{stat.num}</span>
                   <span className="home__ai-stat-label">{stat.label}</span>
@@ -202,13 +251,16 @@ export default function HomePage() {
               <Users aria-hidden="true" /> 用户怎么说
             </h3>
             <div className="home__reviews-list">
-              {userReviews.map(review => (
+              {userReviews.map((review) => (
                 <div key={review.name} className="home__review-item">
                   <div className="home__review-header">
                     <span className="home__review-avatar">{review.avatar}</span>
                     <div>
                       <span className="home__review-name">{review.name}</span>
-                      <span className="home__review-dest">去了{review.dest}</span>
+                      <span className="home__review-dest">
+                        去了
+                        {review.dest}
+                      </span>
                     </div>
                     <span className="home__review-stars" aria-label={`${review.rating} 星`}>
                       {'★'.repeat(review.rating)}

@@ -5,7 +5,16 @@
  */
 import type { SSEEvent } from '@/types/api'
 
-import { CheckCircle2, ChevronRight, CircleDollarSign, Flag, Info, List, MapPin, Search } from 'lucide-react'
+import {
+  CheckCircle2,
+  ChevronRight,
+  CircleDollarSign,
+  Flag,
+  Info,
+  List,
+  MapPin,
+  Search,
+} from 'lucide-react'
 
 import './style.css'
 
@@ -35,32 +44,36 @@ const STEP_CONFIG = [
 
 export function AgentSteps({ steps, currentStep }: AgentStepsProps) {
   /** 将步骤事件数组转为 Map，便于按步骤号快速查找 */
-  const stepMap = new Map(steps.map(s => [s.step, s]))
+  const stepMap = new Map(steps.map((s) => [s.step, s]))
 
   /** 判断指定步骤的当前状态：已完成 / 执行中 / 等待中 */
   function getStepStatus(stepNum: number): 'done' | 'running' | 'pending' {
     const step = stepMap.get(stepNum)
-    if (step?.status === 'complete')
-      return 'done'
-    if (currentStep === stepNum)
-      return 'running'
+    if (step?.status === 'complete') return 'done'
+    if (currentStep === stepNum) return 'running'
     return 'pending'
   }
 
   /** 根据步骤号从 step.data 中提取人类可读的结果摘要 */
   function getResultSummary(stepNum: number): string {
     const step = stepMap.get(stepNum)
-    if (!step?.data)
-      return ''
+    if (!step?.data) return ''
     const d = step.data as Record<string, unknown>
     switch (stepNum) {
-      case 1: return `${d.city} · ${d.days}天 · ¥${d.budget}`
-      case 2: return `找到 ${d.count} 个景点`
-      case 3: return d.temperature ? `${d.temperature}°C · ${d.weatherDesc}` : '天气查询完成'
-      case 4: return `${d.days}天行程 · ${d.spotCount} 个景点`
-      case 5: return `总预算 ¥${Number(d.accommodation || 0) + Number(d.food || 0) + Number(d.transportation || 0) + Number(d.tickets || 0) + Number(d.other || 0)}`
-      case 6: return `${d.count} 条建议`
-      default: return ''
+      case 1:
+        return `${d.city} · ${d.days}天 · ¥${d.budget}`
+      case 2:
+        return `找到 ${d.count} 个景点`
+      case 3:
+        return d.temperature ? `${d.temperature}°C · ${d.weatherDesc}` : '天气查询完成'
+      case 4:
+        return `${d.days}天行程 · ${d.spotCount} 个景点`
+      case 5:
+        return `总预算 ¥${Number(d.accommodation || 0) + Number(d.food || 0) + Number(d.transportation || 0) + Number(d.tickets || 0) + Number(d.other || 0)}`
+      case 6:
+        return `${d.count} 条建议`
+      default:
+        return ''
     }
   }
 
@@ -78,21 +91,28 @@ export function AgentSteps({ steps, currentStep }: AgentStepsProps) {
           const status = getStepStatus(config.step)
           const summary = getResultSummary(config.step)
           return (
-            <div key={config.step} className="agent-steps__item" role="listitem" aria-label={`${config.name}：${status === 'done' ? '已完成' : status === 'running' ? '执行中' : '等待中'}`}>
+            <div
+              key={config.step}
+              className="agent-steps__item"
+              role="listitem"
+              aria-label={`${config.name}：${status === 'done' ? '已完成' : status === 'running' ? '执行中' : '等待中'}`}
+            >
               {/* 左侧时间线：圆点 + 连接线 */}
               <div className="agent-steps__line" aria-hidden="true">
                 <div className={`agent-steps__dot agent-steps__dot--${status}`}>
-                  {status === 'done'
-                    ? <CheckCircle2 size={16} />
-                    : <config.Icon />}
+                  {status === 'done' ? <CheckCircle2 size={16} /> : <config.Icon />}
                 </div>
                 {index < STEP_CONFIG.length - 1 && (
-                  <div className={`agent-steps__connector ${status === 'done' ? 'agent-steps__connector--done' : ''}`} />
+                  <div
+                    className={`agent-steps__connector ${status === 'done' ? 'agent-steps__connector--done' : ''}`}
+                  />
                 )}
               </div>
               <div className="agent-steps__body">
                 <div className="agent-steps__name-row">
-                  <span className={`agent-steps__name ${status === 'pending' ? 'agent-steps__name--pending' : ''}`}>
+                  <span
+                    className={`agent-steps__name ${status === 'pending' ? 'agent-steps__name--pending' : ''}`}
+                  >
                     {config.name}
                   </span>
                   {status === 'running' && <span className="agent-steps__running">执行中...</span>}

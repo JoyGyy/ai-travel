@@ -11,10 +11,7 @@ import { NextResponse } from 'next/server'
 
 import { checkRateLimit } from '@/lib/rate-limit'
 import { getAuthFromHeaders } from '@/lib/services/auth'
-import {
-  createCommunityPost,
-  listCommunityPosts,
-} from '@/lib/services/community'
+import { createCommunityPost, listCommunityPosts } from '@/lib/services/community'
 import { httpError, withErrorHandler, withProtected } from '@/lib/utils/http'
 import {
   ensureArray,
@@ -37,15 +34,12 @@ function validateItinerarySnapshot(value: unknown): unknown | undefined {
   if (value === undefined || value === null) return undefined
 
   const size = Buffer.byteLength(JSON.stringify(value), 'utf8')
-  if (size > MAX_ITINERARY_SNAPSHOT_SIZE)
-    throw httpError(400, '行程快照不能超过 100KB')
+  if (size > MAX_ITINERARY_SNAPSHOT_SIZE) throw httpError(400, '行程快照不能超过 100KB')
 
-  if (typeof value !== 'object')
-    throw httpError(400, '行程快照格式无效')
+  if (typeof value !== 'object') throw httpError(400, '行程快照格式无效')
 
   const snapshot = value as Record<string, unknown>
-  if (snapshot.city !== undefined)
-    readOptionalString(snapshot.city, '行程城市', MAX_CITY_LENGTH)
+  if (snapshot.city !== undefined) readOptionalString(snapshot.city, '行程城市', MAX_CITY_LENGTH)
   if (snapshot.days !== undefined)
     readPositiveInteger(snapshot.days, '行程天数', { min: 1, max: 30 })
   if (snapshot.itinerary !== undefined && !Array.isArray(snapshot.itinerary))
@@ -59,8 +53,7 @@ function validateItinerarySnapshot(value: unknown): unknown | undefined {
 function validateImages(value: unknown): CommunityImageInput[] {
   const rawImages = ensureArray(value, '图片', { max: MAX_IMAGES_PER_POST })
   return rawImages.map((item, index) => {
-    if (!item || typeof item !== 'object')
-      throw httpError(400, `第 ${index + 1} 张图片格式无效`)
+    if (!item || typeof item !== 'object') throw httpError(400, `第 ${index + 1} 张图片格式无效`)
 
     const image = item as Record<string, unknown>
     const url = readRequiredString(image.url, '图片地址', { min: 1, max: 300 })
@@ -77,8 +70,7 @@ function validateImages(value: unknown): CommunityImageInput[] {
 }
 
 function validatePostPayload(payload: unknown): CreateCommunityPostInput {
-  if (!payload || typeof payload !== 'object')
-    throw httpError(400, '缺少帖子数据')
+  if (!payload || typeof payload !== 'object') throw httpError(400, '缺少帖子数据')
 
   const p = payload as Record<string, unknown>
   const title = readOptionalString(p.title, '标题', MAX_POST_TITLE_LENGTH)
@@ -95,28 +87,32 @@ function validatePostPayload(payload: unknown): CreateCommunityPostInput {
 
 // ========== 路由处理 ==========
 
-export const GET = withErrorHandler(
-  async (req: Request) => {
-    const rateLimited = await checkRateLimit(req, 'community:read', 60, 60_000)
-    if (rateLimited) return rateLimited
+export const GET = withErrorHandler(async (req: Request) => {
+  const rateLimited = await checkRateLimit(req, 'community:read', 60, 60_000)
+  if (rateLimited) return rateLimited
 
-    const viewer = await getAuthFromHeaders(req.headers)
-    const { searchParams } = new URL(req.url)
+  const viewer = await getAuthFromHeaders(req.headers)
+  const { searchParams } = new URL(req.url)
 
-    const page = readPositiveInteger(searchParams.get('page') || '1', '页码', { min: 1, max: 10_000 })
-    const pageSize = readPositiveInteger(searchParams.get('pageSize') || '10', '每页数量', { min: 1, max: 30 })
+  const page = readPositiveInteger(searchParams.get('page') || '1', '页码', { min: 1, max: 10_000 })
+  const pageSize = readPositiveInteger(searchParams.get('pageSize') || '10', '每页数量', {
+    min: 1,
+    max: 30,
+  })
 
-    const data = await listCommunityPosts({
+  const data = await listCommunityPosts(
+    {
       page,
       pageSize,
       city: readOptionalString(searchParams.get('city'), '城市', MAX_CITY_LENGTH),
       withItinerary: readBoolean(searchParams.get('withItinerary')),
       authorId: readOptionalString(searchParams.get('authorId'), '作者', 100),
-    }, viewer?.id)
+    },
+    viewer?.id,
+  )
 
-    return NextResponse.json({ success: true, data, message: 'ok' })
-  },
-)
+  return NextResponse.json({ success: true, data, message: 'ok' })
+})
 
 export const POST = withProtected(
   async (req, { user }) => {

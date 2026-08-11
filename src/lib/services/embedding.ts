@@ -17,8 +17,7 @@ export interface EmbeddingConfig {
 
 /** 获取 Embedding API 配置，未配置时返回 null */
 function getEmbeddingConfig(): EmbeddingConfig | null {
-  if (!env.SILICONFLOW_API_KEY)
-    return null
+  if (!env.SILICONFLOW_API_KEY) return null
 
   return {
     baseUrl: env.SILICONFLOW_BASE_URL,
@@ -39,7 +38,7 @@ export async function generateEmbedding(text: string): Promise<number[] | null> 
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${config.apiKey}`,
+        Authorization: `Bearer ${config.apiKey}`,
       },
       body: JSON.stringify({
         model: EMBEDDING_MODEL,
@@ -53,10 +52,9 @@ export async function generateEmbedding(text: string): Promise<number[] | null> 
       return null
     }
 
-    const data = await response.json() as { data?: Array<{ embedding?: number[] }> }
+    const data = (await response.json()) as { data?: Array<{ embedding?: number[] }> }
     return data.data?.[0]?.embedding || null
-  }
-  catch (err) {
+  } catch (err) {
     log.error('Embedding 生成失败:', (err as Error).message)
     return null
   }
@@ -76,7 +74,7 @@ export async function generateEmbeddings(texts: string[]): Promise<(number[] | n
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${config.apiKey}`,
+        Authorization: `Bearer ${config.apiKey}`,
       },
       body: JSON.stringify({
         model: EMBEDDING_MODEL,
@@ -90,10 +88,9 @@ export async function generateEmbeddings(texts: string[]): Promise<(number[] | n
       return texts.map(() => null)
     }
 
-    const data = await response.json() as { data?: Array<{ embedding?: number[] }> }
+    const data = (await response.json()) as { data?: Array<{ embedding?: number[] }> }
     return texts.map((_, i) => data.data?.[i]?.embedding || null)
-  }
-  catch (err) {
+  } catch (err) {
     log.error('Embedding 批量生成失败:', (err as Error).message)
     return texts.map(() => null)
   }

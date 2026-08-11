@@ -68,7 +68,7 @@
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: #FF6B35;
+  background: #ff6b35;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -98,7 +98,7 @@
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #FF6B35;
+  color: #ff6b35;
 }
 
 .login-page__hero-title {
@@ -135,7 +135,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #FF6B35;
+  background: #ff6b35;
   flex-shrink: 0;
 }
 
@@ -210,7 +210,9 @@
   border: none;
   border-bottom: 2px solid transparent;
   cursor: pointer;
-  transition: color 0.2s, border-color 0.2s;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
 }
 
 .login-page__tab:hover {
@@ -219,7 +221,7 @@
 
 .login-page__tab--active {
   color: #292524;
-  border-bottom-color: #FF6B35;
+  border-bottom-color: #ff6b35;
 }
 
 /* 错误提示 */
@@ -257,7 +259,9 @@
   border: 1px solid #d6d3d1;
   border-radius: 6px;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
   box-sizing: border-box;
 }
 
@@ -266,11 +270,11 @@
 }
 
 .login-page__field input:focus {
-  border-color: #FF6B35;
+  border-color: #ff6b35;
   box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
 }
 
-.login-page__field input[aria-invalid="true"] {
+.login-page__field input[aria-invalid='true'] {
   border-color: #ef4444;
 }
 
@@ -282,7 +286,7 @@
   font-size: 14px;
   font-weight: 600;
   color: #fff;
-  background: #FF6B35;
+  background: #ff6b35;
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -290,11 +294,13 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: background 0.2s, opacity 0.2s;
+  transition:
+    background 0.2s,
+    opacity 0.2s;
 }
 
 .login-page__submit:hover {
-  background: #E85D2A;
+  background: #e85d2a;
 }
 
 .login-page__submit:disabled {
@@ -312,7 +318,9 @@
 }
 
 @keyframes login-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .login-page:focus-visible {

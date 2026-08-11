@@ -16,7 +16,7 @@ const log = createLogger('http')
 /** 自定义 HTTP 错误类，携带状态码和可选的配额信息 */
 export class HttpError extends Error {
   status: number
-  quota?: { used: number, limit: number, remaining: number }
+  quota?: { used: number; limit: number; remaining: number }
 
   constructor(status: number, message: string) {
     super(message)
@@ -46,7 +46,7 @@ function isSensitiveError(err: Error): boolean {
     'connect ECONNREFUSED',
   ]
   const msg = err.message.toLowerCase()
-  return sensitivePatterns.some(p => msg.includes(p.toLowerCase()))
+  return sensitivePatterns.some((p) => msg.includes(p.toLowerCase()))
 }
 
 /** 将错误转换为 Next.js JSON 响应 */
@@ -65,7 +65,7 @@ export function errorResponse(err: unknown): NextResponse {
     log.error('服务器错误:', err)
 
     // 敏感错误信息脱敏，避免暴露数据库查询等内部细节
-    const clientMessage = isSensitiveError(err) ? '服务器内部错误' : (err.message || '服务器内部错误')
+    const clientMessage = isSensitiveError(err) ? '服务器内部错误' : err.message || '服务器内部错误'
     return NextResponse.json({ success: false, message: clientMessage }, { status: 500 })
   }
 
@@ -80,8 +80,7 @@ export function withErrorHandler(
   return async (req: Request, context?: unknown): Promise<NextResponse> => {
     try {
       return await handler(req, context)
-    }
-    catch (err) {
+    } catch (err) {
       return errorResponse(err)
     }
   }
@@ -99,8 +98,7 @@ export interface AuthUser {
  */
 export async function requireAuth(req: Request): Promise<AuthUser> {
   const user = await getAuthFromHeaders(req.headers)
-  if (!user)
-    throw httpError(401, '未登录')
+  if (!user) throw httpError(401, '未登录')
   return user
 }
 
@@ -110,8 +108,7 @@ export async function requireAuth(req: Request): Promise<AuthUser> {
  */
 export function requireCsrf(req: Request): void {
   const csrfToken = extractCsrfToken(req.headers, req.headers.get('cookie') || undefined)
-  if (!csrfToken || !verifyCsrfToken(csrfToken))
-    throw httpError(403, 'CSRF token 无效')
+  if (!csrfToken || !verifyCsrfToken(csrfToken)) throw httpError(403, 'CSRF token 无效')
 }
 
 /**
@@ -127,12 +124,9 @@ export function requireCsrf(req: Request): void {
  * )
  */
 export function withProtected<TContext = unknown>(
-  handler: (
-    req: Request,
-    ctx: { user: AuthUser } & TContext,
-  ) => Promise<NextResponse>,
+  handler: (req: Request, ctx: { user: AuthUser } & TContext) => Promise<NextResponse>,
   options?: {
-    rateLimit?: { name: string, max: number, windowMs?: number }
+    rateLimit?: { name: string; max: number; windowMs?: number }
   },
 ) {
   return async (req: Request, context?: TContext): Promise<NextResponse> => {
@@ -147,8 +141,7 @@ export function withProtected<TContext = unknown>(
       }
 
       return await handler(req, { user, ...context } as { user: AuthUser } & TContext)
-    }
-    catch (err) {
+    } catch (err) {
       return errorResponse(err)
     }
   }
@@ -163,17 +156,13 @@ export function withProtected<TContext = unknown>(
  * })
  */
 export function withAuth<TContext = unknown>(
-  handler: (
-    req: Request,
-    ctx: { user: AuthUser } & TContext,
-  ) => Promise<NextResponse>,
+  handler: (req: Request, ctx: { user: AuthUser } & TContext) => Promise<NextResponse>,
 ) {
   return async (req: Request, context?: TContext): Promise<NextResponse> => {
     try {
       const user = await requireAuth(req)
       return await handler(req, { user, ...context } as { user: AuthUser } & TContext)
-    }
-    catch (err) {
+    } catch (err) {
       return errorResponse(err)
     }
   }
@@ -191,8 +180,7 @@ export function withRateLimit(
       const blocked = await checkRateLimit(req, name, max, windowMs)
       if (blocked) return blocked
       return await handler(req)
-    }
-    catch (err) {
+    } catch (err) {
       return errorResponse(err)
     }
   }
@@ -220,8 +208,7 @@ export function withPublicPost(
       }
 
       return await handler(req)
-    }
-    catch (err) {
+    } catch (err) {
       return errorResponse(err)
     }
   }
@@ -239,15 +226,12 @@ export function setAuthCookie(response: NextResponse, token: string): void {
 }
 
 /** 包装需要认证且返回原始 Response 的 Route Handler（SSE 流等） */
-export function withAuthRaw(
-  handler: (req: Request, ctx: { user: AuthUser }) => Promise<Response>,
-) {
+export function withAuthRaw(handler: (req: Request, ctx: { user: AuthUser }) => Promise<Response>) {
   return async (req: Request): Promise<Response> => {
     try {
       const user = await requireAuth(req)
       return await handler(req, { user })
-    }
-    catch (err) {
+    } catch (err) {
       return errorResponse(err)
     }
   }

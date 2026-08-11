@@ -7,32 +7,26 @@ import { NextResponse } from 'next/server'
 
 import { checkRateLimit } from '@/lib/rate-limit'
 import { getAuthFromHeaders } from '@/lib/services/auth'
-import {
-  deleteCommunityPost,
-  getCommunityPostById,
-} from '@/lib/services/community'
+import { deleteCommunityPost, getCommunityPostById } from '@/lib/services/community'
 import { httpError, withErrorHandler, withProtected } from '@/lib/utils/http'
 import { readRequiredString } from '@/lib/utils/validation'
 
 type Context = { params: Promise<{ id: string }> }
 
-export const GET = withErrorHandler(
-  async (req: Request, context?: unknown) => {
-    const { params } = context as Context
-    const rateLimited = await checkRateLimit(req, 'community:read', 60, 60_000)
-    if (rateLimited) return rateLimited
+export const GET = withErrorHandler(async (req: Request, context?: unknown) => {
+  const { params } = context as Context
+  const rateLimited = await checkRateLimit(req, 'community:read', 60, 60_000)
+  if (rateLimited) return rateLimited
 
-    const viewer = await getAuthFromHeaders(req.headers)
-    const { id } = await params
-    readRequiredString(id, '帖子ID', { min: 1, max: 100 })
+  const viewer = await getAuthFromHeaders(req.headers)
+  const { id } = await params
+  readRequiredString(id, '帖子ID', { min: 1, max: 100 })
 
-    const post = await getCommunityPostById(id, viewer?.id)
-    if (!post)
-      throw httpError(404, '帖子不存在或已删除')
+  const post = await getCommunityPostById(id, viewer?.id)
+  if (!post) throw httpError(404, '帖子不存在或已删除')
 
-    return NextResponse.json({ success: true, data: post, message: 'ok' })
-  },
-)
+  return NextResponse.json({ success: true, data: post, message: 'ok' })
+})
 
 export const DELETE = withProtected<Context>(
   async (_req, { user, params }) => {

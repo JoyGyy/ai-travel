@@ -22,11 +22,29 @@ import { immer } from 'zustand/middleware/immer'
 export interface ItineraryDay {
   day: number
   title: string
-  spots: Array<{ name: string, description: string, duration: string }>
+  spots: Array<{ name: string; description: string; duration: string }>
   date?: string
-  morning?: { spot: string, description: string, duration: string, ticket?: string, transportation?: string }
-  afternoon?: { spot: string, description: string, duration: string, ticket?: string, transportation?: string }
-  evening?: { spot: string, description: string, duration: string, ticket?: string, transportation?: string }
+  morning?: {
+    spot: string
+    description: string
+    duration: string
+    ticket?: string
+    transportation?: string
+  }
+  afternoon?: {
+    spot: string
+    description: string
+    duration: string
+    ticket?: string
+    transportation?: string
+  }
+  evening?: {
+    spot: string
+    description: string
+    duration: string
+    ticket?: string
+    transportation?: string
+  }
 }
 
 /** 景点参考信息 */
@@ -98,35 +116,58 @@ const initialState = {
 
 export const useItineraryStore = create<ItineraryState>()(
   devtools(
-    immer(set => ({
+    immer((set) => ({
       ...initialState,
 
       // --- 简单 Setter 操作 ---
 
-      setItinerary: data => set((state) => { state.itinerary = data }),
-      setBudgetBreakdown: data => set((state) => { state.budgetBreakdown = data }),
-      setTips: tips => set((state) => { state.tips = tips }),
-      setWeather: weather => set((state) => { state.weather = weather }),
-      setAccommodation: data => set((state) => { state.accommodation = data }),
-      setNightlife: data => set((state) => { state.nightlife = data }),
-      setAttractionRefs: data => set((state) => { state.attractionRefs = data }),
+      setItinerary: (data) =>
+        set((state) => {
+          state.itinerary = data
+        }),
+      setBudgetBreakdown: (data) =>
+        set((state) => {
+          state.budgetBreakdown = data
+        }),
+      setTips: (tips) =>
+        set((state) => {
+          state.tips = tips
+        }),
+      setWeather: (weather) =>
+        set((state) => {
+          state.weather = weather
+        }),
+      setAccommodation: (data) =>
+        set((state) => {
+          state.accommodation = data
+        }),
+      setNightlife: (data) =>
+        set((state) => {
+          state.nightlife = data
+        }),
+      setAttractionRefs: (data) =>
+        set((state) => {
+          state.attractionRefs = data
+        }),
 
       // --- Agent 步骤操作（支持去重更新） ---
 
-      addAgentStep: step =>
+      addAgentStep: (step) =>
         set((state) => {
-          const idx = state.agentSteps.findIndex(s => s.step === step.step)
+          const idx = state.agentSteps.findIndex((s) => s.step === step.step)
           if (idx >= 0) {
             state.agentSteps[idx] = step
-          }
-          else {
+          } else {
             state.agentSteps.push(step)
           }
         }),
 
       // --- 状态控制和重置 ---
 
-      setCurrentAgentStep: step => set((state) => { state.currentAgentStep = step }),
+      setCurrentAgentStep: (step) =>
+        set((state) => {
+          state.currentAgentStep = step
+        }),
       reset: () => set(() => initialState),
     })),
     { name: 'ItineraryStore' },

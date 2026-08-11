@@ -25,25 +25,25 @@ function collectSpotNames(itinerary: ItineraryDay[] = []): string[] {
   for (const day of itinerary) {
     for (const period of ['morning', 'afternoon', 'evening'] as const) {
       const name = day?.[period]?.spot
-      if (typeof name === 'string' && name.trim())
-        names.push(name.trim())
+      if (typeof name === 'string' && name.trim()) names.push(name.trim())
     }
   }
   return names
 }
 
 /** 将行程中的景点名称匹配到产品景点数据，生成引用列表（按 ID 去重） */
-async function matchAttractionRefsFromItinerary(itinerary: ItineraryDay[] = []): Promise<AttractionRef[]> {
+async function matchAttractionRefsFromItinerary(
+  itinerary: ItineraryDay[] = [],
+): Promise<AttractionRef[]> {
   const refs: AttractionRef[] = []
   const seen = new Set<string>()
 
   for (const spotName of collectSpotNames(itinerary)) {
     const result = await searchAttractions({ keyword: spotName })
     const matched = result.items.find(
-      item => item.name === spotName || (item.aliases || []).includes(spotName),
+      (item) => item.name === spotName || (item.aliases || []).includes(spotName),
     )
-    if (!matched || seen.has(matched.id))
-      continue
+    if (!matched || seen.has(matched.id)) continue
 
     seen.add(matched.id)
     refs.push({

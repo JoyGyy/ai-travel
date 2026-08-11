@@ -27,8 +27,7 @@ function readShares(): ShareRecord[] {
   try {
     const raw = fs.readFileSync(DATA_PATH, 'utf-8')
     return JSON.parse(raw) as ShareRecord[]
-  }
-  catch {
+  } catch {
     return []
   }
 }
@@ -46,12 +45,23 @@ function hashItinerary(itinerary: unknown): string {
 }
 
 /** 创建分享记录，相同内容的行程会复用已有 ID */
-export function createShare({ city, days, budget, itinerary }: { city: string, days: number, budget: string, itinerary: unknown }): string {
+export function createShare({
+  city,
+  days,
+  budget,
+  itinerary,
+}: {
+  city: string
+  days: number
+  budget: string
+  itinerary: unknown
+}): string {
   const shares = readShares()
   const contentHash = hashItinerary(itinerary)
 
   const existing = shares.find(
-    s => s.city === city && s.days === days && s.budget === budget && s.contentHash === contentHash,
+    (s) =>
+      s.city === city && s.days === days && s.budget === budget && s.contentHash === contentHash,
   )
   if (existing) {
     return existing.id
@@ -78,7 +88,7 @@ export function createShare({ city, days, budget, itinerary }: { city: string, d
 /** 获取分享记录并自增浏览次数 */
 export function getShare(id: string): ShareRecord | null {
   const shares = readShares()
-  const share = shares.find(s => s.id === id)
+  const share = shares.find((s) => s.id === id)
 
   if (!share) {
     return null

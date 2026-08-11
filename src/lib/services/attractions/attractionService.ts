@@ -5,11 +5,7 @@ import type { AttractionItem } from './providers/pgAttractionProvider'
  * 组合景点数据 provider 和收藏数据库函数，提供统一的景点业务接口
  */
 import { httpError } from '../../utils/http'
-import {
-  addFavoriteAttraction,
-  listFavoriteAttractionIds,
-  removeFavoriteAttraction,
-} from '../auth'
+import { addFavoriteAttraction, listFavoriteAttractionIds, removeFavoriteAttraction } from '../auth'
 import {
   getAttractionMeta,
   getAttractionById as providerGetAttractionById,
@@ -19,13 +15,15 @@ import {
 
 /** 获取用户收藏的景点 ID 集合 */
 async function getFavoriteIdSet(userId: string | undefined): Promise<Set<string>> {
-  if (!userId)
-    return new Set()
+  if (!userId) return new Set()
   return new Set(await listFavoriteAttractionIds(userId))
 }
 
 /** 为景点数据附加 isFavorite 标记 */
-function withFavorite(attraction: AttractionItem, favoriteIds: Set<string>): AttractionItem & { isFavorite: boolean } {
+function withFavorite(
+  attraction: AttractionItem,
+  favoriteIds: Set<string>,
+): AttractionItem & { isFavorite: boolean } {
   return {
     ...attraction,
     isFavorite: favoriteIds.has(attraction.id),
@@ -39,14 +37,19 @@ interface ListResult {
   tags: string[]
 }
 
-async function listAttractions(filters: Record<string, unknown> = {}, userId?: string): Promise<ListResult> {
+async function listAttractions(
+  filters: Record<string, unknown> = {},
+  userId?: string,
+): Promise<ListResult> {
   const favoriteIds = await getFavoriteIdSet(userId)
-  const result = await providerListAttractions(filters as Parameters<typeof providerListAttractions>[0])
+  const result = await providerListAttractions(
+    filters as Parameters<typeof providerListAttractions>[0],
+  )
 
   const rawItems = Array.isArray(result) ? result : result.items
   const total = Array.isArray(result) ? rawItems.length : result.total
 
-  const items = rawItems.map(item => withFavorite(item, favoriteIds))
+  const items = rawItems.map((item) => withFavorite(item, favoriteIds))
   const meta = await getAttractionMeta()
 
   return {
@@ -57,10 +60,12 @@ async function listAttractions(filters: Record<string, unknown> = {}, userId?: s
   }
 }
 
-async function getAttractionById(id: string, userId?: string): Promise<{ attraction: AttractionItem & { isFavorite: boolean }, isFavorite: boolean } | null> {
+async function getAttractionById(
+  id: string,
+  userId?: string,
+): Promise<{ attraction: AttractionItem & { isFavorite: boolean }; isFavorite: boolean } | null> {
   const attraction = await providerGetAttractionById(id)
-  if (!attraction)
-    return null
+  if (!attraction) return null
 
   const favoriteIds = await getFavoriteIdSet(userId)
   return {
@@ -69,26 +74,29 @@ async function getAttractionById(id: string, userId?: string): Promise<{ attract
   }
 }
 
-async function listFavoriteAttractions(userId: string): Promise<(AttractionItem & { isFavorite: boolean })[]> {
+async function listFavoriteAttractions(
+  userId: string,
+): Promise<(AttractionItem & { isFavorite: boolean })[]> {
   const favoriteIds = await getFavoriteIdSet(userId)
-  const results = await Promise.all(
-    [...favoriteIds].map(id => providerGetAttractionById(id)),
-  )
-  return results
-    .filter(Boolean)
-    .map(item => withFavorite(item!, favoriteIds))
+  const results = await Promise.all([...favoriteIds].map((id) => providerGetAttractionById(id)))
+  return results.filter(Boolean).map((item) => withFavorite(item!, favoriteIds))
 }
 
-async function favoriteAttraction(userId: string, attractionId: string): Promise<{ isFavorite: true }> {
+async function favoriteAttraction(
+  userId: string,
+  attractionId: string,
+): Promise<{ isFavorite: true }> {
   const attraction = await providerGetAttractionById(attractionId)
-  if (!attraction)
-    throw httpError(404, '景点不存在')
+  if (!attraction) throw httpError(404, '景点不存在')
 
   await addFavoriteAttraction(userId, attractionId)
   return { isFavorite: true }
 }
 
-async function unfavoriteAttraction(userId: string, attractionId: string): Promise<{ isFavorite: false }> {
+async function unfavoriteAttraction(
+  userId: string,
+  attractionId: string,
+): Promise<{ isFavorite: false }> {
   await removeFavoriteAttraction(userId, attractionId)
   return { isFavorite: false }
 }

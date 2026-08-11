@@ -5,12 +5,48 @@ import { imageUrl } from '@/lib/images'
 
 /** 热门目的地 */
 export const hotDestinations = [
-  { name: '三亚', tag: '海岛度假', img: imageUrl('/images/home/trip-greece.jpg'), temp: '28°C', price: '¥2,899起' },
-  { name: '丽江', tag: '古城慢游', img: imageUrl('/images/home/trip-scotland.jpg'), temp: '18°C', price: '¥1,599起' },
-  { name: '西安', tag: '历史探秘', img: imageUrl('/images/home/trip-egypt.jpg'), temp: '22°C', price: '¥1,299起' },
-  { name: '成都', tag: '美食之都', img: imageUrl('/images/home/trip-scotland.jpg'), temp: '24°C', price: '¥1,499起' },
-  { name: '大理', tag: '风花雪月', img: imageUrl('/images/home/trip-greece.jpg'), temp: '20°C', price: '¥1,899起' },
-  { name: '厦门', tag: '文艺小城', img: imageUrl('/images/home/trip-egypt.jpg'), temp: '26°C', price: '¥1,699起' },
+  {
+    name: '三亚',
+    tag: '海岛度假',
+    img: imageUrl('/images/home/trip-greece.jpg'),
+    temp: '28°C',
+    price: '¥2,899起',
+  },
+  {
+    name: '丽江',
+    tag: '古城慢游',
+    img: imageUrl('/images/home/trip-scotland.jpg'),
+    temp: '18°C',
+    price: '¥1,599起',
+  },
+  {
+    name: '西安',
+    tag: '历史探秘',
+    img: imageUrl('/images/home/trip-egypt.jpg'),
+    temp: '22°C',
+    price: '¥1,299起',
+  },
+  {
+    name: '成都',
+    tag: '美食之都',
+    img: imageUrl('/images/home/trip-scotland.jpg'),
+    temp: '24°C',
+    price: '¥1,499起',
+  },
+  {
+    name: '大理',
+    tag: '风花雪月',
+    img: imageUrl('/images/home/trip-greece.jpg'),
+    temp: '20°C',
+    price: '¥1,899起',
+  },
+  {
+    name: '厦门',
+    tag: '文艺小城',
+    img: imageUrl('/images/home/trip-egypt.jpg'),
+    temp: '26°C',
+    price: '¥1,699起',
+  },
 ]
 
 /** 精选推荐 */
@@ -52,7 +88,25 @@ export const featuredTrips = [
 
 /** 用户评价 */
 export const userReviews = [
-  { name: '小王', avatar: '王', dest: '三亚', text: 'AI 规划的行程太省心了！每天节奏刚好，酒店推荐也很赞。', rating: 5 },
-  { name: '阿丽', avatar: '丽', dest: '丽江', text: '第一次用 AI 做旅行攻略，比自己查攻略高效 10 倍！', rating: 5 },
-  { name: '老张', avatar: '张', dest: '西安', text: '带爸妈出行，行程安排考虑了老人家体力，很贴心。', rating: 5 },
+  {
+    name: '小王',
+    avatar: '王',
+    dest: '三亚',
+    text: 'AI 规划的行程太省心了！每天节奏刚好，酒店推荐也很赞。',
+    rating: 5,
+  },
+  {
+    name: '阿丽',
+    avatar: '丽',
+    dest: '丽江',
+    text: '第一次用 AI 做旅行攻略，比自己查攻略高效 10 倍！',
+    rating: 5,
+  },
+  {
+    name: '老张',
+    avatar: '张',
+    dest: '西安',
+    text: '带爸妈出行，行程安排考虑了老人家体力，很贴心。',
+    rating: 5,
+  },
 ]

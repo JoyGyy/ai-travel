@@ -24,19 +24,29 @@ import './style.css'
 /** 生成搜索 URL 降级地址（无真实购票链接时使用） */
 function buildSearchUrl(platform: 'ctrip' | 'fliggy' | 'ly', attraction: Attraction) {
   const keyword = encodeURIComponent(`${attraction.city} ${attraction.name} 门票`)
-  if (platform === 'ctrip')
-    return `https://you.ctrip.com/searchsite/?query=${keyword}`
-  if (platform === 'fliggy')
-    return `https://s.taobao.com/search?q=${keyword}`
+  if (platform === 'ctrip') return `https://you.ctrip.com/searchsite/?query=${keyword}`
+  if (platform === 'fliggy') return `https://s.taobao.com/search?q=${keyword}`
   return `https://www.ly.com/scenery/scenerysearchlist_${keyword}.html`
 }
 
 /** 构建购票链接列表，优先使用真实链接，缺失时降级为搜索 URL */
 function buildBookingLinks(attraction: Attraction) {
   return [
-    { key: 'ctrip' as const, label: '携程', href: attraction.bookingLinks.ctrip || buildSearchUrl('ctrip', attraction) },
-    { key: 'fliggy' as const, label: '飞猪', href: attraction.bookingLinks.fliggy || buildSearchUrl('fliggy', attraction) },
-    { key: 'ly' as const, label: '同程', href: attraction.bookingLinks.ly || buildSearchUrl('ly', attraction) },
+    {
+      key: 'ctrip' as const,
+      label: '携程',
+      href: attraction.bookingLinks.ctrip || buildSearchUrl('ctrip', attraction),
+    },
+    {
+      key: 'fliggy' as const,
+      label: '飞猪',
+      href: attraction.bookingLinks.fliggy || buildSearchUrl('fliggy', attraction),
+    },
+    {
+      key: 'ly' as const,
+      label: '同程',
+      href: attraction.bookingLinks.ly || buildSearchUrl('ly', attraction),
+    },
   ]
 }
 
@@ -67,16 +77,11 @@ export default function AttractionDetail() {
       setError('')
       try {
         const data = await fetchAttractionDetail(id)
-        if (!cancelled)
-          setAttraction({ ...data.attraction, isFavorite: data.isFavorite })
-      }
-      catch (err: unknown) {
-        if (!cancelled)
-          setError(err instanceof Error ? err.message : '景点加载失败')
-      }
-      finally {
-        if (!cancelled)
-          setLoading(false)
+        if (!cancelled) setAttraction({ ...data.attraction, isFavorite: data.isFavorite })
+      } catch (err: unknown) {
+        if (!cancelled) setError(err instanceof Error ? err.message : '景点加载失败')
+      } finally {
+        if (!cancelled) setLoading(false)
       }
     }
     loadData()
@@ -87,13 +92,11 @@ export default function AttractionDetail() {
 
   /** 切换收藏状态 */
   async function handleToggleFavorite() {
-    if (!attraction)
-      return
+    if (!attraction) return
     setFavoritePending(true)
     try {
       await toggleFavorite(attraction.id, attraction.isFavorite ?? false)
-    }
-    finally {
+    } finally {
       setFavoritePending(false)
     }
   }
@@ -101,9 +104,18 @@ export default function AttractionDetail() {
   // ---- 加载中状态 ----
   if (loading) {
     return (
-      <main className="attraction-detail travel-page-shell" aria-labelledby="attraction-loading-title">
-        <div className="attraction-detail__state travel-surface-card" role="status" aria-live="polite">
-          <div className="flex items-center justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>
+      <main
+        className="attraction-detail travel-page-shell"
+        aria-labelledby="attraction-loading-title"
+      >
+        <div
+          className="attraction-detail__state travel-surface-card"
+          role="status"
+          aria-live="polite"
+        >
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
           <h1 id="attraction-loading-title">加载景点详情中...</h1>
           <p>正在取出这张目的地票根。</p>
         </div>
@@ -113,13 +125,26 @@ export default function AttractionDetail() {
   // ---- 错误/空数据状态 ----
   if (error || !attraction) {
     return (
-      <main className="attraction-detail travel-page-shell" aria-labelledby="attraction-error-title">
+      <main
+        className="attraction-detail travel-page-shell"
+        aria-labelledby="attraction-error-title"
+      >
         <div className="attraction-detail__state travel-surface-card" role="alert">
           <h1 id="attraction-error-title">景点暂时无法打开</h1>
           <p>{error || '景点不存在或已下架'}</p>
           <div className="attraction-detail__state-actions">
-            <Button className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => setReloadKey(prev => prev + 1)}>重试</Button>
-            <Button className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => router.push('/attractions')}>返回景点列表</Button>
+            <Button
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+              onClick={() => setReloadKey((prev) => prev + 1)}
+            >
+              重试
+            </Button>
+            <Button
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+              onClick={() => router.push('/attractions')}
+            >
+              返回景点列表
+            </Button>
           </div>
         </div>
       </main>
@@ -127,7 +152,9 @@ export default function AttractionDetail() {
   }
 
   // ---- 构建 AI 规划跳转参数 ----
-  const prompt = encodeURIComponent(`帮我规划一个包含${attraction.city}${attraction.name}的旅行行程`)
+  const prompt = encodeURIComponent(
+    `帮我规划一个包含${attraction.city}${attraction.name}的旅行行程`,
+  )
   const ticketTypeClass = attraction.ticketType === 'free' ? 'travel-tag--free' : 'travel-tag--paid'
 
   return (
@@ -151,9 +178,15 @@ export default function AttractionDetail() {
           <h1 id="attraction-detail-title">{attraction.name}</h1>
           <p className="attraction-detail__summary">{attraction.summary}</p>
           <div className="attraction-detail__tags">
-            <Badge className={`travel-tag ${ticketTypeClass}`}>{attraction.ticketType === 'free' ? '免费' : '收费'}</Badge>
+            <Badge className={`travel-tag ${ticketTypeClass}`}>
+              {attraction.ticketType === 'free' ? '免费' : '收费'}
+            </Badge>
             <Badge className="travel-tag travel-tag--warning">{attraction.priceText}</Badge>
-            {attraction.tags.map(tag => <Badge key={tag} className="travel-tag travel-tag--info">{tag}</Badge>)}
+            {attraction.tags.map((tag) => (
+              <Badge key={tag} className="travel-tag travel-tag--info">
+                {tag}
+              </Badge>
+            ))}
           </div>
           <div className="attraction-detail__hero-actions">
             <Button
@@ -162,10 +195,15 @@ export default function AttractionDetail() {
               aria-pressed={Boolean(attraction.isFavorite)}
               disabled={favoritePending}
             >
-              <Heart aria-hidden="true" className={`mr-2 h-4 w-4 ${attraction.isFavorite ? 'fill-current' : ''}`} />
+              <Heart
+                aria-hidden="true"
+                className={`mr-2 h-4 w-4 ${attraction.isFavorite ? 'fill-current' : ''}`}
+              />
               {favoritePending ? '处理中...' : attraction.isFavorite ? '已收藏' : '收藏'}
             </Button>
-            <Link className="attraction-detail__primary-action" href={`/chat?prompt=${prompt}`}>让 AI 规划这站</Link>
+            <Link className="attraction-detail__primary-action" href={`/chat?prompt=${prompt}`}>
+              让 AI 规划这站
+            </Link>
           </div>
         </div>
       </section>
@@ -200,19 +238,29 @@ export default function AttractionDetail() {
       {/* ---- 游玩亮点 ---- */}
       <section className="attraction-detail__section travel-surface-card">
         <h2>游玩亮点</h2>
-        <ul className="attraction-detail__list">{attraction.highlights.map(item => <li key={item}>{item}</li>)}</ul>
+        <ul className="attraction-detail__list">
+          {attraction.highlights.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
       </section>
       {/* ---- 注意事项 ---- */}
       <section className="attraction-detail__section travel-surface-card">
         <h2>注意事项</h2>
-        <ul className="attraction-detail__list">{attraction.tips.map(item => <li key={item}>{item}</li>)}</ul>
+        <ul className="attraction-detail__list">
+          {attraction.tips.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
       </section>
       {/* ---- 购票入口 ---- */}
       <section className="attraction-detail__section travel-surface-card">
         <h2>购票入口</h2>
-        <p className="attraction-detail__notice">价格、库存和开放时间以第三方平台及景区官方公告为准。</p>
+        <p className="attraction-detail__notice">
+          价格、库存和开放时间以第三方平台及景区官方公告为准。
+        </p>
         <div className="attraction-detail__booking">
-          {buildBookingLinks(attraction).map(link => (
+          {buildBookingLinks(attraction).map((link) => (
             <a
               key={link.key}
               href={link.href}
@@ -220,8 +268,7 @@ export default function AttractionDetail() {
               rel="noopener noreferrer"
               aria-label={`去${link.label}查看${attraction.name}门票，打开新窗口`}
             >
-              去
-              {link.label}
+              去{link.label}
               查看
             </a>
           ))}

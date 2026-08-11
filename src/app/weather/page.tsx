@@ -25,14 +25,14 @@ export default function Weather() {
   // ---- 城市搜索过滤 ----
   const filteredCities = useMemo(() => {
     const keyword = city.trim()
-    if (!keyword)
-      return allCities
-    return allCities.filter(c => c.includes(keyword))
+    if (!keyword) return allCities
+    return allCities.filter((c) => c.includes(keyword))
   }, [city])
 
-  const activeCityId = showDropdown && filteredCities[activeCityIndex]
-    ? `weather-city-option-${activeCityIndex}`
-    : undefined
+  const activeCityId =
+    showDropdown && filteredCities[activeCityIndex]
+      ? `weather-city-option-${activeCityIndex}`
+      : undefined
 
   // ---- 城市选择 ----
   function selectCity(name: string) {
@@ -59,48 +59,61 @@ export default function Weather() {
     if (event.key === 'ArrowDown') {
       event.preventDefault()
       if (filteredCities.length)
-        setActiveCityIndex(index => Math.min(index + 1, filteredCities.length - 1))
-    }
-    else if (event.key === 'ArrowUp') {
+        setActiveCityIndex((index) => Math.min(index + 1, filteredCities.length - 1))
+    } else if (event.key === 'ArrowUp') {
       event.preventDefault()
-      if (filteredCities.length)
-        setActiveCityIndex(index => Math.max(index - 1, 0))
-    }
-    else if (event.key === 'Enter') {
+      if (filteredCities.length) setActiveCityIndex((index) => Math.max(index - 1, 0))
+    } else if (event.key === 'Enter') {
       event.preventDefault()
       if (showDropdown && filteredCities[activeCityIndex])
         selectCity(filteredCities[activeCityIndex])
-      else if (city.trim())
-        fetchWeather(city.trim())
-    }
-    else if (event.key === 'Escape') {
+      else if (city.trim()) fetchWeather(city.trim())
+    } else if (event.key === 'Escape') {
       setShowDropdown(false)
     }
   }
 
   // ---- 错误重试 ----
   function retryWeather() {
-    if (city.trim())
-      fetchWeather(city.trim())
+    if (city.trim()) fetchWeather(city.trim())
   }
 
   return (
-    <main className="weather-page" onClick={() => showDropdown && setShowDropdown(false)} aria-labelledby="weather-title">
+    <main
+      className="weather-page"
+      onClick={() => showDropdown && setShowDropdown(false)}
+      aria-labelledby="weather-title"
+    >
       <div className="weather-page__hero">
         <div className="weather-page__deco" aria-hidden="true" />
         <p className="weather-page__label">WEATHER</p>
-        <h1 id="weather-title" className="weather-page__title">天气查询</h1>
+        <h1 id="weather-title" className="weather-page__title">
+          天气查询
+        </h1>
         <p className="weather-page__subtitle">查看目的地实时天气，合理安排行程</p>
       </div>
 
       <div className="weather-page__content">
-        <div className="weather-page__search" onClick={e => e.stopPropagation()}>
+        <div className="weather-page__search" onClick={(e) => e.stopPropagation()}>
           <div className="weather-page__search-inner">
-            <svg className="weather-page__search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <svg
+              className="weather-page__search-icon"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
-            <label className="weather-page__search-label" htmlFor="weather-city-input">城市名称</label>
+            <label className="weather-page__search-label" htmlFor="weather-city-input">
+              城市名称
+            </label>
             <input
               id="weather-city-input"
               name="weather-city"
@@ -135,7 +148,9 @@ export default function Weather() {
                   {name}
                 </button>
               ))}
-              {!filteredCities.length && <div className="weather-page__dropdown-empty">未找到匹配城市</div>}
+              {!filteredCities.length && (
+                <div className="weather-page__dropdown-empty">未找到匹配城市</div>
+              )}
             </div>
           )}
         </div>
@@ -167,7 +182,7 @@ export default function Weather() {
             <div className="weather-page__hot-line" />
           </div>
           <div className="weather-page__hot-list">
-            {hotCities.map(name => (
+            {hotCities.map((name) => (
               <button
                 key={name}
                 type="button"

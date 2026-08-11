@@ -42,37 +42,29 @@ export function ChatAgentSteps({ steps, currentStep, isLoading }: ChatAgentSteps
   }, [isLoading, steps.length])
 
   // 无步骤时不渲染
-  if (steps.length === 0)
-    return null
+  if (steps.length === 0) return null
 
   /** 将步骤事件数组转为 Map，便于按步骤号快速查找 */
-  const stepMap = new Map(steps.map(s => [s.step, s]))
+  const stepMap = new Map(steps.map((s) => [s.step, s]))
   /** 已完成步骤数 */
-  const completedCount = steps.filter(s => s.status === 'complete').length
+  const completedCount = steps.filter((s) => s.status === 'complete').length
 
   /** 判断指定步骤的当前状态：已完成 / 执行中 / 等待中 */
   function getStepStatus(stepNum: number): 'done' | 'running' | 'pending' {
     const step = stepMap.get(stepNum)
-    if (step?.status === 'complete')
-      return 'done'
-    if (currentStep === stepNum)
-      return 'running'
+    if (step?.status === 'complete') return 'done'
+    if (currentStep === stepNum) return 'running'
     return 'pending'
   }
 
   /** 根据步骤数据提取人类可读的摘要文本 */
   function getSummary(step: StepEvent): string {
-    if (!step.data)
-      return ''
+    if (!step.data) return ''
     const d = step.data as Record<string, unknown>
-    if (d.city && d.attractionCount)
-      return `${d.city} · ${d.attractionCount} 个景点`
-    if (d.cityCount)
-      return `${d.cityCount} 个城市`
-    if (d.city_a && d.city_b)
-      return `${d.city_a} vs ${d.city_b}`
-    if (d.city && d.tipCount)
-      return `${d.city} · ${d.tipCount} 条贴士`
+    if (d.city && d.attractionCount) return `${d.city} · ${d.attractionCount} 个景点`
+    if (d.cityCount) return `${d.cityCount} 个城市`
+    if (d.city_a && d.city_b) return `${d.city_a} vs ${d.city_b}`
+    if (d.city && d.tipCount) return `${d.city} · ${d.tipCount} 条贴士`
     return ''
   }
 
@@ -90,19 +82,23 @@ export function ChatAgentSteps({ steps, currentStep, isLoading }: ChatAgentSteps
       >
         <span className="chat-agent-steps__header-left">
           {/* 加载中显示动态圆点，完成后显示勾号 */}
-          <span className={`chat-agent-steps__icon ${isLoading ? 'chat-agent-steps__icon--loading' : 'chat-agent-steps__icon--done'}`} aria-hidden="true">
+          <span
+            className={`chat-agent-steps__icon ${isLoading ? 'chat-agent-steps__icon--loading' : 'chat-agent-steps__icon--done'}`}
+            aria-hidden="true"
+          >
             {isLoading ? <span className="chat-agent-steps__dot" /> : <CheckCircle2 size={16} />}
           </span>
           <span className="chat-agent-steps__label">Agent 思考过程</span>
           <span className="chat-agent-steps__count">
-            (
-            {completedCount}
-            /
-            {steps.length}
-            )
+            ({completedCount}/{steps.length})
           </span>
         </span>
-        <span className={`chat-agent-steps__arrow ${isExpanded ? 'chat-agent-steps__arrow--expanded' : ''}`} aria-hidden="true">▶</span>
+        <span
+          className={`chat-agent-steps__arrow ${isExpanded ? 'chat-agent-steps__arrow--expanded' : ''}`}
+          aria-hidden="true"
+        >
+          ▶
+        </span>
       </button>
 
       {/* 展开后的步骤列表 */}
@@ -115,20 +111,28 @@ export function ChatAgentSteps({ steps, currentStep, isLoading }: ChatAgentSteps
               <div key={step.step} className="chat-agent-steps__item">
                 {/* 左侧时间线：步骤编号圆点 + 连接线 */}
                 <div className="chat-agent-steps__line">
-                  <div className={`chat-agent-steps__dot-item chat-agent-steps__dot-item--${status}`}>
+                  <div
+                    className={`chat-agent-steps__dot-item chat-agent-steps__dot-item--${status}`}
+                  >
                     {status === 'done' ? <CheckCircle2 size={14} /> : <span>{step.step}</span>}
                   </div>
                   {index < steps.length - 1 && (
-                    <div className={`chat-agent-steps__conn ${status === 'done' ? 'chat-agent-steps__conn--done' : ''}`} />
+                    <div
+                      className={`chat-agent-steps__conn ${status === 'done' ? 'chat-agent-steps__conn--done' : ''}`}
+                    />
                   )}
                 </div>
                 {/* 右侧步骤信息：名称 + 状态 + 结果摘要 */}
                 <div className="chat-agent-steps__body">
                   <div className="chat-agent-steps__name-row">
-                    <span className={`chat-agent-steps__name ${status === 'pending' ? 'chat-agent-steps__name--pending' : ''}`}>
+                    <span
+                      className={`chat-agent-steps__name ${status === 'pending' ? 'chat-agent-steps__name--pending' : ''}`}
+                    >
                       {step.name}
                     </span>
-                    {status === 'running' && <span className="chat-agent-steps__running">执行中...</span>}
+                    {status === 'running' && (
+                      <span className="chat-agent-steps__running">执行中...</span>
+                    )}
                   </div>
                   {summary && (
                     <div className="chat-agent-steps__summary">

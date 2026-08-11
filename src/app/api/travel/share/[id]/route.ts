@@ -16,12 +16,10 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
     const { id } = await params
     const share = getShare(id)
-    if (!share)
-      throw httpError(404, '分享不存在')
+    if (!share) throw httpError(404, '分享不存在')
 
     return NextResponse.json({ success: true, data: share })
-  }
-  catch (err) {
+  } catch (err) {
     return errorResponse(err)
   }
 }

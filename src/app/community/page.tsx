@@ -11,8 +11,8 @@ import { CommunityPostCard } from '@/components/CommunityPostCard'
 import { CommunityPostCardSkeleton } from '@/components/CommunityPostCard/skeleton'
 import { Pagination } from '@/components/Pagination'
 import { RepostModal } from '@/components/RepostModal'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { useCommunityActions } from '@/hooks/useCommunityActions'
 
 import './style.css'
@@ -34,9 +34,9 @@ export default function Community() {
 
   const { user, hasHydrated, requireLogin, toggleLike, submitRepost } = useCommunityActions({
     onLikeSuccess: (postId, likedByMe, likeCount) => {
-      setItems(prev => prev.map(item =>
-        item.id === postId ? { ...item, likedByMe, likeCount } : item,
-      ))
+      setItems((prev) =>
+        prev.map((item) => (item.id === postId ? { ...item, likedByMe, likeCount } : item)),
+      )
     },
   })
 
@@ -48,11 +48,9 @@ export default function Community() {
       setItems(data.items)
       setTotal(data.total)
       setFilters({ ...nextFilters, page: data.page, pageSize: data.pageSize })
-    }
-    catch (err: unknown) {
+    } catch (err: unknown) {
       setError(err instanceof Error ? err.message : '社区内容加载失败')
-    }
-    finally {
+    } finally {
       setLoading(false)
     }
   }, [])
@@ -63,69 +61,81 @@ export default function Community() {
 
   // requireLogin 已从 useCommunityActions hook 获取
 
-  const updateFilters = useCallback((patch: CommunityPostFilters) => {
-    const next = { ...filters, ...patch, page: patch.page || 1, pageSize: PAGE_SIZE }
-    load(next)
-  }, [filters, load])
+  const updateFilters = useCallback(
+    (patch: CommunityPostFilters) => {
+      const next = { ...filters, ...patch, page: patch.page || 1, pageSize: PAGE_SIZE }
+      load(next)
+    },
+    [filters, load],
+  )
 
-  const handleSearch = useCallback((event: { preventDefault: () => void }) => {
-    event.preventDefault()
-    updateFilters({ city: cityInput.trim() })
-  }, [updateFilters, cityInput])
+  const handleSearch = useCallback(
+    (event: { preventDefault: () => void }) => {
+      event.preventDefault()
+      updateFilters({ city: cityInput.trim() })
+    },
+    [updateFilters, cityInput],
+  )
 
   const clearFilters = useCallback(() => {
     setCityInput('')
     load({ page: 1, pageSize: PAGE_SIZE })
   }, [load])
 
-  const handleLike = useCallback(async (post: CommunityPost) => {
-    setLikePendingIds(prev => new Set(prev).add(post.id))
-    try {
-      await toggleLike(post.id, post.likedByMe)
-    }
-    finally {
-      setLikePendingIds((prev) => {
-        const next = new Set(prev)
-        next.delete(post.id)
-        return next
-      })
-    }
-  }, [toggleLike])
-
-  const openRepost = useCallback((post: CommunityPost) => {
-    if (!requireLogin('转发'))
-      return
-    setRepostTarget(post)
-  }, [requireLogin])
-
-  const handleSubmitRepost = useCallback(async (content: string) => {
-    if (!repostTarget)
-      return false
-
-    setRepostPendingIds(prev => new Set(prev).add(repostTarget.id))
-    try {
-      const success = await submitRepost(repostTarget.id, content)
-      if (success) {
-        // 刷新列表以显示新转发
-        const data = await fetchCommunityPosts({ ...filters, pageSize: PAGE_SIZE })
-        setItems(data.items)
-        setTotal(data.total)
-        setRepostTarget(null)
+  const handleLike = useCallback(
+    async (post: CommunityPost) => {
+      setLikePendingIds((prev) => new Set(prev).add(post.id))
+      try {
+        await toggleLike(post.id, post.likedByMe)
+      } finally {
+        setLikePendingIds((prev) => {
+          const next = new Set(prev)
+          next.delete(post.id)
+          return next
+        })
       }
-      return success
-    }
-    finally {
-      setRepostPendingIds((prev) => {
-        const next = new Set(prev)
-        next.delete(repostTarget.id)
-        return next
-      })
-    }
-  }, [repostTarget, submitRepost, filters])
+    },
+    [toggleLike],
+  )
 
-  const hasActiveFilters = useMemo(() =>
-    Boolean(filters.city || filters.withItinerary || filters.authorId),
-  [filters])
+  const openRepost = useCallback(
+    (post: CommunityPost) => {
+      if (!requireLogin('转发')) return
+      setRepostTarget(post)
+    },
+    [requireLogin],
+  )
+
+  const handleSubmitRepost = useCallback(
+    async (content: string) => {
+      if (!repostTarget) return false
+
+      setRepostPendingIds((prev) => new Set(prev).add(repostTarget.id))
+      try {
+        const success = await submitRepost(repostTarget.id, content)
+        if (success) {
+          // 刷新列表以显示新转发
+          const data = await fetchCommunityPosts({ ...filters, pageSize: PAGE_SIZE })
+          setItems(data.items)
+          setTotal(data.total)
+          setRepostTarget(null)
+        }
+        return success
+      } finally {
+        setRepostPendingIds((prev) => {
+          const next = new Set(prev)
+          next.delete(repostTarget.id)
+          return next
+        })
+      }
+    },
+    [repostTarget, submitRepost, filters],
+  )
+
+  const hasActiveFilters = useMemo(
+    () => Boolean(filters.city || filters.withItinerary || filters.authorId),
+    [filters],
+  )
 
   return (
     <main className="community-page travel-page-shell" aria-labelledby="community-title">
@@ -145,19 +155,27 @@ export default function Community() {
         </Button>
       </section>
 
-      <section className="community-page__filters travel-surface-card" aria-labelledby="community-filter-title">
+      <section
+        className="community-page__filters travel-surface-card"
+        aria-labelledby="community-filter-title"
+      >
         <div className="community-page__filters-header">
           <h2 id="community-filter-title">筛选分享</h2>
-          {hasActiveFilters ? <Button variant="link" onClick={clearFilters}>清空筛选</Button> : null}
+          {hasActiveFilters ? (
+            <Button variant="link" onClick={clearFilters}>
+              清空筛选
+            </Button>
+          ) : null}
         </div>
         <form className="community-page__search" onSubmit={handleSearch}>
           <label htmlFor="community-city">城市</label>
           <div className="community-page__search-control">
-            <Input className="flex-1"
+            <Input
+              className="flex-1"
               id="community-city"
               placeholder="输入城市，例如 成都"
               value={cityInput}
-              onChange={event => setCityInput(event.target.value)}
+              onChange={(event) => setCityInput(event.target.value)}
             />
             <Button type="submit">搜索</Button>
           </div>
@@ -167,7 +185,7 @@ export default function Community() {
           <input
             type="checkbox"
             checked={Boolean(filters.withItinerary)}
-            onChange={event => updateFilters({ withItinerary: event.target.checked })}
+            onChange={(event) => updateFilters({ withItinerary: event.target.checked })}
             aria-label="只看含行程分享"
           />
         </div>
@@ -176,70 +194,66 @@ export default function Community() {
         </p>
       </section>
 
-      {loading
-        ? (
-            <section className="community-page__feed" role="status" aria-live="polite">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <CommunityPostCardSkeleton key={i} />
-              ))}
-            </section>
-          )
-        : null}
+      {loading ? (
+        <section className="community-page__feed" role="status" aria-live="polite">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <CommunityPostCardSkeleton key={i} />
+          ))}
+        </section>
+      ) : null}
 
-      {!loading && error
-        ? (
-            <div className="community-page__state travel-surface-card" role="alert">
-              <p>{error}</p>
-              <Button onClick={() => load(filters)}>重试</Button>
-            </div>
-          )
-        : null}
+      {!loading && error ? (
+        <div className="community-page__state travel-surface-card" role="alert">
+          <p>{error}</p>
+          <Button onClick={() => load(filters)}>重试</Button>
+        </div>
+      ) : null}
 
-      {!loading && !error && items.length === 0
-        ? (
-            <div className="community-page__state travel-surface-card">
-              <div className="text-center py-8 text-muted-foreground"><p>还没有符合条件的旅行分享</p></div>
-              <Button
-                disabled={!hasHydrated}
-                onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}
-              >
-                {!hasHydrated ? '加载中...' : '发布第一条分享'}
-              </Button>
-            </div>
-          )
-        : null}
+      {!loading && !error && items.length === 0 ? (
+        <div className="community-page__state travel-surface-card">
+          <div className="text-center py-8 text-muted-foreground">
+            <p>还没有符合条件的旅行分享</p>
+          </div>
+          <Button
+            disabled={!hasHydrated}
+            onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}
+          >
+            {!hasHydrated ? '加载中...' : '发布第一条分享'}
+          </Button>
+        </div>
+      ) : null}
 
-      {!loading && !error && items.length > 0
-        ? (
-            <>
-              <section className="community-page__feed" aria-label="社区分享列表">
-                {items.map(post => (
-                  <CommunityPostCard
-                    key={post.id}
-                    post={post}
-                    currentUserId={user?.id}
-                    likePending={likePendingIds.has(post.id)}
-                    repostPending={repostPendingIds.has(post.id)}
-                    onLike={handleLike}
-                    onComment={item => router.push(`/community/${item.id}`)}
-                    onRepost={openRepost}
-                  />
-                ))}
-              </section>
-              <Pagination
-                className="community-page__pagination"
-                page={filters.page || 1}
-                total={total}
-                pageSize={PAGE_SIZE}
-                onPageChange={page => updateFilters({ page })}
+      {!loading && !error && items.length > 0 ? (
+        <>
+          <section className="community-page__feed" aria-label="社区分享列表">
+            {items.map((post) => (
+              <CommunityPostCard
+                key={post.id}
+                post={post}
+                currentUserId={user?.id}
+                likePending={likePendingIds.has(post.id)}
+                repostPending={repostPendingIds.has(post.id)}
+                onLike={handleLike}
+                onComment={(item) => router.push(`/community/${item.id}`)}
+                onRepost={openRepost}
               />
-            </>
-          )
-        : null}
+            ))}
+          </section>
+          <Pagination
+            className="community-page__pagination"
+            page={filters.page || 1}
+            total={total}
+            pageSize={PAGE_SIZE}
+            onPageChange={(page) => updateFilters({ page })}
+          />
+        </>
+      ) : null}
 
       <RepostModal
         open={Boolean(repostTarget)}
-        targetTitle={repostTarget?.title || repostTarget?.content || `${repostTarget?.city || '旅行'}分享`}
+        targetTitle={
+          repostTarget?.title || repostTarget?.content || `${repostTarget?.city || '旅行'}分享`
+        }
         pending={repostTarget ? repostPendingIds.has(repostTarget.id) : false}
         onClose={() => setRepostTarget(null)}
         onSubmit={handleSubmitRepost}

@@ -1,6 +1,12 @@
 import type { UIMessage } from 'ai'
 
-import { convertToModelMessages, createUIMessageStreamResponse, isStepCount, streamText, toUIMessageStream } from 'ai'
+import {
+  convertToModelMessages,
+  createUIMessageStreamResponse,
+  isStepCount,
+  streamText,
+  toUIMessageStream,
+} from 'ai'
 
 import { getTravelModel } from './providers'
 import { travelTools } from './tools'

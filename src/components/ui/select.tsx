@@ -11,7 +11,11 @@ const Select = SelectPrimitive.Root
 const SelectGroup = SelectPrimitive.Group
 const SelectValue = SelectPrimitive.Value
 
-function SelectTrigger({ className, children, ...props }: ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>) {
+function SelectTrigger({
+  className,
+  children,
+  ...props
+}: ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>) {
   return (
     <SelectPrimitive.Trigger
       className={cn(
@@ -28,23 +32,40 @@ function SelectTrigger({ className, children, ...props }: ComponentPropsWithoutR
   )
 }
 
-function SelectScrollUpButton({ className, ...props }: ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollUpButton>) {
+function SelectScrollUpButton({
+  className,
+  ...props
+}: ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollUpButton>) {
   return (
-    <SelectPrimitive.ScrollUpButton className={cn('flex cursor-default items-center justify-center py-1', className)} {...props}>
+    <SelectPrimitive.ScrollUpButton
+      className={cn('flex cursor-default items-center justify-center py-1', className)}
+      {...props}
+    >
       <ChevronUp className="h-4 w-4" />
     </SelectPrimitive.ScrollUpButton>
   )
 }
 
-function SelectScrollDownButton({ className, ...props }: ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollDownButton>) {
+function SelectScrollDownButton({
+  className,
+  ...props
+}: ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollDownButton>) {
   return (
-    <SelectPrimitive.ScrollDownButton className={cn('flex cursor-default items-center justify-center py-1', className)} {...props}>
+    <SelectPrimitive.ScrollDownButton
+      className={cn('flex cursor-default items-center justify-center py-1', className)}
+      {...props}
+    >
       <ChevronDown className="h-4 w-4" />
     </SelectPrimitive.ScrollDownButton>
   )
 }
 
-function SelectContent({ className, children, position = 'popper', ...props }: ComponentPropsWithoutRef<typeof SelectPrimitive.Content>) {
+function SelectContent({
+  className,
+  children,
+  position = 'popper',
+  ...props
+}: ComponentPropsWithoutRef<typeof SelectPrimitive.Content>) {
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
@@ -73,11 +94,23 @@ function SelectContent({ className, children, position = 'popper', ...props }: C
   )
 }
 
-function SelectLabel({ className, ...props }: ComponentPropsWithoutRef<typeof SelectPrimitive.Label>) {
-  return <SelectPrimitive.Label className={cn('py-1.5 pl-8 pr-2 text-sm font-semibold', className)} {...props} />
+function SelectLabel({
+  className,
+  ...props
+}: ComponentPropsWithoutRef<typeof SelectPrimitive.Label>) {
+  return (
+    <SelectPrimitive.Label
+      className={cn('py-1.5 pl-8 pr-2 text-sm font-semibold', className)}
+      {...props}
+    />
+  )
 }
 
-function SelectItem({ className, children, ...props }: ComponentPropsWithoutRef<typeof SelectPrimitive.Item>) {
+function SelectItem({
+  className,
+  children,
+  ...props
+}: ComponentPropsWithoutRef<typeof SelectPrimitive.Item>) {
   return (
     <SelectPrimitive.Item
       className={cn(
@@ -96,8 +129,13 @@ function SelectItem({ className, children, ...props }: ComponentPropsWithoutRef<
   )
 }
 
-function SelectSeparator({ className, ...props }: ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>) {
-  return <SelectPrimitive.Separator className={cn('-mx-1 my-1 h-px bg-muted', className)} {...props} />
+function SelectSeparator({
+  className,
+  ...props
+}: ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>) {
+  return (
+    <SelectPrimitive.Separator className={cn('-mx-1 my-1 h-px bg-muted', className)} {...props} />
+  )
 }
 
 export {

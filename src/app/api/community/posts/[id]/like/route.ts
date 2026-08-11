@@ -6,10 +6,7 @@
  */
 import { NextResponse } from 'next/server'
 
-import {
-  likeCommunityPost,
-  unlikeCommunityPost,
-} from '@/lib/services/community'
+import { likeCommunityPost, unlikeCommunityPost } from '@/lib/services/community'
 import { withProtected } from '@/lib/utils/http'
 import { readRequiredString } from '@/lib/utils/validation'
 

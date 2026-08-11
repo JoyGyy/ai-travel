@@ -8,31 +8,22 @@ import { httpError } from './http'
 export function readRequiredString(
   value: unknown,
   fieldName: string,
-  options: { min?: number, max?: number } = {},
+  options: { min?: number; max?: number } = {},
 ): string {
   const { min = 1, max = 2000 } = options
-  if (typeof value !== 'string')
-    throw httpError(400, `${fieldName}必须是文本`)
+  if (typeof value !== 'string') throw httpError(400, `${fieldName}必须是文本`)
   const trimmed = value.trim()
-  if (trimmed.length < min)
-    throw httpError(400, `请输入${fieldName}`)
-  if (trimmed.length > max)
-    throw httpError(400, `${fieldName}不能超过 ${max} 个字符`)
+  if (trimmed.length < min) throw httpError(400, `请输入${fieldName}`)
+  if (trimmed.length > max) throw httpError(400, `${fieldName}不能超过 ${max} 个字符`)
   return trimmed
 }
 
 /** 校验可选字符串字段 */
-export function readOptionalString(
-  value: unknown,
-  fieldName: string,
-  max: number,
-): string {
+export function readOptionalString(value: unknown, fieldName: string, max: number): string {
   if (value === undefined || value === null) return ''
-  if (typeof value !== 'string')
-    throw httpError(400, `${fieldName}必须是文本`)
+  if (typeof value !== 'string') throw httpError(400, `${fieldName}必须是文本`)
   const trimmed = value.trim()
-  if (trimmed.length > max)
-    throw httpError(400, `${fieldName}不能超过 ${max} 个字符`)
+  if (trimmed.length > max) throw httpError(400, `${fieldName}不能超过 ${max} 个字符`)
   return trimmed
 }
 
@@ -40,7 +31,7 @@ export function readOptionalString(
 export function readPositiveInteger(
   value: unknown,
   fieldName: string,
-  options: { min?: number, max?: number } = {},
+  options: { min?: number; max?: number } = {},
 ): number {
   const { min = 1, max = 30 } = options
   const number = Number(value)
@@ -57,10 +48,8 @@ export function ensureArray(
 ): unknown[] {
   const { max = 20 } = options
   if (value === undefined) return []
-  if (!Array.isArray(value))
-    throw httpError(400, `${fieldName}必须是数组`)
-  if (value.length > max)
-    throw httpError(400, `${fieldName}最多支持 ${max} 条`)
+  if (!Array.isArray(value)) throw httpError(400, `${fieldName}必须是数组`)
+  if (value.length > max) throw httpError(400, `${fieldName}最多支持 ${max} 条`)
   return value
 }
 

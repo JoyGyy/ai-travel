@@ -75,8 +75,8 @@ export interface AuthUser {
  * 从请求中提取并验证认证用户
  * 未登录时抛出 401 HttpError
  */
-export function requireAuth(req: Request): AuthUser {
-  const user = getAuthFromHeaders(req.headers)
+export async function requireAuth(req: Request): Promise<AuthUser> {
+  const user = await getAuthFromHeaders(req.headers)
   if (!user)
     throw httpError(401, '未登录')
   return user
@@ -115,12 +115,12 @@ export function withProtected<TContext = unknown>(
 ) {
   return async (req: Request, context?: TContext): Promise<NextResponse> => {
     try {
-      const user = requireAuth(req)
+      const user = await requireAuth(req)
       requireCsrf(req)
 
       if (options?.rateLimit) {
         const { name, max, windowMs } = options.rateLimit
-        const blocked = checkRateLimit(req, name, max, windowMs)
+        const blocked = await checkRateLimit(req, name, max, windowMs)
         if (blocked) return blocked
       }
 
@@ -148,7 +148,7 @@ export function withAuth<TContext = unknown>(
 ) {
   return async (req: Request, context?: TContext): Promise<NextResponse> => {
     try {
-      const user = requireAuth(req)
+      const user = await requireAuth(req)
       return await handler(req, { user, ...context } as { user: AuthUser } & TContext)
     }
     catch (err) {
@@ -166,7 +166,7 @@ export function withRateLimit(
 ) {
   return async (req: Request): Promise<Response> => {
     try {
-      const blocked = checkRateLimit(req, name, max, windowMs)
+      const blocked = await checkRateLimit(req, name, max, windowMs)
       if (blocked) return blocked
       return await handler(req)
     }
@@ -188,7 +188,7 @@ export function withPublicPost(
 ) {
   return async (req: Request): Promise<Response> => {
     try {
-      const blocked = checkRateLimit(req, name, max, windowMs)
+      const blocked = await checkRateLimit(req, name, max, windowMs)
       if (blocked) return blocked
 
       // CSRF token 存在时验证有效性，不存在时放行（首次访问场景）
@@ -222,7 +222,7 @@ export function withAuthRaw(
 ) {
   return async (req: Request): Promise<Response> => {
     try {
-      const user = requireAuth(req)
+      const user = await requireAuth(req)
       return await handler(req, { user })
     }
     catch (err) {

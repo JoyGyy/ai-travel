@@ -11,7 +11,7 @@ import { errorResponse, httpError } from '@/lib/utils/http'
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     // 限流
-    const rateLimited = checkRateLimit(req, 'share:get', 30, 60_000)
+    const rateLimited = await checkRateLimit(req, 'share:get', 30, 60_000)
     if (rateLimited) return rateLimited
 
     const { id } = await params

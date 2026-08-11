@@ -5,7 +5,7 @@
  */
 import bcrypt from 'bcryptjs'
 import { eq, sql } from 'drizzle-orm'
-import jwt from 'jsonwebtoken'
+import { SignJWT, jwtVerify } from 'jose'
 import { nanoid } from 'nanoid'
 
 import { aiUsage, userFavoriteAttractions, users } from '@/db/schema'
@@ -17,6 +17,19 @@ import { env } from '../env'
 const SALT_ROUNDS = 10
 /** 每日 AI 调用上限 */
 const DAILY_AI_LIMIT = 10
+
+/** 获取 JWT 签名密钥 */
+function getJwtKey(): Uint8Array {
+  return new TextEncoder().encode(env.JWT_SECRET)
+}
+
+/** 签发 JWT（有效期 7 天） */
+async function signJwt(payload: { id: string, username: string }): Promise<string> {
+  return new SignJWT(payload)
+    .setProtectedHeader({ alg: 'HS256' })
+    .setExpirationTime('7d')
+    .sign(getJwtKey())
+}
 
 /** 密码复杂度校验：至少 8 位，包含大小写字母和数字 */
 function validatePassword(password: string): void {
@@ -88,7 +101,7 @@ async function register(username: string, password: string, email?: string): Pro
     createdAt: new Date(createdAt),
   })
 
-  const token = jwt.sign({ id, username }, env.JWT_SECRET, { expiresIn: '7d' })
+  const token = await signJwt({ id, username })
   return { token, user: { id, username, createdAt } }
 }
 
@@ -110,7 +123,7 @@ async function login(username: string, password: string): Promise<AuthResult> {
   if (!match)
     throw new Error('用户名或密码错误')
 
-  const token = jwt.sign({ id: user.id, username: user.username }, env.JWT_SECRET, { expiresIn: '7d' })
+  const token = await signJwt({ id: user.id, username: user.username })
   return {
     token,
     user: {
@@ -122,17 +135,18 @@ async function login(username: string, password: string): Promise<AuthResult> {
 }
 
 /** 验证 JWT token，无效时抛出异常 */
-function verifyToken(token: string): JwtPayload {
-  return jwt.verify(token, env.JWT_SECRET) as JwtPayload
+async function verifyToken(token: string): Promise<JwtPayload> {
+  const { payload } = await jwtVerify(token, getJwtKey())
+  return payload as unknown as JwtPayload
 }
 
 /** 从 Authorization header 或 cookie 提取并验证用户 */
-export function getAuthFromHeaders(headers: Headers): JwtPayload | null {
+export async function getAuthFromHeaders(headers: Headers): Promise<JwtPayload | null> {
   // 优先从 Authorization header
   const authHeader = headers.get('authorization')
   if (authHeader?.startsWith('Bearer ')) {
     try {
-      return verifyToken(authHeader.slice(7))
+      return await verifyToken(authHeader.slice(7))
     }
     catch { return null }
   }
@@ -144,7 +158,7 @@ export function getAuthFromHeaders(headers: Headers): JwtPayload | null {
     const match = cookie.match(/\btoken=([^;]+)/)
     if (match) {
       try {
-        return verifyToken(match[1])
+        return await verifyToken(match[1])
       }
       catch { return null }
     }
@@ -154,8 +168,8 @@ export function getAuthFromHeaders(headers: Headers): JwtPayload | null {
 }
 
 /** 必需认证，失败返回 null */
-export function requireAuthFromHeaders(headers: Headers): JwtPayload {
-  const user = getAuthFromHeaders(headers)
+export async function requireAuthFromHeaders(headers: Headers): Promise<JwtPayload> {
+  const user = await getAuthFromHeaders(headers)
   if (!user) {
     throw new Error('未登录')
   }

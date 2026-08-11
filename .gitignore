@@ -48,8 +48,7 @@ next-env.d.ts
 !.env.example
 
 # Claude Code
-.claude/settings.local.json
-.claude/worktrees/
+.claude/
 
 # Playwright MCP
 .playwright-mcp/

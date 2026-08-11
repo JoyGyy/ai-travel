@@ -118,7 +118,8 @@ export const useItineraryStore = create<ItineraryState>()(
           const idx = state.agentSteps.findIndex(s => s.step === step.step)
           if (idx >= 0) {
             state.agentSteps[idx] = step
-          } else {
+          }
+          else {
             state.agentSteps.push(step)
           }
         }),

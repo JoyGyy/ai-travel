@@ -97,10 +97,10 @@ function validatePostPayload(payload: unknown): CreateCommunityPostInput {
 
 export const GET = withErrorHandler(
   async (req: Request) => {
-    const rateLimited = checkRateLimit(req, 'community:read', 60, 60_000)
+    const rateLimited = await checkRateLimit(req, 'community:read', 60, 60_000)
     if (rateLimited) return rateLimited
 
-    const viewer = getAuthFromHeaders(req.headers)
+    const viewer = await getAuthFromHeaders(req.headers)
     const { searchParams } = new URL(req.url)
 
     const page = readPositiveInteger(searchParams.get('page') || '1', '页码', { min: 1, max: 10_000 })

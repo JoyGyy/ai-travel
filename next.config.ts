@@ -35,11 +35,6 @@ const nextConfig: NextConfig = {
     ]
   },
 
-  // Turbopack 根目录（next-app 作为子目录时需要指定）
-  turbopack: {
-    root: __dirname,
-  },
-
   // 实验性功能
   experimental: {
     serverActions: {

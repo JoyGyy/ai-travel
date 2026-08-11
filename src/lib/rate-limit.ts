@@ -32,15 +32,15 @@ if (typeof setInterval !== 'undefined') {
  * 检查限流，返回 NextResponse 表示被限流，null 表示放行
  * @param userId 可选，已解析的用户 ID，避免重复 JWT 验证
  */
-export function checkRateLimit(
+export async function checkRateLimit(
   req: Request,
   name: string,
   maxRequests: number,
   windowMs: number = 60_000,
   userId?: string,
-): NextResponse | null {
+): Promise<NextResponse | null> {
   // 如果调用方已传入 userId，直接使用；否则从 header 解析
-  const uid = userId ?? getAuthFromHeaders(req.headers)?.id
+  const uid = userId ?? (await getAuthFromHeaders(req.headers))?.id
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
     || req.headers.get('x-real-ip')
     || 'unknown'

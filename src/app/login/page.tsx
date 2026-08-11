@@ -61,9 +61,12 @@ export default function Login() {
   /* ---------- 表单校验 ---------- */
 
   function validateForm() {
-    if (!username.trim()) return '请输入用户名'
-    if (!password) return '请输入密码'
-    if (tab === 'register' && password.length < 6) return '密码长度至少 6 位'
+    if (!username.trim())
+      return '请输入用户名'
+    if (!password)
+      return '请输入密码'
+    if (tab === 'register' && password.length < 6)
+      return '密码长度至少 6 位'
     return ''
   }
 
@@ -71,7 +74,8 @@ export default function Login() {
 
   async function handleSubmit(event: { preventDefault: () => void }) {
     event.preventDefault()
-    if (loading) return
+    if (loading)
+      return
 
     const validationError = validateForm()
     if (validationError) {
@@ -84,14 +88,17 @@ export default function Login() {
     try {
       if (tab === 'login') {
         await login(username.trim(), password)
-      } else {
+      }
+      else {
         await register(username.trim(), password)
       }
       toast.success(tab === 'login' ? '登录成功' : '注册成功')
       router.push('/')
-    } catch (err: unknown) {
+    }
+    catch (err: unknown) {
       setFormError(err instanceof Error ? err.message : '操作失败，请检查信息后重试')
-    } finally {
+    }
+    finally {
       setLoading(false)
     }
   }
@@ -168,7 +175,7 @@ export default function Login() {
           </div>
 
           <div className="login-page__tabs" role="group" aria-label="选择登录或注册">
-            {(['login', 'register'] as const).map((t) => (
+            {(['login', 'register'] as const).map(t => (
               <button
                 key={t}
                 type="button"

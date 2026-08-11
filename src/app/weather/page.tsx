@@ -25,12 +25,13 @@ export default function Weather() {
   // ---- 城市搜索过滤 ----
   const filteredCities = useMemo(() => {
     const keyword = city.trim()
-    if (!keyword) return allCities
-    return allCities.filter((c) => c.includes(keyword))
+    if (!keyword)
+      return allCities
+    return allCities.filter(c => c.includes(keyword))
   }, [city])
 
-  const activeCityId =
-    showDropdown && filteredCities[activeCityIndex]
+  const activeCityId
+    = showDropdown && filteredCities[activeCityIndex]
       ? `weather-city-option-${activeCityIndex}`
       : undefined
 
@@ -59,23 +60,29 @@ export default function Weather() {
     if (event.key === 'ArrowDown') {
       event.preventDefault()
       if (filteredCities.length)
-        setActiveCityIndex((index) => Math.min(index + 1, filteredCities.length - 1))
-    } else if (event.key === 'ArrowUp') {
+        setActiveCityIndex(index => Math.min(index + 1, filteredCities.length - 1))
+    }
+    else if (event.key === 'ArrowUp') {
       event.preventDefault()
-      if (filteredCities.length) setActiveCityIndex((index) => Math.max(index - 1, 0))
-    } else if (event.key === 'Enter') {
+      if (filteredCities.length)
+        setActiveCityIndex(index => Math.max(index - 1, 0))
+    }
+    else if (event.key === 'Enter') {
       event.preventDefault()
       if (showDropdown && filteredCities[activeCityIndex])
         selectCity(filteredCities[activeCityIndex])
-      else if (city.trim()) fetchWeather(city.trim())
-    } else if (event.key === 'Escape') {
+      else if (city.trim())
+        fetchWeather(city.trim())
+    }
+    else if (event.key === 'Escape') {
       setShowDropdown(false)
     }
   }
 
   // ---- 错误重试 ----
   function retryWeather() {
-    if (city.trim()) fetchWeather(city.trim())
+    if (city.trim())
+      fetchWeather(city.trim())
   }
 
   return (
@@ -94,7 +101,7 @@ export default function Weather() {
       </div>
 
       <div className="weather-page__content">
-        <div className="weather-page__search" onClick={(e) => e.stopPropagation()}>
+        <div className="weather-page__search" onClick={e => e.stopPropagation()}>
           <div className="weather-page__search-inner">
             <svg
               className="weather-page__search-icon"
@@ -182,7 +189,7 @@ export default function Weather() {
             <div className="weather-page__hot-line" />
           </div>
           <div className="weather-page__hot-list">
-            {hotCities.map((name) => (
+            {hotCities.map(name => (
               <button
                 key={name}
                 type="button"

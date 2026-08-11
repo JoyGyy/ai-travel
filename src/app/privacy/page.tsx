@@ -98,7 +98,8 @@ export default function Privacy() {
               <h2>九、联系我们</h2>
               <p>
                 如你希望咨询、投诉或行使个人信息相关权利，请发送邮件至
-                <a href={`mailto:${contactEmail}`}>{contactEmail}</a>。
+                <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
+                。
               </p>
             </section>
           </div>

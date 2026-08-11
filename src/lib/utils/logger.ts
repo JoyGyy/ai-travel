@@ -2,6 +2,7 @@
  * 结构化日志工具
  * 带时间戳和模块标签，便于后续替换为 pino/winston 等专业日志库
  */
+import process from 'node:process'
 
 const LEVEL_LABELS: Record<string, string> = {
   debug: 'DEBUG',

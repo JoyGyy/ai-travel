@@ -11,7 +11,7 @@ import type { Attraction } from '@/types/attraction'
 import { ArrowLeft, Heart } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRouter, useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 import { fetchAttractionDetail } from '@/api/attractions'
@@ -91,7 +91,7 @@ export default function AttractionDetail() {
       return
     setFavoritePending(true)
     try {
-      await toggleFavorite(attraction.id, attraction.isFavorite)
+      await toggleFavorite(attraction.id, attraction.isFavorite ?? false)
     }
     finally {
       setFavoritePending(false)

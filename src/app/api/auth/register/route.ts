@@ -4,9 +4,9 @@
 import { NextResponse } from 'next/server'
 
 import { register } from '@/lib/services/auth'
-import { setAuthCookie, withRateLimit } from '@/lib/utils/http'
+import { setAuthCookie, withPublicPost } from '@/lib/utils/http'
 
-export const POST = withRateLimit('auth-register', 5, 3600_000, async (req) => {
+export const POST = withPublicPost('auth-register', 5, 3600_000, async (req) => {
   const body = await req.json()
   const result = await register(body.username, body.password, body.email)
 

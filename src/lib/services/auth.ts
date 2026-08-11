@@ -18,6 +18,18 @@ const SALT_ROUNDS = 10
 /** 每日 AI 调用上限 */
 const DAILY_AI_LIMIT = 10
 
+/** 密码复杂度校验：至少 8 位，包含大小写字母和数字 */
+function validatePassword(password: string): void {
+  if (password.length < 8)
+    throw new Error('密码长度至少 8 个字符')
+  if (!/[a-z]/.test(password))
+    throw new Error('密码需包含小写字母')
+  if (!/[A-Z]/.test(password))
+    throw new Error('密码需包含大写字母')
+  if (!/[0-9]/.test(password))
+    throw new Error('密码需包含数字')
+}
+
 export interface AuthResult {
   token: string
   user: { id: string, username: string, createdAt: string }
@@ -57,8 +69,7 @@ async function register(username: string, password: string, email?: string): Pro
     throw new Error('用户名和密码不能为空')
   if (username.length < 2 || username.length > 20)
     throw new Error('用户名长度为 2-20 个字符')
-  if (password.length < 6)
-    throw new Error('密码长度至少 6 个字符')
+  validatePassword(password)
 
   const existing = await db.select({ id: users.id }).from(users).where(eq(users.username, username))
   if (existing.length > 0)
@@ -261,7 +272,7 @@ async function getProfile(userId: string): Promise<UserProfile> {
 async function changePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
   if (!userId) throw new Error('用户信息无效')
   if (!currentPassword || !newPassword) throw new Error('当前密码和新密码不能为空')
-  if (newPassword.length < 6) throw new Error('新密码长度至少 6 个字符')
+  validatePassword(newPassword)
 
   const result = await db
     .select({ passwordHash: users.passwordHash })

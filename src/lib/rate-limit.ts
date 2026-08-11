@@ -1,6 +1,10 @@
 /**
  * 限流工具
- * 基于内存的滑动窗口限流，自托管场景下可用
+ * 基于内存的滑动窗口限流
+ *
+ * 注意：此实现在自托管（PM2 单实例）场景下有效。
+ * 若部署到 Serverless 环境（Vercel 等），限流状态不跨实例共享，
+ * 需改用 Redis 或数据库存储。可将 requestLog 替换为外部存储适配器。
  */
 import { NextResponse } from 'next/server'
 

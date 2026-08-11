@@ -42,7 +42,7 @@ export const users = pgTable('users', {
 
 export const aiUsage = pgTable('ai_usage', {
   userId: varchar('user_id', { length: 64 }).notNull().references(() => users.id),
-  usageDate: text('usage_date').notNull().default('CURRENT_DATE'),
+  usageDate: text('usage_date').notNull(),
   usedCount: integer('used_count').notNull().default(0),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 }, t => [

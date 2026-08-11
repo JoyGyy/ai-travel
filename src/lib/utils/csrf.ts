@@ -1,8 +1,8 @@
 /**
  * CSRF 防护工具
- * 基于 Double Submit Cookie 模式
+ * 基于 Double Submit Cookie 模式，使用 HMAC-SHA256 签名
  */
-import { createHash, randomBytes } from 'node:crypto'
+import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto'
 
 import { env } from '../env'
 
@@ -16,7 +16,7 @@ export function generateCsrfToken(): string {
   const random = randomBytes(32).toString('hex')
   const timestamp = Date.now()
   const payload = `${random}:${timestamp}`
-  const signature = createHash('sha256').update(`${payload}:${CSRF_SECRET}`).digest('hex')
+  const signature = createHmac('sha256', CSRF_SECRET).update(payload).digest('hex')
   return `${payload}:${signature}`
 }
 
@@ -35,11 +35,12 @@ export function verifyCsrfToken(token: string): boolean {
   // 检查过期
   if (Date.now() - timestamp > TOKEN_EXPIRY_MS) return false
 
-  // 验证签名
+  // 使用 HMAC 验证签名，并用 timingSafeEqual 防止时序攻击
   const payload = `${random}:${timestampStr}`
-  const expectedSignature = createHash('sha256').update(`${payload}:${CSRF_SECRET}`).digest('hex')
+  const expectedSignature = createHmac('sha256', CSRF_SECRET).update(payload).digest('hex')
 
-  return signature === expectedSignature
+  if (signature.length !== expectedSignature.length) return false
+  return timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature))
 }
 
 /**

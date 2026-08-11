@@ -97,10 +97,12 @@ if (typeof window === 'undefined' && process.env.NODE_ENV !== undefined) {
     validateEnv()
   }
   catch (err) {
-    // 构建时环境变量可能未配置，仅打印警告
-    if (process.env.NODE_ENV === 'production') {
-      console.warn('[env] 环境变量校验:', (err as Error).message)
+    // 生产环境必须通过校验，否则阻止启动
+    if (env.IS_PRODUCTION) {
+      throw err
     }
+    // 开发/构建时仅打印警告
+    console.warn('[env] 环境变量校验:', (err as Error).message)
   }
 }
 

@@ -33,6 +33,7 @@
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.2",
     "immer": "^11.1.15",
+    "jose": "^6.2.8",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^1.27.0",
     "nanoid": "^6.0.0",

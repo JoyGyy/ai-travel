@@ -176,6 +176,35 @@ export function withRateLimit(
   }
 }
 
+/**
+ * 包装需要限流 + CSRF（可选）但不需要认证的 Route Handler
+ * 用于登录/注册等公开 POST 接口：CSRF token 存在时必须有效，不存在时放行
+ */
+export function withPublicPost(
+  name: string,
+  max: number,
+  windowMs: number,
+  handler: (req: Request) => Promise<Response>,
+) {
+  return async (req: Request): Promise<Response> => {
+    try {
+      const blocked = checkRateLimit(req, name, max, windowMs)
+      if (blocked) return blocked
+
+      // CSRF token 存在时验证有效性，不存在时放行（首次访问场景）
+      const csrfToken = extractCsrfToken(req.headers, req.headers.get('cookie') || undefined)
+      if (csrfToken && !verifyCsrfToken(csrfToken)) {
+        throw httpError(403, 'CSRF token 无效')
+      }
+
+      return await handler(req)
+    }
+    catch (err) {
+      return errorResponse(err)
+    }
+  }
+}
+
 /** 设置认证 cookie 的统一配置 */
 export function setAuthCookie(response: NextResponse, token: string): void {
   response.cookies.set('token', token, {

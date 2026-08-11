@@ -99,7 +99,7 @@ export default function Attractions() {
   const handleToggleFavorite = useCallback(async (item: Attraction) => {
     setFavoritePendingIds(prev => new Set(prev).add(item.id))
     try {
-      await toggleFavorite(item.id, item.isFavorite)
+      await toggleFavorite(item.id, item.isFavorite ?? false)
     }
     finally {
       setFavoritePendingIds((prev) => {
@@ -245,7 +245,7 @@ export default function Attractions() {
                             <button
                               type="button"
                               aria-label={`${item.isFavorite ? '取消收藏' : '收藏'}${item.name}`}
-                              aria-pressed={Boolean(item.isFavorite)}
+                              aria-pressed={!!item.isFavorite}
                               disabled={isFavoritePending}
                               onClick={(e) => {
                                 e.preventDefault()

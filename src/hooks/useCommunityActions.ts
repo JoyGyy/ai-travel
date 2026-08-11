@@ -34,8 +34,9 @@ export function useCommunityActions(options: UseCommunityActionsOptions = {}) {
    * @returns 是否已登录
    */
   const requireLogin = useCallback((action: string): boolean => {
+    // 等待 Zustand store 水合完成，避免刷新页面后误判为未登录
     if (!hasHydrated) {
-      toast.info('正在恢复登录状态...')
+      // 水合未完成时，不执行操作但也不跳转，等待水合完成
       return false
     }
     if (!user) {

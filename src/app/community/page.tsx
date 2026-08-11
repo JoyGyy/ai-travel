@@ -32,7 +32,7 @@ export default function Community() {
   const [repostPendingIds, setRepostPendingIds] = useState<Set<string>>(() => new Set())
   const [repostTarget, setRepostTarget] = useState<CommunityPost | null>(null)
 
-  const { user, requireLogin, toggleLike, submitRepost } = useCommunityActions({
+  const { user, hasHydrated, requireLogin, toggleLike, submitRepost } = useCommunityActions({
     onLikeSuccess: (postId, likedByMe, likeCount) => {
       setItems(prev => prev.map(item =>
         item.id === postId ? { ...item, likedByMe, likeCount } : item,
@@ -135,9 +135,13 @@ export default function Community() {
           <h1 id="community-title">旅友正在路上</h1>
           <p>把 AI 规划、实拍照片和旅行心得做成一张明信片，让下一位出发的人少走弯路。</p>
         </div>
-        <Button size="lg" onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}>
+        <Button
+          size="lg"
+          disabled={!hasHydrated}
+          onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}
+        >
           <Plus aria-hidden="true" className="mr-2 h-4 w-4" />
-          发布旅行分享
+          {!hasHydrated ? '加载中...' : '发布旅行分享'}
         </Button>
       </section>
 
@@ -195,7 +199,12 @@ export default function Community() {
         ? (
             <div className="community-page__state travel-surface-card">
               <div className="text-center py-8 text-muted-foreground"><p>还没有符合条件的旅行分享</p></div>
-              <Button onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}>发布第一条分享</Button>
+              <Button
+                disabled={!hasHydrated}
+                onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}
+              >
+                {!hasHydrated ? '加载中...' : '发布第一条分享'}
+              </Button>
             </div>
           )
         : null}

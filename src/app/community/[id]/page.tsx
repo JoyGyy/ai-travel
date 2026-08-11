@@ -50,7 +50,7 @@ export default function CommunityPostDetail() {
   const [repostPending, setRepostPending] = useState(false)
   const [isLikeAnimating, setIsLikeAnimating] = useState(false)
 
-  const { user, requireLogin, toggleLike, submitRepost } = useCommunityActions({
+  const { user, hasHydrated, requireLogin, toggleLike, submitRepost } = useCommunityActions({
     onLikeSuccess: (_postId, likedByMe, likeCount) => {
       if (post) {
         setPost({ ...post, likedByMe, likeCount })
@@ -290,13 +290,12 @@ export default function CommunityPostDetail() {
             <Heart aria-hidden="true" className={`mr-1 h-4 w-4 ${post.likedByMe ? 'fill-current' : ''}`} />
             {likePending ? '...' : post.likeCount}
           </Button>
-          <Button onClick={() => (requireLogin('转发') ? setRepostOpen(true) : undefined)}>
+          <Button
+            disabled={!hasHydrated}
+            onClick={() => (requireLogin('转发') ? setRepostOpen(true) : undefined)}
+          >
             <Repeat2 aria-hidden="true" className="mr-1 h-4 w-4" />
-            转发
-            {' '}
-            ·
-            {' '}
-            {post.repostCount}
+            {!hasHydrated ? '加载中...' : `转发 · ${post.repostCount}`}
           </Button>
           <Button onClick={shareLink}>
             <Share2 aria-hidden="true" className="mr-1 h-4 w-4" />
@@ -331,9 +330,9 @@ export default function CommunityPostDetail() {
             placeholder="写下你的建议、问题或补充体验"
             onChange={event => setCommentInput(event.target.value)}
           />
-          <Button disabled={commentSubmitting} onClick={submitComment}>
+          <Button disabled={!hasHydrated || commentSubmitting} onClick={submitComment}>
             <Send aria-hidden="true" className="mr-1 h-4 w-4" />
-            {commentSubmitting ? '发布中...' : '发布评论'}
+            {!hasHydrated ? '加载中...' : commentSubmitting ? '发布中...' : '发布评论'}
           </Button>
         </div>
 

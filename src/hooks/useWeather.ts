@@ -45,11 +45,9 @@ export function useWeather() {
   }, [])
 
   // --- 组件卸载时中止进行中的请求 ---
-  useEffect(() => {
-    return () => {
+  useEffect(() => () => {
       abortRef.current?.abort()
-    }
-  }, [])
+    }, [])
 
   return { weather, loading, error, fetchWeather }
 }

@@ -27,11 +27,11 @@ interface SpotItemProps {
   attractionRef?: AttractionRef
 }
 
-export const SpotItem = React.memo(function SpotItem({
+export const SpotItem = React.memo(({
   period,
   data,
   attractionRef,
-}: SpotItemProps) {
+}: SpotItemProps) => {
   // 根据时段（上午/下午/晚上）映射不同的主题色和背景色
   const periodColorMap: Record<string, string> = {
     上午: 'var(--travel-period-morning)',
@@ -57,19 +57,25 @@ export const SpotItem = React.memo(function SpotItem({
         {/* ---- 标签：游玩时长 / 门票 / 交通方式 ---- */}
         <div className="spot-item__tags">
           <span className="spot-item__tag">
-            <Clock size={14} /> {data.duration}
+            <Clock size={14} />
+            {' '}
+            {data.duration}
           </span>
           <span className="spot-item__tag spot-item__tag--price">{data.ticket}</span>
           <span className="spot-item__tag">
-            <Compass size={14} /> {data.transportation}
+            <Compass size={14} />
+            {' '}
+            {data.transportation}
           </span>
         </div>
         {/* ---- 关联景点详情链接（有 attractionRef 时显示） ---- */}
-        {attractionRef ? (
-          <Link className="spot-item__detail-link" href={`/attractions/${attractionRef.id}`}>
-            {`查看${attractionRef.name}详情`}
-          </Link>
-        ) : null}
+        {attractionRef
+          ? (
+              <Link className="spot-item__detail-link" href={`/attractions/${attractionRef.id}`}>
+                {`查看${attractionRef.name}详情`}
+              </Link>
+            )
+          : null}
       </div>
     </div>
   )

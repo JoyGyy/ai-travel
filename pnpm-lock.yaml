@@ -138,6 +138,12 @@ importers:
       eslint-plugin-perfectionist:
         specifier: ^5.10.0
         version: 5.10.1(eslint@9.39.5(jiti@2.7.0))(typescript@5.7.2)
+      eslint-plugin-react:
+        specifier: ^7.37.5
+        version: 7.37.5(eslint@9.39.5(jiti@2.7.0))
+      eslint-plugin-react-hooks:
+        specifier: ^7.1.1
+        version: 7.1.1(eslint@9.39.5(jiti@2.7.0))
       husky:
         specifier: ^9.1.7
         version: 9.1.7

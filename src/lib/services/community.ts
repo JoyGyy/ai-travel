@@ -474,9 +474,7 @@ export async function createCommunityPost(
   authorId: string,
   input: CreateCommunityPostInput,
 ): Promise<CommunityPost> {
-  const id = await db.transaction(async (tx) => {
-    return insertPost(tx, authorId, { ...input, postType: 'original', originalPostId: null })
-  })
+  const id = await db.transaction(async (tx) => insertPost(tx, authorId, { ...input, postType: 'original', originalPostId: null }))
 
   const post = await getCommunityPostById(id, authorId)
   if (!post) throw httpError(500, '帖子创建后读取失败')
@@ -673,14 +671,12 @@ export async function repostCommunityPost(
   const originalPostId = target.original_post_id || target.id
   await ensurePostExists(originalPostId)
 
-  const newPostId = await db.transaction(async (tx) => {
-    return insertPost(tx, authorId, {
+  const newPostId = await db.transaction(async (tx) => insertPost(tx, authorId, {
       postType: 'repost',
       originalPostId,
       content,
       city: target.city,
-    })
-  })
+    }))
 
   const post = await getCommunityPostById(newPostId, authorId)
   if (!post) throw httpError(500, '转发创建后读取失败')

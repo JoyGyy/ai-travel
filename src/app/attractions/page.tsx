@@ -216,7 +216,7 @@ export default function Attractions() {
 
       {loading ? (
         <div className="attractions-page__loading" role="status" aria-live="polite">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
           <span>加载景点中...</span>
         </div>
       ) : null}

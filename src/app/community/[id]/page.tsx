@@ -2,8 +2,8 @@
 
 import type { CommunityComment, CommunityPost } from '@/types/community'
 
-import { ArrowLeft, Trash2, Heart, Repeat2, Send, Share2 } from 'lucide-react'
-import { useRouter, useParams } from 'next/navigation'
+import { ArrowLeft, Heart, Repeat2, Send, Share2, Trash2 } from 'lucide-react'
+import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 import {
@@ -221,7 +221,7 @@ export default function CommunityPostDetail() {
           role="status"
           aria-live="polite"
         >
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
           <h1 id="community-detail-loading">加载旅行分享中...</h1>
         </div>
       </main>
@@ -332,7 +332,7 @@ export default function CommunityPostDetail() {
 
         {commentsLoading ? (
           <div className="community-detail__comments-loading">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
             加载评论中...
           </div>
         ) : null}

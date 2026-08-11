@@ -38,7 +38,8 @@ export function RepostModal({
 }: RepostModalProps) {
   const [content, setContent] = useState('')
 
-  if (!open) return null
+  if (!open)
+    return null
 
   const handleSubmit = async () => {
     const success = await onSubmit(content)
@@ -56,12 +57,12 @@ export function RepostModal({
         <h3 className="text-lg font-semibold mb-4">转发旅行分享</h3>
         <p className="text-muted-foreground mb-4">可以直接转发，也可以写一句给旅友的补充说明。</p>
         <textarea
-          className="flex min-h-[80px] w-full rounded-xl border border-input bg-background px-3 py-2 text-sm mb-4"
+          className="flex min-h-20 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm mb-4"
           value={content}
           maxLength={500}
           rows={4}
           placeholder="例如：这条路线适合第一次去成都的朋友"
-          onChange={(event) => setContent(event.target.value)}
+          onChange={event => setContent(event.target.value)}
         />
         <div className="flex items-center gap-2 text-muted-foreground mb-4">
           <Icon aria-hidden="true" />

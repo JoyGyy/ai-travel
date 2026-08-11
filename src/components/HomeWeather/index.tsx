@@ -10,12 +10,18 @@ import './style.css'
 
 /** 根据天气描述文本匹配对应的图标类型 */
 function getWeatherIconType(desc = ''): string {
-  if (desc.includes('雷') || desc.includes('暴雨')) return 'storm'
-  if (desc.includes('雨')) return 'rain'
-  if (desc.includes('雪')) return 'snow'
-  if (desc.includes('雾')) return 'fog'
-  if (desc.includes('云') || desc.includes('阴')) return 'cloudy'
-  if (desc.includes('晴')) return 'sunny'
+  if (desc.includes('雷') || desc.includes('暴雨'))
+    return 'storm'
+  if (desc.includes('雨'))
+    return 'rain'
+  if (desc.includes('雪'))
+    return 'snow'
+  if (desc.includes('雾'))
+    return 'fog'
+  if (desc.includes('云') || desc.includes('阴'))
+    return 'cloudy'
+  if (desc.includes('晴'))
+    return 'sunny'
   return 'default'
 }
 
@@ -62,7 +68,9 @@ export function HomeWeather({ weather, loading }: HomeWeatherProps) {
               <span className="home-weather__unit">°C</span>
             </div>
             <p className="home-weather__desc">
-              {weather.weatherDesc} · 体感
+              {weather.weatherDesc}
+              {' '}
+              · 体感
               {weather.feelsLike}
               °C
             </p>
@@ -72,7 +80,8 @@ export function HomeWeather({ weather, loading }: HomeWeatherProps) {
           <p className="home-weather__city">{weather.city}</p>
           <p className="home-weather__humidity">
             湿度
-            {weather.humidity}%
+            {weather.humidity}
+            %
           </p>
         </div>
       </div>
@@ -86,7 +95,10 @@ export function HomeWeather({ weather, loading }: HomeWeatherProps) {
               </span>
               <WeatherIcon desc={day.weatherDesc} className="home-weather__forecast-icon" />
               <span className="home-weather__forecast-temp">
-                {day.minTemp}~{day.maxTemp}°
+                {day.minTemp}
+                ~
+                {day.maxTemp}
+                °
               </span>
             </div>
           ))}

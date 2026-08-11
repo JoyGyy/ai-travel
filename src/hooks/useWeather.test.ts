@@ -119,8 +119,7 @@ describe('useWeather', () => {
   describe('请求竞态控制', () => {
     it('重复调用应该中止前一次请求', async () => {
       // 模拟第一次请求被中止
-      vi.mocked(getWeatherApi).mockImplementation((_city, options) => {
-        return new Promise((_resolve, reject) => {
+      vi.mocked(getWeatherApi).mockImplementation((_city, options) => new Promise((_resolve, reject) => {
           const signal = options?.signal
           if (signal?.aborted) {
             const err = new DOMException('The operation was aborted.', 'AbortError')
@@ -132,8 +131,7 @@ describe('useWeather', () => {
               reject(new DOMException('The operation was aborted.', 'AbortError'))
             })
           }
-        })
-      })
+        }))
 
       const { result } = renderHook(() => useWeather())
 

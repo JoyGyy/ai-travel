@@ -8,7 +8,7 @@ import { NextResponse } from 'next/server'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { createCommunityComment, listCommunityComments } from '@/lib/services/community'
 import { withErrorHandler, withProtected } from '@/lib/utils/http'
-import { readRequiredString, readPositiveInteger } from '@/lib/utils/validation'
+import { readPositiveInteger, readRequiredString } from '@/lib/utils/validation'
 
 const MAX_COMMENT_LENGTH = 500
 

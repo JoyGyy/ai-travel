@@ -32,7 +32,8 @@ export function Pagination({
 }: PaginationProps) {
   const totalPages = Math.ceil(total / pageSize)
 
-  if (totalPages <= 1) return null
+  if (totalPages <= 1)
+    return null
 
   return (
     <div className={`flex items-center justify-center gap-4 ${className}`}>
@@ -40,7 +41,15 @@ export function Pagination({
         上一页
       </Button>
       <span className="text-sm text-muted-foreground">
-        第 {page} 页，共 {totalPages} 页
+        第
+        {' '}
+        {page}
+        {' '}
+        页，共
+        {' '}
+        {totalPages}
+        {' '}
+        页
       </span>
       <Button
         variant="outline"

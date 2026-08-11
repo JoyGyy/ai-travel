@@ -5,7 +5,7 @@
 import { useRouter } from 'next/navigation'
 import { useCallback } from 'react'
 
-import { likeCommunityPost, unlikeCommunityPost, repostCommunityPost } from '@/api/community'
+import { likeCommunityPost, repostCommunityPost, unlikeCommunityPost } from '@/api/community'
 import { useAuthStore } from '@/stores/auth'
 
 import { useAppToast } from './useAppToast'

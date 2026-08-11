@@ -2,7 +2,7 @@
 
 import type { CommunityImage, CommunityItinerarySnapshot } from '@/types/community'
 
-import { X, ImageIcon, Send } from 'lucide-react'
+import { ImageIcon, Send, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useMemo, useRef, useState } from 'react'
 

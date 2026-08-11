@@ -5,7 +5,7 @@
  */
 import bcrypt from 'bcryptjs'
 import { eq, sql } from 'drizzle-orm'
-import { SignJWT, jwtVerify } from 'jose'
+import { jwtVerify, SignJWT } from 'jose'
 import { nanoid } from 'nanoid'
 
 import { aiUsage, userFavoriteAttractions, users } from '@/db/schema'

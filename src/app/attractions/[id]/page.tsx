@@ -114,7 +114,7 @@ export default function AttractionDetail() {
           aria-live="polite"
         >
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
           </div>
           <h1 id="attraction-loading-title">加载景点详情中...</h1>
           <p>正在取出这张目的地票根。</p>

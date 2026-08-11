@@ -11,10 +11,10 @@ const LEVEL_LABELS: Record<string, string> = {
 }
 
 export interface Logger {
-  debug(message: string, ...args: unknown[]): void
-  info(message: string, ...args: unknown[]): void
-  warn(message: string, ...args: unknown[]): void
-  error(message: string, ...args: unknown[]): void
+  debug: (message: string, ...args: unknown[]) => void
+  info: (message: string, ...args: unknown[]) => void
+  warn: (message: string, ...args: unknown[]) => void
+  error: (message: string, ...args: unknown[]) => void
 }
 
 function formatTime(): string {
@@ -24,7 +24,8 @@ function formatTime(): string {
 export function createLogger(module: string): Logger {
   return {
     debug(message: string, ...args: unknown[]) {
-      if (process.env.NODE_ENV === 'production') return
+      if (process.env.NODE_ENV === 'production')
+        return
       console.debug(`[${formatTime()}] [${LEVEL_LABELS.debug}] [${module}] ${message}`, ...args)
     },
     info(message: string, ...args: unknown[]) {

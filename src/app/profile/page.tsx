@@ -148,15 +148,15 @@ export default function Profile() {
         >
           <div className="profile-page__card travel-surface-card">
             <div className="animate-pulse">
-              <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
-              <div className="h-4 bg-muted rounded w-1/2"></div>
+              <div className="h-4 bg-muted rounded w-3/4 mb-2" />
+              <div className="h-4 bg-muted rounded w-1/2" />
             </div>
           </div>
           <div className="profile-page__card travel-surface-card">
             <div className="animate-pulse">
-              <div className="h-4 bg-muted rounded w-full mb-2"></div>
-              <div className="h-4 bg-muted rounded w-5/6 mb-2"></div>
-              <div className="h-4 bg-muted rounded w-4/6"></div>
+              <div className="h-4 bg-muted rounded w-full mb-2" />
+              <div className="h-4 bg-muted rounded w-5/6 mb-2" />
+              <div className="h-4 bg-muted rounded w-4/6" />
             </div>
           </div>
         </div>

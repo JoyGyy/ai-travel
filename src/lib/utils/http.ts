@@ -30,6 +30,25 @@ export function httpError(status: number, message: string): HttpError {
   return new HttpError(status, message)
 }
 
+/** 判断是否为敏感错误（数据库、驱动等），不应暴露给客户端 */
+function isSensitiveError(err: Error): boolean {
+  // 数据库/驱动错误特征
+  const sensitivePatterns = [
+    'select "',
+    'insert into',
+    'update "',
+    'delete from',
+    'relation "',
+    'column "',
+    'syntax error at',
+    'pg_',
+    'ECONNREFUSED',
+    'connect ECONNREFUSED',
+  ]
+  const msg = err.message.toLowerCase()
+  return sensitivePatterns.some(p => msg.includes(p.toLowerCase()))
+}
+
 /** 将错误转换为 Next.js JSON 响应 */
 export function errorResponse(err: unknown): NextResponse {
   if (err instanceof HttpError) {
@@ -44,7 +63,10 @@ export function errorResponse(err: unknown): NextResponse {
     }
 
     log.error('服务器错误:', err)
-    return NextResponse.json({ success: false, message: err.message || '服务器内部错误' }, { status: 500 })
+
+    // 敏感错误信息脱敏，避免暴露数据库查询等内部细节
+    const clientMessage = isSensitiveError(err) ? '服务器内部错误' : (err.message || '服务器内部错误')
+    return NextResponse.json({ success: false, message: clientMessage }, { status: 500 })
   }
 
   log.error('未知错误:', err)

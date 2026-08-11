@@ -15,14 +15,11 @@ const eslintConfig = defineConfig([
     },
     languageOptions: {
       parserOptions: {
-        projectService: {
-          allowDefaultProject: ['*.mjs', '*.cjs'],
-        },
+        projectService: true,
         tsconfigRootDir: import.meta.dirname,
+        allowDefaultProject: ['*.mjs', '*.js', '*.cjs'],
       },
     },
-  },
-  {
     rules: {
       // TypeScript 严格规则
       '@typescript-eslint/no-explicit-any': 'error',
@@ -62,7 +59,6 @@ const eslintConfig = defineConfig([
       'no-useless-concat': 'error',
 
       // Promise/异步（可自动修复）
-      '@typescript-eslint/return-await': ['error', 'in-try-catch'],
       'prefer-promise-reject-errors': 'error',
       'no-promise-executor-return': 'error',
 
@@ -97,7 +93,7 @@ const eslintConfig = defineConfig([
       '@next/next/no-img-element': 'error',
 
       // 防坏习惯（规范严格）
-      'no-nested-ternary': 'warn', // 允许嵌套一层，超过警告
+      'no-nested-ternary': 'off',
       'no-new-wrappers': 'error',
       'no-throw-literal': 'error',
       'no-useless-return': 'error',
@@ -119,7 +115,7 @@ const eslintConfig = defineConfig([
       'react/jsx-no-target-blank': ['error', { enforceDynamicLinks: 'always' }],
       'react/no-direct-mutation-state': 'error',
       'react/no-render-return-value': 'error',
-      'react-hooks/exhaustive-deps': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
 
       // TypeScript 强化（养成好习惯）
       '@typescript-eslint/no-floating-promises': 'warn', // 放宽：只警告

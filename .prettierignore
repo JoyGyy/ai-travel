@@ -2,19 +2,15 @@
 .next
 out
 build
+dist
 
 # 依赖
 node_modules
 
-# 配置文件
-*.config.js
-*.config.mjs
-*.config.ts
-
-# 数据文件
-*.json
-*.md
-
 # 特殊文件
 pnpm-lock.yaml
 next-env.d.ts
+
+# 数据文件
+*.min.js
+*.min.css

@@ -11,27 +11,53 @@ AI 驱动的智能旅行规划助手，基于 Next.js 16 全栈框架，集成 S
 - `pnpm dev` — 启动 Next.js 开发服务器（端口 3000）
 - `pnpm build` — 生产构建
 - `pnpm start` — 启动生产服务器
-- `pnpm lint` — ESLint 检查
+- `pnpm lint` — ESLint 检查并自动修复
+- `pnpm typecheck` — TypeScript 类型检查
+- `pnpm test` — 启动 Vitest 测试（watch 模式）
+- `pnpm test:run` — 运行一次测试
+- `pnpm db:generate` — 生成 Drizzle 迁移文件
+- `pnpm db:migrate` — 执行数据库迁移
+- `pnpm db:studio` — 打开 Drizzle Studio
 
 ## 架构要点
 
 ### 技术栈
-- Next.js 16、React 19、TypeScript、Tailwind CSS v4、shadcn/ui
-- Zustand 5 状态管理、jose JWT 认证
-- App Router（`src/app/` 目录结构）
-- API Routes 处理后端逻辑
+- **前端**: Next.js 16、React 19、TypeScript、Tailwind CSS v4、shadcn/ui、Zustand 5
+- **后端**: Next.js Route Handlers、PostgreSQL、Drizzle ORM
+- **AI**: SiliconFlow/DeepSeek LLM、ReAct Agent、RAG
+- **认证**: jose (JWT)、bcryptjs
+- **测试**: Vitest
+- **代码规范**: ESLint + Prettier、Husky + lint-staged
+
+### 样式方案
+项目采用**混合样式**策略：
+- `src/components/ui/` — shadcn/ui 组件，使用 **Tailwind CSS 工具类**
+- `src/components/` 其他组件和 `src/app/` 页面 — 使用**传统 CSS 文件**（BEM 风格类名）
+- Tailwind 配置中定义了 shadcn/ui 设计变量（primary、secondary、muted 等）
 
 ### 目录结构
-- `src/app/` — 页面和 API 路由
-- `src/components/` — 可复用组件（含 `ui/` 基础组件和 `home/` 首页组件）
-- `src/stores/` — Zustand 状态管理
-- `src/api/` — API 客户端
-- `src/types/` — TypeScript 类型定义
-- `src/lib/` — 工具库和服务（认证、限流、CSRF、AI 提供商等）
-- `src/hooks/` — 自定义 Hooks
-- `src/constants/` — 常量数据
-- `src/db/` — Drizzle ORM schema 和数据库配置
-- `data/` — 数据文件（用户数据库、分享数据等）
+```
+src/
+├── app/              # App Router 页面 + API Routes
+├── components/       # 可复用组件
+│   ├── ui/           # shadcn/ui 基础组件（Tailwind）
+│   └── home/         # 首页组件
+├── lib/              # 服务层 + 工具函数
+│   ├── services/     # 业务服务（auth、community、attractions）
+│   ├── utils/        # 工具函数（http、csrf、logger、validation）
+│   ├── ai/           # AI 提供商、工具和流处理
+│   └── services/attractions/  # 景点匹配和服务
+├── stores/           # Zustand 状态管理
+├── hooks/            # 自定义 Hooks
+├── api/              # 前端 API 客户端
+├── db/               # Drizzle ORM schema + 数据库配置
+├── constants/        # 常量数据
+├── knowledge/        # RAG 知识库（JSON）
+├── types/            # TypeScript 类型定义
+├── utils/            # 通用工具函数（storage 等）
+├── styles/           # 全局样式
+└── test/             # 测试配置
+```
 
 ### 关键特性
 - 流式 AI 响应（SSE）
@@ -48,6 +74,12 @@ AI 驱动的智能旅行规划助手，基于 Next.js 16 全栈框架，集成 S
 - 密码策略：至少 8 位，包含大小写字母和数字
 - CSP 安全响应头
 - httpOnly + secure Cookie
+
+## 代码规范
+
+- 格式化工具：Prettier（配置见 `.prettierrc`）
+- Lint：ESLint（配置见 `eslint.config.mjs`），含 React、TypeScript、perfectionist 插件
+- Git hooks：Husky + lint-staged，提交前自动运行 ESLint 和测试
 
 ## 环境变量
 

@@ -33,19 +33,16 @@ const { mockJwtVerify, mockSignJwt } = vi.hoisted(() => ({
 }))
 
 vi.mock('jose', () => {
-  // 创建一个可链式调用的 SignJWT mock 类
+  // 创建一个可链式调用的 SignJWT mock 类（必须是真正的 class 才能被 new 调用）
   class MockSignJWT {
     setExpirationTime = vi.fn().mockReturnThis()
     setProtectedHeader = vi.fn().mockReturnThis()
     sign = mockSignJwt
   }
 
-  // 使用 function 声明使其可作为构造函数
-  const MockSignJWTConstructor = vi.fn(() => new MockSignJWT())
-
   return {
     jwtVerify: mockJwtVerify,
-    SignJWT: MockSignJWTConstructor,
+    SignJWT: MockSignJWT,
   }
 })
 

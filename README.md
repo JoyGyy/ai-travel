@@ -8,6 +8,8 @@ AI 驱动的智能旅行规划助手，基于 Next.js App Router 全栈架构。
 - **后端**: Next.js Route Handlers + PostgreSQL + Drizzle ORM
 - **AI**: SiliconFlow/DeepSeek LLM + ReAct Agent + RAG
 - **认证**: jose (JWT) + bcryptjs
+- **测试**: Vitest
+- **代码规范**: ESLint + Prettier + Husky + lint-staged
 - **部署**: PM2 + Nginx
 
 ## 快速开始
@@ -35,7 +37,8 @@ cp .env.example .env
 createdb travel_db
 
 # 推送 schema（使用 Drizzle Kit）
-pnpm drizzle-kit push
+pnpm db:generate
+pnpm db:migrate
 ```
 
 ### 4. 启动开发服务器
@@ -48,34 +51,52 @@ pnpm dev
 
 ## 常用命令
 
-| 命令         | 说明           |
-| ------------ | -------------- |
-| `pnpm dev`   | 启动开发服务器 |
-| `pnpm build` | 生产构建       |
-| `pnpm start` | 启动生产服务   |
-| `pnpm lint`  | ESLint 检查    |
+| 命令              | 说明                      |
+| ----------------- | ------------------------- |
+| `pnpm dev`        | 启动开发服务器            |
+| `pnpm build`      | 生产构建                  |
+| `pnpm start`      | 启动生产服务              |
+| `pnpm lint`       | ESLint 检查并自动修复     |
+| `pnpm typecheck`  | TypeScript 类型检查       |
+| `pnpm test`       | Vitest 测试（watch 模式） |
+| `pnpm test:run`   | 运行一次测试              |
+| `pnpm db:generate`| 生成 Drizzle 迁移文件     |
+| `pnpm db:migrate` | 执行数据库迁移            |
+| `pnpm db:studio`  | 打开 Drizzle Studio       |
 
 ## 项目结构
 
 ```
 src/
 ├── app/                    # App Router 页面 + API Routes
-│   ├── api/                # API 路由（auth、travel、community）
+│   ├── api/                # API 路由（auth、travel、community、weather）
 │   └── (pages)/            # 页面路由
 ├── components/             # UI 组件
-│   ├── ui/                 # shadcn/ui 基础组件
+│   ├── ui/                 # shadcn/ui 基础组件（Tailwind）
 │   └── home/               # 首页组件
 ├── lib/                    # 服务层 + 工具函数
-│   ├── services/           # 业务服务（auth、community）
-│   ├── utils/              # 工具函数（http、csrf、logger）
-│   └── ai/                 # AI 提供商和工具
+│   ├── services/           # 业务服务（auth、community、attractions、embedding）
+│   ├── utils/              # 工具函数（http、csrf、logger、validation）
+│   └── ai/                 # AI 提供商、工具和流处理
 ├── stores/                 # Zustand 状态管理
 ├── hooks/                  # 自定义 Hooks
 ├── api/                    # 前端 API 客户端
 ├── db/                     # Drizzle ORM schema + 数据库配置
 ├── constants/              # 常量数据
-└── types/                  # TypeScript 类型
+├── knowledge/              # RAG 知识库（JSON）
+├── types/                  # TypeScript 类型定义
+├── utils/                  # 通用工具函数（storage 等）
+├── styles/                 # 全局样式
+└── test/                   # 测试配置
 ```
+
+## 样式方案
+
+项目采用混合样式策略：
+
+- **shadcn/ui 组件**（`src/components/ui/`）：使用 Tailwind CSS 工具类
+- **业务组件和页面**：使用传统 CSS 文件，配合 BEM 风格类名
+- **设计变量**：通过 Tailwind 配置 + CSS 自定义属性统一管理颜色、圆角等
 
 ## 安全特性
 

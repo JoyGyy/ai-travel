@@ -6,10 +6,10 @@
 // ========== 类型定义 ==========
 
 export interface LLMProviderConfig {
-  name: string
-  baseUrl: string
   apiKey: string
+  baseUrl: string
   model: string
+  name: string
 }
 
 // ========== 默认值常量 ==========
@@ -22,8 +22,21 @@ const MIN_JWT_SECRET_LENGTH = 32
 
 // ========== 环境变量读取工具函数 ==========
 
-function readString(name: string, fallback = ''): string {
-  return process.env[name]?.trim() || fallback
+export interface EnvConfig {
+  ADMIN_USERS: string
+  DATABASE_URL: string
+  DEEPSEEK_API_KEY: string
+  DEEPSEEK_BASE_URL: string
+  DEEPSEEK_MODEL: string
+  IMAGE_BASE_URL: string
+  IS_PRODUCTION: boolean
+  JWT_SECRET: string
+  LLM_STREAM_TIMEOUT_MS: number
+  LLM_TIMEOUT_MS: number
+  NODE_ENV: string
+  SILICONFLOW_API_KEY: string
+  SILICONFLOW_BASE_URL: string
+  SILICONFLOW_MODEL: string
 }
 
 function readNumber(name: string, fallback: number): number {
@@ -39,38 +52,25 @@ function readNumber(name: string, fallback: number): number {
 
 // ========== 统一配置对象 ==========
 
-export interface EnvConfig {
-  NODE_ENV: string
-  JWT_SECRET: string
-  LLM_TIMEOUT_MS: number
-  LLM_STREAM_TIMEOUT_MS: number
-  SILICONFLOW_API_KEY: string
-  SILICONFLOW_BASE_URL: string
-  SILICONFLOW_MODEL: string
-  DEEPSEEK_API_KEY: string
-  DEEPSEEK_BASE_URL: string
-  DEEPSEEK_MODEL: string
-  DATABASE_URL: string
-  ADMIN_USERS: string
-  IS_PRODUCTION: boolean
-  IMAGE_BASE_URL: string
+function readString(name: string, fallback = ''): string {
+  return process.env[name]?.trim() || fallback
 }
 
 const env: EnvConfig = {
-  NODE_ENV: readString('NODE_ENV', 'development'),
-  JWT_SECRET: readString('JWT_SECRET'),
-  LLM_TIMEOUT_MS: readNumber('LLM_TIMEOUT_MS', 60_000),
-  LLM_STREAM_TIMEOUT_MS: readNumber('LLM_STREAM_TIMEOUT_MS', 120_000),
-  SILICONFLOW_API_KEY: readString('SILICONFLOW_API_KEY'),
-  SILICONFLOW_BASE_URL: readString('SILICONFLOW_BASE_URL', DEFAULT_SILICONFLOW_BASE_URL),
-  SILICONFLOW_MODEL: readString('SILICONFLOW_MODEL', DEFAULT_SILICONFLOW_MODEL),
+  ADMIN_USERS: readString('ADMIN_USERS'),
+  DATABASE_URL: readString('DATABASE_URL'),
   DEEPSEEK_API_KEY: readString('DEEPSEEK_API_KEY'),
   DEEPSEEK_BASE_URL: readString('DEEPSEEK_BASE_URL', DEFAULT_DEEPSEEK_BASE_URL),
   DEEPSEEK_MODEL: readString('DEEPSEEK_MODEL', DEFAULT_DEEPSEEK_MODEL),
-  DATABASE_URL: readString('DATABASE_URL'),
-  ADMIN_USERS: readString('ADMIN_USERS'),
-  IS_PRODUCTION: false,
   IMAGE_BASE_URL: readString('IMAGE_BASE_URL'),
+  IS_PRODUCTION: false,
+  JWT_SECRET: readString('JWT_SECRET'),
+  LLM_STREAM_TIMEOUT_MS: readNumber('LLM_STREAM_TIMEOUT_MS', 120_000),
+  LLM_TIMEOUT_MS: readNumber('LLM_TIMEOUT_MS', 60_000),
+  NODE_ENV: readString('NODE_ENV', 'development'),
+  SILICONFLOW_API_KEY: readString('SILICONFLOW_API_KEY'),
+  SILICONFLOW_BASE_URL: readString('SILICONFLOW_BASE_URL', DEFAULT_SILICONFLOW_BASE_URL),
+  SILICONFLOW_MODEL: readString('SILICONFLOW_MODEL', DEFAULT_SILICONFLOW_MODEL),
 }
 
 env.IS_PRODUCTION = env.NODE_ENV === 'production'
@@ -116,18 +116,18 @@ export function getLLMProviders(): LLMProviderConfig[] {
   const providers: LLMProviderConfig[] = []
   if (env.SILICONFLOW_API_KEY) {
     providers.push({
-      name: 'SiliconFlow',
-      baseUrl: env.SILICONFLOW_BASE_URL,
       apiKey: env.SILICONFLOW_API_KEY,
+      baseUrl: env.SILICONFLOW_BASE_URL,
       model: env.SILICONFLOW_MODEL,
+      name: 'SiliconFlow',
     })
   }
   if (env.DEEPSEEK_API_KEY) {
     providers.push({
-      name: 'DeepSeek',
-      baseUrl: env.DEEPSEEK_BASE_URL,
       apiKey: env.DEEPSEEK_API_KEY,
+      baseUrl: env.DEEPSEEK_BASE_URL,
       model: env.DEEPSEEK_MODEL,
+      name: 'DeepSeek',
     })
   }
   return providers

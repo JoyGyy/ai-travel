@@ -10,14 +10,14 @@ const contactEmail = 'joygyzhi@outlook.com'
 
 export default function Terms() {
   return (
-    <main className="legal-page" aria-labelledby="terms-title">
+    <main aria-labelledby="terms-title" className="legal-page">
       <div className="legal-page__inner">
         <Link className="legal-page__back" href="/">
           返回首页
         </Link>
         <article className="legal-page__card">
           <p className="legal-page__eyebrow">Terms of Service</p>
-          <h1 id="terms-title" className="legal-page__title">
+          <h1 className="legal-page__title" id="terms-title">
             用户协议
           </h1>
           <p className="legal-page__updated">更新日期：2026 年 7 月 22 日</p>

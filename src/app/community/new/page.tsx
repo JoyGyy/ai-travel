@@ -1,10 +1,10 @@
 'use client'
 
-import type { CommunityImage, CommunityItinerarySnapshot } from '@/types/community'
-
 import { ImageIcon, Send, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useMemo, useRef, useState } from 'react'
+
+import type { CommunityImage, CommunityItinerarySnapshot } from '@/types/community'
 
 import { createCommunityPost, uploadCommunityImages } from '@/api/community'
 import { CommunityImageGrid } from '@/components/CommunityImageGrid'
@@ -13,10 +13,6 @@ import { Button } from '@/components/ui/button'
 import { useAppToast } from '@/hooks/useAppToast'
 
 import './style.css'
-
-function isImageFile(file: File) {
-  return ['image/jpeg', 'image/png', 'image/webp'].includes(file.type)
-}
 
 export default function CommunityPostCreate() {
   const router = useRouter()
@@ -36,8 +32,7 @@ export default function CommunityPostCreate() {
   )
 
   async function handleUpload(files: FileList | null) {
-    if (!files || files.length === 0)
-      return
+    if (!files || files.length === 0) return
 
     const file = files[0]
     if (images.length >= 9) {
@@ -56,13 +51,11 @@ export default function CommunityPostCreate() {
     setUploading(true)
     try {
       const uploaded = await uploadCommunityImages([file])
-      setImages(prev => [...prev, ...uploaded].slice(0, 9))
+      setImages((prev) => [...prev, ...uploaded].slice(0, 9))
       toast.success('图片上传成功')
-    }
-    catch (err: unknown) {
+    } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : '图片上传失败')
-    }
-    finally {
+    } finally {
       setUploading(false)
       if (fileInputRef.current) {
         fileInputRef.current.value = ''
@@ -71,8 +64,8 @@ export default function CommunityPostCreate() {
   }
 
   function removeImage(image: CommunityImage) {
-    setImages(prev =>
-      prev.filter(item => (item.storageKey || item.url) !== (image.storageKey || image.url)),
+    setImages((prev) =>
+      prev.filter((item) => (item.storageKey || item.url) !== (image.storageKey || image.url)),
     )
   }
 
@@ -86,25 +79,23 @@ export default function CommunityPostCreate() {
     setSubmitting(true)
     try {
       const post = await createCommunityPost({
-        title: title.trim() || undefined,
-        content: content.trim() || undefined,
         city: city.trim() || snapshot?.city,
+        content: content.trim() || undefined,
         images,
         itinerarySnapshot: snapshot,
+        title: title.trim() || undefined,
       })
       toast.success('已发布到社区')
       router.push(`/community/${post.id}`)
-    }
-    catch (err: unknown) {
+    } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : '发布失败')
-    }
-    finally {
+    } finally {
       setSubmitting(false)
     }
   }
 
   return (
-    <main className="community-create travel-page-shell" aria-labelledby="community-create-title">
+    <main aria-labelledby="community-create-title" className="community-create travel-page-shell">
       <section className="community-create__hero travel-page-hero travel-ticket-edge travel-route-line">
         <p className="community-create__label">NEW POSTCARD</p>
         <h1 id="community-create-title">发布旅行分享</h1>
@@ -112,49 +103,49 @@ export default function CommunityPostCreate() {
       </section>
 
       <section className="community-create__panel travel-surface-card">
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-2">
-            <label htmlFor="title" className="text-sm font-medium">
+            <label className="text-sm font-medium" htmlFor="title">
               标题
             </label>
             <input
-              id="title"
-              type="text"
-              maxLength={80}
-              placeholder="例如：成都三天两晚松弛路线"
-              value={title}
-              onChange={event => setTitle(event.target.value)}
               className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
+              id="title"
+              maxLength={80}
+              onChange={(event) => setTitle(event.target.value)}
+              placeholder="例如：成都三天两晚松弛路线"
+              type="text"
+              value={title}
             />
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="content" className="text-sm font-medium">
+            <label className="text-sm font-medium" htmlFor="content">
               正文
             </label>
             <textarea
+              className="flex min-h-20 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
               id="content"
               maxLength={2000}
-              rows={7}
+              onChange={(event) => setContent(event.target.value)}
               placeholder="分享你的路线、体验、避坑提醒或适合的人群"
+              rows={7}
               value={content}
-              onChange={event => setContent(event.target.value)}
-              className="flex min-h-20 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
             />
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="city" className="text-sm font-medium">
+            <label className="text-sm font-medium" htmlFor="city">
               城市
             </label>
             <input
-              id="city"
-              type="text"
-              maxLength={50}
-              placeholder="例如：成都"
-              value={city}
-              onChange={event => setCity(event.target.value)}
               className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
+              id="city"
+              maxLength={50}
+              onChange={(event) => setCity(event.target.value)}
+              placeholder="例如：成都"
+              type="text"
+              value={city}
             />
           </div>
 
@@ -164,67 +155,61 @@ export default function CommunityPostCreate() {
               <span>图片</span>
             </div>
             <input
-              ref={fileInputRef}
-              type="file"
               accept="image/jpeg,image/png,image/webp"
               className="hidden"
-              onChange={event => handleUpload(event.target.files)}
+              onChange={(event) => handleUpload(event.target.files)}
+              ref={fileInputRef}
+              type="file"
             />
             <Button
-              type="button"
-              variant="outline"
               disabled={uploading || images.length >= 9}
               onClick={() => fileInputRef.current?.click()}
+              type="button"
+              variant="outline"
             >
               {uploading ? '上传中...' : '上传图片'}
             </Button>
             <p className="community-create__hint">
               最多 9 张，支持 JPG、PNG、WebP，单张不超过 5MB。
             </p>
-            {images.length > 0
-              ? (
-                  <div className="community-create__image-preview">
-                    <CommunityImageGrid images={images} />
-                    <div className="community-create__image-actions">
-                      {images.map(image => (
-                        <button
-                          key={image.storageKey || image.url}
-                          type="button"
-                          onClick={() => removeImage(image)}
-                        >
-                          <X aria-hidden="true" />
-                          移除图片
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )
-              : null}
+            {images.length > 0 ? (
+              <div className="community-create__image-preview">
+                <CommunityImageGrid images={images} />
+                <div className="community-create__image-actions">
+                  {images.map((image) => (
+                    <button
+                      key={image.storageKey || image.url}
+                      onClick={() => removeImage(image)}
+                      type="button"
+                    >
+                      <X aria-hidden="true" />
+                      移除图片
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </div>
 
-          {snapshot
-            ? (
-                <div className="community-create__itinerary">
-                  <CommunityItineraryPreview
-                    snapshot={snapshot}
-                    removable
-                    onRemove={() => setSnapshot(null)}
-                  />
-                </div>
-              )
-            : null}
+          {snapshot ? (
+            <div className="community-create__itinerary">
+              <CommunityItineraryPreview
+                onRemove={() => setSnapshot(null)}
+                removable
+                snapshot={snapshot}
+              />
+            </div>
+          ) : null}
 
-          {!canSubmit
-            ? (
-                <p className="community-create__requirement">正文、图片和行程快照至少需要提供一项。</p>
-              )
-            : null}
+          {!canSubmit ? (
+            <p className="community-create__requirement">正文、图片和行程快照至少需要提供一项。</p>
+          ) : null}
 
           <div className="community-create__actions">
-            <Button type="button" variant="outline" onClick={() => router.push('/community')}>
+            <Button onClick={() => router.push('/community')} type="button" variant="outline">
               取消
             </Button>
-            <Button type="submit" disabled={!canSubmit || uploading || submitting}>
+            <Button disabled={!canSubmit || uploading || submitting} type="submit">
               <Send aria-hidden="true" className="mr-2 h-4 w-4" />
               {submitting ? '发布中...' : '发布到社区'}
             </Button>
@@ -233,4 +218,8 @@ export default function CommunityPostCreate() {
       </section>
     </main>
   )
+}
+
+function isImageFile(file: File) {
+  return ['image/jpeg', 'image/png', 'image/webp'].includes(file.type)
 }

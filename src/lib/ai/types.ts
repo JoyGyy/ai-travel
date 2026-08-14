@@ -1,17 +1,17 @@
+export type TravelChatData =
+  | { message: string; type: 'notice'; }
+  | { source: TravelSourceData; type: 'source'; }
+  | { step: TravelStepData; type: 'step'; }
+
 export interface TravelSourceData {
-  id: string
-  title: string
   city?: string
   excerpt?: string
+  id: string
+  title: string
 }
 
 export interface TravelStepData {
   id: string
   label: string
-  status: 'running' | 'completed' | 'failed'
+  status: 'completed' | 'failed' | 'running'
 }
-
-export type TravelChatData =
-  | { type: 'source'; source: TravelSourceData }
-  | { type: 'step'; step: TravelStepData }
-  | { type: 'notice'; message: string }

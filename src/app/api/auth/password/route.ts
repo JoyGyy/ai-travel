@@ -11,7 +11,7 @@ export const PUT = withProtected(
     const body = await req.json()
     await changePassword(user.id, body.currentPassword, body.newPassword)
 
-    return NextResponse.json({ success: true, message: '密码修改成功' })
+    return NextResponse.json({ message: '密码修改成功', success: true })
   },
-  { rateLimit: { name: 'auth-password', max: 10, windowMs: 60_000 } },
+  { rateLimit: { max: 10, name: 'auth-password', windowMs: 60_000 } },
 )

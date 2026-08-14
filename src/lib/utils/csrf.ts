@@ -10,6 +10,23 @@ const CSRF_SECRET = env.JWT_SECRET
 const TOKEN_EXPIRY_MS = 60 * 60 * 1000 // 1 小时过期
 
 /**
+ * 从请求头或 cookie 中提取 CSRF token
+ */
+export function extractCsrfToken(headers: Headers, cookies?: string): null | string {
+  // 优先从 X-CSRF-Token header 获取
+  const headerToken = headers.get('x-csrf-token') || headers.get('x-xsrf-token')
+  if (headerToken) return headerToken
+
+  // 其次从 cookie 获取
+  if (cookies) {
+    const match = cookies.match(/csrf_token=([^;]+)/)
+    if (match) return match[1]
+  }
+
+  return null
+}
+
+/**
  * 生成 CSRF token
  */
 export function generateCsrfToken(): string {
@@ -41,21 +58,4 @@ export function verifyCsrfToken(token: string): boolean {
 
   if (signature.length !== expectedSignature.length) return false
   return timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature))
-}
-
-/**
- * 从请求头或 cookie 中提取 CSRF token
- */
-export function extractCsrfToken(headers: Headers, cookies?: string): string | null {
-  // 优先从 X-CSRF-Token header 获取
-  const headerToken = headers.get('x-csrf-token') || headers.get('x-xsrf-token')
-  if (headerToken) return headerToken
-
-  // 其次从 cookie 获取
-  if (cookies) {
-    const match = cookies.match(/csrf_token=([^;]+)/)
-    if (match) return match[1]
-  }
-
-  return null
 }

@@ -12,12 +12,12 @@ function readFilters(query: URLSearchParams): Record<string, unknown> {
   return {
     city: query.get('city')?.trim() || '',
     keyword: query.get('keyword')?.trim() || '',
+    page: Number(query.get('page')) || 1,
+    pageSize: Number(query.get('pageSize')) || 20,
+    tag: query.get('tag')?.trim() || '',
     ticketType: ['free', 'paid'].includes(query.get('ticketType') || '')
       ? query.get('ticketType')
       : '',
-    tag: query.get('tag')?.trim() || '',
-    page: Number(query.get('page')) || 1,
-    pageSize: Number(query.get('pageSize')) || 20,
   }
 }
 
@@ -25,5 +25,5 @@ export const GET = withAuth(async (req, { user }) => {
   const { searchParams } = new URL(req.url)
   const data = await listAttractions(readFilters(searchParams), user.id)
 
-  return NextResponse.json({ success: true, data, message: 'ok' })
+  return NextResponse.json({ data, message: 'ok', success: true })
 })

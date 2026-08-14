@@ -14,20 +14,19 @@ interface RAGSourceProps {
 
 export function RAGSource({ sources }: RAGSourceProps) {
   // 无来源时不渲染
-  if (!sources || sources.length === 0)
-    return null
+  if (!sources || sources.length === 0) return null
 
   return (
     <div className="rag-source">
       {/* ---- 标题栏 ---- */}
       <div className="rag-source__header">
-        <MapPin size={16} className="rag-source__icon" aria-hidden="true" />
+        <MapPin aria-hidden="true" className="rag-source__icon" size={16} />
         <span>参考来源</span>
       </div>
       {/* ---- 来源标签列表 ---- */}
       <div className="rag-source__list">
-        {sources.map(source => (
-          <span key={source} className="rag-source__tag">
+        {sources.map((source) => (
+          <span className="rag-source__tag" key={source}>
             {source}
           </span>
         ))}

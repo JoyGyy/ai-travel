@@ -9,7 +9,7 @@ import { useTravelChat } from '@/hooks/useTravelChat'
 
 export default function ChatPage() {
   const [input, setInput] = useState('')
-  const { messages, sendMessage, status, error, stop, setMessages } = useTravelChat()
+  const { error, messages, sendMessage, setMessages, status, stop } = useTravelChat()
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -30,13 +30,13 @@ export default function ChatPage() {
 
       <div className="flex-1 space-y-4">
         {messages.map((message) => (
-          <div key={message.id} className={message.role === 'user' ? 'text-right' : 'text-left'}>
+          <div className={message.role === 'user' ? 'text-right' : 'text-left'} key={message.id}>
             {message.parts.map((part, index) => {
               if (part.type === 'text') {
                 return (
                   <p
-                    key={index}
                     className="inline-block rounded-3xl bg-card px-4 py-3 shadow-[var(--shadow-paper)]"
+                    key={index}
                   >
                     {part.text}
                   </p>
@@ -44,7 +44,7 @@ export default function ChatPage() {
               }
               if (part.type.startsWith('tool-') || part.type === 'dynamic-tool') {
                 return (
-                  <pre key={index} className="overflow-auto rounded-2xl bg-muted p-3 text-xs">
+                  <pre className="overflow-auto rounded-2xl bg-muted p-3 text-xs" key={index}>
                     {JSON.stringify(part, null, 2)}
                   </pre>
                 )
@@ -58,24 +58,24 @@ export default function ChatPage() {
       {error && <p className="mt-4 text-sm text-destructive">{error.message}</p>}
 
       <form
-        onSubmit={handleSubmit}
         className="mt-6 flex gap-3 rounded-3xl border bg-card p-3 shadow-[var(--travel-shadow-floating)]"
+        onSubmit={handleSubmit}
       >
         <Textarea
-          value={input}
           onChange={(event) => setInput(event.target.value)}
           placeholder="例如：帮我规划杭州 3 天 2 晚，预算 3000 元"
+          value={input}
         />
-        <Button type="submit" disabled={!input.trim() || status !== 'ready'}>
+        <Button disabled={!input.trim() || status !== 'ready'} type="submit">
           <Send className="mr-2 h-4 w-4" />
           发送
         </Button>
         {status !== 'ready' && (
-          <Button type="button" variant="outline" onClick={stop}>
+          <Button onClick={stop} type="button" variant="outline">
             停止
           </Button>
         )}
-        <Button type="button" variant="ghost" onClick={() => setMessages([])}>
+        <Button onClick={() => setMessages([])} type="button" variant="ghost">
           <Trash2 className="h-4 w-4" />
         </Button>
       </form>

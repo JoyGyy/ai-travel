@@ -1,10 +1,10 @@
 'use client'
 
-import type { CommunityComment, CommunityPost } from '@/types/community'
-
 import { ArrowLeft, Heart, Repeat2, Send, Share2, Trash2 } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+
+import type { CommunityComment, CommunityPost } from '@/types/community'
 
 import {
   createCommunityComment,
@@ -50,10 +50,10 @@ export default function CommunityPostDetail() {
   const [repostPending, setRepostPending] = useState(false)
   const [isLikeAnimating, setIsLikeAnimating] = useState(false)
 
-  const { user, hasHydrated, requireLogin, toggleLike, submitRepost } = useCommunityActions({
+  const { hasHydrated, requireLogin, submitRepost, toggleLike, user } = useCommunityActions({
     onLikeSuccess: (_postId, likedByMe, likeCount) => {
       if (post) {
-        setPost({ ...post, likedByMe, likeCount })
+        setPost({ ...post, likeCount, likedByMe })
       }
     },
   })
@@ -197,8 +197,8 @@ export default function CommunityPostDetail() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: post?.title || '旅行社区分享',
           text: post?.content || '看看这条旅行分享',
+          title: post?.title || '旅行社区分享',
           url,
         })
         return
@@ -213,13 +213,13 @@ export default function CommunityPostDetail() {
   if (loading) {
     return (
       <main
-        className="community-detail travel-page-shell"
         aria-labelledby="community-detail-loading"
+        className="community-detail travel-page-shell"
       >
         <div
+          aria-live="polite"
           className="community-detail__state travel-surface-card"
           role="status"
-          aria-live="polite"
         >
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
           <h1 id="community-detail-loading">加载旅行分享中...</h1>
@@ -230,7 +230,7 @@ export default function CommunityPostDetail() {
 
   if (error || !post) {
     return (
-      <main className="community-detail travel-page-shell" aria-labelledby="community-detail-error">
+      <main aria-labelledby="community-detail-error" className="community-detail travel-page-shell">
         <div className="community-detail__state travel-surface-card" role="alert">
           <h1 id="community-detail-error">帖子暂时无法打开</h1>
           <p>{error || '帖子不存在或已删除'}</p>
@@ -246,15 +246,15 @@ export default function CommunityPostDetail() {
   const isAuthor = user?.id === post.author.id
 
   return (
-    <main className="community-detail travel-page-shell" aria-labelledby="community-detail-title">
-      <button type="button" className="community-detail__back" onClick={() => router.back()}>
+    <main aria-labelledby="community-detail-title" className="community-detail travel-page-shell">
+      <button className="community-detail__back" onClick={() => router.back()} type="button">
         <ArrowLeft aria-hidden="true" />
         返回
       </button>
 
       <section className="community-detail__post travel-surface-card travel-ticket-edge">
         <header className="community-detail__header">
-          <div className="community-detail__avatar" aria-hidden="true">
+          <div aria-hidden="true" className="community-detail__avatar">
             {post.author.username.slice(0, 1).toUpperCase()}
           </div>
           <div>
@@ -266,7 +266,7 @@ export default function CommunityPostDetail() {
         {post.content ? <p className="community-detail__content">{post.content}</p> : null}
         <CommunityImageGrid images={post.images} />
         {post.itinerarySnapshot ? (
-          <CommunityItineraryPreview snapshot={post.itinerarySnapshot} mode="detail" />
+          <CommunityItineraryPreview mode="detail" snapshot={post.itinerarySnapshot} />
         ) : null}
         {post.originalPost ? (
           <CommunityPostCard post={{ ...post.originalPost, originalPost: null }} />
@@ -274,10 +274,10 @@ export default function CommunityPostDetail() {
           <div className="community-detail__missing travel-surface-card">原帖已删除</div>
         ) : null}
 
-        <div className="community-detail__actions" aria-label="帖子操作">
+        <div aria-label="帖子操作" className="community-detail__actions">
           <Button
-            className={`community-detail__like-btn ${post.likedByMe ? 'community-detail__like-btn--liked' : ''} ${isLikeAnimating ? 'community-detail__like-btn--animating' : ''}`}
             aria-pressed={post.likedByMe}
+            className={`community-detail__like-btn ${post.likedByMe ? 'community-detail__like-btn--liked' : ''} ${isLikeAnimating ? 'community-detail__like-btn--animating' : ''}`}
             disabled={likePending}
             onClick={handleLike}
           >
@@ -299,7 +299,7 @@ export default function CommunityPostDetail() {
             分享链接
           </Button>
           {isAuthor ? (
-            <Button variant="destructive" disabled={postDeletePending} onClick={removePost}>
+            <Button disabled={postDeletePending} onClick={removePost} variant="destructive">
               <Trash2 aria-hidden="true" className="mr-1 h-4 w-4" />
               {postDeletePending ? '删除中...' : '删除帖子'}
             </Button>
@@ -308,8 +308,8 @@ export default function CommunityPostDetail() {
       </section>
 
       <section
-        className="community-detail__comments travel-surface-card"
         aria-labelledby="community-comments-title"
+        className="community-detail__comments travel-surface-card"
       >
         <div className="community-detail__comments-header">
           <h2 id="community-comments-title">评论</h2>
@@ -318,11 +318,11 @@ export default function CommunityPostDetail() {
         <div className="community-detail__comment-form">
           <textarea
             className="flex min-h-[80px] w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
-            value={commentInput}
-            rows={4}
             maxLength={500}
-            placeholder="写下你的建议、问题或补充体验"
             onChange={(event) => setCommentInput(event.target.value)}
+            placeholder="写下你的建议、问题或补充体验"
+            rows={4}
+            value={commentInput}
           />
           <Button disabled={!hasHydrated || commentSubmitting} onClick={submitComment}>
             <Send aria-hidden="true" className="mr-1 h-4 w-4" />
@@ -344,7 +344,7 @@ export default function CommunityPostDetail() {
         {!commentsLoading && comments.length > 0 ? (
           <div className="community-detail__comment-list">
             {comments.map((comment) => (
-              <article key={comment.id} className="community-detail__comment">
+              <article className="community-detail__comment" key={comment.id}>
                 <div>
                   <strong>{comment.author.username}</strong>
                   <span>{formatRelativeTime(comment.createdAt)}</span>
@@ -352,10 +352,10 @@ export default function CommunityPostDetail() {
                 <p>{comment.content}</p>
                 {comment.author.id === user?.id ? (
                   <Button
-                    variant="link"
                     className="text-destructive"
                     disabled={deletePendingId === comment.id}
                     onClick={() => removeComment(comment)}
+                    variant="link"
                   >
                     {deletePendingId === comment.id ? '删除中...' : '删除'}
                   </Button>
@@ -365,20 +365,20 @@ export default function CommunityPostDetail() {
           </div>
         ) : null}
         <Pagination
-          page={commentPage}
-          total={commentTotal}
-          pageSize={COMMENT_PAGE_SIZE}
           onPageChange={setCommentPage}
+          page={commentPage}
+          pageSize={COMMENT_PAGE_SIZE}
+          total={commentTotal}
         />
       </section>
 
       <RepostModal
-        open={repostOpen}
-        targetTitle={post.title || post.content || `${post.city || '旅行'}分享`}
-        pending={repostPending}
+        icon="link"
         onClose={() => setRepostOpen(false)}
         onSubmit={handleSubmitRepost}
-        icon="link"
+        open={repostOpen}
+        pending={repostPending}
+        targetTitle={post.title || post.content || `${post.city || '旅行'}分享`}
       />
     </main>
   )

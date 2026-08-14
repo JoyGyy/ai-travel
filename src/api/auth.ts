@@ -7,19 +7,15 @@ import type { AuthResponse, AuthUser, ProfileData } from '@/types/api'
 
 import { request } from './client'
 
-/** 用户登录 */
-export async function loginApi(username: string, password: string): Promise<AuthResponse> {
-  return request<AuthResponse>('/api/auth/login', {
-    method: 'POST',
-    body: { username, password },
-  })
-}
-
-/** 用户注册 */
-export async function registerApi(username: string, password: string): Promise<AuthResponse> {
-  return request<AuthResponse>('/api/auth/register', {
-    method: 'POST',
-    body: { username, password },
+/** 修改密码（需认证，修改成功后需重新登录） */
+export async function changePasswordApi(
+  currentPassword: string,
+  newPassword: string,
+): Promise<{ message: string; success: true }> {
+  return request<{ message: string; success: true }>('/api/auth/password', {
+    auth: true,
+    body: { currentPassword, newPassword },
+    method: 'PUT',
   })
 }
 
@@ -31,20 +27,24 @@ export async function getMeApi(): Promise<{ success: true; user: AuthUser }> {
 }
 
 /** 获取个人资料（含 AI 额度等信息，需认证） */
-export async function getProfileApi(): Promise<{ success: true; profile: ProfileData }> {
-  return request<{ success: true; profile: ProfileData }>('/api/auth/profile', {
+export async function getProfileApi(): Promise<{ profile: ProfileData; success: true }> {
+  return request<{ profile: ProfileData; success: true }>('/api/auth/profile', {
     auth: true,
   })
 }
 
-/** 修改密码（需认证，修改成功后需重新登录） */
-export async function changePasswordApi(
-  currentPassword: string,
-  newPassword: string,
-): Promise<{ success: true; message: string }> {
-  return request<{ success: true; message: string }>('/api/auth/password', {
-    method: 'PUT',
-    body: { currentPassword, newPassword },
-    auth: true,
+/** 用户登录 */
+export async function loginApi(username: string, password: string): Promise<AuthResponse> {
+  return request<AuthResponse>('/api/auth/login', {
+    body: { password, username },
+    method: 'POST',
+  })
+}
+
+/** 用户注册 */
+export async function registerApi(username: string, password: string): Promise<AuthResponse> {
+  return request<AuthResponse>('/api/auth/register', {
+    body: { password, username },
+    method: 'POST',
   })
 }

@@ -1,6 +1,6 @@
-import type { WeatherResponse } from '@/types/api'
-
 import { act, renderHook, waitFor } from '@testing-library/react'
+
+import type { WeatherResponse } from '@/types/api'
 
 import { useWeather } from './useWeather'
 
@@ -14,9 +14,9 @@ import { getWeatherApi } from '@/api/weather'
 
 const mockWeatherData: WeatherResponse = {
   city: '北京',
+  humidity: 40,
   temperature: 25,
   weatherDesc: '晴',
-  humidity: 40,
   windSpeed: 10,
 }
 
@@ -119,19 +119,22 @@ describe('useWeather', () => {
   describe('请求竞态控制', () => {
     it('重复调用应该中止前一次请求', async () => {
       // 模拟第一次请求被中止
-      vi.mocked(getWeatherApi).mockImplementation((_city, options) => new Promise((_resolve, reject) => {
-          const signal = options?.signal
-          if (signal?.aborted) {
-            const err = new DOMException('The operation was aborted.', 'AbortError')
-            reject(err)
-            return
-          }
-          if (signal) {
-            signal.addEventListener('abort', () => {
-              reject(new DOMException('The operation was aborted.', 'AbortError'))
-            })
-          }
-        }))
+      vi.mocked(getWeatherApi).mockImplementation(
+        (_city, options) =>
+          new Promise((_resolve, reject) => {
+            const signal = options?.signal
+            if (signal?.aborted) {
+              const err = new DOMException('The operation was aborted.', 'AbortError')
+              reject(err)
+              return
+            }
+            if (signal) {
+              signal.addEventListener('abort', () => {
+                reject(new DOMException('The operation was aborted.', 'AbortError'))
+              })
+            }
+          }),
+      )
 
       const { result } = renderHook(() => useWeather())
 

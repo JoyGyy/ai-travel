@@ -1,5 +1,11 @@
 'use client'
 
+import { ArrowLeft, Heart } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useParams, useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+
 /**
  * 景点详情页面
  *
@@ -8,47 +14,12 @@
  */
 import type { Attraction } from '@/types/attraction'
 
-import { ArrowLeft, Heart } from 'lucide-react'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-
 import { fetchAttractionDetail } from '@/api/attractions'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useAttractionFavorite } from '@/hooks/useAttractionFavorite'
 
 import './style.css'
-
-/** 生成搜索 URL 降级地址（无真实购票链接时使用） */
-function buildSearchUrl(platform: 'ctrip' | 'fliggy' | 'ly', attraction: Attraction) {
-  const keyword = encodeURIComponent(`${attraction.city} ${attraction.name} 门票`)
-  if (platform === 'ctrip') return `https://you.ctrip.com/searchsite/?query=${keyword}`
-  if (platform === 'fliggy') return `https://s.taobao.com/search?q=${keyword}`
-  return `https://www.ly.com/scenery/scenerysearchlist_${keyword}.html`
-}
-
-/** 构建购票链接列表，优先使用真实链接，缺失时降级为搜索 URL */
-function buildBookingLinks(attraction: Attraction) {
-  return [
-    {
-      key: 'ctrip' as const,
-      label: '携程',
-      href: attraction.bookingLinks.ctrip || buildSearchUrl('ctrip', attraction),
-    },
-    {
-      key: 'fliggy' as const,
-      label: '飞猪',
-      href: attraction.bookingLinks.fliggy || buildSearchUrl('fliggy', attraction),
-    },
-    {
-      key: 'ly' as const,
-      label: '同程',
-      href: attraction.bookingLinks.ly || buildSearchUrl('ly', attraction),
-    },
-  ]
-}
 
 export default function AttractionDetail() {
   // ---- 路由参数与状态 ----
@@ -105,13 +76,13 @@ export default function AttractionDetail() {
   if (loading) {
     return (
       <main
-        className="attraction-detail travel-page-shell"
         aria-labelledby="attraction-loading-title"
+        className="attraction-detail travel-page-shell"
       >
         <div
+          aria-live="polite"
           className="attraction-detail__state travel-surface-card"
           role="status"
-          aria-live="polite"
         >
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
@@ -126,8 +97,8 @@ export default function AttractionDetail() {
   if (error || !attraction) {
     return (
       <main
-        className="attraction-detail travel-page-shell"
         aria-labelledby="attraction-error-title"
+        className="attraction-detail travel-page-shell"
       >
         <div className="attraction-detail__state travel-surface-card" role="alert">
           <h1 id="attraction-error-title">景点暂时无法打开</h1>
@@ -158,20 +129,20 @@ export default function AttractionDetail() {
   const ticketTypeClass = attraction.ticketType === 'free' ? 'travel-tag--free' : 'travel-tag--paid'
 
   return (
-    <main className="attraction-detail travel-page-shell" aria-labelledby="attraction-detail-title">
-      <button type="button" className="attraction-detail__back" onClick={() => router.back()}>
+    <main aria-labelledby="attraction-detail-title" className="attraction-detail travel-page-shell">
+      <button className="attraction-detail__back" onClick={() => router.back()} type="button">
         <ArrowLeft aria-hidden="true" />
         <span>返回</span>
       </button>
       {/* ---- 封面与操作区 ---- */}
       <section className="attraction-detail__hero travel-surface-card travel-ticket-edge travel-route-line">
         <Image
-          src={attraction.coverImage}
           alt={`${attraction.name}，${attraction.city}景点封面`}
-          loading="eager"
-          width={800}
           height={500}
+          loading="eager"
+          src={attraction.coverImage}
           unoptimized
+          width={800}
         />
         <div className="attraction-detail__hero-content">
           <p className="attraction-detail__city">{attraction.city}</p>
@@ -183,17 +154,17 @@ export default function AttractionDetail() {
             </Badge>
             <Badge className="travel-tag travel-tag--warning">{attraction.priceText}</Badge>
             {attraction.tags.map((tag) => (
-              <Badge key={tag} className="travel-tag travel-tag--info">
+              <Badge className="travel-tag travel-tag--info" key={tag}>
                 {tag}
               </Badge>
             ))}
           </div>
           <div className="attraction-detail__hero-actions">
             <Button
-              onClick={handleToggleFavorite}
               aria-label={`${attraction.isFavorite ? '取消收藏' : '收藏'}${attraction.name}`}
               aria-pressed={Boolean(attraction.isFavorite)}
               disabled={favoritePending}
+              onClick={handleToggleFavorite}
             >
               <Heart
                 aria-hidden="true"
@@ -262,11 +233,11 @@ export default function AttractionDetail() {
         <div className="attraction-detail__booking">
           {buildBookingLinks(attraction).map((link) => (
             <a
-              key={link.key}
-              href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
               aria-label={`去${link.label}查看${attraction.name}门票，打开新窗口`}
+              href={link.href}
+              key={link.key}
+              rel="noopener noreferrer"
+              target="_blank"
             >
               去{link.label}
               查看
@@ -276,4 +247,33 @@ export default function AttractionDetail() {
       </section>
     </main>
   )
+}
+
+/** 构建购票链接列表，优先使用真实链接，缺失时降级为搜索 URL */
+function buildBookingLinks(attraction: Attraction) {
+  return [
+    {
+      href: attraction.bookingLinks.ctrip || buildSearchUrl('ctrip', attraction),
+      key: 'ctrip' as const,
+      label: '携程',
+    },
+    {
+      href: attraction.bookingLinks.fliggy || buildSearchUrl('fliggy', attraction),
+      key: 'fliggy' as const,
+      label: '飞猪',
+    },
+    {
+      href: attraction.bookingLinks.ly || buildSearchUrl('ly', attraction),
+      key: 'ly' as const,
+      label: '同程',
+    },
+  ]
+}
+
+/** 生成搜索 URL 降级地址（无真实购票链接时使用） */
+function buildSearchUrl(platform: 'ctrip' | 'fliggy' | 'ly', attraction: Attraction) {
+  const keyword = encodeURIComponent(`${attraction.city} ${attraction.name} 门票`)
+  if (platform === 'ctrip') return `https://you.ctrip.com/searchsite/?query=${keyword}`
+  if (platform === 'fliggy') return `https://s.taobao.com/search?q=${keyword}`
+  return `https://www.ly.com/scenery/scenerysearchlist_${keyword}.html`
 }

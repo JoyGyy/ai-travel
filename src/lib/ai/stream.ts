@@ -22,10 +22,10 @@ export const TRAVEL_SYSTEM_PROMPT = `你是一个专业的旅行规划师，不�
 
 export async function createTravelChatStream(messages: UIMessage[]) {
   const result = streamText({
-    model: getTravelModel(),
-    system: TRAVEL_SYSTEM_PROMPT,
     messages: await convertToModelMessages(messages),
+    model: getTravelModel(),
     stopWhen: isStepCount(5),
+    system: TRAVEL_SYSTEM_PROMPT,
     tools: travelTools,
   })
 

@@ -15,15 +15,6 @@ function Avatar({ className, ...props }: ComponentPropsWithoutRef<typeof AvatarP
   )
 }
 
-function AvatarImage({
-  className,
-  ...props
-}: ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>) {
-  return (
-    <AvatarPrimitive.Image className={cn('aspect-square h-full w-full', className)} {...props} />
-  )
-}
-
 function AvatarFallback({
   className,
   ...props
@@ -39,4 +30,13 @@ function AvatarFallback({
   )
 }
 
-export { Avatar, AvatarImage, AvatarFallback }
+function AvatarImage({
+  className,
+  ...props
+}: ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>) {
+  return (
+    <AvatarPrimitive.Image className={cn('aspect-square h-full w-full', className)} {...props} />
+  )
+}
+
+export { Avatar, AvatarFallback, AvatarImage }

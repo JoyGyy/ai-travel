@@ -30,12 +30,12 @@ const mockTransaction = vi.fn()
 
 vi.mock('@/lib/db', () => ({
   db: {
-    select: (...args: unknown[]) => mockSelect(...args),
-    insert: (...args: unknown[]) => mockInsert(...args),
-    update: (...args: unknown[]) => mockUpdate(...args),
     delete: (...args: unknown[]) => mockDelete(...args),
     execute: (...args: unknown[]) => mockExecute(...args),
+    insert: (...args: unknown[]) => mockInsert(...args),
+    select: (...args: unknown[]) => mockSelect(...args),
     transaction: (...args: unknown[]) => mockTransaction(...args),
+    update: (...args: unknown[]) => mockUpdate(...args),
   },
   typedQuery: <T>(result: unknown[]) => result as unknown as T[],
 }))
@@ -62,35 +62,35 @@ function createQueryBuilder(finalResult: unknown[]) {
 /** 生成社区帖子原始行数据 */
 function makePostRow(
   overrides: Partial<{
-    id: string
     author_id: string
     author_username: string
-    post_type: 'original' | 'repost'
-    original_post_id: string | null
-    title: string
-    content: string
     city: string
-    like_count: number
     comment_count: number
-    repost_count: number
+    content: string
+    id: string
+    like_count: number
     liked_by_me: boolean
+    original_post_id: null | string
+    post_type: 'original' | 'repost'
+    repost_count: number
+    title: string
   }> = {},
 ) {
   return {
-    id: overrides.id ?? 'post-1',
     author_id: overrides.author_id ?? 'author-1',
     author_username: overrides.author_username ?? 'testuser',
-    post_type: overrides.post_type ?? 'original',
-    original_post_id: overrides.original_post_id ?? null,
-    title: overrides.title ?? '测试帖子',
-    content: overrides.content ?? '帖子内容',
     city: overrides.city ?? '北京',
+    comment_count: overrides.comment_count ?? 3,
+    content: overrides.content ?? '帖子内容',
+    created_at: new Date('2024-01-15T10:00:00Z'),
+    id: overrides.id ?? 'post-1',
     itinerary_snapshot: null,
     like_count: overrides.like_count ?? 5,
-    comment_count: overrides.comment_count ?? 3,
-    repost_count: overrides.repost_count ?? 1,
     liked_by_me: overrides.liked_by_me ?? false,
-    created_at: new Date('2024-01-15T10:00:00Z'),
+    original_post_id: overrides.original_post_id ?? null,
+    post_type: overrides.post_type ?? 'original',
+    repost_count: overrides.repost_count ?? 1,
+    title: overrides.title ?? '测试帖子',
     updated_at: new Date('2024-01-15T10:00:00Z'),
   }
 }
@@ -114,11 +114,11 @@ describe('community 服务', () => {
       // act
       const result = await listCommunityPosts(
         {
+          authorId: '',
+          city: '',
           page: 1,
           pageSize: 10,
-          city: '',
           withItinerary: false,
-          authorId: '',
         },
         'viewer-1',
       )
@@ -138,11 +138,11 @@ describe('community 服务', () => {
 
       // act
       const result = await listCommunityPosts({
+        authorId: '',
+        city: '',
         page: -1,
         pageSize: 100,
-        city: '',
         withItinerary: false,
-        authorId: '',
       })
 
       // assert
@@ -157,11 +157,11 @@ describe('community 服务', () => {
 
       // act
       await listCommunityPosts({
+        authorId: '',
+        city: '上海',
         page: 1,
         pageSize: 10,
-        city: '上海',
         withItinerary: false,
-        authorId: '',
       })
 
       // assert
@@ -219,9 +219,9 @@ describe('community 服务', () => {
 
       // act
       const result = await createCommunityPost('author-1', {
-        title: '新帖子',
-        content: '内容',
         city: '北京',
+        content: '内容',
+        title: '新帖子',
       })
 
       // assert
@@ -356,12 +356,12 @@ describe('community 服务', () => {
         .mockReturnValueOnce(
           createQueryBuilder([
             {
-              id: 'comment-1',
-              postId: 'post-1',
               authorId: 'user-1',
               authorUsername: 'commenter',
               content: '好帖子',
               createdAt: new Date('2024-01-15T12:00:00Z'),
+              id: 'comment-1',
+              postId: 'post-1',
               updatedAt: new Date('2024-01-15T12:00:00Z'),
             },
           ]),
@@ -387,11 +387,11 @@ describe('community 服务', () => {
       mockSelect.mockReturnValueOnce(createQueryBuilder([{ id: 'post-1' }]))
       // insert returning
       const insertedComment = {
-        id: 'comment-1',
-        postId: 'post-1',
         authorId: 'user-1',
         content: '评论内容',
         createdAt: new Date('2024-01-15T12:00:00Z'),
+        id: 'comment-1',
+        postId: 'post-1',
         updatedAt: new Date('2024-01-15T12:00:00Z'),
       }
       mockInsert.mockReturnValue({
@@ -461,10 +461,10 @@ describe('community 服务', () => {
       mockSelect.mockReturnValueOnce(
         createQueryBuilder([
           {
-            id: 'post-1',
-            postType: 'original',
-            originalPostId: null,
             city: '北京',
+            id: 'post-1',
+            originalPostId: null,
+            postType: 'original',
           },
         ]),
       )
@@ -484,8 +484,8 @@ describe('community 服务', () => {
       // getCommunityPostById
       const repostRow = makePostRow({
         id: 'repost-1',
-        post_type: 'repost',
         original_post_id: 'post-1',
+        post_type: 'repost',
       })
       mockExecute.mockResolvedValue({ rows: [repostRow] })
 

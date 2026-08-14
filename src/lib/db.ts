@@ -19,27 +19,8 @@ const { Pool } = pg
 // ========== 全局单例连接池 ==========
 
 const globalForDb = globalThis as unknown as {
-  _pgPool: pg.Pool | null
-  _drizzleDb: ReturnType<typeof drizzle<typeof schema>> | null
-}
-
-function getPool(): pg.Pool | null {
-  if (!env.DATABASE_URL) return null
-
-  if (!globalForDb._pgPool) {
-    globalForDb._pgPool = new Pool({
-      connectionString: env.DATABASE_URL,
-      max: 10,
-      idleTimeoutMillis: 30_000,
-      connectionTimeoutMillis: 5_000,
-    })
-
-    globalForDb._pgPool.on('error', (err: Error) => {
-      log.error('连接池异常:', err.message)
-    })
-  }
-
-  return globalForDb._pgPool
+  _drizzleDb: null | ReturnType<typeof drizzle<typeof schema>>
+  _pgPool: null | pg.Pool
 }
 
 /** 获取 Drizzle ORM 实例（延迟初始化，全局单例） */
@@ -50,6 +31,25 @@ function getDb() {
     globalForDb._drizzleDb = drizzle(pool, { schema })
   }
   return globalForDb._drizzleDb
+}
+
+function getPool(): null | pg.Pool {
+  if (!env.DATABASE_URL) return null
+
+  if (!globalForDb._pgPool) {
+    globalForDb._pgPool = new Pool({
+      connectionString: env.DATABASE_URL,
+      connectionTimeoutMillis: 5_000,
+      idleTimeoutMillis: 30_000,
+      max: 10,
+    })
+
+    globalForDb._pgPool.on('error', (err: Error) => {
+      log.error('连接池异常:', err.message)
+    })
+  }
+
+  return globalForDb._pgPool
 }
 
 // ========== 导出 ==========
@@ -65,11 +65,9 @@ export const db = new Proxy({} as ReturnType<typeof drizzle<typeof schema>>, {
   },
 })
 
-/** 执行 SQL 查询（保留用于 pgvector 等原生查询场景） */
-async function query(text: string, params?: unknown[]): Promise<QueryResult> {
-  const pool = getPool()
-  if (!pool) throw new Error('数据库未配置，请设置 DATABASE_URL 环境变量')
-  return pool.query(text, params)
+/** 将 Drizzle sql 查询结果类型安全地转换为指定类型 */
+export function typedQuery<T>(result: unknown[]): T[] {
+  return result as unknown as T[]
 }
 
 async function getClient(): Promise<PoolClient> {
@@ -78,9 +76,11 @@ async function getClient(): Promise<PoolClient> {
   return pool.connect()
 }
 
-/** 将 Drizzle sql 查询结果类型安全地转换为指定类型 */
-export function typedQuery<T>(result: unknown[]): T[] {
-  return result as unknown as T[]
+/** 执行 SQL 查询（保留用于 pgvector 等原生查询场景） */
+async function query(text: string, params?: unknown[]): Promise<QueryResult> {
+  const pool = getPool()
+  if (!pool) throw new Error('数据库未配置，请设置 DATABASE_URL 环境变量')
+  return pool.query(text, params)
 }
 
 export { getClient, query }

@@ -4,7 +4,7 @@ import { httpError, withAuthRaw } from '@/lib/utils/http'
 
 export const POST = withAuthRaw(async (req, { user }) => {
   const body = await req.json()
-  const { city, budget, days } = body
+  const { budget, city, days } = body
 
   if (!city || typeof city !== 'string' || city.length > 50) {
     throw httpError(400, '请提供有效的目的地城市')
@@ -17,5 +17,5 @@ export const POST = withAuthRaw(async (req, { user }) => {
   }
 
   await consumeAiQuota(user.id)
-  return createTravelRecommendStream({ city, budget, days })
+  return createTravelRecommendStream({ budget, city, days })
 })

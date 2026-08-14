@@ -1,3 +1,7 @@
+import { Clock, Compass } from 'lucide-react'
+import Link from 'next/link'
+import React from 'react'
+
 /**
  * 景点项目组件
  *
@@ -7,31 +11,23 @@
  */
 import type { AttractionRef } from '@/stores/itinerary'
 
-import { Clock, Compass } from 'lucide-react'
-import Link from 'next/link'
-import React from 'react'
-
 import './style.css'
 
 interface SpotData {
-  spot: string
   description: string
   duration: string
+  spot: string
   ticket?: string
   transportation?: string
 }
 
 interface SpotItemProps {
-  period: '上午' | '下午' | '晚上'
-  data: SpotData
   attractionRef?: AttractionRef
+  data: SpotData
+  period: '上午' | '下午' | '晚上'
 }
 
-export const SpotItem = React.memo(({
-  period,
-  data,
-  attractionRef,
-}: SpotItemProps) => {
+export const SpotItem = React.memo(({ attractionRef, data, period }: SpotItemProps) => {
   // 根据时段（上午/下午/晚上）映射不同的主题色和背景色
   const periodColorMap: Record<string, string> = {
     上午: 'var(--travel-period-morning)',
@@ -48,7 +44,7 @@ export const SpotItem = React.memo(({
 
   return (
     <div className="spot-item" style={{ borderLeftColor: periodColor }}>
-      <div className="spot-item__period" style={{ color: periodColor, background: periodBg }}>
+      <div className="spot-item__period" style={{ background: periodBg, color: periodColor }}>
         {period}
       </div>
       <div className="spot-item__body">
@@ -57,25 +53,19 @@ export const SpotItem = React.memo(({
         {/* ---- 标签：游玩时长 / 门票 / 交通方式 ---- */}
         <div className="spot-item__tags">
           <span className="spot-item__tag">
-            <Clock size={14} />
-            {' '}
-            {data.duration}
+            <Clock size={14} /> {data.duration}
           </span>
           <span className="spot-item__tag spot-item__tag--price">{data.ticket}</span>
           <span className="spot-item__tag">
-            <Compass size={14} />
-            {' '}
-            {data.transportation}
+            <Compass size={14} /> {data.transportation}
           </span>
         </div>
         {/* ---- 关联景点详情链接（有 attractionRef 时显示） ---- */}
-        {attractionRef
-          ? (
-              <Link className="spot-item__detail-link" href={`/attractions/${attractionRef.id}`}>
-                {`查看${attractionRef.name}详情`}
-              </Link>
-            )
-          : null}
+        {attractionRef ? (
+          <Link className="spot-item__detail-link" href={`/attractions/${attractionRef.id}`}>
+            {`查看${attractionRef.name}详情`}
+          </Link>
+        ) : null}
       </div>
     </div>
   )

@@ -1,3 +1,5 @@
+import { useCallback, useEffect, useRef, useState } from 'react'
+
 /**
  * 天气查询 Hook
  *
@@ -6,14 +8,12 @@
  */
 import type { WeatherResponse } from '@/types/api'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
-
 import { getWeatherApi } from '@/api/weather'
 
 export function useWeather() {
-  const [weather, setWeather] = useState<WeatherResponse | null>(null)
+  const [weather, setWeather] = useState<null | WeatherResponse>(null)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<null | string>(null)
   const abortRef = useRef<AbortController | null>(null)
 
   const fetchWeather = useCallback((city: string) => {
@@ -45,9 +45,12 @@ export function useWeather() {
   }, [])
 
   // --- 组件卸载时中止进行中的请求 ---
-  useEffect(() => () => {
+  useEffect(
+    () => () => {
       abortRef.current?.abort()
-    }, [])
+    },
+    [],
+  )
 
-  return { weather, loading, error, fetchWeather }
+  return { error, fetchWeather, loading, weather }
 }

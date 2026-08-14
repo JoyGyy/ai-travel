@@ -1,10 +1,3 @@
-/**
- * Agent 执行步骤可视化组件
- * 展示 AI Agent 的多步骤推理过程（行程推荐流程）
- * 包含步骤状态判定、结果摘要提取和步骤时间线渲染
- */
-import type { SSEEvent } from '@/types/api'
-
 import {
   CheckCircle2,
   ChevronRight,
@@ -16,38 +9,45 @@ import {
   Search,
 } from 'lucide-react'
 
+/**
+ * Agent 执行步骤可视化组件
+ * 展示 AI Agent 的多步骤推理过程（行程推荐流程）
+ * 包含步骤状态判定、结果摘要提取和步骤时间线渲染
+ */
+import type { SSEEvent } from '@/types/api'
+
 import './style.css'
 
 /* ========== 类型定义 ========== */
 
+interface AgentStepsProps {
+  currentStep: number
+  steps: StepEvent[]
+}
+
 /** 从 SSEEvent 中提取 step 类型事件 */
 type StepEvent = Extract<SSEEvent, { type: 'step' }>
-
-interface AgentStepsProps {
-  steps: StepEvent[]
-  currentStep: number
-}
 
 /* ========== 步骤静态配置 ========== */
 
 /** 6 个固定步骤的名称和对应图标 */
 const STEP_CONFIG = [
-  { step: 1, name: '解析意图', Icon: Search },
-  { step: 2, name: '知识库检索', Icon: List },
-  { step: 3, name: '查询天气', Icon: Info },
-  { step: 4, name: '行程规划', Icon: MapPin },
-  { step: 5, name: '预算计算', Icon: CircleDollarSign },
-  { step: 6, name: '生成建议', Icon: Flag },
+  { Icon: Search, name: '解析意图', step: 1 },
+  { Icon: List, name: '知识库检索', step: 2 },
+  { Icon: Info, name: '查询天气', step: 3 },
+  { Icon: MapPin, name: '行程规划', step: 4 },
+  { Icon: CircleDollarSign, name: '预算计算', step: 5 },
+  { Icon: Flag, name: '生成建议', step: 6 },
 ]
 
 /* ========== Agent 步骤组件 ========== */
 
-export function AgentSteps({ steps, currentStep }: AgentStepsProps) {
+export function AgentSteps({ currentStep, steps }: AgentStepsProps) {
   /** 将步骤事件数组转为 Map，便于按步骤号快速查找 */
   const stepMap = new Map(steps.map((s) => [s.step, s]))
 
   /** 判断指定步骤的当前状态：已完成 / 执行中 / 等待中 */
-  function getStepStatus(stepNum: number): 'done' | 'running' | 'pending' {
+  function getStepStatus(stepNum: number): 'done' | 'pending' | 'running' {
     const step = stepMap.get(stepNum)
     if (step?.status === 'complete') return 'done'
     if (currentStep === stepNum) return 'running'
@@ -80,7 +80,7 @@ export function AgentSteps({ steps, currentStep }: AgentStepsProps) {
   /* ========== 渲染：步骤时间线 ========== */
 
   return (
-    <div className="agent-steps" aria-live="polite">
+    <div aria-live="polite" className="agent-steps">
       {/* 标题栏 */}
       <div className="agent-steps__header">
         <span className="agent-steps__title">AGENT 执行过程</span>
@@ -92,13 +92,13 @@ export function AgentSteps({ steps, currentStep }: AgentStepsProps) {
           const summary = getResultSummary(config.step)
           return (
             <div
-              key={config.step}
-              className="agent-steps__item"
-              role="listitem"
               aria-label={`${config.name}：${status === 'done' ? '已完成' : status === 'running' ? '执行中' : '等待中'}`}
+              className="agent-steps__item"
+              key={config.step}
+              role="listitem"
             >
               {/* 左侧时间线：圆点 + 连接线 */}
-              <div className="agent-steps__line" aria-hidden="true">
+              <div aria-hidden="true" className="agent-steps__line">
                 <div className={`agent-steps__dot agent-steps__dot--${status}`}>
                   {status === 'done' ? <CheckCircle2 size={16} /> : <config.Icon />}
                 </div>
@@ -119,7 +119,7 @@ export function AgentSteps({ steps, currentStep }: AgentStepsProps) {
                 </div>
                 {summary && (
                   <div className="agent-steps__summary">
-                    <ChevronRight size={14} className="agent-steps__arrow" aria-hidden="true" />
+                    <ChevronRight aria-hidden="true" className="agent-steps__arrow" size={14} />
                     <span>{summary}</span>
                   </div>
                 )}

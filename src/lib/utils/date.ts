@@ -4,10 +4,36 @@
  */
 
 /**
+ * 格式化为本地化日期字符串
+ */
+export function formatDate(value: Date | string): string {
+  const date = typeof value === 'string' ? new Date(value) : value
+  if (Number.isNaN(date.getTime())) return String(value)
+
+  return date.toLocaleDateString('zh-CN')
+}
+
+/**
+ * 格式化为完整的本地化日期时间字符串
+ */
+export function formatFullDateTime(value: Date | string): string {
+  const date = typeof value === 'string' ? new Date(value) : value
+  if (Number.isNaN(date.getTime())) return String(value)
+
+  return date.toLocaleString('zh-CN', {
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  })
+}
+
+/**
  * 格式化为相对时间（如"3分钟前"、"2小时前"、"昨天"等）
  * 超过 7 天显示绝对日期
  */
-export function formatRelativeTime(value: string | Date): string {
+export function formatRelativeTime(value: Date | string): string {
   const date = typeof value === 'string' ? new Date(value) : value
   if (Number.isNaN(date.getTime())) return String(value)
 
@@ -34,30 +60,4 @@ export function formatRelativeTime(value: string | Date): string {
   if (year === now.getFullYear()) return `${month}-${day}`
 
   return `${year}-${month}-${day}`
-}
-
-/**
- * 格式化为完整的本地化日期时间字符串
- */
-export function formatFullDateTime(value: string | Date): string {
-  const date = typeof value === 'string' ? new Date(value) : value
-  if (Number.isNaN(date.getTime())) return String(value)
-
-  return date.toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
-
-/**
- * 格式化为本地化日期字符串
- */
-export function formatDate(value: string | Date): string {
-  const date = typeof value === 'string' ? new Date(value) : value
-  if (Number.isNaN(date.getTime())) return String(value)
-
-  return date.toLocaleDateString('zh-CN')
 }

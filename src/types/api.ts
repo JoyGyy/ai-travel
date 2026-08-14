@@ -2,21 +2,16 @@
  * API 与 SSE 结构类型定义
  */
 
+export interface AiQuotaInfo {
+  limit: number
+  remaining: number
+  used: number
+}
+
 export interface ApiSuccess {
-  success?: boolean
-  message?: string
   error?: string
-}
-
-export interface AuthUser {
-  id: string
-  username: string
-  createdAt?: string
-}
-
-export interface ShareResponse {
-  id: string
-  url: string
+  message?: string
+  success?: boolean
 }
 
 export interface AuthResponse {
@@ -25,19 +20,40 @@ export interface AuthResponse {
   user: AuthUser
 }
 
-export interface AiQuotaInfo {
-  used: number
-  limit: number
-  remaining: number
+export interface AuthUser {
+  createdAt?: string
+  id: string
+  username: string
 }
 
 export interface ProfileData {
+  aiQuota: AiQuotaInfo
+  createdAt: string
+  favoriteIds: string[]
   id: string
   username: string
-  createdAt: string
-  aiQuota: AiQuotaInfo
-  favoriteIds: string[]
 }
+
+export interface ShareResponse {
+  id: string
+  url: string
+}
+
+export interface SSECallbacks {
+  onChunk?: (content: string) => void
+  onComplete?: (data?: object) => void
+  onError?: (error: Error) => void
+  onFinally?: () => void
+  onNotice?: (message: string) => void
+  onStep?: (event: Extract<SSEEvent, { type: 'step' }>) => void
+}
+
+export type SSEEvent =
+  | { content: string; type: 'chunk'; }
+  | { data?: object; name: string; status: 'complete' | 'start'; step: number; type: 'step'; }
+  | { data?: object; type: 'complete'; }
+  | { message: string; type: 'notice'; }
+  | { message?: string; type: 'error'; }
 
 export interface WeatherForecast {
   date: string
@@ -49,27 +65,11 @@ export interface WeatherForecast {
 
 export interface WeatherResponse {
   city: string
-  temperature: number
   feelsLike?: number
+  forecast?: WeatherForecast[]
   humidity?: number
-  windSpeed?: number
+  temperature: number
   weatherCode?: number
   weatherDesc: string
-  forecast?: WeatherForecast[]
-}
-
-export type SSEEvent =
-  | { type: 'chunk'; content: string }
-  | { type: 'step'; step: number; name: string; status: 'start' | 'complete'; data?: object }
-  | { type: 'notice'; message: string }
-  | { type: 'complete'; data?: object }
-  | { type: 'error'; message?: string }
-
-export interface SSECallbacks {
-  onChunk?: (content: string) => void
-  onStep?: (event: Extract<SSEEvent, { type: 'step' }>) => void
-  onNotice?: (message: string) => void
-  onComplete?: (data?: object) => void
-  onError?: (error: Error) => void
-  onFinally?: () => void
+  windSpeed?: number
 }

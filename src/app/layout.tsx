@@ -7,8 +7,8 @@ import { Navigation } from '@/components/Navigation'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Travel AI - 智能旅行规划助手',
   description: 'AI 驱动的智能旅行规划助手，为您定制专属行程',
+  title: 'Travel AI - 智能旅行规划助手',
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {

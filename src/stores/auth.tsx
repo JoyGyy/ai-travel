@@ -1,3 +1,6 @@
+import { create } from 'zustand'
+import { devtools, persist } from 'zustand/middleware'
+
 /**
  * 认证状态管理 Store
  *
@@ -11,21 +14,18 @@
  */
 import type { AuthUser } from '@/types/api'
 
-import { create } from 'zustand'
-import { devtools, persist } from 'zustand/middleware'
-
 import { loginApi, registerApi } from '@/api/auth'
 
 // --- 类型定义 ---
 
 interface AuthState {
-  user: AuthUser | null
-  token: string | null
   _hasHydrated: boolean
-  setHasHydrated: (v: boolean) => void
   login: (username: string, password: string) => Promise<void>
-  register: (username: string, password: string) => Promise<void>
   logout: () => void
+  register: (username: string, password: string) => Promise<void>
+  setHasHydrated: (v: boolean) => void
+  token: null | string
+  user: AuthUser | null
 }
 
 // --- 创建 Store ---
@@ -36,32 +36,32 @@ export const useAuthStore = create<AuthState>()(
       (set) => ({
         // --- 初始状态 ---
 
-        user: null,
-        token: null,
         _hasHydrated: false,
-        setHasHydrated: (v) => set({ _hasHydrated: v }),
-
-        // --- 异步操作：登录/注册 ---
-
         async login(username, password) {
           const data = await loginApi(username, password)
           if (data) {
-            set({ user: data.user, token: data.token })
+            set({ token: data.token, user: data.user })
           }
         },
-
+        logout() {
+          set({ token: null, user: null })
+        },
         async register(username, password) {
           const data = await registerApi(username, password)
           if (data) {
-            set({ user: data.user, token: data.token })
+            set({ token: data.token, user: data.user })
           }
         },
 
+        // --- 异步操作：登录/注册 ---
+
+        setHasHydrated: (v) => set({ _hasHydrated: v }),
+
+        token: null,
+
         // --- 同步操作：登出 ---
 
-        logout() {
-          set({ user: null, token: null })
-        },
+        user: null,
       }),
       // --- 持久化配置 ---
 

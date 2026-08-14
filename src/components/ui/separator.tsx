@@ -8,19 +8,19 @@ import { cn } from '@/lib/utils'
 
 function Separator({
   className,
-  orientation = 'horizontal',
   decorative = true,
+  orientation = 'horizontal',
   ...props
 }: ComponentPropsWithoutRef<typeof SeparatorPrimitive.Root>) {
   return (
     <SeparatorPrimitive.Root
-      decorative={decorative}
-      orientation={orientation}
       className={cn(
         'shrink-0 bg-border',
         orientation === 'horizontal' ? 'h-[1px] w-full' : 'h-full w-[1px]',
         className,
       )}
+      decorative={decorative}
+      orientation={orientation}
       {...props}
     />
   )

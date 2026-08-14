@@ -21,16 +21,16 @@ describe('useAuthStore', () => {
   beforeEach(() => {
     localStorage.clear()
     useAuthStore.setState({
-      user: null,
-      token: null,
       _hasHydrated: false,
+      token: null,
+      user: null,
     })
     vi.clearAllMocks()
   })
 
   describe('初始状态', () => {
     it('user 和 token 应该为 null', () => {
-      const { user, token } = useAuthStore.getState()
+      const { token, user } = useAuthStore.getState()
       expect(user).toBeNull()
       expect(token).toBeNull()
     })
@@ -44,13 +44,13 @@ describe('useAuthStore', () => {
     it('成功登录后应该设置 user 和 token', async () => {
       vi.mocked(loginApi).mockResolvedValue({
         success: true,
-        user: mockUser,
         token: mockToken,
+        user: mockUser,
       })
 
       await useAuthStore.getState().login('testuser', 'password123')
 
-      const { user, token } = useAuthStore.getState()
+      const { token, user } = useAuthStore.getState()
       expect(user).toEqual(mockUser)
       expect(token).toBe(mockToken)
       expect(loginApi).toHaveBeenCalledWith('testuser', 'password123')
@@ -61,7 +61,7 @@ describe('useAuthStore', () => {
 
       await useAuthStore.getState().login('testuser', 'wrong')
 
-      const { user, token } = useAuthStore.getState()
+      const { token, user } = useAuthStore.getState()
       expect(user).toBeNull()
       expect(token).toBeNull()
     })
@@ -71,13 +71,13 @@ describe('useAuthStore', () => {
     it('成功注册后应该设置 user 和 token', async () => {
       vi.mocked(registerApi).mockResolvedValue({
         success: true,
-        user: mockUser,
         token: mockToken,
+        user: mockUser,
       })
 
       await useAuthStore.getState().register('newuser', 'password123')
 
-      const { user, token } = useAuthStore.getState()
+      const { token, user } = useAuthStore.getState()
       expect(user).toEqual(mockUser)
       expect(token).toBe(mockToken)
       expect(registerApi).toHaveBeenCalledWith('newuser', 'password123')
@@ -87,11 +87,11 @@ describe('useAuthStore', () => {
   describe('logout', () => {
     it('应该清空 user 和 token', () => {
       // 先设置登录状态
-      useAuthStore.setState({ user: mockUser, token: mockToken })
+      useAuthStore.setState({ token: mockToken, user: mockUser })
 
       useAuthStore.getState().logout()
 
-      const { user, token } = useAuthStore.getState()
+      const { token, user } = useAuthStore.getState()
       expect(user).toBeNull()
       expect(token).toBeNull()
     })
@@ -109,7 +109,7 @@ describe('useAuthStore', () => {
 
   describe('persist 持久化', () => {
     it('登出后 localStorage 应该清除 user 和 token', () => {
-      useAuthStore.setState({ user: mockUser, token: mockToken })
+      useAuthStore.setState({ token: mockToken, user: mockUser })
       useAuthStore.getState().logout()
 
       // persist 中间件会写入 localStorage，检查 key 存在且 user/token 为 null

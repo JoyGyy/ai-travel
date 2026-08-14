@@ -20,18 +20,17 @@ export default function Weather() {
   const [city, setCity] = useState('')
   const [showDropdown, setShowDropdown] = useState(false)
   const [activeCityIndex, setActiveCityIndex] = useState(0)
-  const { weather, loading, error, fetchWeather } = useWeather()
+  const { error, fetchWeather, loading, weather } = useWeather()
 
   // ---- 城市搜索过滤 ----
   const filteredCities = useMemo(() => {
     const keyword = city.trim()
-    if (!keyword)
-      return allCities
-    return allCities.filter(c => c.includes(keyword))
+    if (!keyword) return allCities
+    return allCities.filter((c) => c.includes(keyword))
   }, [city])
 
-  const activeCityId
-    = showDropdown && filteredCities[activeCityIndex]
+  const activeCityId =
+    showDropdown && filteredCities[activeCityIndex]
       ? `weather-city-option-${activeCityIndex}`
       : undefined
 
@@ -60,97 +59,91 @@ export default function Weather() {
     if (event.key === 'ArrowDown') {
       event.preventDefault()
       if (filteredCities.length)
-        setActiveCityIndex(index => Math.min(index + 1, filteredCities.length - 1))
-    }
-    else if (event.key === 'ArrowUp') {
+        setActiveCityIndex((index) => Math.min(index + 1, filteredCities.length - 1))
+    } else if (event.key === 'ArrowUp') {
       event.preventDefault()
-      if (filteredCities.length)
-        setActiveCityIndex(index => Math.max(index - 1, 0))
-    }
-    else if (event.key === 'Enter') {
+      if (filteredCities.length) setActiveCityIndex((index) => Math.max(index - 1, 0))
+    } else if (event.key === 'Enter') {
       event.preventDefault()
       if (showDropdown && filteredCities[activeCityIndex])
         selectCity(filteredCities[activeCityIndex])
-      else if (city.trim())
-        fetchWeather(city.trim())
-    }
-    else if (event.key === 'Escape') {
+      else if (city.trim()) fetchWeather(city.trim())
+    } else if (event.key === 'Escape') {
       setShowDropdown(false)
     }
   }
 
   // ---- 错误重试 ----
   function retryWeather() {
-    if (city.trim())
-      fetchWeather(city.trim())
+    if (city.trim()) fetchWeather(city.trim())
   }
 
   return (
     <main
+      aria-labelledby="weather-title"
       className="weather-page"
       onClick={() => showDropdown && setShowDropdown(false)}
-      aria-labelledby="weather-title"
     >
       <div className="weather-page__hero">
-        <div className="weather-page__deco" aria-hidden="true" />
+        <div aria-hidden="true" className="weather-page__deco" />
         <p className="weather-page__label">WEATHER</p>
-        <h1 id="weather-title" className="weather-page__title">
+        <h1 className="weather-page__title" id="weather-title">
           天气查询
         </h1>
         <p className="weather-page__subtitle">查看目的地实时天气，合理安排行程</p>
       </div>
 
       <div className="weather-page__content">
-        <div className="weather-page__search" onClick={e => e.stopPropagation()}>
+        <div className="weather-page__search" onClick={(e) => e.stopPropagation()}>
           <div className="weather-page__search-inner">
             <svg
+              aria-hidden="true"
               className="weather-page__search-icon"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
               fill="none"
+              height="18"
               stroke="currentColor"
-              strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              aria-hidden="true"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              width="18"
             >
               <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              <line x1="21" x2="16.65" y1="21" y2="16.65" />
             </svg>
             <label className="weather-page__search-label" htmlFor="weather-city-input">
               城市名称
             </label>
             <input
-              id="weather-city-input"
-              name="weather-city"
-              type="text"
-              placeholder="输入城市名称查询天气…"
-              value={city}
-              onChange={handleInputChange}
-              onFocus={() => setShowDropdown(true)}
-              onKeyDown={handleInputKeyDown}
-              className="weather-page__input"
-              role="combobox"
+              aria-activedescendant={activeCityId}
               aria-autocomplete="list"
               aria-controls="weather-city-listbox"
               aria-expanded={showDropdown}
-              aria-activedescendant={activeCityId}
               aria-haspopup="listbox"
               autoComplete="off"
+              className="weather-page__input"
+              id="weather-city-input"
+              name="weather-city"
+              onChange={handleInputChange}
+              onFocus={() => setShowDropdown(true)}
+              onKeyDown={handleInputKeyDown}
+              placeholder="输入城市名称查询天气…"
+              role="combobox"
+              type="text"
+              value={city}
             />
           </div>
           {showDropdown && (
-            <div id="weather-city-listbox" className="weather-page__dropdown" role="listbox">
+            <div className="weather-page__dropdown" id="weather-city-listbox" role="listbox">
               {filteredCities.map((name, index) => (
                 <button
+                  aria-selected={city === name}
+                  className={`weather-page__dropdown-item ${city === name || activeCityIndex === index ? 'weather-page__dropdown-item--active' : ''}`}
                   id={`weather-city-option-${index}`}
                   key={name}
-                  type="button"
                   onClick={() => selectCity(name)}
-                  className={`weather-page__dropdown-item ${city === name || activeCityIndex === index ? 'weather-page__dropdown-item--active' : ''}`}
                   role="option"
-                  aria-selected={city === name}
+                  type="button"
                 >
                   {name}
                 </button>
@@ -165,7 +158,7 @@ export default function Weather() {
         {/* ---- 天气结果展示 ---- */}
         {(loading || weather) && (
           <div className="weather-page__result">
-            <HomeWeather weather={weather} loading={loading} />
+            <HomeWeather loading={loading} weather={weather} />
           </div>
         )}
 
@@ -174,7 +167,7 @@ export default function Weather() {
           <div className="weather-page__error" role="alert">
             <span>{error}</span>
             {city.trim() && (
-              <button type="button" onClick={retryWeather} className="weather-page__retry-btn">
+              <button className="weather-page__retry-btn" onClick={retryWeather} type="button">
                 重试
               </button>
             )}
@@ -189,12 +182,12 @@ export default function Weather() {
             <div className="weather-page__hot-line" />
           </div>
           <div className="weather-page__hot-list">
-            {hotCities.map(name => (
+            {hotCities.map((name) => (
               <button
-                key={name}
-                type="button"
-                onClick={() => selectCity(name)}
                 className={`weather-page__hot-btn ${city === name ? 'weather-page__hot-btn--active' : ''}`}
+                key={name}
+                onClick={() => selectCity(name)}
+                type="button"
               >
                 {name}
               </button>

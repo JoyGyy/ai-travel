@@ -10,24 +10,24 @@ import { likeCommunityPost, unlikeCommunityPost } from '@/lib/services/community
 import { withProtected } from '@/lib/utils/http'
 import { readRequiredString } from '@/lib/utils/validation'
 
-const RATE_LIMIT = { name: 'community:like', max: 60, windowMs: 60_000 }
+const RATE_LIMIT = { max: 60, name: 'community:like', windowMs: 60_000 }
 
 export const POST = withProtected<{ params: Promise<{ id: string }> }>(
-  async (_req, { user, params }) => {
+  async (_req, { params, user }) => {
     const { id } = await params
-    readRequiredString(id, '帖子ID', { min: 1, max: 100 })
+    readRequiredString(id, '帖子ID', { max: 100, min: 1 })
     const data = await likeCommunityPost(id, user.id)
-    return NextResponse.json({ success: true, data, message: '已点赞' })
+    return NextResponse.json({ data, message: '已点赞', success: true })
   },
   { rateLimit: RATE_LIMIT },
 )
 
 export const DELETE = withProtected<{ params: Promise<{ id: string }> }>(
-  async (_req, { user, params }) => {
+  async (_req, { params, user }) => {
     const { id } = await params
-    readRequiredString(id, '帖子ID', { min: 1, max: 100 })
+    readRequiredString(id, '帖子ID', { max: 100, min: 1 })
     const data = await unlikeCommunityPost(id, user.id)
-    return NextResponse.json({ success: true, data, message: '已取消点赞' })
+    return NextResponse.json({ data, message: '已取消点赞', success: true })
   },
   { rateLimit: RATE_LIMIT },
 )

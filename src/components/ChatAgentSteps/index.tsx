@@ -1,5 +1,8 @@
 'use client'
 
+import { CheckCircle2, ChevronRight } from 'lucide-react'
+import { useEffect, useState } from 'react'
+
 /**
  * Chat Agent 思考过程可视化组件
  * 以可折叠卡片形式展示聊天页中 AI Agent 的推理步骤
@@ -7,25 +10,22 @@
  */
 import type { SSEEvent } from '@/types/api'
 
-import { CheckCircle2, ChevronRight } from 'lucide-react'
-import { useEffect, useState } from 'react'
-
 import './style.css'
 
 /* ========== 类型定义 ========== */
 
+interface ChatAgentStepsProps {
+  currentStep: number
+  isLoading: boolean
+  steps: StepEvent[]
+}
+
 /** 从 SSEEvent 中提取 step 类型事件 */
 type StepEvent = Extract<SSEEvent, { type: 'step' }>
 
-interface ChatAgentStepsProps {
-  steps: StepEvent[]
-  currentStep: number
-  isLoading: boolean
-}
-
 /* ========== Chat Agent 步骤组件 ========== */
 
-export function ChatAgentSteps({ steps, currentStep, isLoading }: ChatAgentStepsProps) {
+export function ChatAgentSteps({ currentStep, isLoading, steps }: ChatAgentStepsProps) {
   /** 控制步骤卡片的展开/收起状态 */
   const [isExpanded, setIsExpanded] = useState(true)
 
@@ -50,7 +50,7 @@ export function ChatAgentSteps({ steps, currentStep, isLoading }: ChatAgentSteps
   const completedCount = steps.filter((s) => s.status === 'complete').length
 
   /** 判断指定步骤的当前状态：已完成 / 执行中 / 等待中 */
-  function getStepStatus(stepNum: number): 'done' | 'running' | 'pending' {
+  function getStepStatus(stepNum: number): 'done' | 'pending' | 'running' {
     const step = stepMap.get(stepNum)
     if (step?.status === 'complete') return 'done'
     if (currentStep === stepNum) return 'running'
@@ -74,17 +74,17 @@ export function ChatAgentSteps({ steps, currentStep, isLoading }: ChatAgentSteps
     <div className="chat-agent-steps">
       {/* 可点击的折叠头：显示状态图标、标题和步骤计数 */}
       <button
-        type="button"
+        aria-controls="chat-agent-steps-list"
+        aria-expanded={isExpanded}
         className="chat-agent-steps__header"
         onClick={() => setIsExpanded(!isExpanded)}
-        aria-expanded={isExpanded}
-        aria-controls="chat-agent-steps-list"
+        type="button"
       >
         <span className="chat-agent-steps__header-left">
           {/* 加载中显示动态圆点，完成后显示勾号 */}
           <span
-            className={`chat-agent-steps__icon ${isLoading ? 'chat-agent-steps__icon--loading' : 'chat-agent-steps__icon--done'}`}
             aria-hidden="true"
+            className={`chat-agent-steps__icon ${isLoading ? 'chat-agent-steps__icon--loading' : 'chat-agent-steps__icon--done'}`}
           >
             {isLoading ? <span className="chat-agent-steps__dot" /> : <CheckCircle2 size={16} />}
           </span>
@@ -94,8 +94,8 @@ export function ChatAgentSteps({ steps, currentStep, isLoading }: ChatAgentSteps
           </span>
         </span>
         <span
-          className={`chat-agent-steps__arrow ${isExpanded ? 'chat-agent-steps__arrow--expanded' : ''}`}
           aria-hidden="true"
+          className={`chat-agent-steps__arrow ${isExpanded ? 'chat-agent-steps__arrow--expanded' : ''}`}
         >
           ▶
         </span>
@@ -103,12 +103,12 @@ export function ChatAgentSteps({ steps, currentStep, isLoading }: ChatAgentSteps
 
       {/* 展开后的步骤列表 */}
       {isExpanded && (
-        <div id="chat-agent-steps-list" className="chat-agent-steps__list" aria-live="polite">
+        <div aria-live="polite" className="chat-agent-steps__list" id="chat-agent-steps-list">
           {steps.map((step, index) => {
             const status = getStepStatus(step.step)
             const summary = getSummary(step)
             return (
-              <div key={step.step} className="chat-agent-steps__item">
+              <div className="chat-agent-steps__item" key={step.step}>
                 {/* 左侧时间线：步骤编号圆点 + 连接线 */}
                 <div className="chat-agent-steps__line">
                   <div
@@ -136,7 +136,7 @@ export function ChatAgentSteps({ steps, currentStep, isLoading }: ChatAgentSteps
                   </div>
                   {summary && (
                     <div className="chat-agent-steps__summary">
-                      <ChevronRight size={14} className="chat-agent-steps__summary-arrow" />
+                      <ChevronRight className="chat-agent-steps__summary-arrow" size={14} />
                       <span>{summary}</span>
                     </div>
                   )}

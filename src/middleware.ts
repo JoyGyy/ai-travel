@@ -10,13 +10,6 @@ import { NextResponse } from 'next/server'
 // 受保护的路由前缀
 const PROTECTED_PATHS = ['/detail', '/chat', '/attractions', '/profile', '/community/new']
 
-// 从环境变量获取 JWT_SECRET（middleware 中无法使用 env.ts）
-function getJwtSecret(): Uint8Array {
-  const secret = process.env.JWT_SECRET
-  if (!secret) throw new Error('JWT_SECRET 未配置')
-  return new TextEncoder().encode(secret)
-}
-
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
@@ -49,6 +42,13 @@ export async function middleware(request: NextRequest) {
     response.cookies.delete('token')
     return response
   }
+}
+
+// 从环境变量获取 JWT_SECRET（middleware 中无法使用 env.ts）
+function getJwtSecret(): Uint8Array {
+  const secret = process.env.JWT_SECRET
+  if (!secret) throw new Error('JWT_SECRET 未配置')
+  return new TextEncoder().encode(secret)
 }
 
 export const config = {

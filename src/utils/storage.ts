@@ -14,13 +14,13 @@ import type { WeatherResponse } from '@/types/api'
 
 // --- 行程缓存数据结构 ---
 export interface ItineraryCache {
-  itinerary: ItineraryDay[]
-  budgetBreakdown: BudgetBreakdown | null
-  tips: string[]
-  weather: WeatherResponse | null
   accommodation: Accommodation[]
-  nightlife: string[]
   attractionRefs: AttractionRef[]
+  budgetBreakdown: BudgetBreakdown | null
+  itinerary: ItineraryDay[]
+  nightlife: string[]
+  tips: string[]
+  weather: null | WeatherResponse
 }
 
 // --- 从 localStorage 加载缓存 ---

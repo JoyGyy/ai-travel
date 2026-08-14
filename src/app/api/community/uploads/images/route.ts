@@ -1,3 +1,5 @@
+import { nanoid } from 'nanoid'
+import { NextResponse } from 'next/server'
 /**
  * 社区路由 — 图片上传
  * POST /api/community/uploads/images
@@ -6,9 +8,6 @@
  */
 import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
-
-import { nanoid } from 'nanoid'
-import { NextResponse } from 'next/server'
 
 import { withProtected } from '@/lib/utils/http'
 import { httpError } from '@/lib/utils/http'
@@ -30,7 +29,7 @@ async function currentUploadFolder() {
   const month = String(now.getMonth() + 1).padStart(2, '0')
   const folder = path.join(UPLOAD_ROOT, year, month)
   await mkdir(folder, { recursive: true })
-  return { folder, year, month }
+  return { folder, month, year }
 }
 
 export const POST = withProtected(
@@ -43,8 +42,8 @@ export const POST = withProtected(
     if (files.length > MAX_IMAGES_PER_POST)
       throw httpError(400, `每次最多上传 ${MAX_IMAGES_PER_POST} 张图片`)
 
-    const { folder, year, month } = await currentUploadFolder()
-    const images: Array<{ url: string; storageKey: string; altText: string }> = []
+    const { folder, month, year } = await currentUploadFolder()
+    const images: Array<{ altText: string; storageKey: string; url: string; }> = []
 
     // 并行写入所有文件，用 map 返回结果保证顺序与用户选择一致
     const results = await Promise.all(
@@ -61,15 +60,15 @@ export const POST = withProtected(
 
         const relativePath = `${year}/${month}/${filename}`
         return {
-          url: `${PUBLIC_UPLOAD_PREFIX}/${relativePath}`,
-          storageKey: `community/${relativePath}`,
           altText: file.name ? `${file.name} 图片` : '旅行分享图片',
+          storageKey: `community/${relativePath}`,
+          url: `${PUBLIC_UPLOAD_PREFIX}/${relativePath}`,
         }
       }),
     )
     images.push(...results)
 
-    return NextResponse.json({ success: true, data: { images }, message: '上传成功' })
+    return NextResponse.json({ data: { images }, message: '上传成功', success: true })
   },
-  { rateLimit: { name: 'community:upload', max: 30, windowMs: 60 * 60_000 } },
+  { rateLimit: { max: 30, name: 'community:upload', windowMs: 60 * 60_000 } },
 )

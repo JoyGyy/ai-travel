@@ -27,27 +27,25 @@ vi.mock('@/lib/env', () => ({
 }))
 
 // Mock jose 库（使用 vi.hoisted 确保变量在 mock 之前初始化）
-const { mockSignJwt, mockJwtVerify } = vi.hoisted(() => ({
-  mockSignJwt: vi.fn(),
+const { mockJwtVerify, mockSignJwt } = vi.hoisted(() => ({
   mockJwtVerify: vi.fn(),
+  mockSignJwt: vi.fn(),
 }))
 
 vi.mock('jose', () => {
   // 创建一个可链式调用的 SignJWT mock 类
   class MockSignJWT {
-    setProtectedHeader = vi.fn().mockReturnThis()
     setExpirationTime = vi.fn().mockReturnThis()
+    setProtectedHeader = vi.fn().mockReturnThis()
     sign = mockSignJwt
   }
 
   // 使用 function 声明使其可作为构造函数
-  const MockSignJWTConstructor = vi.fn(function () {
-    return new MockSignJWT()
-  })
+  const MockSignJWTConstructor = vi.fn(() => new MockSignJWT())
 
   return {
-    SignJWT: MockSignJWTConstructor,
     jwtVerify: mockJwtVerify,
+    SignJWT: MockSignJWTConstructor,
   }
 })
 
@@ -59,11 +57,11 @@ const mockExecute = vi.fn()
 
 vi.mock('@/lib/db', () => ({
   db: {
-    select: (...args: unknown[]) => mockSelect(...args),
-    insert: (...args: unknown[]) => mockInsert(...args),
-    update: (...args: unknown[]) => mockUpdate(...args),
     delete: (...args: unknown[]) => mockDelete(...args),
     execute: (...args: unknown[]) => mockExecute(...args),
+    insert: (...args: unknown[]) => mockInsert(...args),
+    select: (...args: unknown[]) => mockSelect(...args),
+    update: (...args: unknown[]) => mockUpdate(...args),
   },
 }))
 
@@ -151,10 +149,10 @@ describe('auth 服务', () => {
       mockSelect.mockReturnValue(
         createQueryBuilder([
           {
-            id: 'user-1',
-            username: 'testuser',
-            passwordHash: 'hashed-pw',
             createdAt,
+            id: 'user-1',
+            passwordHash: 'hashed-pw',
+            username: 'testuser',
           },
         ]),
       )
@@ -192,10 +190,10 @@ describe('auth 服务', () => {
       mockSelect.mockReturnValue(
         createQueryBuilder([
           {
-            id: 'user-1',
-            username: 'testuser',
-            passwordHash: 'hashed-pw',
             createdAt: new Date(),
+            id: 'user-1',
+            passwordHash: 'hashed-pw',
+            username: 'testuser',
           },
         ]),
       )
@@ -345,7 +343,7 @@ describe('auth 服务', () => {
       mockSelect.mockReturnValue(createQueryBuilder([{ usedCount: 10 }]))
 
       // act & assert
-      const err = (await consumeAiQuota('user-1', '2024-01-15').catch(e => e)) as Error & {
+      const err = (await consumeAiQuota('user-1', '2024-01-15').catch((e) => e)) as Error & {
         status: number
       }
       expect(err.message).toBe('今日 AI 使用次数已达上限，请明天再试')
@@ -417,7 +415,9 @@ describe('auth 服务', () => {
       })
 
       // act & assert
-      await expect(changePassword('user-1', 'OldPassword1', 'NewPassword1')).resolves.toBeUndefined()
+      await expect(
+        changePassword('user-1', 'OldPassword1', 'NewPassword1'),
+      ).resolves.toBeUndefined()
     })
 
     it('当前密码错误时抛出错误', async () => {

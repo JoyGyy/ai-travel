@@ -9,9 +9,9 @@ import './style.css'
 interface BudgetData {
   accommodation?: number
   food?: number
-  transportation?: number
-  tickets?: number
   other?: number
+  tickets?: number
+  transportation?: number
 }
 
 interface BudgetTableProps {
@@ -21,17 +21,17 @@ interface BudgetTableProps {
 const labels: Record<keyof BudgetData, string> = {
   accommodation: '住宿',
   food: '餐饮',
-  transportation: '交通',
-  tickets: '门票',
   other: '其他',
+  tickets: '门票',
+  transportation: '交通',
 }
 
 const barColors: Record<keyof BudgetData, string> = {
   accommodation: 'var(--travel-budget-accommodation)',
   food: 'var(--travel-budget-food)',
-  transportation: 'var(--travel-budget-transportation)',
-  tickets: 'var(--travel-budget-tickets)',
   other: 'var(--travel-budget-other)',
+  tickets: 'var(--travel-budget-tickets)',
+  transportation: 'var(--travel-budget-transportation)',
 }
 
 export function BudgetTable({ data }: BudgetTableProps) {
@@ -42,9 +42,9 @@ export function BudgetTable({ data }: BudgetTableProps) {
   const budgetKeys = Object.keys(labels) as Array<keyof BudgetData>
 
   return (
-    <section className="budget-table" aria-labelledby="budget-table-title">
-      <h2 id="budget-table-title" className="budget-table__header">
-        <span className="budget-table__dot" aria-hidden="true" />
+    <section aria-labelledby="budget-table-title" className="budget-table">
+      <h2 className="budget-table__header" id="budget-table-title">
+        <span aria-hidden="true" className="budget-table__dot" />
         <span>预算明细</span>
       </h2>
       <div className="budget-table__card">
@@ -53,8 +53,8 @@ export function BudgetTable({ data }: BudgetTableProps) {
           <caption className="sr-only">旅行预算分类明细</caption>
           <tbody>
             {budgetKeys.map((key) => (
-              <tr key={key} className="budget-table__row">
-                <th scope="row" className="budget-table__label">
+              <tr className="budget-table__row" key={key}>
+                <th className="budget-table__label" scope="row">
                   {labels[key]}
                 </th>
                 <td className="budget-table__value">¥{data[key] || 0}</td>
@@ -63,20 +63,20 @@ export function BudgetTable({ data }: BudgetTableProps) {
           </tbody>
         </table>
         {/* ---- 柱状图可视化 ---- */}
-        <div className="budget-table__bars" aria-label="预算占比可视化">
+        <div aria-label="预算占比可视化" className="budget-table__bars">
           {budgetKeys.map((key) => (
-            <div key={key} className="budget-table__bar-row">
+            <div className="budget-table__bar-row" key={key}>
               <span className="budget-table__bar-label">{labels[key]}</span>
               <div
+                aria-label={`${labels[key]}预算 ¥${data[key] || 0}`}
                 className="budget-table__bar-track"
                 role="img"
-                aria-label={`${labels[key]}预算 ¥${data[key] || 0}`}
               >
                 <div
                   className="budget-table__bar-fill"
                   style={{
-                    width: `${((data[key] || 0) / max) * 100}%`,
                     background: barColors[key],
+                    width: `${((data[key] || 0) / max) * 100}%`,
                   }}
                 />
               </div>

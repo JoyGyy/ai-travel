@@ -13,17 +13,17 @@ import {
 import { withProtected } from '@/lib/utils/http'
 
 export const POST = withProtected<{ params: Promise<{ id: string }> }>(
-  async (_req, { user, params }) => {
+  async (_req, { params, user }) => {
     const { id } = await params
     const data = await favoriteAttraction(user.id, id)
-    return NextResponse.json({ success: true, data, message: '已收藏' })
+    return NextResponse.json({ data, message: '已收藏', success: true })
   },
 )
 
 export const DELETE = withProtected<{ params: Promise<{ id: string }> }>(
-  async (_req, { user, params }) => {
+  async (_req, { params, user }) => {
     const { id } = await params
     const data = await unfavoriteAttraction(user.id, id)
-    return NextResponse.json({ success: true, data, message: '已取消收藏' })
+    return NextResponse.json({ data, message: '已取消收藏', success: true })
   },
 )

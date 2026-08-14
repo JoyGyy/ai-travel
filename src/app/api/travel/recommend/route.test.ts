@@ -12,8 +12,8 @@ vi.mock('@/lib/ai/recommend', () => ({
 describe('POST /api/travel/recommend', () => {
   it('校验城市参数', async () => {
     const req = new Request('http://localhost/api/travel/recommend', {
+      body: JSON.stringify({ budget: 3000, city: '', days: 3 }),
       method: 'POST',
-      body: JSON.stringify({ city: '', budget: 3000, days: 3 }),
     })
 
     const res = await POST(req)
@@ -22,8 +22,8 @@ describe('POST /api/travel/recommend', () => {
 
   it('参数正确时返回推荐流', async () => {
     const req = new Request('http://localhost/api/travel/recommend', {
+      body: JSON.stringify({ budget: 3000, city: '杭州', days: 3 }),
       method: 'POST',
-      body: JSON.stringify({ city: '杭州', budget: 3000, days: 3 }),
     })
 
     const res = await POST(req)

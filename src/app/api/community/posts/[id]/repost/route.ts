@@ -12,15 +12,15 @@ import { readOptionalString, readRequiredString } from '@/lib/utils/validation'
 const MAX_REPOST_CONTENT_LENGTH = 500
 
 export const POST = withProtected<{ params: Promise<{ id: string }> }>(
-  async (req, { user, params }) => {
+  async (req, { params, user }) => {
     const { id } = await params
-    readRequiredString(id, '帖子ID', { min: 1, max: 100 })
+    readRequiredString(id, '帖子ID', { max: 100, min: 1 })
 
     const body = (await req.json().catch(() => ({}))) as { content?: unknown }
     const content = readOptionalString(body?.content, '转发附言', MAX_REPOST_CONTENT_LENGTH)
 
     const data = await repostCommunityPost(id, user.id, content)
-    return NextResponse.json({ success: true, data, message: '已转发到社区' })
+    return NextResponse.json({ data, message: '已转发到社区', success: true })
   },
-  { rateLimit: { name: 'community:repost', max: 10, windowMs: 60_000 } },
+  { rateLimit: { max: 10, name: 'community:repost', windowMs: 60_000 } },
 )

@@ -1,7 +1,7 @@
+import { Calendar, MapPin, Wallet } from 'lucide-react'
+
 import type { AttractionRef, BudgetBreakdown, ItineraryDay } from '@/stores/itinerary'
 import type { CommunityItinerarySnapshot } from '@/types/community'
-
-import { Calendar, MapPin, Wallet } from 'lucide-react'
 
 import { BudgetTable } from '@/components/BudgetTable'
 import { SpotItem } from '@/components/SpotItem'
@@ -10,81 +10,26 @@ import { WeatherCard } from '@/components/WeatherCard'
 
 import './style.css'
 
-interface CommunityItineraryPreviewProps {
-  snapshot: CommunityItinerarySnapshot | null
-  mode?: 'compact' | 'detail'
-  removable?: boolean
-  onRemove?: () => void
-}
-
 interface BudgetTableData {
   accommodation?: number
   food?: number
-  transportation?: number
-  tickets?: number
   other?: number
+  tickets?: number
+  transportation?: number
 }
 
-function normalizeBudget(data?: BudgetBreakdown | null): BudgetTableData | null {
-  if (!data) return null
-
-  return {
-    accommodation: data.accommodation,
-    food: data.food,
-    transportation: data.transport,
-    tickets: data.attractions,
-    other: Math.max(
-      0,
-      data.total - data.accommodation - data.food - data.transport - data.attractions,
-    ),
-  }
-}
-
-function findAttractionRef(refs: AttractionRef[] = [], spot?: string) {
-  return refs.find((ref) => ref.name === spot)
-}
-
-function getDaySummary(day: ItineraryDay): string {
-  if (day.spots?.length) return day.spots.map((spot) => spot.name).join(' · ')
-
-  return [day.morning?.spot, day.afternoon?.spot, day.evening?.spot].filter(Boolean).join(' · ')
-}
-
-function renderDaySpots(day: ItineraryDay, refs: AttractionRef[]) {
-  const periods = [
-    { period: '上午' as const, data: day.morning },
-    { period: '下午' as const, data: day.afternoon },
-    { period: '晚上' as const, data: day.evening },
-  ]
-
-  if (periods.some((item) => item.data)) {
-    return periods.map((item) =>
-      item.data ? (
-        <SpotItem
-          key={item.period}
-          period={item.period}
-          data={item.data}
-          attractionRef={findAttractionRef(refs, item.data.spot)}
-        />
-      ) : null,
-    )
-  }
-
-  return day.spots?.map((spot, index) => (
-    <SpotItem
-      key={`${day.day}-${spot.name}`}
-      period={index === 0 ? '上午' : index === 1 ? '下午' : '晚上'}
-      data={{ spot: spot.name, description: spot.description, duration: spot.duration }}
-      attractionRef={findAttractionRef(refs, spot.name)}
-    />
-  ))
+interface CommunityItineraryPreviewProps {
+  mode?: 'compact' | 'detail'
+  onRemove?: () => void
+  removable?: boolean
+  snapshot: CommunityItinerarySnapshot | null
 }
 
 export function CommunityItineraryPreview({
-  snapshot,
   mode = 'compact',
-  removable = false,
   onRemove,
+  removable = false,
+  snapshot,
 }: CommunityItineraryPreviewProps) {
   if (!snapshot) return null
 
@@ -94,8 +39,8 @@ export function CommunityItineraryPreview({
 
   return (
     <section
-      className={`community-itinerary community-itinerary--${mode} travel-ticket-edge`}
       aria-label={`${snapshot.city} 行程快照`}
+      className={`community-itinerary community-itinerary--${mode} travel-ticket-edge`}
     >
       <div className="community-itinerary__header">
         <div>
@@ -103,22 +48,22 @@ export function CommunityItineraryPreview({
           <h3>{snapshot.city}</h3>
         </div>
         {removable ? (
-          <button type="button" className="community-itinerary__remove" onClick={onRemove}>
+          <button className="community-itinerary__remove" onClick={onRemove} type="button">
             移除行程
           </button>
         ) : null}
       </div>
 
-      <div className="community-itinerary__meta" aria-label="行程概要">
-        <Badge variant="secondary" className="travel-tag travel-tag--info">
-          <Calendar size={12} className="mr-1" aria-hidden="true" />
+      <div aria-label="行程概要" className="community-itinerary__meta">
+        <Badge className="travel-tag travel-tag--info" variant="secondary">
+          <Calendar aria-hidden="true" className="mr-1" size={12} />
           {snapshot.days}天
         </Badge>
-        <Badge variant="secondary" className="travel-tag travel-tag--success">
-          <Wallet size={12} className="mr-1" aria-hidden="true" />¥{snapshot.budget}
+        <Badge className="travel-tag travel-tag--success" variant="secondary">
+          <Wallet aria-hidden="true" className="mr-1" size={12} />¥{snapshot.budget}
         </Badge>
-        <Badge variant="secondary" className="travel-tag travel-tag--warning">
-          <MapPin size={12} className="mr-1" aria-hidden="true" />
+        <Badge className="travel-tag travel-tag--warning" variant="secondary">
+          <MapPin aria-hidden="true" className="mr-1" size={12} />
           {snapshot.itinerary.length}
           段路线
         </Badge>
@@ -128,7 +73,7 @@ export function CommunityItineraryPreview({
 
       <div className="community-itinerary__days">
         {days.map((day) => (
-          <article key={day.day} className="community-itinerary__day">
+          <article className="community-itinerary__day" key={day.day}>
             <h4>
               Day {day.day}
               {day.title ? ` · ${day.title}` : ''}
@@ -168,4 +113,59 @@ export function CommunityItineraryPreview({
       ) : null}
     </section>
   )
+}
+
+function findAttractionRef(refs: AttractionRef[] = [], spot?: string) {
+  return refs.find((ref) => ref.name === spot)
+}
+
+function getDaySummary(day: ItineraryDay): string {
+  if (day.spots?.length) return day.spots.map((spot) => spot.name).join(' · ')
+
+  return [day.morning?.spot, day.afternoon?.spot, day.evening?.spot].filter(Boolean).join(' · ')
+}
+
+function normalizeBudget(data?: BudgetBreakdown | null): BudgetTableData | null {
+  if (!data) return null
+
+  return {
+    accommodation: data.accommodation,
+    food: data.food,
+    other: Math.max(
+      0,
+      data.total - data.accommodation - data.food - data.transport - data.attractions,
+    ),
+    tickets: data.attractions,
+    transportation: data.transport,
+  }
+}
+
+function renderDaySpots(day: ItineraryDay, refs: AttractionRef[]) {
+  const periods = [
+    { data: day.morning, period: '上午' as const },
+    { data: day.afternoon, period: '下午' as const },
+    { data: day.evening, period: '晚上' as const },
+  ]
+
+  if (periods.some((item) => item.data)) {
+    return periods.map((item) =>
+      item.data ? (
+        <SpotItem
+          attractionRef={findAttractionRef(refs, item.data.spot)}
+          data={item.data}
+          key={item.period}
+          period={item.period}
+        />
+      ) : null,
+    )
+  }
+
+  return day.spots?.map((spot, index) => (
+    <SpotItem
+      attractionRef={findAttractionRef(refs, spot.name)}
+      data={{ description: spot.description, duration: spot.duration, spot: spot.name }}
+      key={`${day.day}-${spot.name}`}
+      period={index === 0 ? '上午' : index === 1 ? '下午' : '晚上'}
+    />
+  ))
 }

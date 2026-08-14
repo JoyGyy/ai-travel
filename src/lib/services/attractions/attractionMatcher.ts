@@ -4,19 +4,19 @@
  */
 import { searchAttractions } from './attractionService'
 
-interface ItineraryDay {
-  day?: number
-  morning?: { spot?: string }
-  afternoon?: { spot?: string }
-  evening?: { spot?: string }
-}
-
 interface AttractionRef {
+  city: string
   id: string
   name: string
-  city: string
-  ticketType: string
   priceText: string
+  ticketType: string
+}
+
+interface ItineraryDay {
+  afternoon?: { spot?: string }
+  day?: number
+  evening?: { spot?: string }
+  morning?: { spot?: string }
 }
 
 /** 从行程数据中提取所有景点名称（去重） */
@@ -47,11 +47,11 @@ async function matchAttractionRefsFromItinerary(
 
     seen.add(matched.id)
     refs.push({
+      city: matched.city,
       id: matched.id,
       name: matched.name,
-      city: matched.city,
-      ticketType: matched.ticketType,
       priceText: matched.priceText,
+      ticketType: matched.ticketType,
     })
   }
 

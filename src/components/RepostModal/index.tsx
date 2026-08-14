@@ -10,18 +10,18 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 
 interface RepostModalProps {
-  /** 是否显示弹窗 */
-  open: boolean
-  /** 目标帖子标题或内容预览 */
-  targetTitle: string
-  /** 转发中状态 */
-  pending?: boolean
+  /** 图标类型：Repeat2 用于列表页，Link 用于详情页 */
+  icon?: 'link' | 'repost'
   /** 关闭弹窗 */
   onClose: () => void
   /** 提交转发 */
   onSubmit: (content: string) => Promise<boolean>
-  /** 图标类型：Repeat2 用于列表页，Link 用于详情页 */
-  icon?: 'repost' | 'link'
+  /** 是否显示弹窗 */
+  open: boolean
+  /** 转发中状态 */
+  pending?: boolean
+  /** 目标帖子标题或内容预览 */
+  targetTitle: string
 }
 
 /**
@@ -29,17 +29,16 @@ interface RepostModalProps {
  * 提取自社区列表页和详情页的重复代码
  */
 export function RepostModal({
-  open,
-  targetTitle,
-  pending = false,
+  icon = 'repost',
   onClose,
   onSubmit,
-  icon = 'repost',
+  open,
+  pending = false,
+  targetTitle,
 }: RepostModalProps) {
   const [content, setContent] = useState('')
 
-  if (!open)
-    return null
+  if (!open) return null
 
   const handleSubmit = async () => {
     const success = await onSubmit(content)
@@ -58,18 +57,18 @@ export function RepostModal({
         <p className="text-muted-foreground mb-4">可以直接转发，也可以写一句给旅友的补充说明。</p>
         <textarea
           className="flex min-h-20 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm mb-4"
-          value={content}
           maxLength={500}
-          rows={4}
+          onChange={(event) => setContent(event.target.value)}
           placeholder="例如：这条路线适合第一次去成都的朋友"
-          onChange={event => setContent(event.target.value)}
+          rows={4}
+          value={content}
         />
         <div className="flex items-center gap-2 text-muted-foreground mb-4">
           <Icon aria-hidden="true" />
           <span>{targetTitle}</span>
         </div>
         <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={onClose}>
+          <Button onClick={onClose} variant="outline">
             取消
           </Button>
           <Button disabled={pending} onClick={handleSubmit}>

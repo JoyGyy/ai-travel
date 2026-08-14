@@ -3,47 +3,15 @@
  * 基于 TF-IDF + 余弦相似度的中文文本匹配
  */
 
-/**
- * 中文分词器：生成单字和双字组合 token（bigram 模型）
- * 例如 "故宫" → ["故", "宫", "故宫"]
- */
-export function tokenize(text: string): string[] {
-  if (!text) return []
-  const cleaned = text.replace(/[，。！？、；："'（）《》【】\s\-.]/g, '').toLowerCase()
-  const tokens: string[] = []
-
-  for (let i = 0; i < cleaned.length; i++) {
-    tokens.push(cleaned[i])
-    if (i + 1 < cleaned.length) {
-      tokens.push(cleaned[i] + cleaned[i + 1])
-    }
-  }
-
-  return tokens.filter((t) => t.length > 0)
-}
-
-/** 计算词频（TF）：每个 token 出现次数除以总 token 数 */
-export function computeTF(tokens: string[]): Map<string, number> {
-  const tf = new Map<string, number>()
-  for (const token of tokens) {
-    tf.set(token, (tf.get(token) || 0) + 1)
-  }
-  const total = tokens.length || 1
-  for (const [key, val] of tf) {
-    tf.set(key, val / total)
-  }
-  return tf
-}
-
 interface Document {
   id: string
   text: string
 }
 
 class TFIDFIndex {
-  idf = new Map<string, number>()
-  docTFs = new Map<string, Map<string, number>>()
   docIds: string[] = []
+  docTFs = new Map<string, Map<string, number>>()
+  idf = new Map<string, number>()
   totalDocs = 0
 
   /** 构建索引：计算所有文档的 TF 并统计 DF 以计算 IDF */
@@ -71,6 +39,15 @@ class TFIDFIndex {
     }
   }
 
+  /** 搜索所有文档并按相似度降序返回 */
+  search(query: string): Array<{ id: string; score: number }> {
+    const results = this.docIds.map((id) => ({
+      id,
+      score: this.similarity(query, id),
+    }))
+    return results.sort((a, b) => b.score - a.score)
+  }
+
   /** 计算查询与指定文档的 TF-IDF 余弦相似度 */
   similarity(query: string, docId: string): number {
     const queryTokens = tokenize(query)
@@ -96,15 +73,38 @@ class TFIDFIndex {
     const denominator = Math.sqrt(queryNorm) * Math.sqrt(docNorm)
     return denominator === 0 ? 0 : dotProduct / denominator
   }
+}
 
-  /** 搜索所有文档并按相似度降序返回 */
-  search(query: string): Array<{ id: string; score: number }> {
-    const results = this.docIds.map((id) => ({
-      id,
-      score: this.similarity(query, id),
-    }))
-    return results.sort((a, b) => b.score - a.score)
+/** 计算词频（TF）：每个 token 出现次数除以总 token 数 */
+export function computeTF(tokens: string[]): Map<string, number> {
+  const tf = new Map<string, number>()
+  for (const token of tokens) {
+    tf.set(token, (tf.get(token) || 0) + 1)
   }
+  const total = tokens.length || 1
+  for (const [key, val] of tf) {
+    tf.set(key, val / total)
+  }
+  return tf
+}
+
+/**
+ * 中文分词器：生成单字和双字组合 token（bigram 模型）
+ * 例如 "故宫" → ["故", "宫", "故宫"]
+ */
+export function tokenize(text: string): string[] {
+  if (!text) return []
+  const cleaned = text.replace(/[，。！？、；："'（）《》【】\s\-.]/g, '').toLowerCase()
+  const tokens: string[] = []
+
+  for (let i = 0; i < cleaned.length; i++) {
+    tokens.push(cleaned[i])
+    if (i + 1 < cleaned.length) {
+      tokens.push(cleaned[i] + cleaned[i + 1])
+    }
+  }
+
+  return tokens.filter((t) => t.length > 0)
 }
 
 export { TFIDFIndex }

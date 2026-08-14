@@ -13,28 +13,42 @@ import {
   searchAttractions as providerSearchAttractions,
 } from './providers/pgAttractionProvider'
 
-/** 获取用户收藏的景点 ID 集合 */
-async function getFavoriteIdSet(userId: string | undefined): Promise<Set<string>> {
-  if (!userId) return new Set()
-  return new Set(await listFavoriteAttractionIds(userId))
+interface ListResult {
+  cities: string[]
+  items: (AttractionItem & { isFavorite: boolean })[]
+  tags: string[]
+  total: number
 }
 
-/** 为景点数据附加 isFavorite 标记 */
-function withFavorite(
-  attraction: AttractionItem,
-  favoriteIds: Set<string>,
-): AttractionItem & { isFavorite: boolean } {
+async function favoriteAttraction(
+  userId: string,
+  attractionId: string,
+): Promise<{ isFavorite: true }> {
+  const attraction = await providerGetAttractionById(attractionId)
+  if (!attraction) throw httpError(404, '景点不存在')
+
+  await addFavoriteAttraction(userId, attractionId)
+  return { isFavorite: true }
+}
+
+async function getAttractionById(
+  id: string,
+  userId?: string,
+): Promise<null | { attraction: AttractionItem & { isFavorite: boolean }; isFavorite: boolean }> {
+  const attraction = await providerGetAttractionById(id)
+  if (!attraction) return null
+
+  const favoriteIds = await getFavoriteIdSet(userId)
   return {
-    ...attraction,
+    attraction: withFavorite(attraction, favoriteIds),
     isFavorite: favoriteIds.has(attraction.id),
   }
 }
 
-interface ListResult {
-  items: (AttractionItem & { isFavorite: boolean })[]
-  total: number
-  cities: string[]
-  tags: string[]
+/** 获取用户收藏的景点 ID 集合 */
+async function getFavoriteIdSet(userId: string | undefined): Promise<Set<string>> {
+  if (!userId) return new Set()
+  return new Set(await listFavoriteAttractionIds(userId))
 }
 
 async function listAttractions(
@@ -53,24 +67,10 @@ async function listAttractions(
   const meta = await getAttractionMeta()
 
   return {
-    items,
-    total,
     cities: meta.cities,
+    items,
     tags: meta.tags,
-  }
-}
-
-async function getAttractionById(
-  id: string,
-  userId?: string,
-): Promise<{ attraction: AttractionItem & { isFavorite: boolean }; isFavorite: boolean } | null> {
-  const attraction = await providerGetAttractionById(id)
-  if (!attraction) return null
-
-  const favoriteIds = await getFavoriteIdSet(userId)
-  return {
-    attraction: withFavorite(attraction, favoriteIds),
-    isFavorite: favoriteIds.has(attraction.id),
+    total,
   }
 }
 
@@ -82,15 +82,8 @@ async function listFavoriteAttractions(
   return results.filter(Boolean).map((item) => withFavorite(item!, favoriteIds))
 }
 
-async function favoriteAttraction(
-  userId: string,
-  attractionId: string,
-): Promise<{ isFavorite: true }> {
-  const attraction = await providerGetAttractionById(attractionId)
-  if (!attraction) throw httpError(404, '景点不存在')
-
-  await addFavoriteAttraction(userId, attractionId)
-  return { isFavorite: true }
+async function searchAttractions(filters: Record<string, unknown> = {}) {
+  return providerSearchAttractions(filters as Parameters<typeof providerSearchAttractions>[0])
 }
 
 async function unfavoriteAttraction(
@@ -101,8 +94,15 @@ async function unfavoriteAttraction(
   return { isFavorite: false }
 }
 
-async function searchAttractions(filters: Record<string, unknown> = {}) {
-  return providerSearchAttractions(filters as Parameters<typeof providerSearchAttractions>[0])
+/** 为景点数据附加 isFavorite 标记 */
+function withFavorite(
+  attraction: AttractionItem,
+  favoriteIds: Set<string>,
+): AttractionItem & { isFavorite: boolean } {
+  return {
+    ...attraction,
+    isFavorite: favoriteIds.has(attraction.id),
+  }
 }
 
 export {

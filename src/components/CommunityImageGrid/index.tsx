@@ -1,19 +1,19 @@
 'use client'
 
-import type { CommunityImage } from '@/types/community'
-
 import Image from 'next/image'
 import { useState } from 'react'
+
+import type { CommunityImage } from '@/types/community'
 
 import './style.css'
 
 interface CommunityImageGridProps {
-  images: CommunityImage[]
   compact?: boolean
+  images: CommunityImage[]
 }
 
-export function CommunityImageGrid({ images, compact = false }: CommunityImageGridProps) {
-  const [previewIndex, setPreviewIndex] = useState<number | null>(null)
+export function CommunityImageGrid({ compact = false, images }: CommunityImageGridProps) {
+  const [previewIndex, setPreviewIndex] = useState<null | number>(null)
 
   if (images.length === 0) return null
 
@@ -46,18 +46,18 @@ export function CommunityImageGrid({ images, compact = false }: CommunityImageGr
       >
         {visibleImages.map((image, index) => (
           <button
-            key={image.id || image.storageKey || image.url}
-            type="button"
             className="community-image-grid__image"
+            key={image.id || image.storageKey || image.url}
             onClick={() => handlePreview(index)}
+            type="button"
           >
             <Image
-              src={image.url}
               alt={image.altText || '旅行分享图片'}
-              loading="lazy"
-              width={200}
               height={200}
+              loading="lazy"
+              src={image.url}
               unoptimized
+              width={200}
             />
           </button>
         ))}
@@ -67,42 +67,42 @@ export function CommunityImageGrid({ images, compact = false }: CommunityImageGr
       {previewIndex !== null && (
         <div className="community-image-grid__preview" onClick={handleClose}>
           <button
-            type="button"
+            aria-label="关闭预览"
             className="community-image-grid__close"
             onClick={handleClose}
-            aria-label="关闭预览"
+            type="button"
           >
             &times;
           </button>
           {previewIndex > 0 && (
             <button
-              type="button"
+              aria-label="上一张"
               className="community-image-grid__prev"
               onClick={(e) => {
                 e.stopPropagation()
                 handlePrev()
               }}
-              aria-label="上一张"
+              type="button"
             >
               &#8249;
             </button>
           )}
           <Image
-            src={visibleImages[previewIndex].url}
             alt={visibleImages[previewIndex].altText || '旅行分享图片'}
-            width={800}
             height={600}
+            src={visibleImages[previewIndex].url}
             unoptimized
+            width={800}
           />
           {previewIndex < visibleImages.length - 1 && (
             <button
-              type="button"
+              aria-label="下一张"
               className="community-image-grid__next"
               onClick={(e) => {
                 e.stopPropagation()
                 handleNext()
               }}
-              aria-label="下一张"
+              type="button"
             >
               &#8250;
             </button>

@@ -6,14 +6,14 @@ export function useAppToast() {
   const { toast } = useToast()
 
   return {
-    success(message: string) {
-      toast({ title: '操作成功', description: message })
-    },
     error(message: string) {
-      toast({ title: '操作失败', description: message, variant: 'destructive' })
+      toast({ description: message, title: '操作失败', variant: 'destructive' })
     },
     info(message: string) {
-      toast({ title: '提示', description: message })
+      toast({ description: message, title: '提示' })
+    },
+    success(message: string) {
+      toast({ description: message, title: '操作成功' })
     },
   }
 }

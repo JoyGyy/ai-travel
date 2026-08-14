@@ -20,21 +20,21 @@ export const GET = withErrorHandler(async (req: Request, context?: unknown) => {
 
   const viewer = await getAuthFromHeaders(req.headers)
   const { id } = await params
-  readRequiredString(id, '帖子ID', { min: 1, max: 100 })
+  readRequiredString(id, '帖子ID', { max: 100, min: 1 })
 
   const post = await getCommunityPostById(id, viewer?.id)
   if (!post) throw httpError(404, '帖子不存在或已删除')
 
-  return NextResponse.json({ success: true, data: post, message: 'ok' })
+  return NextResponse.json({ data: post, message: 'ok', success: true })
 })
 
 export const DELETE = withProtected<Context>(
-  async (_req, { user, params }) => {
+  async (_req, { params, user }) => {
     const { id } = await params
-    readRequiredString(id, '帖子ID', { min: 1, max: 100 })
+    readRequiredString(id, '帖子ID', { max: 100, min: 1 })
 
     await deleteCommunityPost(id, user.id)
-    return NextResponse.json({ success: true, message: '帖子已删除' })
+    return NextResponse.json({ message: '帖子已删除', success: true })
   },
-  { rateLimit: { name: 'community:delete', max: 10, windowMs: 60_000 } },
+  { rateLimit: { max: 10, name: 'community:delete', windowMs: 60_000 } },
 )

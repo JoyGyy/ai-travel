@@ -20,32 +20,32 @@ export const GET = withErrorHandler(async (req: Request, context?: unknown) => {
   if (rateLimited) return rateLimited
 
   const { id } = await params
-  readRequiredString(id, '帖子ID', { min: 1, max: 100 })
+  readRequiredString(id, '帖子ID', { max: 100, min: 1 })
 
   const { searchParams } = new URL(req.url)
-  const page = readPositiveInteger(searchParams.get('page') || '1', '页码', { min: 1, max: 10_000 })
+  const page = readPositiveInteger(searchParams.get('page') || '1', '页码', { max: 10_000, min: 1 })
   const pageSize = readPositiveInteger(searchParams.get('pageSize') || '20', '每页数量', {
-    min: 1,
     max: 50,
+    min: 1,
   })
 
   const data = await listCommunityComments(id, page, pageSize)
-  return NextResponse.json({ success: true, data, message: 'ok' })
+  return NextResponse.json({ data, message: 'ok', success: true })
 })
 
 export const POST = withProtected<Context>(
-  async (req, { user, params }) => {
+  async (req, { params, user }) => {
     const { id } = await params
-    readRequiredString(id, '帖子ID', { min: 1, max: 100 })
+    readRequiredString(id, '帖子ID', { max: 100, min: 1 })
 
     const body = (await req.json()) as { content?: unknown }
     const content = readRequiredString(body.content, '评论内容', {
-      min: 1,
       max: MAX_COMMENT_LENGTH,
+      min: 1,
     })
 
     const data = await createCommunityComment(id, user.id, content)
-    return NextResponse.json({ success: true, data, message: '评论已发布' })
+    return NextResponse.json({ data, message: '评论已发布', success: true })
   },
-  { rateLimit: { name: 'community:comment', max: 20, windowMs: 60_000 } },
+  { rateLimit: { max: 20, name: 'community:comment', windowMs: 60_000 } },
 )

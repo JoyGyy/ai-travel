@@ -1,5 +1,6 @@
-import type { Accommodation, AttractionRef, BudgetBreakdown, ItineraryDay } from './itinerary'
 import type { SSEEvent, WeatherResponse } from '@/types/api'
+
+import type { Accommodation, AttractionRef, BudgetBreakdown, ItineraryDay } from './itinerary'
 
 import { useItineraryStore } from './itinerary'
 
@@ -8,17 +9,17 @@ import { useItineraryStore } from './itinerary'
 const mockItinerary: ItineraryDay[] = [
   {
     day: 1,
+    spots: [{ description: '皇家宫殿', duration: '3小时', name: '故宫' }],
     title: '第一天',
-    spots: [{ name: '故宫', description: '皇家宫殿', duration: '3小时' }],
   },
 ]
 
 const mockBudget: BudgetBreakdown = {
   accommodation: 500,
-  transport: 200,
-  food: 300,
   attractions: 150,
+  food: 300,
   total: 1150,
+  transport: 200,
 }
 
 const mockWeather: WeatherResponse = {
@@ -28,18 +29,18 @@ const mockWeather: WeatherResponse = {
 }
 
 const mockAccommodation: Accommodation[] = [
-  { name: '酒店A', type: '经济型', price: 200, rating: 4.5 },
+  { name: '酒店A', price: 200, rating: 4.5, type: '经济型' },
 ]
 
 const mockAttractionRefs: AttractionRef[] = [
-  { id: '1', name: '故宫', city: '北京', ticketType: 'paid', priceText: '60元' },
+  { city: '北京', id: '1', name: '故宫', priceText: '60元', ticketType: 'paid' },
 ]
 
 const mockStep: Extract<SSEEvent, { type: 'step' }> = {
-  type: 'step',
-  step: 1,
   name: '查询景点',
   status: 'start',
+  step: 1,
+  type: 'step',
 }
 
 // --- 测试套件 ---
@@ -48,15 +49,15 @@ describe('useItineraryStore', () => {
   // 每个测试前重置 store
   beforeEach(() => {
     useItineraryStore.setState({
-      itinerary: [],
+      accommodation: [],
+      agentSteps: [],
+      attractionRefs: [],
       budgetBreakdown: null,
+      currentAgentStep: 0,
+      itinerary: [],
+      nightlife: [],
       tips: [],
       weather: null,
-      accommodation: [],
-      nightlife: [],
-      attractionRefs: [],
-      agentSteps: [],
-      currentAgentStep: 0,
     })
   })
 
@@ -146,11 +147,11 @@ describe('useItineraryStore', () => {
       useItineraryStore.getState().addAgentStep(mockStep)
 
       const updatedStep: Extract<SSEEvent, { type: 'step' }> = {
-        type: 'step',
-        step: 1,
+        data: { count: 10 },
         name: '查询景点',
         status: 'complete',
-        data: { count: 10 },
+        step: 1,
+        type: 'step',
       }
       useItineraryStore.getState().addAgentStep(updatedStep)
 
@@ -161,10 +162,10 @@ describe('useItineraryStore', () => {
     it('不同 step 编号应该分别添加', () => {
       useItineraryStore.getState().addAgentStep(mockStep)
       useItineraryStore.getState().addAgentStep({
-        type: 'step',
-        step: 2,
         name: '生成行程',
         status: 'start',
+        step: 2,
+        type: 'step',
       })
 
       expect(useItineraryStore.getState().agentSteps).toHaveLength(2)
@@ -182,15 +183,15 @@ describe('useItineraryStore', () => {
     it('应该重置所有状态为初始值', () => {
       // 先设置各种数据
       useItineraryStore.setState({
-        itinerary: mockItinerary,
+        accommodation: mockAccommodation,
+        agentSteps: [mockStep],
+        attractionRefs: mockAttractionRefs,
         budgetBreakdown: mockBudget,
+        currentAgentStep: 5,
+        itinerary: mockItinerary,
+        nightlife: ['三里屯'],
         tips: ['提示'],
         weather: mockWeather,
-        accommodation: mockAccommodation,
-        nightlife: ['三里屯'],
-        attractionRefs: mockAttractionRefs,
-        agentSteps: [mockStep],
-        currentAgentStep: 5,
       })
 
       useItineraryStore.getState().reset()

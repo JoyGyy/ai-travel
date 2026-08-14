@@ -10,14 +10,14 @@ const contactEmail = 'joygyzhi@outlook.com'
 
 export default function Privacy() {
   return (
-    <main className="legal-page" aria-labelledby="privacy-title">
+    <main aria-labelledby="privacy-title" className="legal-page">
       <div className="legal-page__inner">
         <Link className="legal-page__back" href="/">
           返回首页
         </Link>
         <article className="legal-page__card">
           <p className="legal-page__eyebrow">Privacy Policy</p>
-          <h1 id="privacy-title" className="legal-page__title">
+          <h1 className="legal-page__title" id="privacy-title">
             隐私政策
           </h1>
           <p className="legal-page__updated">更新日期：2026 年 7 月 22 日</p>
@@ -98,8 +98,7 @@ export default function Privacy() {
               <h2>九、联系我们</h2>
               <p>
                 如你希望咨询、投诉或行使个人信息相关权利，请发送邮件至
-                <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
-                。
+                <a href={`mailto:${contactEmail}`}>{contactEmail}</a>。
               </p>
             </section>
           </div>

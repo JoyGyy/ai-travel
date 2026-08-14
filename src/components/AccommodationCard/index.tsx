@@ -6,16 +6,16 @@
  */
 import './style.css'
 
-interface AccommodationItem {
-  name: string
-  type: string
-  description?: string
-  priceRange?: string
-}
-
 interface AccommodationCardProps {
   accommodation: AccommodationItem[]
   nightlife: string[]
+}
+
+interface AccommodationItem {
+  description?: string
+  name: string
+  priceRange?: string
+  type: string
 }
 
 export function AccommodationCard({ accommodation, nightlife }: AccommodationCardProps) {
@@ -33,8 +33,8 @@ export function AccommodationCard({ accommodation, nightlife }: AccommodationCar
           </div>
           <div className="accommodation-card__list">
             {accommodation.map((item, i) => (
-              <div key={item.name} className="accommodation-card__item">
-                <div className="accommodation-card__index" aria-hidden="true">
+              <div className="accommodation-card__item" key={item.name}>
+                <div aria-hidden="true" className="accommodation-card__index">
                   {i + 1}
                 </div>
                 <div className="accommodation-card__body">
@@ -60,10 +60,10 @@ export function AccommodationCard({ accommodation, nightlife }: AccommodationCar
           </div>
           <div className="accommodation-card__list">
             {nightlife.map((item, i) => (
-              <div key={item} className="accommodation-card__item">
+              <div className="accommodation-card__item" key={item}>
                 <div
-                  className="accommodation-card__index accommodation-card__index--light"
                   aria-hidden="true"
+                  className="accommodation-card__index accommodation-card__index--light"
                 >
                   {i + 1}
                 </div>

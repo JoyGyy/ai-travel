@@ -4,8 +4,8 @@
  */
 export default function Loading() {
   return (
-    <div className="layout-loading" role="status" aria-live="polite">
-      <div className="layout-loading__spinner" aria-hidden="true" />
+    <div aria-live="polite" className="layout-loading" role="status">
+      <div aria-hidden="true" className="layout-loading__spinner" />
       <span className="layout-loading__text">加载中...</span>
     </div>
   )

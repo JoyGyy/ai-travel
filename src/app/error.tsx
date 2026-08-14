@@ -26,9 +26,9 @@ export default function Error({
         <p className="error-boundary__message">{error.message || '发生了未知错误'}</p>
         <div className="error-boundary__actions">
           <button
-            type="button"
             className="error-boundary__btn error-boundary__btn--primary"
             onClick={reset}
+            type="button"
           >
             重试
           </button>

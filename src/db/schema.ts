@@ -31,11 +31,11 @@ const vector = customType<{ data: string }>({
 // ========== 用户表 ==========
 
 export const users = pgTable('users', {
-  id: varchar('id', { length: 64 }).primaryKey(),
-  username: varchar('username', { length: 64 }).unique().notNull(),
-  email: varchar('email', { length: 128 }).notNull(),
-  passwordHash: varchar('password_hash', { length: 128 }).notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  email: varchar('email', { length: 128 }).notNull(),
+  id: varchar('id', { length: 64 }).primaryKey(),
+  passwordHash: varchar('password_hash', { length: 128 }).notNull(),
+  username: varchar('username', { length: 64 }).unique().notNull(),
 })
 
 // ========== AI 使用额度表 ==========
@@ -43,12 +43,12 @@ export const users = pgTable('users', {
 export const aiUsage = pgTable(
   'ai_usage',
   {
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+    usageDate: text('usage_date').notNull(),
+    usedCount: integer('used_count').notNull().default(0),
     userId: varchar('user_id', { length: 64 })
       .notNull()
       .references(() => users.id),
-    usageDate: text('usage_date').notNull(),
-    usedCount: integer('used_count').notNull().default(0),
-    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [primaryKey({ columns: [t.userId, t.usageDate] })],
 )
@@ -58,11 +58,11 @@ export const aiUsage = pgTable(
 export const userFavoriteAttractions = pgTable(
   'user_favorite_attractions',
   {
+    attractionId: varchar('attraction_id', { length: 64 }).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     userId: varchar('user_id', { length: 64 })
       .notNull()
       .references(() => users.id),
-    attractionId: varchar('attraction_id', { length: 64 }).notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [primaryKey({ columns: [t.userId, t.attractionId] })],
 )
@@ -72,23 +72,23 @@ export const userFavoriteAttractions = pgTable(
 export const attractions = pgTable(
   'attractions',
   {
+    address: text('address').notNull().default(''),
+    aliases: text('aliases').array().default([]),
+    bookingLinks: jsonb('booking_links').default({}),
+    city: text('city').notNull(),
+    coverImage: text('cover_image').notNull().default(''),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    description: text('description').notNull().default(''),
+    highlights: text('highlights').array().default([]),
     id: text('id').primaryKey(),
     name: text('name').notNull(),
-    city: text('city').notNull(),
-    ticketType: text('ticket_type').notNull().default('free'),
-    priceText: text('price_text').notNull().default(''),
-    coverImage: text('cover_image').notNull().default(''),
-    summary: text('summary').notNull().default(''),
-    description: text('description').notNull().default(''),
-    address: text('address').notNull().default(''),
     openingHours: text('opening_hours').notNull().default(''),
+    priceText: text('price_text').notNull().default(''),
     recommendedDuration: text('recommended_duration').notNull().default(''),
-    aliases: text('aliases').array().default([]),
-    highlights: text('highlights').array().default([]),
-    tips: text('tips').array().default([]),
     suitableFor: text('suitable_for').array().default([]),
-    bookingLinks: jsonb('booking_links').default({}),
-    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    summary: text('summary').notNull().default(''),
+    ticketType: text('ticket_type').notNull().default('free'),
+    tips: text('tips').array().default([]),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
@@ -127,21 +127,21 @@ export const attractionTags = pgTable(
 export const attractionKnowledge = pgTable(
   'attraction_knowledge',
   {
-    id: serial('id').primaryKey(),
-    city: text('city').notNull(),
-    name: text('name').notNull(),
-    description: text('description').notNull().default(''),
-    ticket: numeric('ticket').notNull().default('0'),
-    duration: text('duration').notNull().default(''),
-    tips: text('tips').notNull().default(''),
-    indoor: boolean('indoor').notNull().default(false),
-    tags: text('tags').array().default([]),
-    food: text('food').array().default([]),
-    transport: text('transport').notNull().default(''),
-    bestSeason: text('best_season').notNull().default(''),
     accommodation: jsonb('accommodation').default([]),
-    nightlife: jsonb('nightlife').default([]),
+    bestSeason: text('best_season').notNull().default(''),
+    city: text('city').notNull(),
+    description: text('description').notNull().default(''),
+    duration: text('duration').notNull().default(''),
     embedding: vector('embedding'),
+    food: text('food').array().default([]),
+    id: serial('id').primaryKey(),
+    indoor: boolean('indoor').notNull().default(false),
+    name: text('name').notNull(),
+    nightlife: jsonb('nightlife').default([]),
+    tags: text('tags').array().default([]),
+    ticket: numeric('ticket').notNull().default('0'),
+    tips: text('tips').notNull().default(''),
+    transport: text('transport').notNull().default(''),
   },
   (t) => [
     uniqueIndex('attraction_knowledge_city_name_unique').on(t.city, t.name),
@@ -154,23 +154,23 @@ export const attractionKnowledge = pgTable(
 export const communityPosts = pgTable(
   'community_posts',
   {
-    id: text('id').primaryKey(),
     authorId: varchar('author_id', { length: 64 })
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    postType: text('post_type').notNull().default('original'),
+    city: text('city').notNull().default(''),
+    content: text('content').notNull().default(''),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    deletedAt: timestamp('deleted_at', { withTimezone: true }),
+    id: text('id').primaryKey(),
+    itinerarySnapshot: jsonb('itinerary_snapshot'),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- 自引用表需要 any 打破循环类型
     originalPostId: text('original_post_id').references((): any => communityPosts.id, {
       onDelete: 'set null',
     }),
+    postType: text('post_type').notNull().default('original'),
     title: text('title').notNull().default(''),
-    content: text('content').notNull().default(''),
-    city: text('city').notNull().default(''),
-    itinerarySnapshot: jsonb('itinerary_snapshot'),
-    visibility: text('visibility').notNull().default('public'),
-    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-    deletedAt: timestamp('deleted_at', { withTimezone: true }),
+    visibility: text('visibility').notNull().default('public'),
   },
   (t) => [
     index('idx_community_posts_created_at').on(t.createdAt.desc()),
@@ -185,15 +185,15 @@ export const communityPosts = pgTable(
 export const communityPostImages = pgTable(
   'community_post_images',
   {
+    altText: text('alt_text').notNull().default(''),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     id: text('id').primaryKey(),
     postId: text('post_id')
       .notNull()
       .references(() => communityPosts.id, { onDelete: 'cascade' }),
-    url: text('url').notNull(),
-    storageKey: text('storage_key').notNull(),
-    altText: text('alt_text').notNull().default(''),
     sortOrder: integer('sort_order').notNull().default(0),
-    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    storageKey: text('storage_key').notNull(),
+    url: text('url').notNull(),
   },
   (t) => [index('idx_community_post_images_post').on(t.postId, t.sortOrder)],
 )
@@ -203,13 +203,13 @@ export const communityPostImages = pgTable(
 export const communityPostLikes = pgTable(
   'community_post_likes',
   {
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     postId: text('post_id')
       .notNull()
       .references(() => communityPosts.id, { onDelete: 'cascade' }),
     userId: varchar('user_id', { length: 64 })
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
     primaryKey({ columns: [t.postId, t.userId] }),
@@ -222,17 +222,17 @@ export const communityPostLikes = pgTable(
 export const communityPostComments = pgTable(
   'community_post_comments',
   {
-    id: text('id').primaryKey(),
-    postId: text('post_id')
-      .notNull()
-      .references(() => communityPosts.id, { onDelete: 'cascade' }),
     authorId: varchar('author_id', { length: 64 })
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
     content: text('content').notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
     deletedAt: timestamp('deleted_at', { withTimezone: true }),
+    id: text('id').primaryKey(),
+    postId: text('post_id')
+      .notNull()
+      .references(() => communityPosts.id, { onDelete: 'cascade' }),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
     index('idx_community_comments_post').on(t.postId, t.createdAt.asc()),
@@ -243,23 +243,23 @@ export const communityPostComments = pgTable(
 // ========== Relations ==========
 
 export const usersRelations = relations(users, ({ many }) => ({
-  posts: many(communityPosts),
-  comments: many(communityPostComments),
-  likes: many(communityPostLikes),
-  favorites: many(userFavoriteAttractions),
   aiUsage: many(aiUsage),
+  comments: many(communityPostComments),
+  favorites: many(userFavoriteAttractions),
+  likes: many(communityPostLikes),
+  posts: many(communityPosts),
 }))
 
-export const communityPostsRelations = relations(communityPosts, ({ one, many }) => ({
+export const communityPostsRelations = relations(communityPosts, ({ many, one }) => ({
   author: one(users, { fields: [communityPosts.authorId], references: [users.id] }),
+  comments: many(communityPostComments),
+  images: many(communityPostImages),
+  likes: many(communityPostLikes),
   originalPost: one(communityPosts, {
     fields: [communityPosts.originalPostId],
     references: [communityPosts.id],
     relationName: 'reposts',
   }),
-  images: many(communityPostImages),
-  likes: many(communityPostLikes),
-  comments: many(communityPostComments),
 }))
 
 export const communityPostImagesRelations = relations(communityPostImages, ({ one }) => ({
@@ -278,11 +278,11 @@ export const communityPostLikesRelations = relations(communityPostLikes, ({ one 
 }))
 
 export const communityPostCommentsRelations = relations(communityPostComments, ({ one }) => ({
+  author: one(users, { fields: [communityPostComments.authorId], references: [users.id] }),
   post: one(communityPosts, {
     fields: [communityPostComments.postId],
     references: [communityPosts.id],
   }),
-  author: one(users, { fields: [communityPostComments.authorId], references: [users.id] }),
 }))
 
 export const attractionTagsRelations = relations(attractionTags, ({ one }) => ({

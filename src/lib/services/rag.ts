@@ -15,37 +15,47 @@ import { TFIDFIndex } from './tfidf'
 const log = createLogger('rag')
 
 export interface AttractionKnowledge {
-  name: string
   description: string
-  ticket: number
   duration: string
-  tips: string
   indoor: boolean
+  name: string
   tags: string[]
+  ticket: number
+  tips: string
 }
 
 export interface CityKnowledge {
-  city: string
-  attractions: AttractionKnowledge[]
-  food: string[]
-  transport: string
-  bestSeason: string
   accommodation: unknown[]
+  attractions: AttractionKnowledge[]
+  bestSeason: string
+  city: string
+  food: string[]
   nightlife: unknown[]
+  transport: string
 }
 
 export interface SearchResult {
-  city: string
   attractions: Array<
-    AttractionKnowledge & { score: number; keywordScore: number; tfidfScore: number }
+    AttractionKnowledge & { keywordScore: number; score: number; tfidfScore: number }
   >
+  bestSeason: string
+  city: string
   food: string[]
   transport: string
-  bestSeason: string
 }
 
 let knowledgeCache: CityKnowledge[] | null = null
 const globalIndex = new TFIDFIndex()
+
+async function getAllCities(): Promise<string[]> {
+  const data = await loadKnowledge()
+  return data.map((c) => c.city)
+}
+
+async function getCityData(cityName: string): Promise<CityKnowledge | null> {
+  const data = await loadKnowledge()
+  return data.find((c) => c.city === cityName) || null
+}
 
 /** 从数据库加载景点知识库并构建 TF-IDF 索引（带缓存） */
 async function loadKnowledge(): Promise<CityKnowledge[]> {
@@ -53,19 +63,19 @@ async function loadKnowledge(): Promise<CityKnowledge[]> {
 
   const rows = await db
     .select({
-      city: attractionKnowledge.city,
-      name: attractionKnowledge.name,
-      description: attractionKnowledge.description,
-      ticket: attractionKnowledge.ticket,
-      duration: attractionKnowledge.duration,
-      tips: attractionKnowledge.tips,
-      indoor: attractionKnowledge.indoor,
-      tags: attractionKnowledge.tags,
-      food: attractionKnowledge.food,
-      transport: attractionKnowledge.transport,
-      bestSeason: attractionKnowledge.bestSeason,
       accommodation: attractionKnowledge.accommodation,
+      bestSeason: attractionKnowledge.bestSeason,
+      city: attractionKnowledge.city,
+      description: attractionKnowledge.description,
+      duration: attractionKnowledge.duration,
+      food: attractionKnowledge.food,
+      indoor: attractionKnowledge.indoor,
+      name: attractionKnowledge.name,
       nightlife: attractionKnowledge.nightlife,
+      tags: attractionKnowledge.tags,
+      ticket: attractionKnowledge.ticket,
+      tips: attractionKnowledge.tips,
+      transport: attractionKnowledge.transport,
     })
     .from(attractionKnowledge)
     .orderBy(attractionKnowledge.city, attractionKnowledge.name)
@@ -74,27 +84,27 @@ async function loadKnowledge(): Promise<CityKnowledge[]> {
   for (const row of rows) {
     if (!cityMap.has(row.city)) {
       cityMap.set(row.city, {
-        city: row.city,
-        attractions: [],
-        food: row.food || [],
-        transport: row.transport || '',
-        bestSeason: row.bestSeason || '',
         accommodation:
           typeof row.accommodation === 'string'
             ? JSON.parse(row.accommodation)
             : row.accommodation || [],
+        attractions: [],
+        bestSeason: row.bestSeason || '',
+        city: row.city,
+        food: row.food || [],
         nightlife:
           typeof row.nightlife === 'string' ? JSON.parse(row.nightlife) : row.nightlife || [],
+        transport: row.transport || '',
       })
     }
     cityMap.get(row.city)!.attractions.push({
-      name: row.name,
       description: row.description,
-      ticket: Number(row.ticket),
       duration: row.duration,
-      tips: row.tips,
       indoor: row.indoor,
+      name: row.name,
       tags: row.tags || [],
+      ticket: Number(row.ticket),
+      tips: row.tips,
     })
   }
 
@@ -112,64 +122,6 @@ async function loadKnowledge(): Promise<CityKnowledge[]> {
   globalIndex.buildIndex(docs)
 
   return knowledgeCache
-}
-
-async function getCityData(cityName: string): Promise<CityKnowledge | null> {
-  const data = await loadKnowledge()
-  return data.find((c) => c.city === cityName) || null
-}
-
-/** 关键词匹配：根据标签和文本匹配景点，返回带关键词得分的结果 */
-function matchByKeyword(tags: string[], queryText: string, attractions: AttractionKnowledge[]) {
-  return attractions.map((attr) => {
-    let score = 0
-    const queryLower = queryText.toLowerCase()
-
-    for (const tag of tags) {
-      if (attr.tags.includes(tag)) score += 3
-    }
-
-    if (queryLower && attr.description.toLowerCase().includes(queryLower)) score += 2
-    if (queryLower && attr.name.toLowerCase().includes(queryLower)) score += 5
-
-    for (const tag of tags) {
-      if (attr.name.includes(tag) || attr.description.includes(tag)) score += 1
-    }
-
-    if (attr.tags.includes('必去')) score += 2
-
-    return { ...attr, keywordScore: score }
-  })
-}
-
-/**
- * 向量搜索：使用 pgvector 进行语义相似度搜索
- */
-async function vectorSearch(queryText: string, city: string): Promise<Map<string, number>> {
-  const scoreMap = new Map<string, number>()
-
-  const embedding = await generateEmbedding(queryText)
-  if (!embedding) return scoreMap
-
-  const vectorStr = formatEmbeddingForPg(embedding)
-
-  try {
-    const result = await db.execute<{ name: string; similarity: number }>(sql`
-      SELECT name, 1 - (embedding <=> ${vectorStr}::vector) AS similarity
-      FROM attraction_knowledge
-      WHERE city = ${city} AND embedding IS NOT NULL
-      ORDER BY embedding <=> ${vectorStr}::vector
-      LIMIT 10
-    `)
-
-    for (const row of result.rows) {
-      scoreMap.set(row.name, Number(row.similarity))
-    }
-  } catch (err) {
-    log.warn('向量搜索失败，降级到 TF-IDF:', (err as Error).message)
-  }
-
-  return scoreMap
 }
 
 /**
@@ -213,8 +165,8 @@ async function matchAttractions(
 
     return {
       ...attr,
-      score: finalScore,
       keywordScore: attr.keywordScore,
+      score: finalScore,
       tfidfScore: scoreSource.get(attr.name) || 0,
     }
   })
@@ -222,11 +174,34 @@ async function matchAttractions(
   return scored.filter((a) => !hasKeywords || a.score > 0).sort((a, b) => b.score - a.score)
 }
 
+/** 关键词匹配：根据标签和文本匹配景点，返回带关键词得分的结果 */
+function matchByKeyword(tags: string[], queryText: string, attractions: AttractionKnowledge[]) {
+  return attractions.map((attr) => {
+    let score = 0
+    const queryLower = queryText.toLowerCase()
+
+    for (const tag of tags) {
+      if (attr.tags.includes(tag)) score += 3
+    }
+
+    if (queryLower && attr.description.toLowerCase().includes(queryLower)) score += 2
+    if (queryLower && attr.name.toLowerCase().includes(queryLower)) score += 5
+
+    for (const tag of tags) {
+      if (attr.name.includes(tag) || attr.description.includes(tag)) score += 1
+    }
+
+    if (attr.tags.includes('必去')) score += 2
+
+    return { ...attr, keywordScore: score }
+  })
+}
+
 async function retrieve(
   city: string,
   preferenceTags: string[] = [],
   queryText = '',
-): Promise<SearchResult | null> {
+): Promise<null | SearchResult> {
   const cityData = await getCityData(city)
   if (!cityData) return null
 
@@ -238,17 +213,42 @@ async function retrieve(
   )
 
   return {
-    city: cityData.city,
     attractions: matchedAttractions,
+    bestSeason: cityData.bestSeason,
+    city: cityData.city,
     food: cityData.food,
     transport: cityData.transport,
-    bestSeason: cityData.bestSeason,
   }
 }
 
-async function getAllCities(): Promise<string[]> {
-  const data = await loadKnowledge()
-  return data.map((c) => c.city)
+/**
+ * 向量搜索：使用 pgvector 进行语义相似度搜索
+ */
+async function vectorSearch(queryText: string, city: string): Promise<Map<string, number>> {
+  const scoreMap = new Map<string, number>()
+
+  const embedding = await generateEmbedding(queryText)
+  if (!embedding) return scoreMap
+
+  const vectorStr = formatEmbeddingForPg(embedding)
+
+  try {
+    const result = await db.execute<{ name: string; similarity: number }>(sql`
+      SELECT name, 1 - (embedding <=> ${vectorStr}::vector) AS similarity
+      FROM attraction_knowledge
+      WHERE city = ${city} AND embedding IS NOT NULL
+      ORDER BY embedding <=> ${vectorStr}::vector
+      LIMIT 10
+    `)
+
+    for (const row of result.rows) {
+      scoreMap.set(row.name, Number(row.similarity))
+    }
+  } catch (err) {
+    log.warn('向量搜索失败，降级到 TF-IDF:', (err as Error).message)
+  }
+
+  return scoreMap
 }
 
 export { getAllCities, getCityData, retrieve }

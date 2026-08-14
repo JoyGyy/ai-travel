@@ -1,3 +1,7 @@
+import { create } from 'zustand'
+import { devtools } from 'zustand/middleware'
+import { immer } from 'zustand/middleware/immer'
+
 /**
  * 行程状态管理 Store
  *
@@ -12,104 +16,100 @@
  */
 import type { SSEEvent, WeatherResponse } from '@/types/api'
 
-import { create } from 'zustand'
-import { devtools } from 'zustand/middleware'
-import { immer } from 'zustand/middleware/immer'
-
 // --- 类型定义 ---
 
-/** 单日行程安排 */
-export interface ItineraryDay {
-  day: number
-  title: string
-  spots: Array<{ name: string; description: string; duration: string }>
-  date?: string
-  morning?: {
-    spot: string
-    description: string
-    duration: string
-    ticket?: string
-    transportation?: string
-  }
-  afternoon?: {
-    spot: string
-    description: string
-    duration: string
-    ticket?: string
-    transportation?: string
-  }
-  evening?: {
-    spot: string
-    description: string
-    duration: string
-    ticket?: string
-    transportation?: string
-  }
+/** 住宿推荐 */
+export interface Accommodation {
+  description?: string
+  name: string
+  price: number
+  priceRange?: string
+  rating: number
+  type: string
 }
 
 /** 景点参考信息 */
 export interface AttractionRef {
+  city: string
   id: string
   name: string
-  city: string
-  ticketType: 'free' | 'paid'
   priceText: string
+  ticketType: 'free' | 'paid'
 }
 
 /** 预算明细 */
 export interface BudgetBreakdown {
   accommodation: number
-  transport: number
-  food: number
   attractions: number
+  food: number
   total: number
+  transport: number
 }
 
-/** 住宿推荐 */
-export interface Accommodation {
-  name: string
-  type: string
-  price: number
-  rating: number
-  description?: string
-  priceRange?: string
+/** 单日行程安排 */
+export interface ItineraryDay {
+  afternoon?: {
+    description: string
+    duration: string
+    spot: string
+    ticket?: string
+    transportation?: string
+  }
+  date?: string
+  day: number
+  evening?: {
+    description: string
+    duration: string
+    spot: string
+    ticket?: string
+    transportation?: string
+  }
+  morning?: {
+    description: string
+    duration: string
+    spot: string
+    ticket?: string
+    transportation?: string
+  }
+  spots: Array<{ description: string; duration: string; name: string; }>
+  title: string
 }
 
 /** Store 状态和操作类型 */
 interface ItineraryState {
-  itinerary: ItineraryDay[]
-  budgetBreakdown: BudgetBreakdown | null
-  tips: string[]
-  weather: WeatherResponse | null
   accommodation: Accommodation[]
-  nightlife: string[]
-  attractionRefs: AttractionRef[]
-  agentSteps: Extract<SSEEvent, { type: 'step' }>[]
-  currentAgentStep: number
-  setItinerary: (data: ItineraryDay[]) => void
-  setBudgetBreakdown: (data: BudgetBreakdown | null) => void
-  setTips: (tips: string[]) => void
-  setWeather: (weather: WeatherResponse | null) => void
-  setAccommodation: (data: Accommodation[]) => void
-  setNightlife: (data: string[]) => void
-  setAttractionRefs: (data: AttractionRef[]) => void
   addAgentStep: (step: Extract<SSEEvent, { type: 'step' }>) => void
-  setCurrentAgentStep: (step: number) => void
+  agentSteps: Extract<SSEEvent, { type: 'step' }>[]
+  attractionRefs: AttractionRef[]
+  budgetBreakdown: BudgetBreakdown | null
+  currentAgentStep: number
+  itinerary: ItineraryDay[]
+  nightlife: string[]
   reset: () => void
+  setAccommodation: (data: Accommodation[]) => void
+  setAttractionRefs: (data: AttractionRef[]) => void
+  setBudgetBreakdown: (data: BudgetBreakdown | null) => void
+  setCurrentAgentStep: (step: number) => void
+  setItinerary: (data: ItineraryDay[]) => void
+  setNightlife: (data: string[]) => void
+  setTips: (tips: string[]) => void
+  setWeather: (weather: null | WeatherResponse) => void
+  tips: string[]
+  weather: null | WeatherResponse
 }
 
 // --- 初始状态 ---
 
 const initialState = {
-  itinerary: [],
+  accommodation: [],
+  agentSteps: [],
+  attractionRefs: [],
   budgetBreakdown: null,
+  currentAgentStep: 0,
+  itinerary: [],
+  nightlife: [],
   tips: [],
   weather: null,
-  accommodation: [],
-  nightlife: [],
-  attractionRefs: [],
-  agentSteps: [],
-  currentAgentStep: 0,
 }
 
 // --- 创建 Store ---
@@ -121,37 +121,6 @@ export const useItineraryStore = create<ItineraryState>()(
 
       // --- 简单 Setter 操作 ---
 
-      setItinerary: (data) =>
-        set((state) => {
-          state.itinerary = data
-        }),
-      setBudgetBreakdown: (data) =>
-        set((state) => {
-          state.budgetBreakdown = data
-        }),
-      setTips: (tips) =>
-        set((state) => {
-          state.tips = tips
-        }),
-      setWeather: (weather) =>
-        set((state) => {
-          state.weather = weather
-        }),
-      setAccommodation: (data) =>
-        set((state) => {
-          state.accommodation = data
-        }),
-      setNightlife: (data) =>
-        set((state) => {
-          state.nightlife = data
-        }),
-      setAttractionRefs: (data) =>
-        set((state) => {
-          state.attractionRefs = data
-        }),
-
-      // --- Agent 步骤操作（支持去重更新） ---
-
       addAgentStep: (step) =>
         set((state) => {
           const idx = state.agentSteps.findIndex((s) => s.step === step.step)
@@ -161,14 +130,45 @@ export const useItineraryStore = create<ItineraryState>()(
             state.agentSteps.push(step)
           }
         }),
-
-      // --- 状态控制和重置 ---
-
+      reset: () => set(() => initialState),
+      setAccommodation: (data) =>
+        set((state) => {
+          state.accommodation = data
+        }),
+      setAttractionRefs: (data) =>
+        set((state) => {
+          state.attractionRefs = data
+        }),
+      setBudgetBreakdown: (data) =>
+        set((state) => {
+          state.budgetBreakdown = data
+        }),
       setCurrentAgentStep: (step) =>
         set((state) => {
           state.currentAgentStep = step
         }),
-      reset: () => set(() => initialState),
+      setItinerary: (data) =>
+        set((state) => {
+          state.itinerary = data
+        }),
+
+      // --- Agent 步骤操作（支持去重更新） ---
+
+      setNightlife: (data) =>
+        set((state) => {
+          state.nightlife = data
+        }),
+
+      // --- 状态控制和重置 ---
+
+      setTips: (tips) =>
+        set((state) => {
+          state.tips = tips
+        }),
+      setWeather: (weather) =>
+        set((state) => {
+          state.weather = weather
+        }),
     })),
     { name: 'ItineraryStore' },
   ),

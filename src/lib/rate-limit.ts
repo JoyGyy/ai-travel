@@ -55,7 +55,7 @@ export async function checkRateLimit(
   if (timestamps.length >= maxRequests) {
     const retryAfter = Math.ceil((timestamps[0] + windowMs - now) / 1000)
     return NextResponse.json(
-      { success: false, message: '请求过于频繁，请稍后再试', retryAfter },
+      { message: '请求过于频繁，请稍后再试', retryAfter, success: false },
       { status: 429 },
     )
   }

@@ -5,8 +5,27 @@
  * 供前端景点展示和后端 API 共同使用。
  */
 
-// --- 门票类型：免费 / 付费 ---
-export type AttractionTicketType = 'free' | 'paid'
+// --- 景点完整数据结构 ---
+export interface Attraction {
+  address: string
+  aliases?: string[]
+  bookingLinks: AttractionBookingLinks
+  city: string
+  coverImage: string
+  description: string
+  highlights: string[]
+  id: string
+  isFavorite?: boolean
+  name: string
+  openingHours: string
+  priceText: string
+  recommendedDuration: string
+  suitableFor: string[]
+  summary: string
+  tags: string[]
+  ticketType: AttractionTicketType
+  tips: string[]
+}
 
 // --- 第三方预订链接 ---
 export interface AttractionBookingLinks {
@@ -15,52 +34,33 @@ export interface AttractionBookingLinks {
   ly?: string
 }
 
-// --- 景点完整数据结构 ---
-export interface Attraction {
-  id: string
-  name: string
-  city: string
-  ticketType: AttractionTicketType
-  priceText: string
-  coverImage: string
-  summary: string
-  description: string
-  address: string
-  openingHours: string
-  recommendedDuration: string
-  tags: string[]
-  aliases?: string[]
-  highlights: string[]
-  tips: string[]
-  suitableFor: string[]
-  bookingLinks: AttractionBookingLinks
-  isFavorite?: boolean
+// --- 景点详情接口响应 ---
+export interface AttractionDetailData {
+  attraction: Attraction
+  isFavorite: boolean
 }
 
 // --- 景点筛选参数 ---
 export interface AttractionFilters {
   city?: string
   keyword?: string
-  ticketType?: AttractionTicketType | ''
-  tag?: string
   page?: number
   pageSize?: number
+  tag?: string
+  ticketType?: '' | AttractionTicketType
 }
 
 // --- 景点列表接口响应 ---
 export interface AttractionListData {
-  items: Attraction[]
-  total: number
-  page?: number
   cities: string[]
+  items: Attraction[]
+  page?: number
   tags: string[]
+  total: number
 }
 
-// --- 景点详情接口响应 ---
-export interface AttractionDetailData {
-  attraction: Attraction
-  isFavorite: boolean
-}
+// --- 门票类型：免费 / 付费 ---
+export type AttractionTicketType = 'free' | 'paid'
 
 // --- 收藏操作结果 ---
 export interface FavoriteResult {

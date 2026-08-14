@@ -1,10 +1,10 @@
 'use client'
 
-import type { CommunityPost, CommunityPostFilters } from '@/types/community'
-
 import { Plus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+
+import type { CommunityPost, CommunityPostFilters } from '@/types/community'
 
 import { fetchCommunityPosts } from '@/api/community'
 import { CommunityPostCard } from '@/components/CommunityPostCard'
@@ -32,10 +32,10 @@ export default function Community() {
   const [repostPendingIds, setRepostPendingIds] = useState<Set<string>>(() => new Set())
   const [repostTarget, setRepostTarget] = useState<CommunityPost | null>(null)
 
-  const { user, hasHydrated, requireLogin, toggleLike, submitRepost } = useCommunityActions({
+  const { hasHydrated, requireLogin, submitRepost, toggleLike, user } = useCommunityActions({
     onLikeSuccess: (postId, likedByMe, likeCount) => {
       setItems((prev) =>
-        prev.map((item) => (item.id === postId ? { ...item, likedByMe, likeCount } : item)),
+        prev.map((item) => (item.id === postId ? { ...item, likeCount, likedByMe } : item)),
       )
     },
   })
@@ -138,7 +138,7 @@ export default function Community() {
   )
 
   return (
-    <main className="community-page travel-page-shell" aria-labelledby="community-title">
+    <main aria-labelledby="community-title" className="community-page travel-page-shell">
       <section className="community-page__hero travel-page-hero travel-ticket-edge travel-route-line">
         <div>
           <p className="community-page__label">TRAVEL COMMUNITY</p>
@@ -146,9 +146,9 @@ export default function Community() {
           <p>把 AI 规划、实拍照片和旅行心得做成一张明信片，让下一位出发的人少走弯路。</p>
         </div>
         <Button
-          size="lg"
           disabled={!hasHydrated}
           onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}
+          size="lg"
         >
           <Plus aria-hidden="true" className="mr-2 h-4 w-4" />
           {!hasHydrated ? '加载中...' : '发布旅行分享'}
@@ -156,13 +156,13 @@ export default function Community() {
       </section>
 
       <section
-        className="community-page__filters travel-surface-card"
         aria-labelledby="community-filter-title"
+        className="community-page__filters travel-surface-card"
       >
         <div className="community-page__filters-header">
           <h2 id="community-filter-title">筛选分享</h2>
           {hasActiveFilters ? (
-            <Button variant="link" onClick={clearFilters}>
+            <Button onClick={clearFilters} variant="link">
               清空筛选
             </Button>
           ) : null}
@@ -173,9 +173,9 @@ export default function Community() {
             <Input
               className="flex-1"
               id="community-city"
+              onChange={(event) => setCityInput(event.target.value)}
               placeholder="输入城市，例如 成都"
               value={cityInput}
-              onChange={(event) => setCityInput(event.target.value)}
             />
             <Button type="submit">搜索</Button>
           </div>
@@ -183,19 +183,19 @@ export default function Community() {
         <div className="community-page__switch-row">
           <span>只看含行程分享</span>
           <input
-            type="checkbox"
+            aria-label="只看含行程分享"
             checked={Boolean(filters.withItinerary)}
             onChange={(event) => updateFilters({ withItinerary: event.target.checked })}
-            aria-label="只看含行程分享"
+            type="checkbox"
           />
         </div>
-        <p className="community-page__result-status" aria-live="polite">
+        <p aria-live="polite" className="community-page__result-status">
           {loading ? '正在刷新社区...' : `共 ${total} 条旅行分享`}
         </p>
       </section>
 
       {loading ? (
-        <section className="community-page__feed" role="status" aria-live="polite">
+        <section aria-live="polite" className="community-page__feed" role="status">
           {Array.from({ length: 3 }).map((_, i) => (
             <CommunityPostCardSkeleton key={i} />
           ))}
@@ -225,38 +225,38 @@ export default function Community() {
 
       {!loading && !error && items.length > 0 ? (
         <>
-          <section className="community-page__feed" aria-label="社区分享列表">
+          <section aria-label="社区分享列表" className="community-page__feed">
             {items.map((post) => (
               <CommunityPostCard
-                key={post.id}
-                post={post}
                 currentUserId={user?.id}
+                key={post.id}
                 likePending={likePendingIds.has(post.id)}
-                repostPending={repostPendingIds.has(post.id)}
-                onLike={handleLike}
                 onComment={(item) => router.push(`/community/${item.id}`)}
+                onLike={handleLike}
                 onRepost={openRepost}
+                post={post}
+                repostPending={repostPendingIds.has(post.id)}
               />
             ))}
           </section>
           <Pagination
             className="community-page__pagination"
-            page={filters.page || 1}
-            total={total}
-            pageSize={PAGE_SIZE}
             onPageChange={(page) => updateFilters({ page })}
+            page={filters.page || 1}
+            pageSize={PAGE_SIZE}
+            total={total}
           />
         </>
       ) : null}
 
       <RepostModal
+        onClose={() => setRepostTarget(null)}
+        onSubmit={handleSubmitRepost}
         open={Boolean(repostTarget)}
+        pending={repostTarget ? repostPendingIds.has(repostTarget.id) : false}
         targetTitle={
           repostTarget?.title || repostTarget?.content || `${repostTarget?.city || '旅行'}分享`
         }
-        pending={repostTarget ? repostPendingIds.has(repostTarget.id) : false}
-        onClose={() => setRepostTarget(null)}
-        onSubmit={handleSubmitRepost}
       />
     </main>
   )

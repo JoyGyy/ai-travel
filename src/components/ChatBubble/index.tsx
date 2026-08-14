@@ -18,20 +18,20 @@ const Markdown = lazy(() => import('react-markdown'))
 /* ========== 类型定义 ========== */
 
 interface ChatBubbleProps {
-  role: 'user' | 'assistant'
   content: string
+  role: 'assistant' | 'user'
 }
 
 /* ========== 聊天气泡组件 ========== */
 
-export function ChatBubble({ role, content }: ChatBubbleProps) {
+export function ChatBubble({ content, role }: ChatBubbleProps) {
   const isUser = role === 'user'
 
   return (
     <div className={`chat-bubble ${isUser ? 'chat-bubble--user' : 'chat-bubble--ai'}`}>
       {/* AI 消息显示机器人头像 */}
       {!isUser && (
-        <div className="chat-bubble__avatar" aria-hidden="true">
+        <div aria-hidden="true" className="chat-bubble__avatar">
           <Bot size={20} />
         </div>
       )}

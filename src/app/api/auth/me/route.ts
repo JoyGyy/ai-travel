@@ -11,21 +11,21 @@ import { withAuth } from '@/lib/utils/http'
 export const GET = withAuth(async (req, { user }) => {
   // 验证用户仍存在于数据库
   const result = await db
-    .select({ id: users.id, username: users.username, createdAt: users.createdAt })
+    .select({ createdAt: users.createdAt, id: users.id, username: users.username })
     .from(users)
     .where(eq(users.id, user.id))
 
   if (result.length === 0) {
-    return NextResponse.json({ success: false, message: '用户不存在' }, { status: 401 })
+    return NextResponse.json({ message: '用户不存在', success: false }, { status: 401 })
   }
 
   const dbUser = result[0]
   return NextResponse.json({
     success: true,
     user: {
+      createdAt: dbUser.createdAt.toISOString(),
       id: dbUser.id,
       username: dbUser.username,
-      createdAt: dbUser.createdAt.toISOString(),
     },
   })
 })

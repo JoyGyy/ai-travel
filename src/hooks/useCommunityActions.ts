@@ -99,15 +99,15 @@ export function useCommunityActions(options: UseCommunityActionsOptions = {}) {
   )
 
   return {
-    /** 当前登录用户 */
-    user,
     /** 是否已恢复登录状态 */
     hasHydrated,
     /** 检查登录状态 */
     requireLogin,
-    /** 切换点赞状态 */
-    toggleLike,
     /** 提交转发 */
     submitRepost,
+    /** 切换点赞状态 */
+    toggleLike,
+    /** 当前登录用户 */
+    user,
   }
 }

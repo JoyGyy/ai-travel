@@ -11,22 +11,17 @@ const EMBEDDING_MODEL = 'BAAI/bge-large-zh-v1.5'
 const EMBEDDING_DIMENSION = 1024
 
 export interface EmbeddingConfig {
-  baseUrl: string
   apiKey: string
+  baseUrl: string
 }
 
-/** 获取 Embedding API 配置，未配置时返回 null */
-function getEmbeddingConfig(): EmbeddingConfig | null {
-  if (!env.SILICONFLOW_API_KEY) return null
-
-  return {
-    baseUrl: env.SILICONFLOW_BASE_URL,
-    apiKey: env.SILICONFLOW_API_KEY,
-  }
+/** 将向量数组格式化为 pgvector 可接受的字符串，如 "[0.1,0.2,0.3]" */
+export function formatEmbeddingForPg(embedding: number[]): string {
+  return `[${embedding.join(',')}]`
 }
 
 /** 生成单条文本的向量嵌入 */
-export async function generateEmbedding(text: string): Promise<number[] | null> {
+export async function generateEmbedding(text: string): Promise<null | number[]> {
   const config = getEmbeddingConfig()
   if (!config) {
     log.warn('未配置 SiliconFlow API Key，跳过 embedding 生成')
@@ -35,15 +30,15 @@ export async function generateEmbedding(text: string): Promise<number[] | null> 
 
   try {
     const response = await fetch(`${config.baseUrl}/embeddings`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${config.apiKey}`,
-      },
       body: JSON.stringify({
-        model: EMBEDDING_MODEL,
         input: text,
+        model: EMBEDDING_MODEL,
       }),
+      headers: {
+        Authorization: `Bearer ${config.apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
     })
 
     if (!response.ok) {
@@ -61,7 +56,7 @@ export async function generateEmbedding(text: string): Promise<number[] | null> 
 }
 
 /** 批量生成多条文本的向量嵌入（SiliconFlow 支持批量请求） */
-export async function generateEmbeddings(texts: string[]): Promise<(number[] | null)[]> {
+export async function generateEmbeddings(texts: string[]): Promise<(null | number[])[]> {
   const config = getEmbeddingConfig()
   if (!config) {
     log.warn('未配置 SiliconFlow API Key，跳过 embedding 批量生成')
@@ -71,15 +66,15 @@ export async function generateEmbeddings(texts: string[]): Promise<(number[] | n
   // SiliconFlow 支持批量 embedding
   try {
     const response = await fetch(`${config.baseUrl}/embeddings`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${config.apiKey}`,
-      },
       body: JSON.stringify({
-        model: EMBEDDING_MODEL,
         input: texts,
+        model: EMBEDDING_MODEL,
       }),
+      headers: {
+        Authorization: `Bearer ${config.apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
     })
 
     if (!response.ok) {
@@ -96,9 +91,14 @@ export async function generateEmbeddings(texts: string[]): Promise<(number[] | n
   }
 }
 
-/** 将向量数组格式化为 pgvector 可接受的字符串，如 "[0.1,0.2,0.3]" */
-export function formatEmbeddingForPg(embedding: number[]): string {
-  return `[${embedding.join(',')}]`
+/** 获取 Embedding API 配置，未配置时返回 null */
+function getEmbeddingConfig(): EmbeddingConfig | null {
+  if (!env.SILICONFLOW_API_KEY) return null
+
+  return {
+    apiKey: env.SILICONFLOW_API_KEY,
+    baseUrl: env.SILICONFLOW_BASE_URL,
+  }
 }
 
 export { EMBEDDING_DIMENSION }

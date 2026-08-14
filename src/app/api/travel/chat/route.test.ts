@@ -12,8 +12,8 @@ vi.mock('@/lib/ai/stream', () => ({
 describe('POST /api/travel/chat', () => {
   it('拒绝空消息', async () => {
     const req = new Request('http://localhost/api/travel/chat', {
-      method: 'POST',
       body: JSON.stringify({ messages: [] }),
+      method: 'POST',
     })
 
     const res = await POST(req)
@@ -22,10 +22,10 @@ describe('POST /api/travel/chat', () => {
 
   it('有消息时返回流响应', async () => {
     const req = new Request('http://localhost/api/travel/chat', {
-      method: 'POST',
       body: JSON.stringify({
-        messages: [{ role: 'user', parts: [{ type: 'text', text: '北京三日游' }] }],
+        messages: [{ parts: [{ text: '北京三日游', type: 'text' }], role: 'user' }],
       }),
+      method: 'POST',
     })
 
     const res = await POST(req)

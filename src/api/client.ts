@@ -8,16 +8,45 @@ import type { ApiSuccess } from '@/types/api'
 
 const AUTH_STORAGE_KEY = 'travel_auth'
 
+interface RequestOptions {
+  auth?: boolean
+  body?: FormData | unknown
+  headers?: Record<string, string>
+  method?: string
+  signal?: AbortSignal
+}
+
 /** 自定义 API 错误，携带 HTTP 状态码和响应数据 */
 export class ApiError extends Error {
-  status?: number
   data?: unknown
+  status?: number
 
-  constructor(message: string, { status, data }: { status?: number; data?: unknown } = {}) {
+  constructor(message: string, { data, status }: { data?: unknown; status?: number } = {}) {
     super(message)
     this.name = 'ApiError'
     this.status = status
     this.data = data
+  }
+}
+
+export function getAuthHeader(): Record<string, string> {
+  const token = readPersistedToken()
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
+export function hasAuthToken(): boolean {
+  return Boolean(readPersistedToken())
+}
+
+/** 安全解析 JSON 响应，非 JSON 类型返回 null */
+async function parseResponse<T>(res: Response): Promise<null | T> {
+  const contentType = res.headers.get('content-type') || ''
+  if (!contentType.includes('application/json')) return null
+
+  try {
+    return (await res.json()) as T
+  } catch {
+    return null
   }
 }
 
@@ -34,78 +63,8 @@ function readPersistedToken(): string {
   }
 }
 
-export function hasAuthToken(): boolean {
-  return Boolean(readPersistedToken())
-}
-
-export function getAuthHeader(): Record<string, string> {
-  const token = readPersistedToken()
-  return token ? { Authorization: `Bearer ${token}` } : {}
-}
-
-/** 安全解析 JSON 响应，非 JSON 类型返回 null */
-async function parseResponse<T>(res: Response): Promise<T | null> {
-  const contentType = res.headers.get('content-type') || ''
-  if (!contentType.includes('application/json')) return null
-
-  try {
-    return (await res.json()) as T
-  } catch {
-    return null
-  }
-}
-
-interface RequestOptions {
-  method?: string
-  body?: unknown | FormData
-  headers?: Record<string, string>
-  auth?: boolean
-  signal?: AbortSignal
-}
-
 // 不需要 CSRF 保护的 HTTP 方法
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS'])
-
-/**
- * 获取 CSRF token（从 cookie）
- */
-function readCsrfToken(): string {
-  const raw = document.cookie.match(/csrf_token=([^;]+)/)?.[1] || ''
-  if (!raw) return ''
-
-  const token = decodeURIComponent(raw)
-
-  // 格式: random:timestamp:signature，检查 timestamp 是否在 1 小时内
-  const parts = token.split(':')
-  if (parts.length === 3) {
-    const timestamp = Number(parts[1])
-    if (Number.isFinite(timestamp) && Date.now() - timestamp > 60 * 60 * 1000) {
-      document.cookie = 'csrf_token=; max-age=0; path=/'
-      return ''
-    }
-  }
-
-  return token
-}
-
-function getCsrfHeader(): Record<string, string> {
-  const token = readCsrfToken()
-  return token ? { 'X-CSRF-Token': token } : {}
-}
-
-/** 强制刷新 CSRF token（清除旧 cookie 后重新获取） */
-async function refreshCsrfToken(): Promise<void> {
-  document.cookie = 'csrf_token=; max-age=0; path=/'
-  const res = await fetch('/api/auth/csrf-token', { credentials: 'include' })
-  if (!res.ok) throw new ApiError('CSRF token 获取失败', { status: res.status })
-}
-
-/** 写请求前确保浏览器已有有效的 CSRF cookie */
-async function ensureCsrfToken(): Promise<void> {
-  if (readCsrfToken()) return
-
-  await refreshCsrfToken()
-}
 
 /**
  * 发起 JSON API 请求。
@@ -115,7 +74,7 @@ export async function request<T = ApiSuccess>(
   path: string,
   options: RequestOptions = {},
 ): Promise<T> {
-  const { method = 'GET', body, headers, auth = false, signal } = options
+  const { auth = false, body, headers, method = 'GET', signal } = options
 
   const isWriteMethod = !SAFE_METHODS.has(method.toUpperCase())
   if (isWriteMethod) await ensureCsrfToken()
@@ -124,7 +83,7 @@ export async function request<T = ApiSuccess>(
 
   async function doFetch(): Promise<Response> {
     return fetch(path, {
-      method,
+      body: body === undefined ? undefined : isFormData ? body : JSON.stringify(body),
       credentials: 'include',
       headers: {
         ...(body === undefined || isFormData ? {} : { 'Content-Type': 'application/json' }),
@@ -132,7 +91,7 @@ export async function request<T = ApiSuccess>(
         ...(isWriteMethod ? getCsrfHeader() : {}),
         ...headers,
       },
-      body: body === undefined ? undefined : isFormData ? body : JSON.stringify(body),
+      method,
       signal,
     })
   }
@@ -158,8 +117,49 @@ export async function request<T = ApiSuccess>(
     const fallback = data && typeof data === 'object' ? (data as Record<string, unknown>) : {}
     const message =
       (fallback.message as string) || (fallback.error as string) || `请求失败: HTTP ${res.status}`
-    throw new ApiError(message, { status: res.status, data })
+    throw new ApiError(message, { data, status: res.status })
   }
 
   return data as T
+}
+
+/** 写请求前确保浏览器已有有效的 CSRF cookie */
+async function ensureCsrfToken(): Promise<void> {
+  if (readCsrfToken()) return
+
+  await refreshCsrfToken()
+}
+
+function getCsrfHeader(): Record<string, string> {
+  const token = readCsrfToken()
+  return token ? { 'X-CSRF-Token': token } : {}
+}
+
+/**
+ * 获取 CSRF token（从 cookie）
+ */
+function readCsrfToken(): string {
+  const raw = document.cookie.match(/csrf_token=([^;]+)/)?.[1] || ''
+  if (!raw) return ''
+
+  const token = decodeURIComponent(raw)
+
+  // 格式: random:timestamp:signature，检查 timestamp 是否在 1 小时内
+  const parts = token.split(':')
+  if (parts.length === 3) {
+    const timestamp = Number(parts[1])
+    if (Number.isFinite(timestamp) && Date.now() - timestamp > 60 * 60 * 1000) {
+      document.cookie = 'csrf_token=; max-age=0; path=/'
+      return ''
+    }
+  }
+
+  return token
+}
+
+/** 强制刷新 CSRF token（清除旧 cookie 后重新获取） */
+async function refreshCsrfToken(): Promise<void> {
+  document.cookie = 'csrf_token=; max-age=0; path=/'
+  const res = await fetch('/api/auth/csrf-token', { credentials: 'include' })
+  if (!res.ok) throw new ApiError('CSRF token 获取失败', { status: res.status })
 }

@@ -18,7 +18,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     const share = getShare(id)
     if (!share) throw httpError(404, '分享不存在')
 
-    return NextResponse.json({ success: true, data: share })
+    return NextResponse.json({ data: share, success: true })
   } catch (err) {
     return errorResponse(err)
   }

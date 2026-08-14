@@ -11,8 +11,8 @@ import { request } from './client'
 export function getWeatherApi(
   city: string,
   options: { signal?: AbortSignal } = {},
-): Promise<WeatherResponse | null> {
-  return request<WeatherResponse | null>(`/api/weather?city=${encodeURIComponent(city)}`, {
+): Promise<null | WeatherResponse> {
+  return request<null | WeatherResponse>(`/api/weather?city=${encodeURIComponent(city)}`, {
     signal: options.signal,
   })
 }

@@ -48,12 +48,12 @@ pnpm dev
 
 ## 常用命令
 
-| 命令 | 说明 |
-|------|------|
-| `pnpm dev` | 启动开发服务器 |
-| `pnpm build` | 生产构建 |
-| `pnpm start` | 启动生产服务 |
-| `pnpm lint` | ESLint 检查 |
+| 命令         | 说明           |
+| ------------ | -------------- |
+| `pnpm dev`   | 启动开发服务器 |
+| `pnpm build` | 生产构建       |
+| `pnpm start` | 启动生产服务   |
+| `pnpm lint`  | ESLint 检查    |
 
 ## 项目结构
 
@@ -101,11 +101,11 @@ pm2 start ecosystem.config.cjs
 
 ## 环境变量
 
-| 变量 | 必填 | 说明 |
-|------|------|------|
-| `JWT_SECRET` | ✅ | JWT 签名密钥（至少 32 字符） |
-| `DATABASE_URL` | ✅ | PostgreSQL 连接串 |
-| `SILICONFLOW_API_KEY` | ⚠️ | SiliconFlow API Key |
-| `DEEPSEEK_API_KEY` | ⚠️ | DeepSeek API Key |
+| 变量                  | 必填 | 说明                         |
+| --------------------- | ---- | ---------------------------- |
+| `JWT_SECRET`          | ✅   | JWT 签名密钥（至少 32 字符） |
+| `DATABASE_URL`        | ✅   | PostgreSQL 连接串            |
+| `SILICONFLOW_API_KEY` | ⚠️   | SiliconFlow API Key          |
+| `DEEPSEEK_API_KEY`    | ⚠️   | DeepSeek API Key             |
 
 > ⚠️ 至少配置一个 LLM API Key，否则 AI 功能不可用。

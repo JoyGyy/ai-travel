@@ -82,7 +82,7 @@ export default function Detail() {
   const [activeKeys, setActiveKeys] = useState<string[]>([])
   const [showLoading, setShowLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
-  const { messages, sendMessage, status, error: chatError } = useTravelRecommend()
+  const { error: chatError, messages, sendMessage, status } = useTravelRecommend()
   const hasValidParams = Boolean(city && budget > 0 && days > 0)
 
   function findAttractionRef(spot?: string) {
@@ -164,19 +164,19 @@ export default function Detail() {
   /* ========== 渲染 ========== */
 
   return (
-    <main className="detail-page" aria-labelledby="detail-title">
+    <main aria-labelledby="detail-title" className="detail-page">
       <div className="detail-page__hero travel-route-line">
-        <div className="detail-page__deco" aria-hidden="true" />
+        <div aria-hidden="true" className="detail-page__deco" />
         <button
-          type="button"
           aria-label="返回上一页"
-          onClick={() => router.back()}
           className="detail-page__back"
+          onClick={() => router.back()}
+          type="button"
         >
           <ArrowLeft aria-hidden="true" />
         </button>
         <p className="detail-page__label">ITINERARY</p>
-        <h1 id="detail-title" className="detail-page__title">
+        <h1 className="detail-page__title" id="detail-title">
           {city || '旅行规划'}
         </h1>
         {hasValidParams ? (
@@ -189,24 +189,24 @@ export default function Detail() {
       <div className="detail-page__content">
         {showLoading ? (
           <div
+            aria-label="AI 正在规划行程"
+            aria-live="polite"
             className="detail-page__loading"
             role="status"
-            aria-live="polite"
-            aria-label="AI 正在规划行程"
           >
             <div className="detail-page__loading-card">
               <div className="detail-page__loading-header">
                 <span>AI 规划中</span>
-                <button type="button" aria-label="关闭行程规划并返回" onClick={() => router.back()}>
+                <button aria-label="关闭行程规划并返回" onClick={() => router.back()} type="button">
                   <X aria-hidden="true" />
                 </button>
               </div>
               <div className="detail-page__loading-steps">
-                <AgentSteps steps={agentSteps} currentStep={currentAgentStep} />
+                <AgentSteps currentStep={currentAgentStep} steps={agentSteps} />
               </div>
               <div className="detail-page__loading-spinner">
-                <div className="detail-page__spinner" aria-hidden="true" />
-                <Compass className="detail-page__spinner-icon" aria-hidden="true" />
+                <div aria-hidden="true" className="detail-page__spinner" />
+                <Compass aria-hidden="true" className="detail-page__spinner-icon" />
               </div>
               <p className="detail-page__loading-text">正在为你规划行程...</p>
             </div>
@@ -219,7 +219,7 @@ export default function Detail() {
               <MapPin aria-hidden="true" />
             </div>
             <p>{errorMessage}</p>
-            <button type="button" onClick={() => router.push('/')}>
+            <button onClick={() => router.push('/')} type="button">
               返回首页重新规划
             </button>
           </div>
@@ -230,15 +230,15 @@ export default function Detail() {
             <div className="detail-page__ai-content">
               <div className="detail-page__ai-header">
                 <span>AI 生成的行程规划</span>
-                {status !== 'ready' && <div className="detail-page__spinner" aria-hidden="true" />}
+                {status !== 'ready' && <div aria-hidden="true" className="detail-page__spinner" />}
               </div>
               <div className="detail-page__ai-messages">
                 {messages.map((message) => (
-                  <div key={message.id} className="detail-page__ai-message">
+                  <div className="detail-page__ai-message" key={message.id}>
                     {message.parts.map((part, index) => {
                       if (part.type === 'text') {
                         return (
-                          <div key={index} className="detail-page__ai-text">
+                          <div className="detail-page__ai-text" key={index}>
                             {part.text}
                           </div>
                         )
@@ -263,7 +263,7 @@ export default function Detail() {
                 <MapPin aria-hidden="true" />
               </div>
               <p>暂无行程数据</p>
-              <button type="button" onClick={() => router.push('/chat')}>
+              <button onClick={() => router.push('/chat')} type="button">
                 咨询 AI 生成行程
               </button>
             </div>
@@ -273,7 +273,7 @@ export default function Detail() {
         {!showLoading && !errorMessage && itinerary.length > 0 ? (
           <>
             {/* 摘要卡片 */}
-            <div className="detail-page__summary travel-ticket-edge" aria-label="行程摘要">
+            <div aria-label="行程摘要" className="detail-page__summary travel-ticket-edge">
               <div className="detail-page__summary-item">
                 <span className="detail-page__summary-label">目的地</span>
                 <span className="detail-page__summary-value">{city}</span>
@@ -294,9 +294,9 @@ export default function Detail() {
 
             {/* 天气 */}
             {weather ? (
-              <section className="detail-page__section" aria-labelledby="detail-weather-title">
-                <h2 id="detail-weather-title" className="detail-page__section-title">
-                  <span className="detail-page__dot" aria-hidden="true" />
+              <section aria-labelledby="detail-weather-title" className="detail-page__section">
+                <h2 className="detail-page__section-title" id="detail-weather-title">
+                  <span aria-hidden="true" className="detail-page__dot" />
                   实时天气
                 </h2>
                 <WeatherCard weather={weather} />
@@ -305,15 +305,15 @@ export default function Detail() {
 
             {/* 住宿推荐 */}
             {accommodation.length > 0 || nightlife.length > 0 ? (
-              <section className="detail-page__section" aria-label="住宿和夜生活推荐">
+              <section aria-label="住宿和夜生活推荐" className="detail-page__section">
                 <AccommodationCard accommodation={accommodation} nightlife={nightlife} />
               </section>
             ) : null}
 
             {/* 每日行程 */}
-            <section className="detail-page__section" aria-labelledby="detail-itinerary-title">
-              <h2 id="detail-itinerary-title" className="detail-page__section-title">
-                <span className="detail-page__dot" aria-hidden="true" />
+            <section aria-labelledby="detail-itinerary-title" className="detail-page__section">
+              <h2 className="detail-page__section-title" id="detail-itinerary-title">
+                <span aria-hidden="true" className="detail-page__dot" />
                 每日行程
               </h2>
               <div className="detail-page__itinerary">
@@ -322,47 +322,47 @@ export default function Detail() {
                   const panelId = `detail-day-panel-${dayKey}`
                   const isOpen = activeKeys.includes(dayKey)
                   return (
-                    <div key={item.day} className="detail-page__day">
+                    <div className="detail-page__day" key={item.day}>
                       <button
-                        type="button"
-                        aria-expanded={isOpen}
                         aria-controls={panelId}
+                        aria-expanded={isOpen}
+                        className="detail-page__day-header"
                         onClick={() =>
                           setActiveKeys((prev) =>
                             isOpen ? prev.filter((k) => k !== dayKey) : [...prev, dayKey],
                           )
                         }
-                        className="detail-page__day-header"
+                        type="button"
                       >
                         <span>{item.date}</span>
                         <span
-                          className={`detail-page__day-arrow ${isOpen ? 'detail-page__day-arrow--open' : ''}`}
                           aria-hidden="true"
+                          className={`detail-page__day-arrow ${isOpen ? 'detail-page__day-arrow--open' : ''}`}
                         >
                           ▼
                         </span>
                       </button>
                       {isOpen ? (
-                        <div id={panelId} className="detail-page__day-body">
+                        <div className="detail-page__day-body" id={panelId}>
                           {item.morning && (
                             <SpotItem
-                              period="上午"
-                              data={item.morning}
                               attractionRef={findAttractionRef(item.morning.spot)}
+                              data={item.morning}
+                              period="上午"
                             />
                           )}
                           {item.afternoon && (
                             <SpotItem
-                              period="下午"
-                              data={item.afternoon}
                               attractionRef={findAttractionRef(item.afternoon.spot)}
+                              data={item.afternoon}
+                              period="下午"
                             />
                           )}
                           {item.evening && (
                             <SpotItem
-                              period="晚上"
-                              data={item.evening}
                               attractionRef={findAttractionRef(item.evening.spot)}
+                              data={item.evening}
+                              period="晚上"
                             />
                           )}
                         </div>
@@ -378,15 +378,15 @@ export default function Detail() {
 
             {/* 温馨提示 */}
             {tips.length > 0 ? (
-              <section className="detail-page__section" aria-labelledby="detail-tips-title">
-                <h2 id="detail-tips-title" className="detail-page__section-title">
-                  <span className="detail-page__dot" aria-hidden="true" />
+              <section aria-labelledby="detail-tips-title" className="detail-page__section">
+                <h2 className="detail-page__section-title" id="detail-tips-title">
+                  <span aria-hidden="true" className="detail-page__dot" />
                   温馨提示
                 </h2>
                 <div className="detail-page__tips">
                   {tips.map((tip) => (
-                    <div key={tip} className="detail-page__tip">
-                      <span className="detail-page__tip-dot" aria-hidden="true" />
+                    <div className="detail-page__tip" key={tip}>
+                      <span aria-hidden="true" className="detail-page__tip-dot" />
                       {tip}
                     </div>
                   ))}
@@ -397,19 +397,19 @@ export default function Detail() {
             {/* 分享与咨询操作 */}
             <div className="detail-page__actions">
               <button
-                type="button"
-                onClick={shareToCommunity}
-                className="detail-page__chat-btn"
                 aria-label="分享到社区"
+                className="detail-page__chat-btn"
+                onClick={shareToCommunity}
+                type="button"
               >
                 <Share2 aria-hidden="true" />
                 分享到社区
               </button>
               <button
-                type="button"
-                onClick={() => router.push('/chat')}
-                className="detail-page__chat-btn"
                 aria-label="咨询 AI 优化当前行程"
+                className="detail-page__chat-btn"
+                onClick={() => router.push('/chat')}
+                type="button"
               >
                 咨询 AI 优化行程
               </button>

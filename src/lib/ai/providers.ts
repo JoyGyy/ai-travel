@@ -3,15 +3,15 @@ import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
 import { env } from '@/lib/env'
 
 const siliconflow = createOpenAICompatible({
-  name: 'siliconflow',
   apiKey: env.SILICONFLOW_API_KEY,
   baseURL: env.SILICONFLOW_BASE_URL,
+  name: 'siliconflow',
 })
 
 const deepseek = createOpenAICompatible({
-  name: 'deepseek',
   apiKey: env.DEEPSEEK_API_KEY,
   baseURL: env.DEEPSEEK_BASE_URL,
+  name: 'deepseek',
 })
 
 export function getTravelModel() {

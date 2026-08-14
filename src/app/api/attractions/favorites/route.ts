@@ -12,8 +12,8 @@ export const GET = withAuth(async (req, { user }) => {
   const items = await listFavoriteAttractions(user.id)
 
   return NextResponse.json({
-    success: true,
-    data: { items, total: items.length, cities: [], tags: [] },
+    data: { cities: [], items, tags: [], total: items.length },
     message: 'ok',
+    success: true,
   })
 })

@@ -9,78 +9,88 @@ import { attractions, tags } from '@/db/schema'
 import { db, query, typedQuery } from '../../../db'
 
 export interface AttractionItem {
+  address: string
+  aliases: string[]
+  bookingLinks: Record<string, unknown>
+  city: string
+  coverImage: string
+  description: string
+  highlights: string[]
   id: string
   name: string
-  city: string
-  ticketType: string
-  priceText: string
-  coverImage: string
-  summary: string
-  description: string
-  address: string
   openingHours: string
+  priceText: string
   recommendedDuration: string
-  tags: string[]
-  aliases: string[]
-  highlights: string[]
-  tips: string[]
   suitableFor: string[]
-  bookingLinks: Record<string, unknown>
+  summary: string
+  tags: string[]
+  ticketType: string
+  tips: string[]
 }
 
 interface AttractionRow {
+  address: string
+  aliases?: string[]
+  booking_links?: Record<string, unknown>
+  city: string
+  cover_image: string
+  description: string
+  highlights?: string[]
   id: string
   name: string
-  city: string
-  ticket_type: string
-  price_text: string
-  cover_image: string
-  summary: string
-  description: string
-  address: string
   opening_hours: string
+  price_text: string
   recommended_duration: string
-  tags?: string[]
-  aliases?: string[]
-  highlights?: string[]
-  tips?: string[]
   suitable_for?: string[]
-  booking_links?: Record<string, unknown>
+  summary: string
+  tags?: string[]
+  ticket_type: string
+  tips?: string[]
 }
 
 /** 城市显示排序，热门城市排在前面 */
 const CITY_ORDER = ['北京', '上海', '杭州', '成都', '西安']
 
-/** 将数据库行映射为 AttractionItem（snake_case → camelCase） */
-function mapRow(row: AttractionRow): AttractionItem {
-  return {
-    id: row.id,
-    name: row.name,
-    city: row.city,
-    ticketType: row.ticket_type,
-    priceText: row.price_text,
-    coverImage: row.cover_image,
-    summary: row.summary,
-    description: row.description,
-    address: row.address,
-    openingHours: row.opening_hours,
-    recommendedDuration: row.recommended_duration,
-    tags: row.tags || [],
-    aliases: row.aliases || [],
-    highlights: row.highlights || [],
-    tips: row.tips || [],
-    suitableFor: row.suitable_for || [],
-    bookingLinks: row.booking_links || {},
-  }
-}
-
 interface ListFilters {
   city?: string
   keyword?: string
-  ticketType?: string
-  tag?: string
   page?: number | string
   pageSize?: number | string
+  tag?: string
+  ticketType?: string
+}
+
+/** 根据 ID 获取景点详情 */
+async function getAttractionById(id: string): Promise<AttractionItem | null> {
+  const result = await db.execute(sql`
+    SELECT a.*, COALESCE(ARRAY_AGG(t.name ORDER BY t.name) FILTER (WHERE t.name IS NOT NULL), '{}') AS tags
+    FROM attractions a
+    LEFT JOIN attraction_tags at2 ON at2.attraction_id = a.id
+    LEFT JOIN tags t ON t.id = at2.tag_id
+    WHERE a.id = ${id}
+    GROUP BY a.id
+  `)
+
+  return result.rows.length > 0 ? mapRow(typedQuery<AttractionRow>(result.rows)[0]) : null
+}
+
+/** 获取所有城市列表（按预设排序）和标签列表 */
+async function getAttractionMeta(): Promise<{ cities: string[]; tags: string[] }> {
+  const [cityResult, tagResult] = await Promise.all([
+    db.selectDistinct({ city: attractions.city }).from(attractions).orderBy(attractions.city),
+    db.select({ name: tags.name }).from(tags).orderBy(tags.name),
+  ])
+
+  const dbCities = cityResult.map((r) => r.city)
+  const orderedCities = [
+    ...CITY_ORDER.filter((c) => dbCities.includes(c)),
+    ...dbCities.filter((c) => !CITY_ORDER.includes(c)),
+  ]
+
+  return {
+    cities: orderedCities,
+    tags: tagResult.map((r) => r.name),
+  }
 }
 
 /** 分页查询景点列表，支持城市、关键词、票型、标签等多条件过滤 */
@@ -149,36 +159,26 @@ async function listAttractions(
   }
 }
 
-/** 根据 ID 获取景点详情 */
-async function getAttractionById(id: string): Promise<AttractionItem | null> {
-  const result = await db.execute(sql`
-    SELECT a.*, COALESCE(ARRAY_AGG(t.name ORDER BY t.name) FILTER (WHERE t.name IS NOT NULL), '{}') AS tags
-    FROM attractions a
-    LEFT JOIN attraction_tags at2 ON at2.attraction_id = a.id
-    LEFT JOIN tags t ON t.id = at2.tag_id
-    WHERE a.id = ${id}
-    GROUP BY a.id
-  `)
-
-  return result.rows.length > 0 ? mapRow(typedQuery<AttractionRow>(result.rows)[0]) : null
-}
-
-/** 获取所有城市列表（按预设排序）和标签列表 */
-async function getAttractionMeta(): Promise<{ cities: string[]; tags: string[] }> {
-  const [cityResult, tagResult] = await Promise.all([
-    db.selectDistinct({ city: attractions.city }).from(attractions).orderBy(attractions.city),
-    db.select({ name: tags.name }).from(tags).orderBy(tags.name),
-  ])
-
-  const dbCities = cityResult.map((r) => r.city)
-  const orderedCities = [
-    ...CITY_ORDER.filter((c) => dbCities.includes(c)),
-    ...dbCities.filter((c) => !CITY_ORDER.includes(c)),
-  ]
-
+/** 将数据库行映射为 AttractionItem（snake_case → camelCase） */
+function mapRow(row: AttractionRow): AttractionItem {
   return {
-    cities: orderedCities,
-    tags: tagResult.map((r) => r.name),
+    address: row.address,
+    aliases: row.aliases || [],
+    bookingLinks: row.booking_links || {},
+    city: row.city,
+    coverImage: row.cover_image,
+    description: row.description,
+    highlights: row.highlights || [],
+    id: row.id,
+    name: row.name,
+    openingHours: row.opening_hours,
+    priceText: row.price_text,
+    recommendedDuration: row.recommended_duration,
+    suitableFor: row.suitable_for || [],
+    summary: row.summary,
+    tags: row.tags || [],
+    ticketType: row.ticket_type,
+    tips: row.tips || [],
   }
 }
 

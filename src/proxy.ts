@@ -1,5 +1,5 @@
 /**
- * Next.js Middleware
+ * Next.js Proxy
  * 全局认证守卫：受保护路由未登录或 token 无效时重定向到 /login
  */
 import type { NextRequest } from 'next/server'
@@ -10,7 +10,7 @@ import { NextResponse } from 'next/server'
 // 受保护的路由前缀
 const PROTECTED_PATHS = ['/detail', '/chat', '/attractions', '/profile', '/community/new']
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // 检查是否为受保护路由
@@ -44,7 +44,7 @@ export async function middleware(request: NextRequest) {
   }
 }
 
-// 从环境变量获取 JWT_SECRET（middleware 中无法使用 env.ts）
+// 从环境变量获取 JWT_SECRET（proxy 中无法使用 env.ts）
 function getJwtSecret(): Uint8Array {
   const secret = process.env.JWT_SECRET
   if (!secret) throw new Error('JWT_SECRET 未配置')

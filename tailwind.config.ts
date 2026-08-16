@@ -24,6 +24,7 @@ const config: Config = {
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
+          strong: '#e85d2a',
         },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
@@ -54,6 +55,7 @@ const config: Config = {
           muted: '#78716c',
           'muted-light': '#a8a29e',
           surface: '#fafaf9',
+          'surface-strong': '#ffffff',
           border: '#d6d3d1',
           'border-light': '#e7e5e4',
           sand: '#d4a76a',

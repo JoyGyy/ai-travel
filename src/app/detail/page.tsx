@@ -328,7 +328,7 @@ export default function Detail() {
                 <span className="text-[10px] font-extrabold uppercase tracking-[2px] text-stone-900/62">
                   目的地
                 </span>
-                <span className="max-w-full wrap-anywhere text-center font-serif text-base font-extrabold text-travel-ink">
+                <span className="max-w-full overflow-wrap-anywhere text-center font-serif text-base font-extrabold text-travel-ink">
                   {city}
                 </span>
               </div>
@@ -337,7 +337,7 @@ export default function Detail() {
                 <span className="text-[10px] font-extrabold uppercase tracking-[2px] text-stone-900/62">
                   天数
                 </span>
-                <span className="max-w-full wrap-anywhere text-center font-serif text-base font-extrabold text-travel-ink">
+                <span className="max-w-full overflow-wrap-anywhere text-center font-serif text-base font-extrabold text-travel-ink">
                   {days}天
                 </span>
               </div>
@@ -346,7 +346,7 @@ export default function Detail() {
                 <span className="text-[10px] font-extrabold uppercase tracking-[2px] text-stone-900/62">
                   预算
                 </span>
-                <span className="max-w-full wrap-anywhere text-center font-serif text-base font-extrabold tabular-nums text-[#d63350]">
+                <span className="max-w-full overflow-wrap-anywhere text-center font-serif text-base font-extrabold tabular-nums text-[#d63350]">
                   ¥{budget}
                 </span>
               </div>
@@ -450,7 +450,7 @@ export default function Detail() {
                     <div className="flex items-start gap-3 py-2 text-[13px] leading-relaxed text-stone-900/72" key={tip}>
                       <span
                         aria-hidden="true"
-                        className="mt-2 h-[7px] w-[7px] flex-shrink-0 rounded-full bg-sand shadow-[0_0_0_5px_rgba(var(--travel-sand-rgb),0.16)]"
+                        className="mt-2 h-[7px] w-[7px] flex-shrink-0 rounded-full bg-travel-sand shadow-[0_0_0_5px_rgba(var(--travel-sand-rgb),0.16)]"
                       />
                       {tip}
                     </div>

@@ -201,11 +201,9 @@
   --shadow-inset: inset 0 1px 3px rgba(0, 0, 0, 0.05), inset 0 0 0 1px rgba(0, 0, 0, 0.03);
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* 注意：不要在此处添加未分层的全局 margin/padding 重置。
+   Tailwind v4 的 preflight 已在 @layer base 中提供等效 reset，
+   未分层的 * 规则会覆盖 @layer utilities 中的 padding 与 margin 工具类。 */
 
 html {
   min-width: 320px;

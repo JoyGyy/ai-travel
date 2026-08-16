@@ -12,14 +12,17 @@ import {
   Home,
   LogIn,
   MapPin,
+  Menu,
   Star,
   User,
   Users,
+  X,
   Zap,
 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 import { HeroSearch } from '@/components/home/HeroSearch'
 import { useAppToast } from '@/hooks/useAppToast'
@@ -36,11 +39,20 @@ const quickEntries = [
   { color: '#E84057', href: '/chat', icon: <Bot />, label: 'AI 咨询' },
 ]
 
+const navItems = [
+  { href: '/', label: '首页' },
+  { href: '/weather', label: '天气' },
+  { href: '/attractions', label: '景点' },
+  { href: '/community', label: '社区' },
+  { href: '/chat', label: 'AI 咨询' },
+]
+
 export default function HomePage() {
   const router = useRouter()
   const toast = useAppToast()
   const user = useAuthStore((state) => state.user)
   const hasHydrated = useAuthStore((state) => state._hasHydrated)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const onStart = () => {
     if (!hasHydrated) {
@@ -55,21 +67,21 @@ export default function HomePage() {
     <main className="min-h-[100dvh] overflow-x-hidden bg-background text-travel-ink">
       {/* 顶部导航 */}
       <header className="sticky top-0 z-[100] border-b border-[var(--travel-frosted-border)] bg-white/88 shadow-[0_1px_8px_rgba(0,0,0,0.04)] backdrop-blur-[12px]">
-        <div className="mx-auto flex min-h-[56px] max-w-[1200px] items-center gap-6 px-6">
+        <div className="mx-auto flex min-h-[56px] max-w-[1200px] items-center gap-3 px-4 sm:gap-6 sm:px-6">
           <Link aria-label="返回首页" className="inline-flex flex-shrink-0 items-center gap-2 no-underline" href="/">
             <span className="inline-flex h-9 w-9 items-center justify-center rounded-[10px] bg-primary text-lg text-white shadow-[0_4px_12px_rgba(255,107,53,0.3)]">
               <Compass />
             </span>
             <span className="text-[17px] font-black tracking-tight text-travel-ink">TravelAI</span>
           </Link>
-          <nav aria-label="主导航" className="flex items-center gap-1">
-            <NavLink href="/">首页</NavLink>
-            <NavLink href="/weather">天气</NavLink>
-            <NavLink href="/attractions">景点</NavLink>
-            <NavLink href="/community">社区</NavLink>
-            <NavLink href="/chat">AI 咨询</NavLink>
+          <nav aria-label="主导航" className="hidden items-center gap-1 md:flex">
+            {navItems.map((item) => (
+              <NavLink href={item.href} key={item.href}>
+                {item.label}
+              </NavLink>
+            ))}
           </nav>
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-2 sm:gap-3">
             {user ? (
               <Link className="inline-flex items-center gap-1.5 rounded-full bg-primary/8 px-3.5 py-1.5 text-[13px] font-bold text-primary no-underline" href="/profile">
                 <User /> {user.username || '用户'}
@@ -79,8 +91,31 @@ export default function HomePage() {
                 <LogIn /> 登录 / 注册
               </Link>
             )}
+            <button
+              aria-expanded={mobileMenuOpen}
+              aria-label={mobileMenuOpen ? '关闭菜单' : '打开菜单'}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-travel-ink transition-colors hover:bg-primary/6 md:hidden"
+              onClick={() => setMobileMenuOpen((v) => !v)}
+              type="button"
+            >
+              {mobileMenuOpen ? <X /> : <Menu />}
+            </button>
           </div>
         </div>
+        {mobileMenuOpen ? (
+          <nav aria-label="移动端导航" className="border-t border-[var(--travel-frosted-border)] bg-white px-4 py-2 md:hidden">
+            {navItems.map((item) => (
+              <Link
+                className="flex min-h-[44px] items-center rounded-lg px-3 text-sm font-semibold text-travel-ink no-underline transition-colors hover:bg-primary/6 hover:text-primary"
+                href={item.href}
+                key={item.href}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        ) : null}
       </header>
 
       {/* Hero 搜索区 */}
@@ -116,22 +151,21 @@ export default function HomePage() {
           </h2>
           <span className="text-sm text-primary">查看更多 &gt;</span>
         </div>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           {hotDestinations.map((dest) => (
             <Link
               className="group overflow-hidden rounded-xl bg-white shadow-sm transition-all hover:shadow-md"
               href={`/detail?city=${encodeURIComponent(dest.name)}`}
               key={dest.name}
             >
-              <div className="relative overflow-hidden">
+              <div className="relative h-[200px] w-full overflow-hidden">
                 <Image
                   alt={dest.name}
-                  className="h-[200px] w-full object-cover transition-transform group-hover:scale-105"
-                  height={200}
+                  className="object-cover transition-transform group-hover:scale-105"
+                  fill
                   loading="lazy"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   src={dest.img}
-                  width={300}
                 />
                 <span className="absolute left-2 top-2 rounded-full bg-primary px-2 py-1 text-xs font-bold text-white">
                   {dest.tag}
@@ -164,15 +198,14 @@ export default function HomePage() {
               href={`/detail?city=${encodeURIComponent(trip.city)}`}
               key={trip.title}
             >
-              <div className="relative overflow-hidden">
+              <div className="relative h-[200px] w-full overflow-hidden">
                 <Image
                   alt={trip.title}
-                  className="h-[200px] w-full object-cover transition-transform group-hover:scale-105"
-                  height={200}
+                  className="object-cover transition-transform group-hover:scale-105"
+                  fill
                   loading="lazy"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   src={trip.image}
-                  width={300}
                 />
                 <span className="absolute left-2 top-2 rounded-full bg-primary px-2 py-1 text-xs font-bold text-white">
                   {trip.tag}

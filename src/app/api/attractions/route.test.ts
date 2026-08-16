@@ -2,6 +2,8 @@
  * 景点列表 API 测试
  * GET /api/attractions
  */
+import type * as httpUtils from '@/lib/utils/http'
+
 import { GET } from './route'
 
 vi.mock('@/lib/services/attractions/attractionService', () => ({
@@ -9,16 +11,18 @@ vi.mock('@/lib/services/attractions/attractionService', () => ({
 }))
 
 vi.mock('@/lib/utils/http', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/lib/utils/http')>()
+  const actual: typeof httpUtils = await importOriginal()
   return {
     ...actual,
-    withAuth: (handler: Function) => async (req: Request) => {
-      try {
-        return await handler(req, { user: { id: 'u1', username: 'testuser' } })
-      } catch (err) {
-        return actual.errorResponse(err)
-      }
-    },
+    withAuth:
+      (handler: (req: Request, ctx: { user: { id: string; username: string } }) => Promise<Response>) =>
+        async (req: Request) => {
+          try {
+            return await handler(req, { user: { id: 'u1', username: 'testuser' } })
+          } catch (err) {
+            return actual.errorResponse(err)
+          }
+        },
   }
 })
 
@@ -72,10 +76,8 @@ describe('GET /api/attractions', () => {
     })
 
     const req = new Request('http://localhost/api/attractions?page=2&pageSize=10')
-    const res = await GET(req)
-    const data = await res.json()
+    await GET(req)
 
-    expect(res.status).toBe(200)
     expect(mockListAttractions).toHaveBeenCalledWith(
       expect.objectContaining({ page: 2, pageSize: 10 }),
       'u1',

@@ -2,6 +2,8 @@
  * 获取当前用户信息 API 测试
  * GET /api/auth/me
  */
+import type * as httpUtils from '@/lib/utils/http'
+
 import { GET } from './route'
 
 vi.mock('@/lib/db', () => ({
@@ -9,16 +11,18 @@ vi.mock('@/lib/db', () => ({
 }))
 
 vi.mock('@/lib/utils/http', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/lib/utils/http')>()
+  const actual: typeof httpUtils = await importOriginal()
   return {
     ...actual,
-    withAuth: (handler: Function) => async (req: Request) => {
-      try {
-        return await handler(req, { user: { id: 'u1', username: 'testuser' } })
-      } catch (err) {
-        return actual.errorResponse(err)
-      }
-    },
+    withAuth:
+      (handler: (req: Request, ctx: { user: { id: string; username: string } }) => Promise<Response>) =>
+        async (req: Request) => {
+          try {
+            return await handler(req, { user: { id: 'u1', username: 'testuser' } })
+          } catch (err) {
+            return actual.errorResponse(err)
+          }
+        },
   }
 })
 

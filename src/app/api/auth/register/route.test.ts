@@ -2,6 +2,8 @@
  * 注册 API 测试
  * POST /api/auth/register
  */
+import type * as httpUtils from '@/lib/utils/http'
+
 import { POST } from './route'
 
 vi.mock('@/lib/services/auth', () => ({
@@ -9,18 +11,19 @@ vi.mock('@/lib/services/auth', () => ({
 }))
 
 vi.mock('@/lib/utils/http', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/lib/utils/http')>()
+  const actual: typeof httpUtils = await importOriginal()
   return {
     ...actual,
     setAuthCookie: vi.fn(),
-    withPublicPost: (_name: string, _max: number, _windowMs: number, handler: Function) =>
-      async (req: Request) => {
-        try {
-          return await handler(req)
-        } catch (err) {
-          return actual.errorResponse(err)
-        }
-      },
+    withPublicPost:
+      (_name: string, _max: number, _windowMs: number, handler: (req: Request) => Promise<Response>) =>
+        async (req: Request) => {
+          try {
+            return await handler(req)
+          } catch (err) {
+            return actual.errorResponse(err)
+          }
+        },
   }
 })
 

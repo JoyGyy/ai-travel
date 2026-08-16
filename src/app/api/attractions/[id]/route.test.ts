@@ -2,6 +2,8 @@
  * 景点详情 API 测试
  * GET /api/attractions/[id]
  */
+import type * as httpUtils from '@/lib/utils/http'
+
 import { GET } from './route'
 
 vi.mock('@/lib/services/attractions/attractionService', () => ({
@@ -9,16 +11,21 @@ vi.mock('@/lib/services/attractions/attractionService', () => ({
 }))
 
 vi.mock('@/lib/utils/http', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/lib/utils/http')>()
+  const actual: typeof httpUtils = await importOriginal()
   return {
     ...actual,
-    withAuth: (handler: Function) => async (req: Request, ctx: unknown) => {
-      try {
-        return await handler(req, { ...(ctx as object), user: { id: 'u1', username: 'testuser' } })
-      } catch (err) {
-        return actual.errorResponse(err)
-      }
-    },
+    withAuth:
+      (handler: (req: Request, ctx: { params: Promise<{ id: string }>; user: { id: string; username: string } }) => Promise<Response>) =>
+        async (req: Request, ctx: unknown) => {
+          try {
+            return await handler(req, {
+              ...(ctx as object),
+              user: { id: 'u1', username: 'testuser' },
+            } as { params: Promise<{ id: string }>; user: { id: string; username: string } })
+          } catch (err) {
+            return actual.errorResponse(err)
+          }
+        },
   }
 })
 

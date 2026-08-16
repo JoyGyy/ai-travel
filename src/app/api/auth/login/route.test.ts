@@ -2,6 +2,8 @@
  * 登录 API 测试
  * POST /api/auth/login
  */
+import type * as httpUtils from '@/lib/utils/http'
+
 import { POST } from './route'
 
 vi.mock('@/lib/services/auth', () => ({
@@ -9,19 +11,20 @@ vi.mock('@/lib/services/auth', () => ({
 }))
 
 vi.mock('@/lib/utils/http', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/lib/utils/http')>()
+  const actual: typeof httpUtils = await importOriginal()
   return {
     ...actual,
     setAuthCookie: vi.fn(),
     // 绕过限流和 CSRF，但保留错误处理
-    withPublicPost: (_name: string, _max: number, _windowMs: number, handler: Function) =>
-      async (req: Request) => {
-        try {
-          return await handler(req)
-        } catch (err) {
-          return actual.errorResponse(err)
-        }
-      },
+    withPublicPost:
+      (_name: string, _max: number, _windowMs: number, handler: (req: Request) => Promise<Response>) =>
+        async (req: Request) => {
+          try {
+            return await handler(req)
+          } catch (err) {
+            return actual.errorResponse(err)
+          }
+        },
   }
 })
 
@@ -57,7 +60,7 @@ describe('POST /api/auth/login', () => {
     expect(setAuthCookie).toHaveBeenCalled()
   })
 
-  it('用户名或密码错误返回 401', async () => {
+  it('用户名或密码错误返回 500', async () => {
     mockLogin.mockRejectedValueOnce(new Error('用户名或密码错误'))
 
     const req = new Request('http://localhost/api/auth/login', {

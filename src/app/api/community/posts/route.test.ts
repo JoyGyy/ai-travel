@@ -3,6 +3,8 @@
  * GET /api/community/posts — 帖子列表
  * POST /api/community/posts — 创建帖子
  */
+import type * as httpUtils from '@/lib/utils/http'
+
 import { GET, POST } from './route'
 
 vi.mock('@/lib/services/community', () => ({
@@ -19,16 +21,18 @@ vi.mock('@/lib/rate-limit', () => ({
 }))
 
 vi.mock('@/lib/utils/http', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/lib/utils/http')>()
+  const actual: typeof httpUtils = await importOriginal()
   return {
     ...actual,
-    withProtected: (handler: Function) => async (req: Request) => {
-      try {
-        return await handler(req, { user: { id: 'u1', username: 'testuser' } })
-      } catch (err) {
-        return actual.errorResponse(err)
-      }
-    },
+    withProtected:
+      (handler: (req: Request, ctx: { user: { id: string; username: string } }) => Promise<Response>) =>
+        async (req: Request) => {
+          try {
+            return await handler(req, { user: { id: 'u1', username: 'testuser' } })
+          } catch (err) {
+            return actual.errorResponse(err)
+          }
+        },
   }
 })
 

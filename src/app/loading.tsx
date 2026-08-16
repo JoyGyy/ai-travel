@@ -4,9 +4,16 @@
  */
 export default function Loading() {
   return (
-    <div aria-live="polite" className="layout-loading" role="status">
-      <div aria-hidden="true" className="layout-loading__spinner" />
-      <span className="layout-loading__text">加载中...</span>
+    <div
+      aria-live="polite"
+      className="min-h-dvh flex flex-col items-center justify-center gap-3 text-[var(--travel-ocean)]"
+      role="status"
+    >
+      <div
+        aria-hidden="true"
+        className="w-[34px] h-[34px] border-[3px] border-[rgba(var(--travel-primary-rgb),0.16)] border-t-[var(--color-primary)] rounded-full animate-spin motion-reduce:animate-none"
+      />
+      <span className="text-[13px] font-bold text-[var(--travel-muted)]">加载中...</span>
     </div>
   )
 }

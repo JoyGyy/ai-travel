@@ -38,7 +38,12 @@ export default function ChatPage() {
           </div>
           <button
             className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[14px] border border-stone-900/8 bg-travel-surface text-travel-ink transition-all hover:-translate-y-px hover:bg-white hover:text-travel-orange-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900/28"
-            onClick={() => setMessages([])}
+            aria-label="清空对话"
+            onClick={() => {
+              if (window.confirm('确定要清空对话记录吗？')) {
+                setMessages([])
+              }
+            }}
             title="清空对话"
             type="button"
           >
@@ -150,7 +155,7 @@ export default function ChatPage() {
         )}
 
         {error && (
-          <div className="mx-2 mb-3 flex items-center justify-between gap-3 rounded-2xl border border-red-500/20 bg-red-100/80 p-3 px-3.5 text-[13px] font-extrabold text-destructive">
+          <div className="mx-2 mb-3 flex items-center justify-between gap-3 rounded-2xl border border-red-500/20 bg-red-100/80 p-3 px-3.5 text-[13px] font-extrabold text-destructive" role="alert">
             <span>{error.message}</span>
             <button
               className="min-h-9 rounded-full border border-red-500/22 bg-white/72 px-3.5 font-black text-destructive"
@@ -170,6 +175,7 @@ export default function ChatPage() {
           onSubmit={handleSubmit}
         >
           <input
+            aria-label="输入消息"
             className="h-11 flex-1 rounded-[14px] border border-stone-900/8 bg-white/72 px-4 text-sm text-travel-ink shadow-[inset_0_1px_4px_rgba(41,37,36,0.06)] outline-none placeholder:text-stone-900/44 focus:border-primary/44 focus:shadow-[0_0_0_3px_rgba(var(--travel-primary-rgb),0.14),inset_0_1px_4px_rgba(var(--travel-ocean-rgb),0.06)] disabled:cursor-not-allowed disabled:text-stone-900/46 disabled:bg-white/42"
             disabled={status !== 'ready'}
             onChange={(event) => setInput(event.target.value)}
@@ -178,6 +184,7 @@ export default function ChatPage() {
           />
           <button
             className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[14px] border-0 bg-primary text-white shadow-[0_12px_24px_rgba(var(--travel-primary-rgb),0.34)] transition-all hover:-translate-y-px hover:shadow-[0_16px_30px_rgba(var(--travel-primary-rgb),0.42)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900/24 disabled:cursor-not-allowed disabled:text-stone-900/42 disabled:bg-stone-900/10 disabled:shadow-none"
+            aria-label="发送"
             disabled={!input.trim() || status !== 'ready'}
             title="发送"
             type="submit"

@@ -167,6 +167,7 @@ export const CommunityPostCard = React.memo(
             <div className="flex items-center justify-between mt-1 pt-2 border-t border-travel-border">
               <div className="flex gap-1">
                 <Button
+                  aria-label="点赞"
                   className={`text-travel-muted transition-colors transition-transform duration-200 ease-[var(--ease-standard)] hover:text-travel-ink hover:scale-105 active:scale-95 motion-reduce:transition-none motion-reduce:transform-none ${post.likedByMe ? 'text-destructive' : ''} ${isLikeAnimating ? 'animate-[likeHeartbeat_0.4s_var(--ease-spring)] motion-reduce:animate-none' : ''}`}
                   disabled={likePending}
                   onClick={handleLike}
@@ -177,6 +178,7 @@ export const CommunityPostCard = React.memo(
                   {post.likeCount || ''}
                 </Button>
                 <Button
+                  aria-label="评论"
                   className="text-travel-muted transition-colors transition-transform duration-200 ease-[var(--ease-standard)] hover:text-travel-ink hover:scale-105 active:scale-95 motion-reduce:transition-none motion-reduce:transform-none"
                   onClick={() => onComment?.(post)}
                   size="sm"
@@ -186,6 +188,7 @@ export const CommunityPostCard = React.memo(
                   {post.commentCount || ''}
                 </Button>
                 <Button
+                  aria-label="转发"
                   className="text-travel-muted transition-colors transition-transform duration-200 ease-[var(--ease-standard)] hover:text-travel-ink hover:scale-105 active:scale-95 motion-reduce:transition-none motion-reduce:transform-none"
                   disabled={repostPending}
                   onClick={() => onRepost?.(post)}
@@ -199,6 +202,7 @@ export const CommunityPostCard = React.memo(
 
               {isAuthor && (
                 <Button
+                  aria-label="删除"
                   className="text-destructive"
                   disabled={deletePending}
                   onClick={() => onDelete?.(post)}

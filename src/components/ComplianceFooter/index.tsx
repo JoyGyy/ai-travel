@@ -67,7 +67,6 @@ export function ComplianceFooter({
           className="h-[17px] w-4 shrink-0"
           height={16}
           src={imageUrl('/images/beian-gongan.png')}
-          unoptimized
           width={16}
         />
         <span>{policeRecordText}</span>

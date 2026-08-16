@@ -129,6 +129,7 @@ export default function HomePage() {
                   className="h-[200px] w-full object-cover transition-transform group-hover:scale-105"
                   height={200}
                   loading="lazy"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   src={dest.img}
                   width={300}
                 />
@@ -169,6 +170,7 @@ export default function HomePage() {
                   className="h-[200px] w-full object-cover transition-transform group-hover:scale-105"
                   height={200}
                   loading="lazy"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   src={trip.image}
                   width={300}
                 />

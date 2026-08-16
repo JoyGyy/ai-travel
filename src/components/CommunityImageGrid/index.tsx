@@ -97,8 +97,8 @@ export function CommunityImageGrid({ compact = false, images }: CommunityImageGr
               className="block h-full w-full object-cover"
               height={200}
               loading="lazy"
+              sizes="(max-width: 640px) 33vw, 200px"
               src={image.url}
-              unoptimized
               width={200}
             />
           </button>
@@ -141,8 +141,8 @@ export function CommunityImageGrid({ compact = false, images }: CommunityImageGr
             alt={visibleImages[previewIndex].altText || '旅行分享图片'}
             className="max-h-[80vh] max-w-[90vw] object-contain"
             height={600}
+            sizes="90vw"
             src={visibleImages[previewIndex].url}
-            unoptimized
             width={800}
           />
           {previewIndex < visibleImages.length - 1 && (

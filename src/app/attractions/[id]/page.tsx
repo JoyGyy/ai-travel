@@ -148,8 +148,8 @@ export default function AttractionDetail() {
           className="h-[500px] w-full object-cover"
           height={500}
           loading="eager"
+          sizes="100vw"
           src={attraction.coverImage}
-          unoptimized
           width={800}
         />
         <div className="p-6">

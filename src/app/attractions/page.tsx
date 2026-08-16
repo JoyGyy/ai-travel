@@ -16,6 +16,7 @@ import type { Attraction, AttractionFilters, AttractionTicketType } from '@/type
 import { fetchAttractions } from '@/api/attractions'
 import { Pagination } from '@/components/Pagination'
 import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useAttractionFavorite } from '@/hooks/useAttractionFavorite'
@@ -229,9 +230,29 @@ export default function Attractions() {
       </section>
 
       {loading ? (
-        <div aria-live="polite" className="flex items-center justify-center gap-3 py-8" role="status">
-          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
-          <span>加载景点中...</span>
+        <div aria-live="polite" className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" role="status">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div className="travel-surface-card travel-ticket-edge overflow-hidden" key={i}>
+              <Skeleton className="h-[250px] w-full rounded-none" />
+              <div className="p-5">
+                <div className="mb-2 flex items-center justify-between">
+                  <Skeleton className="h-5 w-2/5" />
+                  <Skeleton className="h-8 w-8 rounded-full" />
+                </div>
+                <Skeleton className="mb-3 h-4 w-full" />
+                <div className="mb-3 flex items-center gap-2">
+                  <Skeleton className="h-5 w-12" />
+                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="h-4 w-14" />
+                </div>
+                <div className="mb-4 flex gap-1.5">
+                  <Skeleton className="h-5 w-14" />
+                  <Skeleton className="h-5 w-14" />
+                </div>
+                <Skeleton className="h-4 w-16" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : null}
       {!loading && error ? (
@@ -268,8 +289,8 @@ export default function Attractions() {
                       className="h-[250px] w-full object-cover"
                       height={250}
                       loading="lazy"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       src={item.coverImage}
-                      unoptimized
                       width={400}
                     />
                     <div className="p-5">

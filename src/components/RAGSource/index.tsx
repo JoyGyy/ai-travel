@@ -6,8 +6,6 @@
  */
 import { MapPin } from 'lucide-react'
 
-import './style.css'
-
 interface RAGSourceProps {
   sources: string[]
 }
@@ -17,16 +15,16 @@ export function RAGSource({ sources }: RAGSourceProps) {
   if (!sources || sources.length === 0) return null
 
   return (
-    <div className="rag-source">
+    <div className="mx-2 mb-3.5 rounded-[18px] border border-[rgba(28,25,23,0.06)] bg-[rgba(var(--travel-primary-rgb),0.04)] p-[13px_16px] shadow-[var(--shadow-paper)] animate-[fadeUp_0.3s_cubic-bezier(0.16,1,0.3,1)_both] motion-reduce:animate-none max-sm:mx-1">
       {/* ---- 标题栏 ---- */}
-      <div className="rag-source__header">
-        <MapPin aria-hidden="true" className="rag-source__icon" size={16} />
+      <div className="mb-[9px] flex items-center gap-[7px] font-extrabold tracking-[0.12em] text-[var(--travel-ocean)] text-[11px]">
+        <MapPin aria-hidden="true" className="shrink-0 text-[var(--color-primary)] text-[13px]" size={16} />
         <span>参考来源</span>
       </div>
       {/* ---- 来源标签列表 ---- */}
-      <div className="rag-source__list">
+      <div className="flex flex-wrap gap-[7px]">
         {sources.map((source) => (
-          <span className="rag-source__tag" key={source}>
+          <span className="max-w-full overflow-wrap-anywhere rounded-full border border-[rgba(28,25,23,0.06)] bg-white px-2.5 py-[5px] font-bold leading-[1.35] text-[var(--travel-ocean)] text-[11px]" key={source}>
             {source}
           </span>
         ))}

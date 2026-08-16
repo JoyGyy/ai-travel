@@ -7,8 +7,6 @@ import Link from 'next/link'
 
 import { imageUrl } from '@/lib/images'
 
-import './style.css'
-
 interface ComplianceFooterProps {
   /** 额外类名，便于页面级定位 */
   className?: string
@@ -32,25 +30,41 @@ export function ComplianceFooter({
   showCopyright = true,
   variant = 'default',
 }: ComplianceFooterProps) {
-  const classes = ['compliance-footer', `compliance-footer--${variant}`, className]
-    .filter(Boolean)
-    .join(' ')
+  const isOverlay = variant === 'overlay'
+
+  const footerBase = 'flex flex-wrap items-center justify-center gap-x-4 gap-y-2.5 px-6 py-[18px] pb-[22px] text-xs leading-normal max-sm:px-4'
+  const footerVariant = isOverlay
+    ? 'justify-start gap-x-3.5 gap-y-2 p-0 text-white/62 max-sm:p-0'
+    : 'border-t border-[rgba(28,25,23,0.06)] bg-[var(--travel-surface)] text-[var(--travel-muted)]'
+
+  const copyrightColor = isOverlay
+    ? 'text-white/58'
+    : 'text-[rgba(var(--travel-ocean-rgb),0.56)]'
+
+  const linkBase = 'inline-flex items-center gap-1.5 no-underline transition-colors duration-[var(--motion-fast)] ease-[var(--ease-standard)] motion-reduce:transition-none'
+  const linkColor = isOverlay
+    ? 'text-white/66 hover:text-[var(--travel-white)] focus-visible:outline-[rgba(255,255,255,0.72)]'
+    : 'text-[rgba(var(--travel-ocean-rgb),0.6)] hover:text-[var(--travel-ocean)] focus-visible:outline-[rgba(var(--travel-primary-rgb),0.46)]'
+  const linkFocus = 'focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:rounded-md'
 
   return (
-    <footer aria-label="网站备案与协议信息" className={classes}>
-      {showCopyright && <span className="compliance-footer__copyright">© 2026 Travel AI</span>}
-      <a className="compliance-footer__link" href={icpRecordHref} rel="noreferrer" target="_blank">
+    <footer
+      aria-label="网站备案与协议信息"
+      className={`${footerBase} ${footerVariant} ${className}`.trim()}
+    >
+      {showCopyright && <span className={copyrightColor}>© 2026 Travel AI</span>}
+      <a className={`${linkBase} ${linkColor} ${linkFocus}`} href={icpRecordHref} rel="noreferrer" target="_blank">
         {icpRecordText}
       </a>
       <a
-        className="compliance-footer__link compliance-footer__police"
+        className={`${linkBase} ${linkColor} ${linkFocus} gap-1.5`}
         href={policeRecordHref}
         rel="noreferrer"
         target="_blank"
       >
         <Image
           alt="公安备案图标"
-          className="compliance-footer__police-icon"
+          className="h-[17px] w-4 shrink-0"
           height={16}
           src={imageUrl('/images/beian-gongan.png')}
           unoptimized
@@ -58,10 +72,10 @@ export function ComplianceFooter({
         />
         <span>{policeRecordText}</span>
       </a>
-      <Link className="compliance-footer__link" href="/terms">
+      <Link className={`${linkBase} ${linkColor} ${linkFocus}`} href="/terms">
         用户协议
       </Link>
-      <Link className="compliance-footer__link" href="/privacy">
+      <Link className={`${linkBase} ${linkColor} ${linkFocus}`} href="/privacy">
         隐私政策
       </Link>
     </footer>

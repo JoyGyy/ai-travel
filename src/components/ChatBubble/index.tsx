@@ -9,8 +9,6 @@
 import { Bot } from 'lucide-react'
 import { lazy, Suspense } from 'react'
 
-import './style.css'
-
 /* ========== 懒加载 Markdown 渲染器 ========== */
 
 const Markdown = lazy(() => import('react-markdown'))
@@ -28,22 +26,26 @@ export function ChatBubble({ content, role }: ChatBubbleProps) {
   const isUser = role === 'user'
 
   return (
-    <div className={`chat-bubble ${isUser ? 'chat-bubble--user' : 'chat-bubble--ai'}`}>
+    <div className={`flex items-start gap-2.5 mx-2 mb-3.5 animate-[fadeUp_0.35s_cubic-bezier(0.16,1,0.3,1)_both] motion-reduce:animate-none max-sm:mx-1 ${isUser ? 'justify-end' : ''}`}>
       {/* AI 消息显示机器人头像 */}
       {!isUser && (
-        <div aria-hidden="true" className="chat-bubble__avatar">
+        <div aria-hidden="true" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[rgba(28,25,23,0.06)] bg-[rgba(var(--travel-primary-rgb),0.08)] text-[15px] text-[var(--travel-ocean)]">
           <Bot size={20} />
         </div>
       )}
       <div
-        className={`chat-bubble__content ${isUser ? 'chat-bubble__content--user' : 'chat-bubble__content--ai'}`}
+        className={`min-w-0 max-w-[min(78%,640px)] overflow-wrap-anywhere break-words text-sm leading-[1.7] whitespace-pre-wrap max-sm:max-w-[84%] ${
+          isUser
+            ? 'rounded-[20px_20px_6px] bg-[var(--color-primary)] px-4 py-[11px] text-white shadow-[0_14px_28px_rgba(var(--travel-primary-rgb),0.32)]'
+            : 'rounded-[6px_20px_20px] border border-[rgba(28,25,23,0.06)] bg-[var(--travel-surface)] px-4 py-3 text-[var(--travel-ocean)] shadow-[0_12px_30px_rgba(var(--travel-ocean-rgb),0.08)]'
+        }`}
       >
         {/* 用户消息纯文本，AI 消息走 Markdown 渲染 */}
         {isUser ? (
           content
         ) : (
-          <div className="markdown-body">
-            <Suspense fallback={<span className="chat-bubble__loading">加载中...</span>}>
+          <div className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_a]:font-bold [&_a]:text-[var(--travel-ocean)] [&_code]:rounded-md [&_code]:bg-[rgba(249,224,189,0.72)] [&_code]:text-[#7a4a1e]">
+            <Suspense fallback={<span className="text-[var(--travel-muted)]">加载中...</span>}>
               <Markdown>{content}</Markdown>
             </Suspense>
           </div>

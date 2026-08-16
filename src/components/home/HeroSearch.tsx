@@ -138,155 +138,180 @@ export function HeroSearch() {
   )
 
   return (
-    <section aria-labelledby="home-hero-title" className="home__hero">
-      <div aria-hidden="true" className="home__hero-bg">
-        <div className="home__hero-gradient" />
-        <div className="home__hero-pattern" />
+    <section
+      aria-labelledby="home-hero-title"
+      className="relative overflow-hidden bg-gradient-to-br from-orange-50/80 via-amber-50/60 to-rose-50/50 py-16"
+    >
+      {/* 背景装饰 */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(255,107,53,0.12),transparent)]" />
+        <div className="absolute inset-0 opacity-[0.03] [background-image:radial-gradient(circle_at_1px_1px,#1c1917_1px,transparent_0)] [background-size:24px_24px]" />
       </div>
-      <div className="home__hero-content">
-        <h1 className="home__hero-title" id="home-hero-title">
+
+      <div className="relative mx-auto max-w-[900px] px-6 text-center">
+        <h1 className="mb-3 text-4xl font-black tracking-tight text-travel-ink" id="home-hero-title">
           AI 旅行规划师
-          <span className="home__hero-highlight">一键生成专属行程</span>
+          <span className="ml-2 bg-gradient-to-r from-primary to-amber-500 bg-clip-text text-transparent">
+            一键生成专属行程
+          </span>
         </h1>
-        <p className="home__hero-subtitle">
+        <p className="mx-auto mb-10 max-w-[540px] text-base text-travel-muted">
           输入目的地，AI 实时结合天气、预算和偏好，为你生成结构化旅行方案
         </p>
 
-        <form className="home__search" noValidate onSubmit={submitPlanner}>
-          <div className="home__search-row">
+        <form
+          className="mx-auto max-w-[780px] rounded-2xl bg-white p-5 shadow-[0_8px_32px_rgba(0,0,0,0.08)]"
+          noValidate
+          onSubmit={submitPlanner}
+        >
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
             {/* 目的地 */}
             <div
-              className="home__search-field home__search-field--city"
+              className="relative flex-1 text-left"
               onClick={(e) => e.stopPropagation()}
             >
-              <MapPin aria-hidden="true" className="home__search-icon" />
-              <label className="home__search-label" htmlFor="home-city-input">
-                <span className="home__search-label-text">目的地</span>
-                <input
-                  aria-activedescendant={activeCityId}
-                  aria-autocomplete="list"
-                  aria-controls="home-city-dropdown"
-                  aria-describedby={fieldErrors.city ? 'home-city-error' : undefined}
-                  aria-expanded={showDropdown}
-                  aria-invalid={Boolean(fieldErrors.city)}
-                  autoComplete="off"
-                  className="home__search-input"
-                  id="home-city-input"
-                  onChange={handleCityChange}
-                  onFocus={() => setShowDropdown(true)}
-                  onKeyDown={handleCityKeyDown}
-                  placeholder="搜索城市"
-                  role="combobox"
-                  type="text"
-                  value={city}
-                />
-                {fieldErrors.city ? (
-                  <span className="home__search-error" id="home-city-error" role="alert">
-                    {fieldErrors.city}
-                  </span>
-                ) : null}
+              <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-travel-muted" htmlFor="home-city-input">
+                <MapPin aria-hidden="true" className="h-3.5 w-3.5" />
+                目的地
               </label>
+              <input
+                aria-activedescendant={activeCityId}
+                aria-autocomplete="list"
+                aria-controls="home-city-dropdown"
+                aria-describedby={fieldErrors.city ? 'home-city-error' : undefined}
+                aria-expanded={showDropdown}
+                aria-invalid={Boolean(fieldErrors.city)}
+                autoComplete="off"
+                className="w-full rounded-lg border border-travel-border-light bg-travel-surface px-3 py-2.5 text-sm text-travel-ink outline-none transition-colors placeholder:text-travel-muted-light focus:border-primary focus:ring-2 focus:ring-primary/20"
+                id="home-city-input"
+                onChange={handleCityChange}
+                onFocus={() => setShowDropdown(true)}
+                onKeyDown={handleCityKeyDown}
+                placeholder="搜索城市"
+                role="combobox"
+                type="text"
+                value={city}
+              />
+              {fieldErrors.city ? (
+                <span className="mt-1 text-xs text-red-500" id="home-city-error" role="alert">
+                  {fieldErrors.city}
+                </span>
+              ) : null}
               {showDropdown ? (
-                <div className="home__dropdown" id="home-city-dropdown" role="listbox">
+                <div
+                  className="absolute left-0 top-full z-50 mt-1 max-h-[280px] w-full overflow-y-auto rounded-xl border border-travel-border-light bg-white py-1 shadow-lg"
+                  id="home-city-dropdown"
+                  role="listbox"
+                >
                   {filteredCities.slice(0, 12).map((name, index) => (
                     <button
                       aria-selected={city === name}
-                      className={`home__dropdown-item ${city === name || activeCityIndex === index ? 'home__dropdown-item--active' : ''}`}
+                      className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors ${
+                        city === name || activeCityIndex === index
+                          ? 'bg-primary/8 text-primary'
+                          : 'text-travel-ink hover:bg-travel-surface'
+                      }`}
                       id={`home-city-option-${index}`}
                       key={name}
                       onClick={() => selectCity(name)}
                       role="option"
                       type="button"
                     >
-                      <MapPin aria-hidden="true" />
+                      <MapPin aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 opacity-50" />
                       {name}
                     </button>
                   ))}
                   {filteredCities.length === 0 ? (
-                    <div className="home__dropdown-empty">未找到匹配城市</div>
+                    <div className="px-3 py-4 text-center text-sm text-travel-muted">
+                      未找到匹配城市
+                    </div>
                   ) : null}
                 </div>
               ) : null}
             </div>
 
             {/* 预算 */}
-            <div className="home__search-field">
-              <CircleDollarSign aria-hidden="true" className="home__search-icon" />
-              <label className="home__search-label" htmlFor="home-budget-input">
-                <span className="home__search-label-text">预算 (元)</span>
-                <input
-                  aria-describedby={fieldErrors.budget ? 'home-budget-error' : undefined}
-                  aria-invalid={Boolean(fieldErrors.budget)}
-                  className="home__search-input"
-                  id="home-budget-input"
-                  inputMode="numeric"
-                  min="1"
-                  onChange={(e) => {
-                    setBudget(e.target.value)
-                    clearFieldError('budget')
-                  }}
-                  onFocus={() => setShowDropdown(false)}
-                  placeholder="3000"
-                  type="number"
-                  value={budget}
-                />
-                {fieldErrors.budget ? (
-                  <span className="home__search-error" id="home-budget-error" role="alert">
-                    {fieldErrors.budget}
-                  </span>
-                ) : null}
+            <div className="w-full text-left sm:w-[140px]">
+              <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-travel-muted" htmlFor="home-budget-input">
+                <CircleDollarSign aria-hidden="true" className="h-3.5 w-3.5" />
+                预算 (元)
               </label>
+              <input
+                aria-describedby={fieldErrors.budget ? 'home-budget-error' : undefined}
+                aria-invalid={Boolean(fieldErrors.budget)}
+                className="w-full rounded-lg border border-travel-border-light bg-travel-surface px-3 py-2.5 text-sm text-travel-ink outline-none transition-colors placeholder:text-travel-muted-light focus:border-primary focus:ring-2 focus:ring-primary/20"
+                id="home-budget-input"
+                inputMode="numeric"
+                min="1"
+                onChange={(e) => {
+                  setBudget(e.target.value)
+                  clearFieldError('budget')
+                }}
+                onFocus={() => setShowDropdown(false)}
+                placeholder="3000"
+                type="number"
+                value={budget}
+              />
+              {fieldErrors.budget ? (
+                <span className="mt-1 text-xs text-red-500" id="home-budget-error" role="alert">
+                  {fieldErrors.budget}
+                </span>
+              ) : null}
             </div>
 
             {/* 天数 */}
-            <div className="home__search-field">
-              <Calendar aria-hidden="true" className="home__search-icon" />
-              <div className="home__search-label">
-                <span className="home__search-label-text">天数</span>
-                <div aria-label="旅行天数" className="home__days-picker">
-                  <button
-                    aria-label="减少天数"
-                    className="home__days-btn"
-                    disabled={days <= 1}
-                    onClick={() => setDays((prev) => Math.max(1, prev - 1))}
-                    type="button"
-                  >
-                    -
-                  </button>
-                  <span aria-live="polite" className="home__days-value">
-                    {days}天
-                  </span>
-                  <button
-                    aria-label="增加天数"
-                    className="home__days-btn"
-                    disabled={days >= 30}
-                    onClick={() => setDays((prev) => Math.min(30, prev + 1))}
-                    type="button"
-                  >
-                    +
-                  </button>
-                </div>
+            <div className="w-full text-left sm:w-[120px]">
+              <span className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-travel-muted">
+                <Calendar aria-hidden="true" className="h-3.5 w-3.5" />
+                天数
+              </span>
+              <div aria-label="旅行天数" className="flex items-center overflow-hidden rounded-lg border border-travel-border-light bg-travel-surface">
+                <button
+                  aria-label="减少天数"
+                  className="flex h-[42px] w-10 items-center justify-center text-lg text-travel-muted transition-colors hover:bg-travel-surface-strong hover:text-travel-ink disabled:opacity-40"
+                  disabled={days <= 1}
+                  onClick={() => setDays((prev) => Math.max(1, prev - 1))}
+                  type="button"
+                >
+                  -
+                </button>
+                <span aria-live="polite" className="flex-1 text-center text-sm font-medium text-travel-ink">
+                  {days}天
+                </span>
+                <button
+                  aria-label="增加天数"
+                  className="flex h-[42px] w-10 items-center justify-center text-lg text-travel-muted transition-colors hover:bg-travel-surface-strong hover:text-travel-ink disabled:opacity-40"
+                  disabled={days >= 30}
+                  onClick={() => setDays((prev) => Math.min(30, prev + 1))}
+                  type="button"
+                >
+                  +
+                </button>
               </div>
             </div>
 
             {/* 搜索按钮 */}
-            <button className="home__search-btn" type="submit">
-              <Bot aria-hidden="true" />
+            <button
+              className="inline-flex h-[42px] items-center justify-center gap-2 rounded-lg bg-primary px-6 text-sm font-bold text-white shadow-[0_4px_12px_rgba(255,107,53,0.3)] transition-all hover:-translate-y-0.5 hover:bg-primary-strong hover:shadow-[0_6px_16px_rgba(255,107,53,0.4)] active:translate-y-0"
+              type="submit"
+            >
+              <Bot aria-hidden="true" className="h-4 w-4" />
               <span>AI 规划</span>
             </button>
           </div>
 
           {/* 天气提示 */}
           {weather || weatherLoading ? (
-            <div aria-live="polite" className="home__search-weather">
+            <div aria-live="polite" className="mt-3 flex items-center gap-2 text-sm text-travel-muted">
               {weatherLoading ? (
                 <>
-                  <span aria-hidden="true" className="home__search-weather-spin" /> 正在查询天气...
+                  <span aria-hidden="true" className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-travel-border border-t-primary" />
+                  正在查询天气...
                 </>
               ) : weather ? (
                 <>
-                  <Cloud aria-hidden="true" /> {weather.city} {weather.temperature}
-                  °C {weather.weatherDesc}
+                  <Cloud aria-hidden="true" className="h-4 w-4 text-sky-500" />
+                  {weather.city} {weather.temperature}°C {weather.weatherDesc}
                 </>
               ) : null}
             </div>
@@ -294,13 +319,14 @@ export function HeroSearch() {
         </form>
 
         {/* 热门搜索标签 */}
-        <div className="home__hot-tags">
-          <span className="home__hot-tag-label">
-            <Flame aria-hidden="true" /> 热门：
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+          <span className="flex items-center gap-1 text-sm text-travel-muted">
+            <Flame aria-hidden="true" className="h-3.5 w-3.5 text-primary" />
+            热门：
           </span>
           {['三亚', '丽江', '西安', '成都', '大理', '厦门'].map((tag) => (
             <button
-              className="home__hot-tag"
+              className="rounded-full border border-travel-border-light bg-white px-3 py-1 text-xs font-medium text-travel-ink transition-all hover:border-primary/30 hover:bg-primary/5 hover:text-primary"
               key={tag}
               onClick={() => selectCity(tag)}
               type="button"

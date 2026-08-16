@@ -8,8 +8,6 @@ import { SpotItem } from '@/components/SpotItem'
 import { Badge } from '@/components/ui/badge'
 import { WeatherCard } from '@/components/WeatherCard'
 
-import './style.css'
-
 interface BudgetTableData {
   accommodation?: number
   food?: number
@@ -40,21 +38,29 @@ export function CommunityItineraryPreview({
   return (
     <section
       aria-label={`${snapshot.city} 行程快照`}
-      className={`community-itinerary community-itinerary--${mode} travel-ticket-edge`}
+      className={`${mode === 'compact' ? 'p-4 sm:p-5' : 'p-5'} sm:rounded-3xl rounded-[20px] border border-[rgba(var(--travel-accent-rgb),0.18)] bg-[linear-gradient(135deg,rgba(255,255,255,0.92),rgba(var(--travel-sand-rgb),0.16)),radial-gradient(circle_at_100%_0%,rgba(var(--travel-ocean-rgb),0.12),transparent_38%)] travel-ticket-edge`}
     >
-      <div className="community-itinerary__header">
+      <div className="sm:flex-row flex-col flex items-start justify-between gap-4 mb-3">
         <div>
-          <p className="community-itinerary__eyebrow">AI 行程快照</p>
-          <h3>{snapshot.city}</h3>
+          <p className="m-0 mb-1 text-[var(--travel-accent)] text-[0.78rem] font-extrabold tracking-[0.16em] uppercase">
+            AI 行程快照
+          </p>
+          <h3 className="m-0 text-[var(--travel-ink)] text-[clamp(1.25rem,2vw,1.7rem)]">
+            {snapshot.city}
+          </h3>
         </div>
         {removable ? (
-          <button className="community-itinerary__remove" onClick={onRemove} type="button">
+          <button
+            className="min-h-[38px] border-0 rounded-full text-[var(--travel-danger)] bg-[rgba(var(--travel-danger-rgb),0.08)] cursor-pointer px-3.5 font-bold"
+            onClick={onRemove}
+            type="button"
+          >
             移除行程
           </button>
         ) : null}
       </div>
 
-      <div aria-label="行程概要" className="community-itinerary__meta">
+      <div aria-label="行程概要" className="flex flex-wrap gap-2 mb-4">
         <Badge className="travel-tag travel-tag--info" variant="secondary">
           <Calendar aria-hidden="true" className="mr-1" size={12} />
           {snapshot.days}天
@@ -71,16 +77,23 @@ export function CommunityItineraryPreview({
 
       {snapshot.weather && isDetail ? <WeatherCard weather={snapshot.weather} /> : null}
 
-      <div className="community-itinerary__days">
+      <div className="grid gap-3">
         {days.map((day) => (
-          <article className="community-itinerary__day" key={day.day}>
-            <h4>
+          <article
+            className="p-3.5 border border-dashed border-[rgba(var(--travel-accent-rgb),0.26)] rounded-[18px] bg-[rgba(255,255,255,0.68)]"
+            key={day.day}
+          >
+            <h4 className="m-0 text-[var(--travel-ink)] text-base mb-1.5">
               Day {day.day}
               {day.title ? ` · ${day.title}` : ''}
             </h4>
-            {!isDetail ? <p>{getDaySummary(day) || '这一天还没有详细路线'}</p> : null}
+            {!isDetail ? (
+              <p className="m-0 text-travel-muted leading-7">
+                {getDaySummary(day) || '这一天还没有详细路线'}
+              </p>
+            ) : null}
             {isDetail ? (
-              <div className="community-itinerary__spots">
+              <div className="grid gap-3 mt-3">
                 {renderDaySpots(day, snapshot.attractionRefs || [])}
               </div>
             ) : null}
@@ -89,22 +102,22 @@ export function CommunityItineraryPreview({
       </div>
 
       {!isDetail && snapshot.itinerary.length > days.length ? (
-        <p className="community-itinerary__more">
+        <p className="m-0 mt-3 text-[0.92rem] text-travel-muted leading-7">
           还有 {snapshot.itinerary.length - days.length} 天路线，进入详情查看完整行程。
         </p>
       ) : null}
 
       {isDetail && budget ? (
-        <details className="community-itinerary__collapse">
+        <details className="mt-[18px] bg-[rgba(255,255,255,0.72)] rounded-[18px]">
           <summary className="cursor-pointer font-medium">查看预算明细</summary>
           <BudgetTable data={budget} />
         </details>
       ) : null}
 
       {isDetail && snapshot.tips?.length ? (
-        <div className="community-itinerary__tips">
-          <h4>旅行贴士</h4>
-          <ul>
+        <div className="mt-[18px] p-4 rounded-[18px] bg-[rgba(var(--travel-ocean-rgb),0.08)]">
+          <h4 className="m-0 text-[var(--travel-ink)] text-base mb-1.5">旅行贴士</h4>
+          <ul className="m-0 mt-2.5 pl-5 text-travel-muted leading-[1.8]">
             {snapshot.tips.map((tip) => (
               <li key={tip}>{tip}</li>
             ))}

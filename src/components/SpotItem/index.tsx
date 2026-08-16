@@ -11,8 +11,6 @@ import React from 'react'
  */
 import type { AttractionRef } from '@/stores/itinerary'
 
-import './style.css'
-
 interface SpotData {
   description: string
   duration: string
@@ -43,26 +41,41 @@ export const SpotItem = React.memo(({ attractionRef, data, period }: SpotItemPro
   const periodBg = periodBgMap[period] || 'rgba(var(--travel-accent-rgb), 0.16)'
 
   return (
-    <div className="spot-item" style={{ borderLeftColor: periodColor }}>
-      <div className="spot-item__period" style={{ background: periodBg, color: periodColor }}>
+    <div
+      className="relative flex gap-[14px] my-[10px] p-[14px] border border-[rgba(28,25,23,0.05)] border-l-4 border-l-[var(--travel-accent)] rounded-[18px] bg-travel-surface shadow-[0_10px_26px_rgba(var(--travel-ocean-rgb),0.06)] last:mb-0 max-[560px]:flex-col max-[560px]:gap-[10px]"
+      style={{ borderLeftColor: periodColor }}
+    >
+      <div
+        className="shrink-0 self-start min-w-12 px-2.5 py-1.5 rounded-full border border-[rgba(28,25,23,0.06)] font-[var(--font-display)] text-xs font-black text-center whitespace-nowrap shadow-[inset_0_0_0_1px_rgba(var(--travel-white-rgb),0.24)] max-[560px]:w-fit"
+        style={{ background: periodBg, color: periodColor }}
+      >
         {period}
       </div>
-      <div className="spot-item__body">
-        <h4 className="spot-item__name">{data.spot}</h4>
-        <p className="spot-item__desc">{data.description}</p>
+      <div className="flex-1 min-w-0">
+        <h4 className="mb-1.5 [overflow-wrap:anywhere] font-[var(--font-display)] text-[15px] leading-[1.35] font-extrabold text-[var(--travel-ocean)]">
+          {data.spot}
+        </h4>
+        <p className="mb-2.5 [overflow-wrap:anywhere] text-xs text-[rgba(var(--travel-ink-rgb),0.7)] leading-[1.7]">
+          {data.description}
+        </p>
         {/* ---- 标签：游玩时长 / 门票 / 交通方式 ---- */}
-        <div className="spot-item__tags">
-          <span className="spot-item__tag">
+        <div className="flex gap-2 flex-wrap">
+          <span className="inline-flex items-center gap-1 min-w-0 max-w-full px-[9px] py-1 rounded-full border border-[rgba(28,25,23,0.06)] bg-[rgba(28,25,23,0.03)] text-[rgba(var(--travel-ink-rgb),0.66)] text-xs font-bold [&>svg]:shrink-0 [&>svg]:text-[rgba(var(--travel-ocean-rgb),0.64)]">
             <Clock size={14} /> {data.duration}
           </span>
-          <span className="spot-item__tag spot-item__tag--price">{data.ticket}</span>
-          <span className="spot-item__tag">
+          <span className="inline-flex items-center gap-1 min-w-0 max-w-full px-[9px] py-1 rounded-full border border-[rgba(28,25,23,0.06)] bg-[rgba(var(--travel-primary-rgb),0.12)] text-[var(--color-primary-strong)] text-xs font-black [&>svg]:shrink-0 [&>svg]:text-[rgba(var(--travel-ocean-rgb),0.64)]">
+            {data.ticket}
+          </span>
+          <span className="inline-flex items-center gap-1 min-w-0 max-w-full px-[9px] py-1 rounded-full border border-[rgba(28,25,23,0.06)] bg-[rgba(28,25,23,0.03)] text-[rgba(var(--travel-ink-rgb),0.66)] text-xs font-bold [&>svg]:shrink-0 [&>svg]:text-[rgba(var(--travel-ocean-rgb),0.64)]">
             <Compass size={14} /> {data.transportation}
           </span>
         </div>
         {/* ---- 关联景点详情链接（有 attractionRef 时显示） ---- */}
         {attractionRef ? (
-          <Link className="spot-item__detail-link" href={`/attractions/${attractionRef.id}`}>
+          <Link
+            className="inline-flex mt-2.5 text-[var(--travel-primary)] text-xs font-black hover:opacity-80"
+            href={`/attractions/${attractionRef.id}`}
+          >
             {`查看${attractionRef.name}详情`}
           </Link>
         ) : null}

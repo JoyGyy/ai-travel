@@ -16,8 +16,6 @@ import {
  */
 import type { SSEEvent } from '@/types/api'
 
-import './style.css'
-
 /* ========== 类型定义 ========== */
 
 interface AgentStepsProps {
@@ -80,47 +78,78 @@ export function AgentSteps({ currentStep, steps }: AgentStepsProps) {
   /* ========== 渲染：步骤时间线 ========== */
 
   return (
-    <div aria-live="polite" className="agent-steps">
+    <div
+      aria-live="polite"
+      className="mx-4 mb-4 overflow-hidden rounded-[20px] bg-travel-surface border border-[rgba(28,25,23,0.06)] shadow-[var(--shadow-paper)]"
+    >
       {/* 标题栏 */}
-      <div className="agent-steps__header">
-        <span className="agent-steps__title">AGENT 执行过程</span>
+      <div className="px-5 pt-4 pb-2">
+        <span className="text-xs font-black tracking-[2px] text-[var(--travel-ocean)]">
+          AGENT 执行过程
+        </span>
       </div>
       {/* 步骤列表：圆点 + 连接线 + 步骤信息 */}
-      <div className="agent-steps__list" role="list">
+      <div className="px-5 pb-4" role="list">
         {STEP_CONFIG.map((config, index) => {
           const status = getStepStatus(config.step)
           const summary = getResultSummary(config.step)
           return (
             <div
               aria-label={`${config.name}：${status === 'done' ? '已完成' : status === 'running' ? '执行中' : '等待中'}`}
-              className="agent-steps__item"
+              className="flex items-start gap-3"
               key={config.step}
               role="listitem"
             >
               {/* 左侧时间线：圆点 + 连接线 */}
-              <div aria-hidden="true" className="agent-steps__line">
-                <div className={`agent-steps__dot agent-steps__dot--${status}`}>
+              <div aria-hidden="true" className="flex flex-col items-center">
+                <div
+                  className={`w-[34px] h-[34px] rounded-full flex items-center justify-center shrink-0 text-sm border border-[rgba(var(--travel-white-rgb),0.78)] shadow-[inset_0_0_0_1px_rgba(var(--travel-white-rgb),0.28),_0_10px_22px_rgba(var(--travel-ocean-rgb),0.08)] ${
+                    status === 'done'
+                      ? 'bg-[linear-gradient(135deg,var(--travel-ocean)_0%,var(--travel-ocean-light)_100%)] text-white'
+                      : status === 'running'
+                        ? 'bg-[linear-gradient(135deg,var(--color-primary),var(--color-secondary))] text-white animate-[pulseGlow_1.5s_ease-in-out_infinite] motion-reduce:animate-none'
+                        : 'bg-[rgba(var(--travel-white-rgb),0.62)] text-[rgba(var(--travel-ocean-rgb),0.42)]'
+                  }`}
+                >
                   {status === 'done' ? <CheckCircle2 size={16} /> : <config.Icon />}
                 </div>
                 {index < STEP_CONFIG.length - 1 && (
                   <div
-                    className={`agent-steps__connector ${status === 'done' ? 'agent-steps__connector--done' : ''}`}
+                    className={`w-px h-[22px] ${
+                      status === 'done'
+                        ? 'bg-[linear-gradient(180deg,var(--travel-ocean),rgba(var(--travel-ocean-rgb),0.16))]'
+                        : 'bg-[rgba(var(--travel-ocean-rgb),0.12)]'
+                    }`}
                   />
                 )}
               </div>
-              <div className="agent-steps__body">
-                <div className="agent-steps__name-row">
+              <div className="flex-1 min-w-0 pb-[10px]">
+                <div className="flex items-center gap-2 min-h-[34px]">
                   <span
-                    className={`agent-steps__name ${status === 'pending' ? 'agent-steps__name--pending' : ''}`}
+                    className={`text-sm font-extrabold ${
+                      status === 'pending'
+                        ? 'text-[rgba(var(--travel-ink-rgb),0.5)]'
+                        : 'text-[var(--travel-ocean)]'
+                    }`}
                   >
                     {config.name}
                   </span>
-                  {status === 'running' && <span className="agent-steps__running">执行中...</span>}
+                  {status === 'running' && (
+                    <span className="px-2 py-0.5 rounded-full bg-[rgba(var(--travel-primary-rgb),0.12)] text-[11px] font-extrabold text-[var(--color-primary-strong)]">
+                      执行中...
+                    </span>
+                  )}
                 </div>
                 {summary && (
-                  <div className="agent-steps__summary">
-                    <ChevronRight aria-hidden="true" className="agent-steps__arrow" size={14} />
-                    <span>{summary}</span>
+                  <div className="flex items-center gap-[5px] mt-px">
+                    <ChevronRight
+                      aria-hidden="true"
+                      className="shrink-0 text-[10px] text-[rgba(var(--travel-ocean-rgb),0.48)]"
+                      size={14}
+                    />
+                    <span className="min-w-0 [overflow-wrap:anywhere] text-xs text-[rgba(var(--travel-ink-rgb),0.66)]">
+                      {summary}
+                    </span>
                   </div>
                 )}
               </div>

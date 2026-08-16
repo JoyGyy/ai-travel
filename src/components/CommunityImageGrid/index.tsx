@@ -5,11 +5,31 @@ import { useState } from 'react'
 
 import type { CommunityImage } from '@/types/community'
 
-import './style.css'
-
 interface CommunityImageGridProps {
   compact?: boolean
   images: CommunityImage[]
+}
+
+/** 根据图片数量和 compact 模式决定网格列数和最大宽度 */
+function getGridClasses(count: number, compact: boolean) {
+  const base = compact
+    ? 'gap-1.5 rounded-2xl max-sm:gap-1.5 max-sm:rounded-2xl'
+    : 'gap-2.5 rounded-[22px] max-sm:gap-1.5 max-sm:rounded-2xl'
+
+  if (count === 1) {
+    return `grid grid-cols-1 max-w-[520px] ${base}`
+  }
+  if (count === 2 || count === 4) {
+    return `grid grid-cols-2 max-w-[560px] ${base}`
+  }
+  return `grid grid-cols-3 ${base}`
+}
+
+/** 根据图片数量和 compact 模式决定图片宽高比 */
+function getImageAspectClasses(count: number, compact: boolean) {
+  if (compact) return 'aspect-[4/3]'
+  if (count === 1) return 'aspect-[16/10]'
+  return 'aspect-square'
 }
 
 export function CommunityImageGrid({ compact = false, images }: CommunityImageGridProps) {
@@ -39,20 +59,22 @@ export function CommunityImageGrid({ compact = false, images }: CommunityImageGr
     }
   }
 
+  const gridClasses = getGridClasses(visibleImages.length, compact)
+  const imageAspectClasses = getImageAspectClasses(visibleImages.length, compact)
+
   return (
     <>
-      <div
-        className={`community-image-grid community-image-grid--count-${visibleImages.length} ${compact ? 'community-image-grid--compact' : ''}`}
-      >
+      <div className={`${gridClasses} overflow-hidden`}>
         {visibleImages.map((image, index) => (
           <button
-            className="community-image-grid__image"
+            className={`w-full bg-[rgba(var(--travel-sand-rgb),0.18)] ${imageAspectClasses}`}
             key={image.id || image.storageKey || image.url}
             onClick={() => handlePreview(index)}
             type="button"
           >
             <Image
               alt={image.altText || '旅行分享图片'}
+              className="block h-full w-full object-cover"
               height={200}
               loading="lazy"
               src={image.url}
@@ -65,10 +87,10 @@ export function CommunityImageGrid({ compact = false, images }: CommunityImageGr
 
       {/* 图片预览模态框 */}
       {previewIndex !== null && (
-        <div className="community-image-grid__preview" onClick={handleClose}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80" onClick={handleClose}>
           <button
             aria-label="关闭预览"
-            className="community-image-grid__close"
+            className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-3xl text-white backdrop-blur-sm transition-colors hover:bg-white/30 motion-reduce:transition-none"
             onClick={handleClose}
             type="button"
           >
@@ -77,7 +99,7 @@ export function CommunityImageGrid({ compact = false, images }: CommunityImageGr
           {previewIndex > 0 && (
             <button
               aria-label="上一张"
-              className="community-image-grid__prev"
+              className="absolute left-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-3xl text-white backdrop-blur-sm transition-colors hover:bg-white/30 motion-reduce:transition-none"
               onClick={(e) => {
                 e.stopPropagation()
                 handlePrev()
@@ -89,6 +111,7 @@ export function CommunityImageGrid({ compact = false, images }: CommunityImageGr
           )}
           <Image
             alt={visibleImages[previewIndex].altText || '旅行分享图片'}
+            className="max-h-[80vh] max-w-[90vw] object-contain"
             height={600}
             src={visibleImages[previewIndex].url}
             unoptimized
@@ -97,7 +120,7 @@ export function CommunityImageGrid({ compact = false, images }: CommunityImageGr
           {previewIndex < visibleImages.length - 1 && (
             <button
               aria-label="下一张"
-              className="community-image-grid__next"
+              className="absolute right-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-3xl text-white backdrop-blur-sm transition-colors hover:bg-white/30 motion-reduce:transition-none"
               onClick={(e) => {
                 e.stopPropagation()
                 handleNext()

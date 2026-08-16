@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next'
+import { withSentryConfig } from '@sentry/nextjs'
 
 const nextConfig: NextConfig = {
   // Turbopack 配置 - 明确指定项目根目录
@@ -48,4 +49,20 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default nextConfig
+// 使用 withSentryConfig 包装配置
+// @see https://docs.sentry.io/platforms/javascript/guides/nextjs/
+export default withSentryConfig(nextConfig, {
+  // Source Map 上传配置
+  // 配置 SENTRY_AUTH_TOKEN 后可启用自动上传
+  // authToken: process.env.SENTRY_AUTH_TOKEN,
+
+  // 组织和项目名称（需要在 Sentry 中创建）
+  // org: process.env.SENTRY_ORG,
+  // project: process.env.SENTRY_PROJECT,
+
+  // 仅在生产环境上传 Source Map
+  // hideSourceMaps: true,
+
+  // 自动创建 Release
+  // autoInstrumentServerFunctions: true,
+})

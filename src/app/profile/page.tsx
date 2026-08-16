@@ -1,6 +1,6 @@
 'use client'
 
-import { Bot, Clock, Heart, Key, LogOut } from 'lucide-react'
+import { Bot, Clock, Eye, EyeOff, Heart, Key, LogOut } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
@@ -19,6 +19,14 @@ import { changePasswordApi, getProfileApi } from '@/api/auth'
 import { ApiError } from '@/api/client'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { useAppToast } from '@/hooks/useAppToast'
 import { formatFullDateTime } from '@/lib/utils/date'
 import { useAuthStore } from '@/stores/auth'
@@ -35,6 +43,14 @@ export default function Profile() {
   const [loadError, setLoadError] = useState('')
   const [changingPassword, setChangingPassword] = useState(false)
   const [removingFavoriteIds, setRemovingFavoriteIds] = useState<Set<string>>(() => new Set())
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [passwordErrors, setPasswordErrors] = useState<{
+    confirmPassword?: string
+    currentPassword?: string
+    newPassword?: string
+  }>({})
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false)
   const toast = useAppToast()
 
   // ---- 加载用户资料与收藏列表 ----
@@ -68,13 +84,15 @@ export default function Profile() {
   // ---- 密码修改 ----
   async function handlePasswordChange(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    setPasswordErrors({})
+
     const formData = new FormData(event.currentTarget)
     const currentPassword = formData.get('currentPassword') as string
     const newPassword = formData.get('newPassword') as string
     const confirmPassword = formData.get('confirmPassword') as string
 
     if (newPassword !== confirmPassword) {
-      toast.error('两次输入的新密码不一致')
+      setPasswordErrors({ confirmPassword: '两次输入的新密码不一致' })
       return
     }
 
@@ -94,7 +112,9 @@ export default function Profile() {
         router.replace('/login')
         return
       }
-      toast.error(err instanceof Error ? err.message : '密码修改失败')
+      setPasswordErrors({
+        currentPassword: err instanceof Error ? err.message : '密码修改失败',
+      })
     } finally {
       setChangingPassword(false)
     }
@@ -120,6 +140,11 @@ export default function Profile() {
 
   // ---- 退出登录 ----
   function handleLogout() {
+    setShowLogoutDialog(true)
+  }
+
+  function confirmLogout() {
+    setShowLogoutDialog(false)
     logout()
     router.replace('/')
   }
@@ -263,30 +288,55 @@ export default function Profile() {
               <label className="text-sm font-medium" htmlFor="currentPassword">
                 当前密码
               </label>
-              <input
-                autoComplete="current-password"
-                className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
-                id="currentPassword"
-                name="currentPassword"
-                placeholder="请输入当前密码"
-                required
-                type="password"
-              />
+              <div className="relative">
+                <input
+                  autoComplete="current-password"
+                  className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 pr-10 text-sm"
+                  id="currentPassword"
+                  name="currentPassword"
+                  placeholder="请输入当前密码"
+                  required
+                  type={showCurrentPassword ? 'text' : 'password'}
+                />
+                <button
+                  aria-label={showCurrentPassword ? '隐藏当前密码' : '显示当前密码'}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
+                  onClick={() => setShowCurrentPassword((v) => !v)}
+                  type="button"
+                >
+                  {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              {passwordErrors.currentPassword && (
+                <p className="text-sm text-destructive" role="alert">
+                  {passwordErrors.currentPassword}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium" htmlFor="newPassword">
                 新密码
               </label>
-              <input
-                autoComplete="new-password"
-                className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
-                id="newPassword"
-                minLength={6}
-                name="newPassword"
-                placeholder="请输入新密码（至少 6 位）"
-                required
-                type="password"
-              />
+              <div className="relative">
+                <input
+                  autoComplete="new-password"
+                  className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 pr-10 text-sm"
+                  id="newPassword"
+                  minLength={6}
+                  name="newPassword"
+                  placeholder="请输入新密码（至少 6 位）"
+                  required
+                  type={showNewPassword ? 'text' : 'password'}
+                />
+                <button
+                  aria-label={showNewPassword ? '隐藏新密码' : '显示新密码'}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
+                  onClick={() => setShowNewPassword((v) => !v)}
+                  type="button"
+                >
+                  {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium" htmlFor="confirmPassword">
@@ -301,6 +351,11 @@ export default function Profile() {
                 required
                 type="password"
               />
+              {passwordErrors.confirmPassword && (
+                <p className="text-sm text-destructive" role="alert">
+                  {passwordErrors.confirmPassword}
+                </p>
+              )}
             </div>
             <Button disabled={changingPassword} type="submit">
               {changingPassword ? '正在修改...' : '修改密码'}
@@ -376,6 +431,24 @@ export default function Profile() {
           </Button>
         </div>
       </div>
+
+      {/* 退出登录确认对话框 */}
+      <Dialog onOpenChange={setShowLogoutDialog} open={showLogoutDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>确认退出</DialogTitle>
+            <DialogDescription>确定要退出登录吗？</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={() => setShowLogoutDialog(false)} variant="outline">
+              取消
+            </Button>
+            <Button onClick={confirmLogout} variant="destructive">
+              确认退出
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </main>
   )
 }

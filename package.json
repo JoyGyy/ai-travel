@@ -11,9 +11,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
-    "db:migrate": "tsx db/migrate.ts run",
-    "db:migrate:status": "tsx db/migrate.ts status",
-    "db:migrate:fresh": "tsx db/migrate.ts fresh",
+    "db:migrate": "tsx --env-file=.env db/migrate.ts run",
+    "db:migrate:status": "tsx --env-file=.env db/migrate.ts status",
+    "db:migrate:fresh": "tsx --env-file=.env db/migrate.ts fresh",
     "prepare": "husky"
   },
   "dependencies": {

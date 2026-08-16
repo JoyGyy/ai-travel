@@ -11,9 +11,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio",
+
     "prepare": "husky"
   },
   "dependencies": {
@@ -33,7 +31,7 @@
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "drizzle-orm": "^0.45.2",
+
     "immer": "^11.1.15",
     "jose": "^6.2.8",
     "lucide-react": "^1.27.0",
@@ -59,7 +57,7 @@
     "@typescript-eslint/eslint-plugin": "^8.66.0",
     "@typescript-eslint/parser": "^8.66.0",
     "@vitejs/plugin-react": "^6.0.4",
-    "drizzle-kit": "^0.31.10",
+
     "eslint": "^9.39.5",
     "eslint-config-next": "16.2.11",
     "eslint-config-prettier": "^10.1.8",

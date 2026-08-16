@@ -2,17 +2,9 @@
  * 社区领域服务
  * 负责帖子、图片、点赞、评论和转发的 PostgreSQL 数据访问。
  */
-import { and, asc, count, eq, sql } from 'drizzle-orm'
+import type { PoolClient } from 'pg'
 
-import {
-  communityPostComments,
-  communityPostImages,
-  communityPostLikes,
-  communityPosts,
-  users,
-} from '@/db/schema'
-
-import { db, typedQuery } from '../db'
+import { getClient, query, typedQuery } from '../db'
 import { httpError } from '../utils/http'
 
 export interface CommunityAuthor {
@@ -162,31 +154,26 @@ export async function createCommunityComment(
   const { nanoid } = await import('nanoid')
   const id = nanoid(12)
 
-  const [inserted] = await db
-    .insert(communityPostComments)
-    .values({
-      authorId,
-      content,
-      id,
-      postId,
-    })
-    .returning()
+  const inserted = await query(
+    `INSERT INTO community_post_comments (id, post_id, author_id, content)
+     VALUES ($1, $2, $3, $4)
+     RETURNING id, post_id, author_id, content, created_at, updated_at`,
+    [id, postId, authorId, content],
+  )
 
-  const userResult = await db
-    .select({ username: users.username })
-    .from(users)
-    .where(eq(users.id, authorId))
-  const authorUsername = userResult[0]?.username || ''
+  const userResult = await query('SELECT username FROM users WHERE id = $1', [authorId])
+  const authorUsername = userResult.rows[0]?.username || ''
+  const row = inserted.rows[0]
 
   return {
     comment: mapCommentRow({
-      author_id: inserted.authorId,
+      author_id: row.author_id,
       author_username: authorUsername,
-      content: inserted.content,
-      created_at: inserted.createdAt,
-      id: inserted.id,
-      post_id: inserted.postId,
-      updated_at: inserted.updatedAt,
+      content: row.content,
+      created_at: row.created_at,
+      id: row.id,
+      post_id: row.post_id,
+      updated_at: row.updated_at,
     }),
     commentCount: await getCommentCount(postId),
   }
@@ -197,47 +184,53 @@ export async function createCommunityPost(
   authorId: string,
   input: CreateCommunityPostInput,
 ): Promise<CommunityPost> {
-  const id = await db.transaction(async (tx) =>
-    insertPost(tx, authorId, { ...input, originalPostId: null, postType: 'original' }),
-  )
+  const client = await getClient()
+  try {
+    await client.query('BEGIN')
+    const id = await insertPost(client, authorId, { ...input, originalPostId: null, postType: 'original' })
+    await client.query('COMMIT')
 
-  const post = await getCommunityPostById(id, authorId)
-  if (!post) throw httpError(500, '帖子创建后读取失败')
-  return post
+    const post = await getCommunityPostById(id, authorId)
+    if (!post) throw httpError(500, '帖子创建后读取失败')
+    return post
+  } catch (err) {
+    await client.query('ROLLBACK')
+    throw err
+  } finally {
+    client.release()
+  }
 }
 
 /** 软删除自己的评论 */
 export async function deleteCommunityComment(commentId: string, authorId: string): Promise<void> {
-  const result = await db
-    .select({ authorId: communityPostComments.authorId })
-    .from(communityPostComments)
-    .where(
-      and(eq(communityPostComments.id, commentId), sql`${communityPostComments.deletedAt} IS NULL`),
-    )
+  const result = await query(
+    'SELECT author_id FROM community_post_comments WHERE id = $1 AND deleted_at IS NULL',
+    [commentId],
+  )
 
-  if (result.length === 0) throw httpError(404, '评论不存在或已删除')
-  if (result[0].authorId !== authorId) throw httpError(403, '只能删除自己的评论')
+  if (result.rows.length === 0) throw httpError(404, '评论不存在或已删除')
+  if (result.rows[0].author_id !== authorId) throw httpError(403, '只能删除自己的评论')
 
-  await db
-    .update(communityPostComments)
-    .set({ deletedAt: new Date(), updatedAt: new Date() })
-    .where(eq(communityPostComments.id, commentId))
+  await query(
+    'UPDATE community_post_comments SET deleted_at = NOW(), updated_at = NOW() WHERE id = $1',
+    [commentId],
+  )
 }
 
 /** 软删除自己的帖子 */
 export async function deleteCommunityPost(postId: string, authorId: string): Promise<void> {
-  const result = await db
-    .select({ authorId: communityPosts.authorId })
-    .from(communityPosts)
-    .where(and(eq(communityPosts.id, postId), sql`${communityPosts.deletedAt} IS NULL`))
+  const result = await query(
+    'SELECT author_id FROM community_posts WHERE id = $1 AND deleted_at IS NULL',
+    [postId],
+  )
 
-  if (result.length === 0) throw httpError(404, '帖子不存在或已删除')
-  if (result[0].authorId !== authorId) throw httpError(403, '只能删除自己的帖子')
+  if (result.rows.length === 0) throw httpError(404, '帖子不存在或已删除')
+  if (result.rows[0].author_id !== authorId) throw httpError(403, '只能删除自己的帖子')
 
-  await db
-    .update(communityPosts)
-    .set({ deletedAt: new Date(), updatedAt: new Date() })
-    .where(eq(communityPosts.id, postId))
+  await query(
+    'UPDATE community_posts SET deleted_at = NOW(), updated_at = NOW() WHERE id = $1',
+    [postId],
+  )
 }
 
 /** 查询帖子详情 */
@@ -246,8 +239,9 @@ export async function getCommunityPostById(
   viewerId?: string,
 ): Promise<CommunityPost | null> {
   const viewerIdValue = viewerId || ''
-  const result = await db.execute(
-    sql`${basePostSelect(viewerIdValue)} WHERE p.deleted_at IS NULL AND p.id = ${id}`,
+  const result = await query(
+    `${basePostSelect(viewerIdValue)} WHERE p.deleted_at IS NULL AND p.id = $1`,
+    [id],
   )
 
   if (result.rows.length === 0) return null
@@ -262,7 +256,10 @@ export async function likeCommunityPost(
   userId: string,
 ): Promise<LikeCommunityPostResult> {
   await ensurePostExists(postId)
-  await db.insert(communityPostLikes).values({ postId, userId }).onConflictDoNothing()
+  await query(
+    'INSERT INTO community_post_likes (post_id, user_id) VALUES ($1, $2) ON CONFLICT DO NOTHING',
+    [postId, userId],
+  )
 
   return { likeCount: await getLikeCount(postId), likedByMe: true }
 }
@@ -279,53 +276,37 @@ export async function listCommunityComments(
   const offset = (normalizedPage - 1) * normalizedPageSize
 
   const [dataResult, countResult] = await Promise.all([
-    db
-      .select({
-        authorId: communityPostComments.authorId,
-        authorUsername: users.username,
-        content: communityPostComments.content,
-        createdAt: communityPostComments.createdAt,
-        id: communityPostComments.id,
-        postId: communityPostComments.postId,
-        updatedAt: communityPostComments.updatedAt,
-      })
-      .from(communityPostComments)
-      .innerJoin(users, eq(users.id, communityPostComments.authorId))
-      .where(
-        and(
-          eq(communityPostComments.postId, postId),
-          sql`${communityPostComments.deletedAt} IS NULL`,
-        ),
-      )
-      .orderBy(asc(communityPostComments.createdAt))
-      .limit(normalizedPageSize)
-      .offset(offset),
-    db
-      .select({ cnt: count() })
-      .from(communityPostComments)
-      .where(
-        and(
-          eq(communityPostComments.postId, postId),
-          sql`${communityPostComments.deletedAt} IS NULL`,
-        ),
-      ),
+    query(
+      `SELECT c.id, c.post_id, c.author_id, u.username AS author_username,
+              c.content, c.created_at, c.updated_at
+       FROM community_post_comments c
+       INNER JOIN users u ON u.id = c.author_id
+       WHERE c.post_id = $1 AND c.deleted_at IS NULL
+       ORDER BY c.created_at ASC
+       LIMIT $2 OFFSET $3`,
+      [postId, normalizedPageSize, offset],
+    ),
+    query(
+      'SELECT COUNT(*)::int AS cnt FROM community_post_comments WHERE post_id = $1 AND deleted_at IS NULL',
+      [postId],
+    ),
   ])
 
   return {
-    items: dataResult.map((row) =>
+    items: dataResult.rows.map((row: CommunityCommentRow) =>
       mapCommentRow({
-        author_id: row.authorId,
-        author_username: row.authorUsername,
+        author_id: row.author_id,
+        author_username: row.author_username,
         content: row.content,
-        created_at: row.createdAt,
+        created_at: row.created_at,
         id: row.id,
-        post_id: row.postId,
-        updated_at: row.updatedAt,
+        post_id: row.post_id,
+        updated_at: row.updated_at,
       }),
     ),
     page: normalizedPage,
     pageSize: normalizedPageSize,
-    total: countResult[0]?.cnt ?? 0,
+    total: countResult.rows[0]?.cnt ?? 0,
   }
 }
 
@@ -340,40 +321,39 @@ export async function listCommunityPosts(
   const viewerIdValue = viewerId || ''
 
   // 构建过滤条件
-  const conditions = [sql`${communityPosts.deletedAt} IS NULL`]
+  const conditions: string[] = ['p.deleted_at IS NULL']
+  const params: unknown[] = []
+  let paramIndex = 1
 
   if (filters.city) {
-    conditions.push(eq(communityPosts.city, filters.city))
+    conditions.push(`p.city = $${paramIndex++}`)
+    params.push(filters.city)
   }
 
   if (filters.withItinerary) {
-    conditions.push(sql`${communityPosts.itinerarySnapshot} IS NOT NULL`)
+    conditions.push('p.itinerary_snapshot IS NOT NULL')
   }
 
   if (filters.authorId) {
-    conditions.push(eq(communityPosts.authorId, filters.authorId))
+    conditions.push(`p.author_id = $${paramIndex++}`)
+    params.push(filters.authorId)
   }
 
-  const whereClause =
-    conditions.length > 0
-      ? sql.join(
-          conditions.map((c) => c),
-          sql` AND `,
-        )
-      : sql`TRUE`
+  const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
+
+  const countSql = `SELECT COUNT(*)::int AS cnt FROM community_posts p ${whereClause}`
+  const dataSql = `${basePostSelect(viewerIdValue)} ${whereClause} ORDER BY p.created_at DESC LIMIT $${paramIndex++} OFFSET $${paramIndex++}`
 
   const [countResult, dataResult] = await Promise.all([
-    db.select({ cnt: count() }).from(communityPosts).where(whereClause),
-    db.execute(
-      sql`${basePostSelect(viewerIdValue)} WHERE ${whereClause} ORDER BY p.created_at DESC LIMIT ${pageSize} OFFSET ${offset}`,
-    ),
+    query(countSql, params),
+    query(dataSql, [...params, pageSize, offset]),
   ])
 
   return {
     items: await hydratePosts(typedQuery<CommunityPostRow>(dataResult.rows), viewerId),
     page,
     pageSize,
-    total: countResult[0]?.cnt ?? 0,
+    total: countResult.rows[0]?.cnt ?? 0,
   }
 }
 
@@ -387,14 +367,23 @@ export async function repostCommunityPost(
   const originalPostId = target.original_post_id || target.id
   await ensurePostExists(originalPostId)
 
-  const newPostId = await db.transaction(async (tx) =>
-    insertPost(tx, authorId, {
+  const client = await getClient()
+  let newPostId: string
+  try {
+    await client.query('BEGIN')
+    newPostId = await insertPost(client, authorId, {
       city: target.city,
       content,
       originalPostId,
       postType: 'repost',
-    }),
-  )
+    })
+    await client.query('COMMIT')
+  } catch (err) {
+    await client.query('ROLLBACK')
+    throw err
+  } finally {
+    client.release()
+  }
 
   const post = await getCommunityPostById(newPostId, authorId)
   if (!post) throw httpError(500, '转发创建后读取失败')
@@ -407,15 +396,17 @@ export async function unlikeCommunityPost(
   userId: string,
 ): Promise<LikeCommunityPostResult> {
   await ensurePostExists(postId)
-  await db
-    .delete(communityPostLikes)
-    .where(and(eq(communityPostLikes.postId, postId), eq(communityPostLikes.userId, userId)))
+  await query(
+    'DELETE FROM community_post_likes WHERE post_id = $1 AND user_id = $2',
+    [postId, userId],
+  )
   return { likeCount: await getLikeCount(postId), likedByMe: false }
 }
 
 /** 构建帖子列表的基础 SQL（含 LATERAL JOIN 聚合计数和当前用户点赞状态） */
 function basePostSelect(viewerId: string) {
-  return sql`
+  // 使用 $1 作为 viewerId 参数占位，调用方需将 viewerId 作为第一个参数传入
+  return `
     SELECT
       p.id,
       p.author_id,
@@ -433,7 +424,7 @@ function basePostSelect(viewerId: string) {
       COALESCE(repost_stats.repost_count, 0) AS repost_count,
       EXISTS (
         SELECT 1 FROM community_post_likes viewer_like
-        WHERE viewer_like.post_id = p.id AND viewer_like.user_id = ${viewerId}
+        WHERE viewer_like.post_id = p.id AND viewer_like.user_id = '${viewerId}'
       ) AS liked_by_me
     FROM community_posts p
     JOIN users u ON u.id = p.author_id
@@ -456,26 +447,21 @@ function basePostSelect(viewerId: string) {
 }
 
 async function ensurePostExists(postId: string): Promise<void> {
-  const result = await db
-    .select({ id: communityPosts.id })
-    .from(communityPosts)
-    .where(and(eq(communityPosts.id, postId), sql`${communityPosts.deletedAt} IS NULL`))
+  const result = await query(
+    'SELECT id FROM community_posts WHERE id = $1 AND deleted_at IS NULL',
+    [postId],
+  )
 
-  if (result.length === 0) throw httpError(404, '帖子不存在或已删除')
+  if (result.rows.length === 0) throw httpError(404, '帖子不存在或已删除')
 }
 
 async function getCommentCount(postId: string): Promise<number> {
-  const result = await db
-    .select({ cnt: count() })
-    .from(communityPostComments)
-    .where(
-      and(
-        eq(communityPostComments.postId, postId),
-        sql`${communityPostComments.deletedAt} IS NULL`,
-      ),
-    )
+  const result = await query(
+    'SELECT COUNT(*)::int AS cnt FROM community_post_comments WHERE post_id = $1 AND deleted_at IS NULL',
+    [postId],
+  )
 
-  return result[0]?.cnt ?? 0
+  return result.rows[0]?.cnt ?? 0
 }
 
 async function getImagesByPostIds(postIds: string[]): Promise<Map<string, CommunityImage[]>> {
@@ -484,42 +470,40 @@ async function getImagesByPostIds(postIds: string[]): Promise<Map<string, Commun
 
   if (postIds.length === 0) return imageMap
 
-  const rows = await db
-    .select()
-    .from(communityPostImages)
-    .where(sql`${communityPostImages.postId} = ANY(${postIds}::text[])`)
-    .orderBy(
-      communityPostImages.postId,
-      communityPostImages.sortOrder,
-      communityPostImages.createdAt,
-    )
+  const result = await query(
+    `SELECT id, post_id, url, storage_key, alt_text, sort_order, created_at
+     FROM community_post_images
+     WHERE post_id = ANY($1::text[])
+     ORDER BY post_id, sort_order, created_at`,
+    [postIds],
+  )
 
-  for (const row of rows) {
-    const images = imageMap.get(row.postId) || []
+  for (const row of result.rows) {
+    const images = imageMap.get(row.post_id) || []
     images.push(
       mapImageRow({
-        alt_text: row.altText,
-        created_at: row.createdAt,
+        alt_text: row.alt_text,
+        created_at: row.created_at,
         id: row.id,
-        post_id: row.postId,
-        sort_order: row.sortOrder,
-        storage_key: row.storageKey,
+        post_id: row.post_id,
+        sort_order: row.sort_order,
+        storage_key: row.storage_key,
         url: row.url,
       }),
     )
-    imageMap.set(row.postId, images)
+    imageMap.set(row.post_id, images)
   }
 
   return imageMap
 }
 
 async function getLikeCount(postId: string): Promise<number> {
-  const result = await db
-    .select({ cnt: count() })
-    .from(communityPostLikes)
-    .where(eq(communityPostLikes.postId, postId))
+  const result = await query(
+    'SELECT COUNT(*)::int AS cnt FROM community_post_likes WHERE post_id = $1',
+    [postId],
+  )
 
-  return result[0]?.cnt ?? 0
+  return result.rows[0]?.cnt ?? 0
 }
 
 async function getOriginalSummaryMap(
@@ -530,11 +514,12 @@ async function getOriginalSummaryMap(
   if (originalIds.length === 0) return summaryMap
 
   const viewerIdValue = viewerId || ''
-  const rows = await db.execute(
-    sql`${basePostSelect(viewerIdValue)} WHERE p.deleted_at IS NULL AND p.id = ANY(${originalIds}::text[])`,
+  const result = await query(
+    `${basePostSelect(viewerIdValue)} WHERE p.deleted_at IS NULL AND p.id = ANY($1::text[])`,
+    [originalIds],
   )
 
-  const postRows = typedQuery<CommunityPostRow>(rows.rows)
+  const postRows = typedQuery<CommunityPostRow>(result.rows)
   const imageMap = await getImagesByPostIds(postRows.map((row) => row.id))
   for (const row of postRows)
     summaryMap.set(row.id, mapPostSummary(row, imageMap.get(row.id) || []))
@@ -543,23 +528,20 @@ async function getOriginalSummaryMap(
 }
 
 async function getRepostTarget(postId: string): Promise<RepostTargetRow> {
-  const result = await db
-    .select({
-      city: communityPosts.city,
-      id: communityPosts.id,
-      originalPostId: communityPosts.originalPostId,
-      postType: communityPosts.postType,
-    })
-    .from(communityPosts)
-    .where(and(eq(communityPosts.id, postId), sql`${communityPosts.deletedAt} IS NULL`))
+  const result = await query(
+    `SELECT id, city, original_post_id, post_type
+     FROM community_posts
+     WHERE id = $1 AND deleted_at IS NULL`,
+    [postId],
+  )
 
-  if (result.length === 0) throw httpError(404, '帖子不存在或已删除')
+  if (result.rows.length === 0) throw httpError(404, '帖子不存在或已删除')
 
   return {
-    city: result[0].city,
-    id: result[0].id,
-    original_post_id: result[0].originalPostId,
-    post_type: result[0].postType as CommunityPostType,
+    city: result.rows[0].city,
+    id: result.rows[0].id,
+    original_post_id: result.rows[0].original_post_id,
+    post_type: result.rows[0].post_type as CommunityPostType,
   }
 }
 
@@ -582,7 +564,7 @@ async function hydratePosts(rows: CommunityPostRow[], viewerId?: string): Promis
 
 /** 插入帖子（在事务内使用） */
 async function insertPost(
-  tx: Parameters<Parameters<typeof db.transaction>[0]>[0],
+  client: PoolClient,
   authorId: string,
   input: CreateCommunityPostInput & { originalPostId?: null | string; postType: CommunityPostType; },
 ): Promise<string> {
@@ -593,27 +575,28 @@ async function insertPost(
       ? null
       : JSON.stringify(input.itinerarySnapshot)
 
-  await tx.insert(communityPosts).values({
-    authorId,
-    city: input.city?.trim() || '',
-    content: input.content?.trim() || '',
-    id,
-    itinerarySnapshot: itinerarySnapshot ? sql`${itinerarySnapshot}::jsonb` : null,
-    originalPostId: input.originalPostId || null,
-    postType: input.postType,
-    title: input.title?.trim() || '',
-  })
+  await client.query(
+    `INSERT INTO community_posts (id, author_id, city, content, itinerary_snapshot, original_post_id, post_type, title)
+     VALUES ($1, $2, $3, $4, $5::jsonb, $6, $7, $8)`,
+    [
+      id,
+      authorId,
+      input.city?.trim() || '',
+      input.content?.trim() || '',
+      itinerarySnapshot,
+      input.originalPostId || null,
+      input.postType,
+      input.title?.trim() || '',
+    ],
+  )
 
   const images = input.images || []
-  for (const [index, image] of images.entries()) {
-    await tx.insert(communityPostImages).values({
-      altText: image.altText?.trim() || '',
-      id: nanoid(12),
-      postId: id,
-      sortOrder: index,
-      storageKey: image.storageKey,
-      url: image.url,
-    })
+  for (const [idx, image] of images.entries()) {
+    await client.query(
+      `INSERT INTO community_post_images (id, post_id, url, storage_key, alt_text, sort_order)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [nanoid(12), id, image.url, image.storageKey, image.altText?.trim() || '', idx],
+    )
   }
 
   return id

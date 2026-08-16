@@ -21,43 +21,26 @@ vi.mock('nanoid', () => ({
   nanoid: vi.fn(() => 'mock-nanoid-id'),
 }))
 
-const mockSelect = vi.fn()
-const mockInsert = vi.fn()
-const mockUpdate = vi.fn()
-const mockDelete = vi.fn()
-const mockExecute = vi.fn()
-const mockTransaction = vi.fn()
+const mockQuery = vi.fn()
+const mockGetClient = vi.fn()
 
 vi.mock('@/lib/db', () => ({
-  db: {
-    delete: (...args: unknown[]) => mockDelete(...args),
-    execute: (...args: unknown[]) => mockExecute(...args),
-    insert: (...args: unknown[]) => mockInsert(...args),
-    select: (...args: unknown[]) => mockSelect(...args),
-    transaction: (...args: unknown[]) => mockTransaction(...args),
-    update: (...args: unknown[]) => mockUpdate(...args),
-  },
+  getClient: (...args: unknown[]) => mockGetClient(...args),
+  query: (...args: unknown[]) => mockQuery(...args),
   typedQuery: <T>(result: unknown[]) => result as unknown as T[],
 }))
 
-// ========== 辅助函数 ==========
-
-/** 创建可链式调用的 mock query builder */
-function createQueryBuilder(finalResult: unknown[]) {
-  const builder: Record<string, unknown> = {}
-  builder.from = vi.fn(() => builder)
-  builder.where = vi.fn(() => builder)
-  builder.orderBy = vi.fn(() => builder)
-  builder.limit = vi.fn(() => builder)
-  builder.offset = vi.fn(() => builder)
-  builder.innerJoin = vi.fn(() => builder)
-  builder.values = vi.fn(() => Promise.resolve(undefined))
-  builder.returning = vi.fn(() => Promise.resolve(finalResult))
-  builder.set = vi.fn(() => builder)
-  builder.onConflictDoNothing = vi.fn(() => Promise.resolve(undefined))
-  builder.then = (resolve: (value: unknown[]) => unknown) => resolve(finalResult)
-  return builder
+/** 创建一个 mock PoolClient */
+function createMockClient() {
+  const clientQuery = vi.fn()
+  return {
+    query: clientQuery,
+    release: vi.fn(),
+    _query: clientQuery,
+  }
 }
+
+// ========== 辅助函数 ==========
 
 /** 生成社区帖子原始行数据 */
 function makePostRow(
@@ -108,8 +91,10 @@ describe('community 服务', () => {
     it('正常返回帖子列表', async () => {
       // arrange
       const postRow = makePostRow()
-      mockSelect.mockReturnValue(createQueryBuilder([{ cnt: 1 }]))
-      mockExecute.mockResolvedValue({ rows: [postRow] })
+      mockQuery.mockResolvedValueOnce({ rows: [{ cnt: 1 }] }) // count
+      mockQuery.mockResolvedValueOnce({ rows: [postRow] }) // data
+      // hydratePosts: getImagesByPostIds
+      mockQuery.mockResolvedValueOnce({ rows: [] }) // images
 
       // act
       const result = await listCommunityPosts(
@@ -133,8 +118,8 @@ describe('community 服务', () => {
 
     it('分页参数归一化', async () => {
       // arrange
-      mockSelect.mockReturnValue(createQueryBuilder([{ cnt: 0 }]))
-      mockExecute.mockResolvedValue({ rows: [] })
+      mockQuery.mockResolvedValueOnce({ rows: [{ cnt: 0 }] }) // count
+      mockQuery.mockResolvedValueOnce({ rows: [] }) // data
 
       // act
       const result = await listCommunityPosts({
@@ -152,8 +137,8 @@ describe('community 服务', () => {
 
     it('城市筛选生效', async () => {
       // arrange
-      mockSelect.mockReturnValue(createQueryBuilder([{ cnt: 0 }]))
-      mockExecute.mockResolvedValue({ rows: [] })
+      mockQuery.mockResolvedValueOnce({ rows: [{ cnt: 0 }] }) // count
+      mockQuery.mockResolvedValueOnce({ rows: [] }) // data
 
       // act
       await listCommunityPosts({
@@ -165,8 +150,8 @@ describe('community 服务', () => {
       })
 
       // assert
-      // 验证 select 被调用（count 查询）
-      expect(mockSelect).toHaveBeenCalled()
+      // 验证 query 被调用（count 查询）
+      expect(mockQuery).toHaveBeenCalled()
     })
   })
 
@@ -176,7 +161,8 @@ describe('community 服务', () => {
     it('返回存在的帖子', async () => {
       // arrange
       const postRow = makePostRow()
-      mockExecute.mockResolvedValue({ rows: [postRow] })
+      mockQuery.mockResolvedValueOnce({ rows: [postRow] }) // data
+      mockQuery.mockResolvedValueOnce({ rows: [] }) // images
 
       // act
       const result = await getCommunityPostById('post-1', 'viewer-1')
@@ -190,7 +176,7 @@ describe('community 服务', () => {
 
     it('帖子不存在时返回 null', async () => {
       // arrange
-      mockExecute.mockResolvedValue({ rows: [] })
+      mockQuery.mockResolvedValueOnce({ rows: [] })
 
       // act
       const result = await getCommunityPostById('nonexistent')
@@ -205,17 +191,16 @@ describe('community 服务', () => {
   describe('createCommunityPost()', () => {
     it('成功创建原帖', async () => {
       // arrange
+      const client = createMockClient()
+      mockGetClient.mockResolvedValue(client)
+      client._query.mockResolvedValueOnce(undefined) // BEGIN
+      client._query.mockResolvedValueOnce({ rows: [] }) // INSERT post
+      client._query.mockResolvedValueOnce(undefined) // COMMIT
+
       const postRow = makePostRow({ id: 'new-post' })
-      mockTransaction.mockImplementation(async (callback: (tx: unknown) => Promise<string>) => {
-        const mockTx = {
-          insert: vi.fn().mockReturnValue({
-            values: vi.fn().mockResolvedValue(undefined),
-          }),
-        }
-        return callback(mockTx)
-      })
-      // getCommunityPostById 的 mock
-      mockExecute.mockResolvedValue({ rows: [postRow] })
+      // getCommunityPostById
+      mockQuery.mockResolvedValueOnce({ rows: [postRow] })
+      mockQuery.mockResolvedValueOnce({ rows: [] }) // images
 
       // act
       const result = await createCommunityPost('author-1', {
@@ -226,12 +211,17 @@ describe('community 服务', () => {
 
       // assert
       expect(result.id).toBe('new-post')
-      expect(mockTransaction).toHaveBeenCalled()
+      expect(client.query).toHaveBeenCalledWith('BEGIN')
+      expect(client.query).toHaveBeenCalledWith('COMMIT')
+      expect(client.release).toHaveBeenCalled()
     })
 
     it('事务回滚时抛出错误', async () => {
       // arrange
-      mockTransaction.mockRejectedValue(new Error('事务失败'))
+      const client = createMockClient()
+      mockGetClient.mockResolvedValue(client)
+      client._query.mockResolvedValueOnce(undefined) // BEGIN
+      client._query.mockRejectedValueOnce(new Error('事务失败')) // INSERT fails
 
       // act & assert
       await expect(
@@ -239,6 +229,8 @@ describe('community 服务', () => {
           title: '新帖子',
         }),
       ).rejects.toThrow('事务失败')
+      expect(client.query).toHaveBeenCalledWith('ROLLBACK')
+      expect(client.release).toHaveBeenCalled()
     })
   })
 
@@ -247,12 +239,8 @@ describe('community 服务', () => {
   describe('deleteCommunityPost()', () => {
     it('成功删除自己的帖子', async () => {
       // arrange
-      mockSelect.mockReturnValue(createQueryBuilder([{ authorId: 'author-1' }]))
-      mockUpdate.mockReturnValue({
-        set: vi.fn().mockReturnValue({
-          where: vi.fn().mockResolvedValue(undefined),
-        }),
-      })
+      mockQuery.mockResolvedValueOnce({ rows: [{ author_id: 'author-1' }] }) // SELECT
+      mockQuery.mockResolvedValueOnce({ rows: [] }) // UPDATE
 
       // act & assert
       await expect(deleteCommunityPost('post-1', 'author-1')).resolves.toBeUndefined()
@@ -260,7 +248,7 @@ describe('community 服务', () => {
 
     it('帖子不存在时抛出 404', async () => {
       // arrange
-      mockSelect.mockReturnValue(createQueryBuilder([]))
+      mockQuery.mockResolvedValueOnce({ rows: [] }) // SELECT
 
       // act & assert
       const err = (await deleteCommunityPost('nonexistent', 'author-1').catch(
@@ -272,7 +260,7 @@ describe('community 服务', () => {
 
     it('删除他人帖子时抛出 403', async () => {
       // arrange
-      mockSelect.mockReturnValue(createQueryBuilder([{ authorId: 'other-author' }]))
+      mockQuery.mockResolvedValueOnce({ rows: [{ author_id: 'other-author' }] }) // SELECT
 
       // act & assert
       const err = (await deleteCommunityPost('post-1', 'author-1').catch((e) => e)) as Error & {
@@ -288,25 +276,24 @@ describe('community 服务', () => {
   describe('likeCommunityPost()', () => {
     it('成功点赞帖子', async () => {
       // arrange
-      // ensurePostExists 的 mock
-      mockSelect.mockReturnValue(createQueryBuilder([{ id: 'post-1' }]))
-      // insert like 的 mock
-      mockInsert.mockReturnValue({
-        values: vi.fn().mockReturnValue({
-          onConflictDoNothing: vi.fn().mockResolvedValue(undefined),
-        }),
-      })
+      // ensurePostExists
+      mockQuery.mockResolvedValueOnce({ rows: [{ id: 'post-1' }] })
+      // INSERT like
+      mockQuery.mockResolvedValueOnce({ rows: [] })
+      // getLikeCount
+      mockQuery.mockResolvedValueOnce({ rows: [{ cnt: 6 }] })
 
       // act
       const result = await likeCommunityPost('post-1', 'user-1')
 
       // assert
       expect(result.likedByMe).toBe(true)
+      expect(result.likeCount).toBe(6)
     })
 
     it('帖子不存在时抛出 404', async () => {
       // arrange
-      mockSelect.mockReturnValue(createQueryBuilder([]))
+      mockQuery.mockResolvedValueOnce({ rows: [] }) // ensurePostExists
 
       // act & assert
       const err = (await likeCommunityPost('nonexistent', 'user-1').catch((e) => e)) as Error & {
@@ -319,23 +306,24 @@ describe('community 服务', () => {
   describe('unlikeCommunityPost()', () => {
     it('成功取消点赞', async () => {
       // arrange
-      // ensurePostExists 的 mock
-      mockSelect.mockReturnValue(createQueryBuilder([{ id: 'post-1' }]))
-      // delete like 的 mock
-      mockDelete.mockReturnValue({
-        where: vi.fn().mockResolvedValue(undefined),
-      })
+      // ensurePostExists
+      mockQuery.mockResolvedValueOnce({ rows: [{ id: 'post-1' }] })
+      // DELETE like
+      mockQuery.mockResolvedValueOnce({ rows: [] })
+      // getLikeCount
+      mockQuery.mockResolvedValueOnce({ rows: [{ cnt: 4 }] })
 
       // act
       const result = await unlikeCommunityPost('post-1', 'user-1')
 
       // assert
       expect(result.likedByMe).toBe(false)
+      expect(result.likeCount).toBe(4)
     })
 
     it('帖子不存在时抛出 404', async () => {
       // arrange
-      mockSelect.mockReturnValue(createQueryBuilder([]))
+      mockQuery.mockResolvedValueOnce({ rows: [] }) // ensurePostExists
 
       // act & assert
       const err = (await unlikeCommunityPost('nonexistent', 'user-1').catch((e) => e)) as Error & {
@@ -351,22 +339,23 @@ describe('community 服务', () => {
     it('返回评论列表', async () => {
       // arrange
       // ensurePostExists
-      mockSelect
-        .mockReturnValueOnce(createQueryBuilder([{ id: 'post-1' }])) // ensurePostExists
-        .mockReturnValueOnce(
-          createQueryBuilder([
-            {
-              authorId: 'user-1',
-              authorUsername: 'commenter',
-              content: '好帖子',
-              createdAt: new Date('2024-01-15T12:00:00Z'),
-              id: 'comment-1',
-              postId: 'post-1',
-              updatedAt: new Date('2024-01-15T12:00:00Z'),
-            },
-          ]),
-        ) // data
-        .mockReturnValueOnce(createQueryBuilder([{ cnt: 1 }])) // count
+      mockQuery.mockResolvedValueOnce({ rows: [{ id: 'post-1' }] })
+      // data query
+      mockQuery.mockResolvedValueOnce({
+        rows: [
+          {
+            author_id: 'user-1',
+            author_username: 'commenter',
+            content: '好帖子',
+            created_at: new Date('2024-01-15T12:00:00Z'),
+            id: 'comment-1',
+            post_id: 'post-1',
+            updated_at: new Date('2024-01-15T12:00:00Z'),
+          },
+        ],
+      })
+      // count query
+      mockQuery.mockResolvedValueOnce({ rows: [{ cnt: 1 }] })
 
       // act
       const result = await listCommunityComments('post-1', 1, 20)
@@ -383,24 +372,25 @@ describe('community 服务', () => {
   describe('createCommunityComment()', () => {
     it('成功创建评论', async () => {
       // arrange
-      // ensurePostExists 的 mock
-      mockSelect.mockReturnValueOnce(createQueryBuilder([{ id: 'post-1' }]))
-      // insert returning
-      const insertedComment = {
-        authorId: 'user-1',
-        content: '评论内容',
-        createdAt: new Date('2024-01-15T12:00:00Z'),
-        id: 'comment-1',
-        postId: 'post-1',
-        updatedAt: new Date('2024-01-15T12:00:00Z'),
-      }
-      mockInsert.mockReturnValue({
-        values: vi.fn().mockReturnValue({
-          returning: vi.fn().mockResolvedValue([insertedComment]),
-        }),
+      // ensurePostExists
+      mockQuery.mockResolvedValueOnce({ rows: [{ id: 'post-1' }] })
+      // INSERT RETURNING
+      mockQuery.mockResolvedValueOnce({
+        rows: [
+          {
+            author_id: 'user-1',
+            content: '评论内容',
+            created_at: new Date('2024-01-15T12:00:00Z'),
+            id: 'comment-1',
+            post_id: 'post-1',
+            updated_at: new Date('2024-01-15T12:00:00Z'),
+          },
+        ],
       })
       // 查询用户名
-      mockSelect.mockReturnValueOnce(createQueryBuilder([{ username: 'testuser' }]))
+      mockQuery.mockResolvedValueOnce({ rows: [{ username: 'testuser' }] })
+      // getCommentCount
+      mockQuery.mockResolvedValueOnce({ rows: [{ cnt: 1 }] })
 
       // act
       const result = await createCommunityComment('post-1', 'user-1', '评论内容')
@@ -416,12 +406,8 @@ describe('community 服务', () => {
   describe('deleteCommunityComment()', () => {
     it('成功删除自己的评论', async () => {
       // arrange
-      mockSelect.mockReturnValue(createQueryBuilder([{ authorId: 'user-1' }]))
-      mockUpdate.mockReturnValue({
-        set: vi.fn().mockReturnValue({
-          where: vi.fn().mockResolvedValue(undefined),
-        }),
-      })
+      mockQuery.mockResolvedValueOnce({ rows: [{ author_id: 'user-1' }] }) // SELECT
+      mockQuery.mockResolvedValueOnce({ rows: [] }) // UPDATE
 
       // act & assert
       await expect(deleteCommunityComment('comment-1', 'user-1')).resolves.toBeUndefined()
@@ -429,7 +415,7 @@ describe('community 服务', () => {
 
     it('评论不存在时抛出 404', async () => {
       // arrange
-      mockSelect.mockReturnValue(createQueryBuilder([]))
+      mockQuery.mockResolvedValueOnce({ rows: [] }) // SELECT
 
       // act & assert
       const err = (await deleteCommunityComment('nonexistent', 'user-1').catch(
@@ -441,7 +427,7 @@ describe('community 服务', () => {
 
     it('删除他人评论时抛出 403', async () => {
       // arrange
-      mockSelect.mockReturnValue(createQueryBuilder([{ authorId: 'other-user' }]))
+      mockQuery.mockResolvedValueOnce({ rows: [{ author_id: 'other-user' }] }) // SELECT
 
       // act & assert
       const err = (await deleteCommunityComment('comment-1', 'user-1').catch((e) => e)) as Error & {
@@ -458,28 +444,18 @@ describe('community 服务', () => {
     it('成功转发帖子', async () => {
       // arrange
       // getRepostTarget
-      mockSelect.mockReturnValueOnce(
-        createQueryBuilder([
-          {
-            city: '北京',
-            id: 'post-1',
-            originalPostId: null,
-            postType: 'original',
-          },
-        ]),
-      )
-      // ensurePostExists (originalPostId = post-1)
-      mockSelect.mockReturnValueOnce(createQueryBuilder([{ id: 'post-1' }]))
-
-      // insertPost in transaction
-      mockTransaction.mockImplementation(async (callback: (tx: unknown) => Promise<string>) => {
-        const mockTx = {
-          insert: vi.fn().mockReturnValue({
-            values: vi.fn().mockResolvedValue(undefined),
-          }),
-        }
-        return callback(mockTx)
+      mockQuery.mockResolvedValueOnce({
+        rows: [{ city: '北京', id: 'post-1', original_post_id: null, post_type: 'original' }],
       })
+      // ensurePostExists (originalPostId = post-1)
+      mockQuery.mockResolvedValueOnce({ rows: [{ id: 'post-1' }] })
+
+      // transaction
+      const client = createMockClient()
+      mockGetClient.mockResolvedValue(client)
+      client._query.mockResolvedValueOnce(undefined) // BEGIN
+      client._query.mockResolvedValueOnce({ rows: [] }) // INSERT post
+      client._query.mockResolvedValueOnce(undefined) // COMMIT
 
       // getCommunityPostById
       const repostRow = makePostRow({
@@ -487,7 +463,12 @@ describe('community 服务', () => {
         original_post_id: 'post-1',
         post_type: 'repost',
       })
-      mockExecute.mockResolvedValue({ rows: [repostRow] })
+      mockQuery.mockResolvedValueOnce({ rows: [repostRow] }) // post data
+      mockQuery.mockResolvedValueOnce({ rows: [] }) // images for repost
+      // getOriginalSummaryMap (original post 'post-1')
+      const originalRow = makePostRow({ id: 'post-1' })
+      mockQuery.mockResolvedValueOnce({ rows: [originalRow] })
+      mockQuery.mockResolvedValueOnce({ rows: [] }) // images for original
 
       // act
       const result = await repostCommunityPost('post-1', 'author-2', '转发评论')
@@ -499,7 +480,7 @@ describe('community 服务', () => {
 
     it('转发不存在的帖子时抛出 404', async () => {
       // arrange
-      mockSelect.mockReturnValue(createQueryBuilder([]))
+      mockQuery.mockResolvedValueOnce({ rows: [] }) // getRepostTarget
 
       // act & assert
       const err = (await repostCommunityPost('nonexistent', 'author-1').catch(

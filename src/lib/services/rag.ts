@@ -3,11 +3,7 @@
  * 混合检索：向量语义搜索 + 关键词匹配
  * 当 embedding 不可用时降级为 TF-IDF
  */
-import { sql } from 'drizzle-orm'
-
-import { attractionKnowledge } from '@/db/schema'
-
-import { db } from '../db'
+import { query } from '../db'
 import { createLogger } from '../utils/logger'
 import { formatEmbeddingForPg, generateEmbedding } from './embedding'
 import { TFIDFIndex } from './tfidf'
@@ -61,27 +57,15 @@ async function getCityData(cityName: string): Promise<CityKnowledge | null> {
 async function loadKnowledge(): Promise<CityKnowledge[]> {
   if (knowledgeCache) return knowledgeCache
 
-  const rows = await db
-    .select({
-      accommodation: attractionKnowledge.accommodation,
-      bestSeason: attractionKnowledge.bestSeason,
-      city: attractionKnowledge.city,
-      description: attractionKnowledge.description,
-      duration: attractionKnowledge.duration,
-      food: attractionKnowledge.food,
-      indoor: attractionKnowledge.indoor,
-      name: attractionKnowledge.name,
-      nightlife: attractionKnowledge.nightlife,
-      tags: attractionKnowledge.tags,
-      ticket: attractionKnowledge.ticket,
-      tips: attractionKnowledge.tips,
-      transport: attractionKnowledge.transport,
-    })
-    .from(attractionKnowledge)
-    .orderBy(attractionKnowledge.city, attractionKnowledge.name)
+  const result = await query(
+    `SELECT city, name, description, ticket, duration, tips, indoor, tags, food,
+            transport, best_season, accommodation, nightlife
+     FROM attraction_knowledge
+     ORDER BY city, name`,
+  )
 
   const cityMap = new Map<string, CityKnowledge>()
-  for (const row of rows) {
+  for (const row of result.rows) {
     if (!cityMap.has(row.city)) {
       cityMap.set(row.city, {
         accommodation:
@@ -89,7 +73,7 @@ async function loadKnowledge(): Promise<CityKnowledge[]> {
             ? JSON.parse(row.accommodation)
             : row.accommodation || [],
         attractions: [],
-        bestSeason: row.bestSeason || '',
+        bestSeason: row.best_season || '',
         city: row.city,
         food: row.food || [],
         nightlife:
@@ -233,13 +217,14 @@ async function vectorSearch(queryText: string, city: string): Promise<Map<string
   const vectorStr = formatEmbeddingForPg(embedding)
 
   try {
-    const result = await db.execute<{ name: string; similarity: number }>(sql`
-      SELECT name, 1 - (embedding <=> ${vectorStr}::vector) AS similarity
-      FROM attraction_knowledge
-      WHERE city = ${city} AND embedding IS NOT NULL
-      ORDER BY embedding <=> ${vectorStr}::vector
-      LIMIT 10
-    `)
+    const result = await query(
+      `SELECT name, 1 - (embedding <=> $1::vector) AS similarity
+       FROM attraction_knowledge
+       WHERE city = $2 AND embedding IS NOT NULL
+       ORDER BY embedding <=> $1::vector
+       LIMIT 10`,
+      [vectorStr, city],
+    )
 
     for (const row of result.rows) {
       scoreMap.set(row.name, Number(row.similarity))

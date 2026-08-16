@@ -46,37 +46,11 @@ vi.mock('jose', () => {
   }
 })
 
-const mockSelect = vi.fn()
-const mockInsert = vi.fn()
-const mockUpdate = vi.fn()
-const mockDelete = vi.fn()
-const mockExecute = vi.fn()
+const mockQuery = vi.fn()
 
 vi.mock('@/lib/db', () => ({
-  db: {
-    delete: (...args: unknown[]) => mockDelete(...args),
-    execute: (...args: unknown[]) => mockExecute(...args),
-    insert: (...args: unknown[]) => mockInsert(...args),
-    select: (...args: unknown[]) => mockSelect(...args),
-    update: (...args: unknown[]) => mockUpdate(...args),
-  },
+  query: (...args: unknown[]) => mockQuery(...args),
 }))
-
-// ========== 辅助函数 ==========
-
-/** 创建可链式调用的 mock query builder */
-function createQueryBuilder(finalResult: unknown[]) {
-  const builder: Record<string, unknown> = {}
-  builder.from = vi.fn(() => builder)
-  builder.where = vi.fn(() => builder)
-  builder.orderBy = vi.fn(() => builder)
-  builder.values = vi.fn(() => Promise.resolve(undefined))
-  builder.set = vi.fn(() => builder)
-  builder.onConflictDoNothing = vi.fn(() => Promise.resolve(undefined))
-  // 最终返回结果
-  builder.then = (resolve: (value: unknown[]) => unknown) => resolve(finalResult)
-  return builder
-}
 
 // ========== 测试 ==========
 
@@ -90,10 +64,8 @@ describe('auth 服务', () => {
   describe('register()', () => {
     it('成功注册用户', async () => {
       // arrange
-      mockSelect.mockReturnValue(createQueryBuilder([])) // 用户名不存在
-      mockInsert.mockReturnValue({
-        values: vi.fn().mockResolvedValue(undefined),
-      })
+      mockQuery.mockResolvedValueOnce({ rows: [] }) // 用户名不存在
+      mockQuery.mockResolvedValueOnce({ rows: [] }) // INSERT
       vi.spyOn(bcrypt, 'hash').mockResolvedValue('hashed-password' as never)
       mockSignJwt.mockResolvedValue('mock-jwt-token')
 
@@ -130,7 +102,7 @@ describe('auth 服务', () => {
 
     it('用户名已存在时抛出错误', async () => {
       // arrange
-      mockSelect.mockReturnValue(createQueryBuilder([{ id: 'existing-id' }]))
+      mockQuery.mockResolvedValueOnce({ rows: [{ id: 'existing-id' }] })
 
       // act & assert
       await expect(register('existinguser', 'Password123')).rejects.toThrow('用户名已存在')
@@ -143,16 +115,9 @@ describe('auth 服务', () => {
     it('成功登录', async () => {
       // arrange
       const createdAt = new Date('2024-01-01T00:00:00Z')
-      mockSelect.mockReturnValue(
-        createQueryBuilder([
-          {
-            createdAt,
-            id: 'user-1',
-            passwordHash: 'hashed-pw',
-            username: 'testuser',
-          },
-        ]),
-      )
+      mockQuery.mockResolvedValueOnce({
+        rows: [{ created_at: createdAt, id: 'user-1', password_hash: 'hashed-pw', username: 'testuser' }],
+      })
       vi.spyOn(bcrypt, 'compare').mockResolvedValue(true as never)
       mockSignJwt.mockResolvedValue('login-token')
 
@@ -176,7 +141,7 @@ describe('auth 服务', () => {
 
     it('用户不存在时抛出错误', async () => {
       // arrange
-      mockSelect.mockReturnValue(createQueryBuilder([]))
+      mockQuery.mockResolvedValueOnce({ rows: [] })
 
       // act & assert
       await expect(login('nonexistent', 'Password123')).rejects.toThrow('用户名或密码错误')
@@ -184,16 +149,9 @@ describe('auth 服务', () => {
 
     it('密码错误时抛出错误', async () => {
       // arrange
-      mockSelect.mockReturnValue(
-        createQueryBuilder([
-          {
-            createdAt: new Date(),
-            id: 'user-1',
-            passwordHash: 'hashed-pw',
-            username: 'testuser',
-          },
-        ]),
-      )
+      mockQuery.mockResolvedValueOnce({
+        rows: [{ created_at: new Date(), id: 'user-1', password_hash: 'hashed-pw', username: 'testuser' }],
+      })
       vi.spyOn(bcrypt, 'compare').mockResolvedValue(false as never)
 
       // act & assert
@@ -322,7 +280,7 @@ describe('auth 服务', () => {
   describe('consumeAiQuota()', () => {
     it('正常消耗一次配额', async () => {
       // arrange
-      mockExecute.mockResolvedValue({ rows: [{ used_count: 3 }] })
+      mockQuery.mockResolvedValueOnce({ rows: [{ used_count: 3 }] })
 
       // act
       const result = await consumeAiQuota('user-1', '2024-01-15')
@@ -335,9 +293,9 @@ describe('auth 服务', () => {
 
     it('达到上限时抛出 429 错误', async () => {
       // arrange
-      mockExecute.mockResolvedValue({ rows: [] }) // RETURNING 为空 = 已达上限
+      mockQuery.mockResolvedValueOnce({ rows: [] }) // RETURNING 为空 = 已达上限
       // getAiQuotaStatus 的 mock
-      mockSelect.mockReturnValue(createQueryBuilder([{ usedCount: 10 }]))
+      mockQuery.mockResolvedValueOnce({ rows: [{ used_count: 10 }] })
 
       // act & assert
       const err = (await consumeAiQuota('user-1', '2024-01-15').catch((e) => e)) as Error & {
@@ -358,11 +316,7 @@ describe('auth 服务', () => {
   describe('addFavoriteAttraction()', () => {
     it('成功添加收藏', async () => {
       // arrange
-      mockInsert.mockReturnValue({
-        values: vi.fn().mockReturnValue({
-          onConflictDoNothing: vi.fn().mockResolvedValue(undefined),
-        }),
-      })
+      mockQuery.mockResolvedValueOnce({ rows: [] })
 
       // act & assert
       await expect(addFavoriteAttraction('user-1', 'attraction-1')).resolves.toBeUndefined()
@@ -380,9 +334,7 @@ describe('auth 服务', () => {
   describe('removeFavoriteAttraction()', () => {
     it('成功取消收藏', async () => {
       // arrange
-      mockDelete.mockReturnValue({
-        where: vi.fn().mockResolvedValue(undefined),
-      })
+      mockQuery.mockResolvedValueOnce({ rows: [] })
 
       // act & assert
       await expect(removeFavoriteAttraction('user-1', 'attraction-1')).resolves.toBeUndefined()
@@ -402,14 +354,10 @@ describe('auth 服务', () => {
   describe('changePassword()', () => {
     it('成功修改密码', async () => {
       // arrange
-      mockSelect.mockReturnValue(createQueryBuilder([{ passwordHash: 'old-hashed' }]))
+      mockQuery.mockResolvedValueOnce({ rows: [{ password_hash: 'old-hashed' }] })
       vi.spyOn(bcrypt, 'compare').mockResolvedValue(true as never)
       vi.spyOn(bcrypt, 'hash').mockResolvedValue('new-hashed' as never)
-      mockUpdate.mockReturnValue({
-        set: vi.fn().mockReturnValue({
-          where: vi.fn().mockResolvedValue(undefined),
-        }),
-      })
+      mockQuery.mockResolvedValueOnce({ rows: [] }) // UPDATE
 
       // act & assert
       await expect(
@@ -419,7 +367,7 @@ describe('auth 服务', () => {
 
     it('当前密码错误时抛出错误', async () => {
       // arrange
-      mockSelect.mockReturnValue(createQueryBuilder([{ passwordHash: 'old-hashed' }]))
+      mockQuery.mockResolvedValueOnce({ rows: [{ password_hash: 'old-hashed' }] })
       vi.spyOn(bcrypt, 'compare').mockResolvedValue(false as never)
 
       // act & assert
@@ -430,7 +378,7 @@ describe('auth 服务', () => {
 
     it('用户不存在时抛出错误', async () => {
       // arrange
-      mockSelect.mockReturnValue(createQueryBuilder([]))
+      mockQuery.mockResolvedValueOnce({ rows: [] })
 
       // act & assert
       await expect(changePassword('nonexistent', 'OldPassword1', 'NewPassword1')).rejects.toThrow(

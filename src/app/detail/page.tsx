@@ -214,7 +214,7 @@ export default function Detail() {
                 </span>
                 <button
                   aria-label="关闭行程规划并返回"
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-stone-900/8 bg-white/72 text-sm text-stone-900/72 transition-all hover:rotate-[8deg] hover:scale-104 hover:bg-accent/20 hover:text-accent-strong"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-stone-900/8 bg-white/72 text-sm text-stone-900/72 transition-all hover:rotate-[8deg] hover:scale-105 hover:bg-accent/20 hover:text-[#d63350]"
                   onClick={() => router.back()}
                   type="button"
                 >
@@ -240,7 +240,7 @@ export default function Detail() {
 
         {!showLoading && errorMessage ? (
           <div className="mx-auto -mt-9 flex w-full max-w-[560px] flex-col items-center gap-4 rounded-[26px] border border-[var(--travel-frosted-border)] bg-travel-surface p-[52px_22px] shadow-[var(--shadow-paper)]" role="alert">
-            <div className="flex h-[82px] w-[82px] items-center justify-center rounded-6xl bg-sand/15 text-[40px] text-travel-ink shadow-[0_16px_34px_rgba(var(--travel-ocean-rgb),0.1)]">
+            <div className="flex h-[82px] w-[82px] items-center justify-center rounded-3xl bg-[#d4a76a]/15 text-[40px] text-travel-ink shadow-[0_16px_34px_rgba(var(--travel-ocean-rgb),0.1)]">
               <MapPin aria-hidden="true" />
             </div>
             <p className="text-center font-serif text-sm leading-relaxed text-stone-900/74">
@@ -300,7 +300,7 @@ export default function Detail() {
             </div>
           ) : (
             <div className="mx-auto -mt-9 flex w-full max-w-[560px] flex-col items-center gap-4 rounded-[26px] border border-[var(--travel-frosted-border)] bg-travel-surface p-[52px_22px] shadow-[var(--shadow-paper)]" role="status">
-              <div className="flex h-[82px] w-[82px] items-center justify-center rounded-6xl bg-sand/15 text-[40px] text-travel-ink shadow-[0_16px_34px_rgba(var(--travel-ocean-rgb),0.1)]">
+              <div className="flex h-[82px] w-[82px] items-center justify-center rounded-3xl bg-[#d4a76a]/15 text-[40px] text-travel-ink shadow-[0_16px_34px_rgba(var(--travel-ocean-rgb),0.1)]">
                 <MapPin aria-hidden="true" />
               </div>
               <p className="text-center font-serif text-sm leading-relaxed text-stone-900/74">

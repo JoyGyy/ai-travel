@@ -36,6 +36,7 @@ const config: Config = {
         accent: {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
+          strong: '#d63350',
         },
         destructive: {
           DEFAULT: 'hsl(var(--destructive))',
@@ -55,6 +56,8 @@ const config: Config = {
           surface: '#fafaf9',
           border: '#d6d3d1',
           'border-light': '#e7e5e4',
+          sand: '#d4a76a',
+          'sand-light': '#fff0d6',
         },
       },
       fontFamily: {

@@ -109,14 +109,18 @@ src/
 
 ## 部署
 
-```bash
-# 构建并启动
-pnpm build
-pm2 start ecosystem.config.cjs
+> ⚠️ 生产服务器内存仅 1.8G，**不要在服务器上执行 `pnpm build`**（会触发 OOM 导致构建产物损坏）。构建在本地完成，部署脚本只上传产物。
 
-# 或使用部署脚本
-./deploy.sh
+在**本地开发机**执行部署脚本：
+
+```bash
+./deploy.sh                 # 使用默认 SSH 别名 ecs
+DEPLOY_HOST=myhost ./deploy.sh  # 指定 SSH 主机别名
 ```
+
+脚本流程：本地 `pnpm build` → 上传源码 + `.next` 产物 → 服务器安装依赖（国内镜像）→ 重启 PM2 → 健康检查。
+
+部署时自动保留服务器上的运行数据：`.env`（密钥）、`public/uploads/`（社区图片）、`data/shared_itineraries.json`（分享记录）、`logs/`。
 
 参考 `nginx.conf` 配置 Nginx 反向代理。
 

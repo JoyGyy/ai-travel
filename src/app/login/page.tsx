@@ -5,10 +5,10 @@
  * 左右分栏布局：左侧品牌展示区，右侧登录/注册表单。
  * 通过 Zustand auth store 管理认证状态，支持登录和注册两种模式切换。
  */
-import { ArrowLeft, Compass } from 'lucide-react'
+import { ArrowLeft, Compass, Eye, EyeOff } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { ComplianceFooter } from '@/components/ComplianceFooter'
 import { useAppToast } from '@/hooks/useAppToast'
@@ -45,7 +45,21 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [formError, setFormError] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState<{ username?: string; password?: string }>({})
+  const usernameRef = useRef<HTMLInputElement>(null)
+  const passwordRef = useRef<HTMLInputElement>(null)
   const currentCopy = formCopy[tab]
+
+  /* ---------- focus 到第一个错误字段 ---------- */
+
+  useEffect(() => {
+    if (fieldErrors.username) {
+      usernameRef.current?.focus()
+    } else if (fieldErrors.password) {
+      passwordRef.current?.focus()
+    }
+  }, [fieldErrors])
 
   /* ---------- 登录/注册模式切换 ---------- */
 
@@ -54,15 +68,21 @@ export default function Login() {
     setUsername('')
     setPassword('')
     setFormError('')
+    setFieldErrors({})
+    setShowPassword(false)
   }
 
-  /* ---------- 表单校验 ---------- */
+  /* ---------- 表单校验（返回字段级错误） ---------- */
 
-  function validateForm() {
-    if (!username.trim()) return '请输入用户名'
-    if (!password) return '请输入密码'
-    if (tab === 'register' && password.length < 6) return '密码长度至少 6 位'
-    return ''
+  function validateForm(): { username?: string; password?: string } {
+    const errors: { username?: string; password?: string } = {}
+    if (!username.trim()) errors.username = '请输入用户名'
+    if (!password) {
+      errors.password = '请输入密码'
+    } else if (tab === 'register' && password.length < 6) {
+      errors.password = '密码长度至少 6 位'
+    }
+    return errors
   }
 
   /* ---------- 提交登录/注册请求 ---------- */
@@ -71,12 +91,14 @@ export default function Login() {
     event.preventDefault()
     if (loading) return
 
-    const validationError = validateForm()
-    if (validationError) {
-      setFormError(validationError)
+    const errors = validateForm()
+    if (errors.username || errors.password) {
+      setFieldErrors(errors)
+      setFormError('')
       return
     }
 
+    setFieldErrors({})
     setFormError('')
     setLoading(true)
     try {
@@ -88,6 +110,7 @@ export default function Login() {
       toast.success(tab === 'login' ? '登录成功' : '注册成功')
       router.push('/')
     } catch (err: unknown) {
+      setFieldErrors({})
       setFormError(err instanceof Error ? err.message : '操作失败，请检查信息后重试')
     } finally {
       setLoading(false)
@@ -207,44 +230,69 @@ export default function Login() {
             <div className="mb-5">
               <label className="mb-1.5 block text-sm font-medium text-stone-700" htmlFor="login-username">
                 用户名
+                <span aria-hidden="true" className="ml-1 text-destructive">*</span>
               </label>
               <input
-                aria-invalid={Boolean(formError && !username.trim())}
+                aria-invalid={Boolean(fieldErrors.username)}
                 autoComplete="username"
                 className="h-11 w-full rounded-md border border-travel-border bg-white px-3.5 text-sm text-travel-ink outline-none transition-[border-color,box-shadow] placeholder:text-stone-400 focus:border-travel-orange focus:ring-2 focus:ring-travel-orange/10 aria-[invalid=true]:border-red-500"
                 id="login-username"
                 name="username"
                 onChange={(e) => {
                   setUsername(e.target.value)
-                  setFormError('')
+                  if (fieldErrors.username) setFieldErrors((prev) => ({ ...prev, username: undefined }))
+                  if (formError) setFormError('')
                 }}
                 placeholder="请输入用户名"
+                ref={usernameRef}
                 spellCheck={false}
                 type="text"
                 value={username}
               />
+              {fieldErrors.username && (
+                <p aria-live="polite" className="mt-1.5 text-xs text-red-600">
+                  {fieldErrors.username}
+                </p>
+              )}
             </div>
 
             <div className="mb-5">
               <label className="mb-1.5 block text-sm font-medium text-stone-700" htmlFor="login-password">
                 密码
+                <span aria-hidden="true" className="ml-1 text-destructive">*</span>
               </label>
-              <input
-                aria-invalid={Boolean(
-                  formError && (!password || (tab === 'register' && password.length < 6)),
-                )}
-                autoComplete={tab === 'register' ? 'new-password' : 'current-password'}
-                className="h-11 w-full rounded-md border border-travel-border bg-white px-3.5 text-sm text-travel-ink outline-none transition-[border-color,box-shadow] placeholder:text-stone-400 focus:border-travel-orange focus:ring-2 focus:ring-travel-orange/10 aria-[invalid=true]:border-red-500"
-                id="login-password"
-                name="password"
-                onChange={(e) => {
-                  setPassword(e.target.value)
-                  setFormError('')
-                }}
-                placeholder={currentCopy.passwordPlaceholder}
-                type="password"
-                value={password}
-              />
+              <div className="relative">
+                <input
+                  aria-invalid={Boolean(fieldErrors.password)}
+                  autoComplete={tab === 'register' ? 'new-password' : 'current-password'}
+                  className="h-11 w-full rounded-md border border-travel-border bg-white pr-10 pl-3.5 text-sm text-travel-ink outline-none transition-[border-color,box-shadow] placeholder:text-stone-400 focus:border-travel-orange focus:ring-2 focus:ring-travel-orange/10 aria-[invalid=true]:border-red-500"
+                  id="login-password"
+                  name="password"
+                  onChange={(e) => {
+                    setPassword(e.target.value)
+                    if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: undefined }))
+                  if (formError) setFormError('')
+                  }}
+                  placeholder={currentCopy.passwordPlaceholder}
+                  ref={passwordRef}
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                />
+                <button
+                  aria-label={showPassword ? '隐藏密码' : '显示密码'}
+                  className="absolute top-1/2 right-2.5 -translate-y-1/2 border-none bg-transparent p-0.5 text-stone-400 transition-colors hover:text-stone-600"
+                  onClick={() => setShowPassword((v) => !v)}
+                  tabIndex={-1}
+                  type="button"
+                >
+                  {showPassword ? <EyeOff aria-hidden="true" size={18} /> : <Eye aria-hidden="true" size={18} />}
+                </button>
+              </div>
+              {fieldErrors.password && (
+                <p aria-live="polite" className="mt-1.5 text-xs text-red-600">
+                  {fieldErrors.password}
+                </p>
+              )}
             </div>
 
             <button

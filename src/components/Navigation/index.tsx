@@ -32,7 +32,7 @@ export function Navigation() {
 /* ========== 顶部导航栏 ========== */
 
 /** 根据路径判断是否显示导航栏 */
-function shouldShowNav(pathname: string) {
+export function shouldShowNav(pathname: string) {
   if (pathname === '/' || pathname === '/login') return false
 
   return (

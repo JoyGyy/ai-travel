@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 
 import { AppProviders } from '@/components/AppProviders'
+import { MainWrapper } from '@/components/MainWrapper'
 import { Navigation } from '@/components/Navigation'
 
 import './globals.css'
@@ -22,7 +23,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         </a>
         <AppProviders>
           <Navigation />
-          <main className="pt-[72px]" id="main-content">{children}</main>
+          <MainWrapper>{children}</MainWrapper>
         </AppProviders>
       </body>
     </html>

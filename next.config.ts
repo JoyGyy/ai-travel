@@ -3,7 +3,7 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   // Turbopack 配置 - 明确指定项目根目录
   turbopack: {
-    root: '.',
+    root: import.meta.dirname,
   },
 
   // 图片域名白名单

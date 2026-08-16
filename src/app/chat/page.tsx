@@ -5,8 +5,6 @@ import './style.css'
 import { Send, Trash2 } from 'lucide-react'
 import { type FormEvent, useState } from 'react'
 
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
 import { useTravelChat } from '@/hooks/useTravelChat'
 
 export default function ChatPage() {
@@ -79,20 +77,15 @@ export default function ChatPage() {
         )}
 
         {messages.map((message) => (
-          <div className="chat-page__typing" key={message.id}>
+          <div
+            className={message.role === 'user' ? 'chat-page__user-msg-wrapper' : 'chat-page__typing'}
+            key={message.id}
+            style={message.role === 'user' ? { textAlign: 'right', margin: '0 8px 12px' } : undefined}
+          >
             {message.role === 'assistant' && (
               <div className="chat-page__typing-avatar">🤖</div>
             )}
-            <div
-              className={message.role === 'user' ? 'chat-page__error' : ''}
-              style={{
-                marginLeft: message.role === 'user' ? 'auto' : undefined,
-                maxWidth: message.role === 'user' ? '70%' : undefined,
-                background: message.role === 'user' ? 'var(--color-primary)' : undefined,
-                color: message.role === 'user' ? '#fff' : undefined,
-                border: message.role === 'user' ? 'none' : undefined,
-              }}
-            >
+            <div className={message.role === 'user' ? 'chat-page__user-msg' : ''}>
               {message.parts.map((part, index) => {
                 if (part.type === 'text') {
                   return <p key={index}>{part.text}</p>

@@ -205,7 +205,7 @@ export default function Community() {
       </section>
 
       {loading ? (
-        <section aria-live="polite" className="columns-2 gap-4" role="status">
+        <section aria-live="polite" className="columns-1 sm:columns-2 gap-4" role="status">
           {Array.from({ length: 3 }).map((_, i) => (
             <CommunityPostCardSkeleton key={i} />
           ))}
@@ -235,7 +235,7 @@ export default function Community() {
 
       {!loading && !error && items.length > 0 ? (
         <>
-          <section aria-label="社区分享列表" className="columns-2 gap-4 break-inside-avoid">
+          <section aria-label="社区分享列表" className="columns-1 sm:columns-2 gap-4 break-inside-avoid">
             {items.map((post) => (
               <CommunityPostCard
                 currentUserId={user?.id}

@@ -209,11 +209,13 @@
 
 html {
   min-width: 320px;
+  overflow-x: hidden;
   scroll-behavior: smooth;
 }
 
 body {
   min-width: 320px;
+  overflow-x: hidden;
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

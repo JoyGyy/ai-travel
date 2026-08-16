@@ -22,7 +22,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         </a>
         <AppProviders>
           <Navigation />
-          <main id="main-content">{children}</main>
+          <main className="pt-[72px]" id="main-content">{children}</main>
         </AppProviders>
       </body>
     </html>

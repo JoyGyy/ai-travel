@@ -249,23 +249,8 @@ export default function CommunityPostDetail() {
 
   return (
     <main aria-labelledby="community-detail-title" className="travel-page-shell gap-6">
-      {/* 页面进入动画 */}
-      <style jsx global>{`
-        @keyframes detailFadeIn {
-          from { opacity: 0; transform: translateY(16px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .community-detail > * {
-          animation: detailFadeIn 0.5s ease-out backwards;
-        }
-        .community-detail > *:nth-child(1) { animation-delay: 0s; }
-        .community-detail > *:nth-child(2) { animation-delay: 0.1s; }
-        .community-detail > *:nth-child(3) { animation-delay: 0.2s; }
-        .community-detail > *:nth-child(4) { animation-delay: 0.3s; }
-      `}</style>
-
       <button
-        className="inline-flex w-fit items-center gap-2 rounded-full bg-white/78 px-4 py-2.5 text-sm font-extrabold text-travel-ink shadow-sm transition-all hover:-translate-x-1 hover:text-accent hover:shadow-md"
+        className="animate-detail-fade-in inline-flex w-fit items-center gap-2 rounded-full bg-white/78 px-4 py-2.5 text-sm font-extrabold text-travel-ink shadow-sm transition-all hover:-translate-x-1 hover:text-accent hover:shadow-md"
         onClick={() => router.back()}
         type="button"
       >
@@ -273,7 +258,7 @@ export default function CommunityPostDetail() {
         返回
       </button>
 
-      <section className="travel-surface-card travel-ticket-edge grid gap-[18px] rounded-[28px] p-[26px]">
+      <section className="animate-detail-fade-in [animation-delay:0.1s] travel-surface-card travel-ticket-edge grid gap-[18px] rounded-[28px] p-[26px]">
         <header className="flex items-center gap-3">
           <div
             aria-hidden="true"
@@ -346,7 +331,7 @@ export default function CommunityPostDetail() {
 
       <section
         aria-labelledby="community-comments-title"
-        className="travel-surface-card grid gap-[18px] rounded-[28px] p-[26px]"
+        className="animate-detail-fade-in [animation-delay:0.2s] travel-surface-card grid gap-[18px] rounded-[28px] p-[26px]"
       >
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-travel-ink" id="community-comments-title">

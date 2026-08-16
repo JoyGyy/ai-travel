@@ -23,8 +23,6 @@ import { useAppToast } from '@/hooks/useAppToast'
 import { formatFullDateTime } from '@/lib/utils/date'
 import { useAuthStore } from '@/stores/auth'
 
-import './style.css'
-
 export default function Profile() {
   // ---- 路由与全局状态 ----
   const router = useRouter()
@@ -129,28 +127,32 @@ export default function Profile() {
   // ---- 加载中骨架屏 ----
   if (loading) {
     return (
-      <main className="profile-page travel-page-shell">
-        <section className="profile-page__hero travel-page-hero travel-ticket-edge travel-route-line">
-          <p className="profile-page__label">PROFILE</p>
-          <h1>个人中心</h1>
+      <main className="travel-page-shell">
+        <section className="travel-page-hero travel-ticket-edge travel-route-line">
+          <p className="mb-2.5 w-fit rounded-full bg-primary/10 px-2.5 py-1.5 text-[12px] font-black tracking-[0.14em] text-primary-strong">
+            PROFILE
+          </p>
+          <h1 className="font-display text-[clamp(30px,5vw,48px)] leading-[1.08] text-travel-ocean">
+            个人中心
+          </h1>
         </section>
         <div
           aria-label="正在加载个人中心"
           aria-live="polite"
-          className="profile-page__content"
+          className="flex flex-col gap-[18px]"
           role="status"
         >
-          <div className="profile-page__card travel-surface-card">
-            <div className="animate-pulse">
-              <div className="h-4 bg-muted rounded w-3/4 mb-2" />
-              <div className="h-4 bg-muted rounded w-1/2" />
+          <div className="overflow-hidden rounded-xl">
+            <div className="animate-pulse p-6">
+              <div className="mb-2 h-4 w-3/4 rounded bg-muted" />
+              <div className="h-4 w-1/2 rounded bg-muted" />
             </div>
           </div>
-          <div className="profile-page__card travel-surface-card">
-            <div className="animate-pulse">
-              <div className="h-4 bg-muted rounded w-full mb-2" />
-              <div className="h-4 bg-muted rounded w-5/6 mb-2" />
-              <div className="h-4 bg-muted rounded w-4/6" />
+          <div className="overflow-hidden rounded-xl">
+            <div className="animate-pulse p-6">
+              <div className="mb-2 h-4 w-full rounded bg-muted" />
+              <div className="mb-2 h-4 w-5/6 rounded bg-muted" />
+              <div className="h-4 w-4/6 rounded bg-muted" />
             </div>
           </div>
         </div>
@@ -165,39 +167,41 @@ export default function Profile() {
   const displayName = user?.username ?? profile?.username ?? '用户'
 
   return (
-    <main aria-labelledby="profile-title" className="profile-page travel-page-shell">
-      <section className="profile-page__hero travel-page-hero travel-ticket-edge travel-route-line">
-        <p className="profile-page__label">PROFILE</p>
-        <h1 id="profile-title">个人中心</h1>
-        <p>管理你的账户信息、AI 额度和目的地收藏。</p>
+    <main aria-labelledby="profile-title" className="travel-page-shell">
+      <section className="travel-page-hero travel-ticket-edge travel-route-line">
+        <p className="mb-2.5 w-fit rounded-full bg-primary/10 px-2.5 py-1.5 text-[12px] font-black tracking-[0.14em] text-primary-strong">
+          PROFILE
+        </p>
+        <h1 className="font-display text-[clamp(30px,5vw,48px)] leading-[1.08] text-travel-ocean" id="profile-title">
+          个人中心
+        </h1>
+        <p className="mt-2 text-travel-muted">管理你的账户信息、AI 额度和目的地收藏。</p>
       </section>
 
-      <div className="profile-page__content">
+      <div className="mx-auto flex max-w-[760px] flex-col gap-[18px]">
         {loadError ? (
-          <div
-            className="profile-page__card profile-page__error-card travel-surface-card"
-            role="alert"
-          >
-            <h2>个人资料加载失败</h2>
-            <p>{loadError}</p>
+          <div className="overflow-hidden rounded-xl p-4" role="alert">
+            <h2 className="mb-2 text-lg font-bold text-travel-ocean">个人资料加载失败</h2>
+            <p className="mb-3.5 text-travel-muted">{loadError}</p>
             <Button onClick={loadProfile}>重试</Button>
           </div>
         ) : null}
 
         {/* 用户信息卡 */}
-        <div className="profile-page__card profile-page__user-card travel-surface-card travel-ticket-edge">
-          <div className="profile-page__user-info">
+        <div className="travel-surface-card travel-ticket-edge overflow-hidden bg-[radial-gradient(circle_at_88%_18%,rgba(var(--travel-primary-rgb),0.12),transparent_28%),var(--travel-surface)]">
+          <div className="flex items-center gap-[18px]">
             <div
-              className="profile-page__avatar flex items-center justify-center rounded-full bg-muted text-3xl"
-              style={{ height: 76, width: 76 }}
+              className="flex h-[76px] w-[76px] flex-shrink-0 items-center justify-center rounded-full bg-muted text-3xl"
             >
               {displayName[0]?.toUpperCase()}
             </div>
-            <div className="profile-page__user-detail">
-              <p className="profile-page__user-eyebrow">当前旅伴</p>
-              <h2 className="profile-page__username">{displayName}</h2>
-              <p className="profile-page__meta">
-                <Clock aria-hidden="true" />
+            <div>
+              <p className="text-[11px] font-black tracking-[0.14em] text-primary-strong">
+                当前旅伴
+              </p>
+              <h2 className="text-2xl font-bold text-travel-ocean">{displayName}</h2>
+              <p className="mt-1 flex items-center gap-1.5 text-sm text-stone-900/72">
+                <Clock aria-hidden="true" className="h-4 w-4" />
                 <span>
                   注册于 {profile?.createdAt ? formatFullDateTime(profile.createdAt) : '未知'}
                 </span>
@@ -207,14 +211,14 @@ export default function Profile() {
         </div>
 
         {/* AI 使用额度 */}
-        <div className="profile-page__card travel-surface-card">
-          <h3 className="text-lg font-semibold">
+        <div className="travel-surface-card p-6">
+          <h3 className="flex items-center gap-2 text-lg font-semibold">
             <Bot aria-hidden="true" /> AI 使用额度
           </h3>
           {quota ? (
-            <div className="profile-page__quota">
-              <div className="profile-page__quota-header">
-                <span>今日已使用</span>
+            <div className="mt-4">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-sm text-travel-muted">今日已使用</span>
                 <Badge
                   className={`travel-tag ${quota.remaining > 0 ? 'travel-tag--success' : 'travel-tag--danger'}`}
                 >
@@ -236,25 +240,25 @@ export default function Profile() {
                   style={{ width: `${quotaPercent}%` }}
                 />
               </div>
-              <p className="profile-page__quota-tip">
+              <p className="mt-2 text-sm text-travel-muted">
                 {quota.remaining > 0
                   ? `剩余 ${quota.remaining} 次，每日 ${quota.limit} 次重置`
                   : '今日额度已用完，明天重置'}
               </p>
             </div>
           ) : (
-            <div className="text-center py-4 text-muted-foreground">
+            <div className="py-4 text-center text-muted-foreground">
               <p>无法获取额度信息</p>
             </div>
           )}
         </div>
 
         {/* 修改密码 */}
-        <div className="profile-page__card travel-surface-card">
-          <h3 className="text-lg font-semibold">
+        <div className="travel-surface-card p-6">
+          <h3 className="flex items-center gap-2 text-lg font-semibold">
             <Key aria-hidden="true" /> 修改密码
           </h3>
-          <form className="profile-page__password-form space-y-4" onSubmit={handlePasswordChange}>
+          <form className="mt-4 space-y-4" onSubmit={handlePasswordChange}>
             <div className="space-y-2">
               <label className="text-sm font-medium" htmlFor="currentPassword">
                 当前密码
@@ -305,25 +309,25 @@ export default function Profile() {
         </div>
 
         {/* 我的收藏 */}
-        <div className="profile-page__card travel-surface-card">
-          <h3 className="text-lg font-semibold">
+        <div className="travel-surface-card p-6">
+          <h3 className="flex items-center gap-2 text-lg font-semibold">
             <Heart aria-hidden="true" /> 我的收藏 ({favorites.length})
           </h3>
           {favorites.length > 0 ? (
-            <div className="profile-page__favorites-list space-y-4">
+            <div className="mt-4 space-y-4">
               {favorites.map((item) => (
                 <div
-                  className="flex items-center justify-between p-4 border rounded-xl"
+                  className="flex items-center justify-between rounded-xl border p-4"
                   key={item.id}
                 >
                   <div>
                     <Link
-                      className="profile-page__fav-title font-medium"
+                      className="font-medium text-primary hover:underline"
                       href={`/attractions/${item.id}`}
                     >
                       {item.name}
                     </Link>
-                    <div className="profile-page__fav-meta mt-2 flex gap-2">
+                    <div className="mt-2 flex gap-2">
                       {item.city && <Badge variant="secondary">{item.city}</Badge>}
                       {item.ticketType === 'free' ? (
                         <Badge className="bg-green-100 text-green-800" variant="secondary">
@@ -355,7 +359,7 @@ export default function Profile() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-8 text-muted-foreground">
+            <div className="py-8 text-center text-muted-foreground">
               <p className="mb-4">还没有收藏景点</p>
               <Link href="/attractions">
                 <Button>去逛逛</Button>
@@ -365,7 +369,7 @@ export default function Profile() {
         </div>
 
         {/* 退出登录 */}
-        <div className="profile-page__card profile-page__logout-card travel-surface-card">
+        <div className="travel-surface-card p-6">
           <Button className="w-full" onClick={handleLogout} size="lg" variant="destructive">
             <LogOut aria-hidden="true" className="mr-2" />
             退出登录

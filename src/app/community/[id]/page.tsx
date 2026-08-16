@@ -23,8 +23,6 @@ import { useAppToast } from '@/hooks/useAppToast'
 import { useCommunityActions } from '@/hooks/useCommunityActions'
 import { formatRelativeTime } from '@/lib/utils/date'
 
-import './style.css'
-
 const COMMENT_PAGE_SIZE = 20
 
 export default function CommunityPostDetail() {
@@ -214,15 +212,17 @@ export default function CommunityPostDetail() {
     return (
       <main
         aria-labelledby="community-detail-loading"
-        className="community-detail travel-page-shell"
+        className="travel-page-shell gap-6"
       >
         <div
           aria-live="polite"
-          className="community-detail__state travel-surface-card"
+          className="grid min-h-[260px] place-items-center gap-3 rounded-[28px] p-[26px] text-center"
           role="status"
         >
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-          <h1 id="community-detail-loading">加载旅行分享中...</h1>
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
+          <h1 className="text-xl font-bold text-travel-ink" id="community-detail-loading">
+            加载旅行分享中...
+          </h1>
         </div>
       </main>
     )
@@ -230,11 +230,13 @@ export default function CommunityPostDetail() {
 
   if (error || !post) {
     return (
-      <main aria-labelledby="community-detail-error" className="community-detail travel-page-shell">
-        <div className="community-detail__state travel-surface-card" role="alert">
-          <h1 id="community-detail-error">帖子暂时无法打开</h1>
-          <p>{error || '帖子不存在或已删除'}</p>
-          <div className="community-detail__state-actions">
+      <main aria-labelledby="community-detail-error" className="travel-page-shell gap-6">
+        <div className="grid min-h-[260px] place-items-center gap-3 rounded-[28px] p-[26px] text-center" role="alert">
+          <h1 className="text-xl font-bold text-travel-ink" id="community-detail-error">
+            帖子暂时无法打开
+          </h1>
+          <p className="text-travel-muted">{error || '帖子不存在或已删除'}</p>
+          <div className="flex gap-3">
             <Button onClick={() => setReloadKey((prev) => prev + 1)}>重试</Button>
             <Button onClick={() => router.push('/community')}>返回社区</Button>
           </div>
@@ -246,40 +248,74 @@ export default function CommunityPostDetail() {
   const isAuthor = user?.id === post.author.id
 
   return (
-    <main aria-labelledby="community-detail-title" className="community-detail travel-page-shell">
-      <button className="community-detail__back" onClick={() => router.back()} type="button">
+    <main aria-labelledby="community-detail-title" className="travel-page-shell gap-6">
+      {/* 页面进入动画 */}
+      <style jsx global>{`
+        @keyframes detailFadeIn {
+          from { opacity: 0; transform: translateY(16px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .community-detail > * {
+          animation: detailFadeIn 0.5s ease-out backwards;
+        }
+        .community-detail > *:nth-child(1) { animation-delay: 0s; }
+        .community-detail > *:nth-child(2) { animation-delay: 0.1s; }
+        .community-detail > *:nth-child(3) { animation-delay: 0.2s; }
+        .community-detail > *:nth-child(4) { animation-delay: 0.3s; }
+      `}</style>
+
+      <button
+        className="inline-flex w-fit items-center gap-2 rounded-full bg-white/78 px-4 py-2.5 text-sm font-extrabold text-travel-ink shadow-sm transition-all hover:-translate-x-1 hover:text-accent hover:shadow-md"
+        onClick={() => router.back()}
+        type="button"
+      >
         <ArrowLeft aria-hidden="true" />
         返回
       </button>
 
-      <section className="community-detail__post travel-surface-card travel-ticket-edge">
-        <header className="community-detail__header">
-          <div aria-hidden="true" className="community-detail__avatar">
+      <section className="travel-surface-card travel-ticket-edge grid gap-[18px] rounded-[28px] p-[26px]">
+        <header className="flex items-center gap-3">
+          <div
+            aria-hidden="true"
+            className="grid h-12 w-12 place-items-center rounded-full bg-primary text-lg font-bold text-white"
+          >
             {post.author.username.slice(0, 1).toUpperCase()}
           </div>
           <div>
-            <p>{post.author.username}</p>
-            <span>{formatRelativeTime(post.createdAt)}</span>
+            <p className="font-semibold text-travel-ink">{post.author.username}</p>
+            <span className="text-sm text-travel-muted">{formatRelativeTime(post.createdAt)}</span>
           </div>
         </header>
-        <h1 id="community-detail-title">{post.title || `${post.city || '旅行'}分享`}</h1>
-        {post.content ? <p className="community-detail__content">{post.content}</p> : null}
+
+        <h1 className="text-2xl font-bold text-travel-ink" id="community-detail-title">
+          {post.title || `${post.city || '旅行'}分享`}
+        </h1>
+
+        {post.content ? (
+          <p className="whitespace-pre-wrap leading-relaxed text-travel-ink">{post.content}</p>
+        ) : null}
+
         <CommunityImageGrid images={post.images} />
+
         {post.itinerarySnapshot ? (
           <CommunityItineraryPreview mode="detail" snapshot={post.itinerarySnapshot} />
         ) : null}
+
         {post.originalPost ? (
           <CommunityPostCard post={{ ...post.originalPost, originalPost: null }} />
         ) : post.postType === 'repost' ? (
-          <div className="community-detail__missing travel-surface-card">原帖已删除</div>
+          <div className="rounded-xl bg-muted/50 p-4 text-center text-travel-muted">
+            原帖已删除
+          </div>
         ) : null}
 
-        <div aria-label="帖子操作" className="community-detail__actions">
+        <div aria-label="帖子操作" className="flex flex-wrap gap-2">
           <Button
             aria-pressed={post.likedByMe}
-            className={`community-detail__like-btn ${post.likedByMe ? 'community-detail__like-btn--liked' : ''} ${isLikeAnimating ? 'community-detail__like-btn--animating' : ''}`}
+            className={`${post.likedByMe ? 'text-primary' : ''} ${isLikeAnimating ? 'animate-bounce' : ''}`}
             disabled={likePending}
             onClick={handleLike}
+            variant="outline"
           >
             <Heart
               aria-hidden="true"
@@ -290,11 +326,12 @@ export default function CommunityPostDetail() {
           <Button
             disabled={!hasHydrated}
             onClick={() => (requireLogin('转发') ? setRepostOpen(true) : undefined)}
+            variant="outline"
           >
             <Repeat2 aria-hidden="true" className="mr-1 h-4 w-4" />
             {!hasHydrated ? '加载中...' : `转发 · ${post.repostCount}`}
           </Button>
-          <Button onClick={shareLink}>
+          <Button onClick={shareLink} variant="outline">
             <Share2 aria-hidden="true" className="mr-1 h-4 w-4" />
             分享链接
           </Button>
@@ -309,13 +346,16 @@ export default function CommunityPostDetail() {
 
       <section
         aria-labelledby="community-comments-title"
-        className="community-detail__comments travel-surface-card"
+        className="travel-surface-card grid gap-[18px] rounded-[28px] p-[26px]"
       >
-        <div className="community-detail__comments-header">
-          <h2 id="community-comments-title">评论</h2>
-          <span>{commentTotal} 条</span>
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold text-travel-ink" id="community-comments-title">
+            评论
+          </h2>
+          <span className="text-sm text-travel-muted">{commentTotal} 条</span>
         </div>
-        <div className="community-detail__comment-form">
+
+        <div className="grid gap-3">
           <textarea
             className="flex min-h-[80px] w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
             maxLength={500}
@@ -331,30 +371,37 @@ export default function CommunityPostDetail() {
         </div>
 
         {commentsLoading ? (
-          <div className="community-detail__comments-loading">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-            加载评论中...
+          <div className="flex items-center justify-center gap-3 py-8">
+            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
+            <span className="text-travel-muted">加载评论中...</span>
           </div>
         ) : null}
+
         {!commentsLoading && comments.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
+          <div className="py-8 text-center text-muted-foreground">
             <p>还没有评论，来写第一条吧</p>
           </div>
         ) : null}
+
         {!commentsLoading && comments.length > 0 ? (
-          <div className="community-detail__comment-list">
+          <div className="space-y-4">
             {comments.map((comment) => (
-              <article className="community-detail__comment" key={comment.id}>
-                <div>
-                  <strong>{comment.author.username}</strong>
-                  <span>{formatRelativeTime(comment.createdAt)}</span>
+              <article className="grid gap-2 rounded-xl border p-4" key={comment.id}>
+                <div className="flex items-center gap-2">
+                  <strong className="text-sm font-semibold text-travel-ink">
+                    {comment.author.username}
+                  </strong>
+                  <span className="text-xs text-travel-muted">
+                    {formatRelativeTime(comment.createdAt)}
+                  </span>
                 </div>
-                <p>{comment.content}</p>
+                <p className="text-sm text-travel-ink">{comment.content}</p>
                 {comment.author.id === user?.id ? (
                   <Button
-                    className="text-destructive"
+                    className="justify-self-start text-destructive"
                     disabled={deletePendingId === comment.id}
                     onClick={() => removeComment(comment)}
+                    size="sm"
                     variant="link"
                   >
                     {deletePendingId === comment.id ? '删除中...' : '删除'}
@@ -364,7 +411,9 @@ export default function CommunityPostDetail() {
             ))}
           </div>
         ) : null}
+
         <Pagination
+          className="flex justify-center"
           onPageChange={setCommentPage}
           page={commentPage}
           pageSize={COMMENT_PAGE_SIZE}

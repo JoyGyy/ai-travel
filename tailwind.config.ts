@@ -44,11 +44,26 @@ const config: Config = {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
+        // 自定义颜色
+        travel: {
+          orange: '#ff6b35',
+          'orange-dark': '#e85d2a',
+          ink: '#292524',
+          'ink-light': '#44403c',
+          muted: '#78716c',
+          'muted-light': '#a8a29e',
+          surface: '#fafaf9',
+          border: '#d6d3d1',
+          'border-light': '#e7e5e4',
+        },
       },
       fontFamily: {
         sans: ['var(--font-sans)'],
         display: ['var(--font-display)'],
         serif: ['var(--font-serif)'],
+      },
+      animation: {
+        'spin-slow': 'spin 0.6s linear infinite',
       },
     },
   },

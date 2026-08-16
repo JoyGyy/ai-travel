@@ -15,8 +15,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useCommunityActions } from '@/hooks/useCommunityActions'
 
-import './style.css'
-
 const PAGE_SIZE = 10
 
 export default function Community() {
@@ -138,38 +136,50 @@ export default function Community() {
   )
 
   return (
-    <main aria-labelledby="community-title" className="community-page travel-page-shell">
-      <section className="community-page__hero travel-page-hero travel-ticket-edge travel-route-line">
-        <div>
-          <p className="community-page__label">TRAVEL COMMUNITY</p>
-          <h1 id="community-title">旅友正在路上</h1>
-          <p>把 AI 规划、实拍照片和旅行心得做成一张明信片，让下一位出发的人少走弯路。</p>
+    <main aria-labelledby="community-title" className="travel-page-shell gap-5">
+      <section className="travel-page-hero travel-ticket-edge travel-route-line">
+        <div className="flex items-center justify-between gap-5">
+          <div>
+            <p className="mb-2 text-[0.75rem] font-bold uppercase tracking-[0.15em] text-primary">
+              TRAVEL COMMUNITY
+            </p>
+            <h1 className="text-[clamp(1.8rem,4vw,3rem)] leading-[1.15] text-travel-ink" id="community-title">
+              旅友正在路上
+            </h1>
+            <p className="mt-2 max-w-[500px] text-[0.95rem] leading-relaxed text-travel-muted">
+              把 AI 规划、实拍照片和旅行心得做成一张明信片，让下一位出发的人少走弯路。
+            </p>
+          </div>
+          <Button
+            disabled={!hasHydrated}
+            onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}
+            size="lg"
+          >
+            <Plus aria-hidden="true" className="mr-2 h-4 w-4" />
+            {!hasHydrated ? '加载中...' : '发布旅行分享'}
+          </Button>
         </div>
-        <Button
-          disabled={!hasHydrated}
-          onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}
-          size="lg"
-        >
-          <Plus aria-hidden="true" className="mr-2 h-4 w-4" />
-          {!hasHydrated ? '加载中...' : '发布旅行分享'}
-        </Button>
       </section>
 
       <section
         aria-labelledby="community-filter-title"
-        className="community-page__filters travel-surface-card"
+        className="travel-surface-card grid gap-3.5 rounded-xl p-4"
       >
-        <div className="community-page__filters-header">
-          <h2 id="community-filter-title">筛选分享</h2>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-base font-semibold text-travel-ink" id="community-filter-title">
+            筛选分享
+          </h2>
           {hasActiveFilters ? (
             <Button onClick={clearFilters} variant="link">
               清空筛选
             </Button>
           ) : null}
         </div>
-        <form className="community-page__search" onSubmit={handleSearch}>
-          <label htmlFor="community-city">城市</label>
-          <div className="community-page__search-control">
+        <form className="grid gap-1.5" onSubmit={handleSearch}>
+          <label className="text-[13px] font-medium text-travel-ink" htmlFor="community-city">
+            城市
+          </label>
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
             <Input
               className="flex-1"
               id="community-city"
@@ -180,8 +190,8 @@ export default function Community() {
             <Button type="submit">搜索</Button>
           </div>
         </form>
-        <div className="community-page__switch-row">
-          <span>只看含行程分享</span>
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-[13px] font-medium text-travel-ink">只看含行程分享</span>
           <input
             aria-label="只看含行程分享"
             checked={Boolean(filters.withItinerary)}
@@ -189,13 +199,13 @@ export default function Community() {
             type="checkbox"
           />
         </div>
-        <p aria-live="polite" className="community-page__result-status">
+        <p aria-live="polite" className="text-[13px] text-travel-muted">
           {loading ? '正在刷新社区...' : `共 ${total} 条旅行分享`}
         </p>
       </section>
 
       {loading ? (
-        <section aria-live="polite" className="community-page__feed" role="status">
+        <section aria-live="polite" className="columns-2 gap-4" role="status">
           {Array.from({ length: 3 }).map((_, i) => (
             <CommunityPostCardSkeleton key={i} />
           ))}
@@ -203,15 +213,15 @@ export default function Community() {
       ) : null}
 
       {!loading && error ? (
-        <div className="community-page__state travel-surface-card" role="alert">
+        <div className="grid place-items-center gap-3 rounded-xl p-6 text-center text-travel-muted" role="alert">
           <p>{error}</p>
           <Button onClick={() => load(filters)}>重试</Button>
         </div>
       ) : null}
 
       {!loading && !error && items.length === 0 ? (
-        <div className="community-page__state travel-surface-card">
-          <div className="text-center py-8 text-muted-foreground">
+        <div className="grid place-items-center gap-3 rounded-xl p-6 text-center text-travel-muted">
+          <div className="py-8 text-center text-muted-foreground">
             <p>还没有符合条件的旅行分享</p>
           </div>
           <Button
@@ -225,7 +235,7 @@ export default function Community() {
 
       {!loading && !error && items.length > 0 ? (
         <>
-          <section aria-label="社区分享列表" className="community-page__feed">
+          <section aria-label="社区分享列表" className="columns-2 gap-4 break-inside-avoid">
             {items.map((post) => (
               <CommunityPostCard
                 currentUserId={user?.id}
@@ -240,7 +250,7 @@ export default function Community() {
             ))}
           </section>
           <Pagination
-            className="community-page__pagination"
+            className="flex justify-center py-2 pb-6"
             onPageChange={(page) => updateFilters({ page })}
             page={filters.page || 1}
             pageSize={PAGE_SIZE}

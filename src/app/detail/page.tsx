@@ -14,38 +14,36 @@ import { useTravelRecommend } from '@/hooks/useTravelRecommend'
 import { useItineraryStore } from '@/stores/itinerary'
 import { loadItineraryCache } from '@/utils/storage'
 
-import './style.css'
-
 // 动态导入重型组件，减少初始包大小
 const AccommodationCard = dynamic(
   () =>
     import('@/components/AccommodationCard').then((mod) => ({ default: mod.AccommodationCard })),
   {
-    loading: () => <div className="h-32 animate-pulse bg-muted rounded-xl" />,
+    loading: () => <div className="h-32 animate-pulse rounded-xl bg-muted" />,
   },
 )
 const AgentSteps = dynamic(
   () => import('@/components/AgentSteps').then((mod) => ({ default: mod.AgentSteps })),
   {
-    loading: () => <div className="h-48 animate-pulse bg-muted rounded-xl" />,
+    loading: () => <div className="h-48 animate-pulse rounded-xl bg-muted" />,
   },
 )
 const BudgetTable = dynamic(
   () => import('@/components/BudgetTable').then((mod) => ({ default: mod.BudgetTable })),
   {
-    loading: () => <div className="h-64 animate-pulse bg-muted rounded-xl" />,
+    loading: () => <div className="h-64 animate-pulse rounded-xl bg-muted" />,
   },
 )
 const SpotItem = dynamic(
   () => import('@/components/SpotItem').then((mod) => ({ default: mod.SpotItem })),
   {
-    loading: () => <div className="h-24 animate-pulse bg-muted rounded-xl" />,
+    loading: () => <div className="h-24 animate-pulse rounded-xl bg-muted" />,
   },
 )
 const WeatherCard = dynamic(
   () => import('@/components/WeatherCard').then((mod) => ({ default: mod.WeatherCard })),
   {
-    loading: () => <div className="h-40 animate-pulse bg-muted rounded-xl" />,
+    loading: () => <div className="h-40 animate-pulse rounded-xl bg-muted" />,
   },
 )
 
@@ -164,62 +162,95 @@ export default function Detail() {
   /* ========== 渲染 ========== */
 
   return (
-    <main aria-labelledby="detail-title" className="detail-page">
-      <div className="detail-page__hero travel-route-line">
-        <div aria-hidden="true" className="detail-page__deco" />
+    <main aria-labelledby="detail-title" className="flex-1 overflow-x-hidden bg-background pb-[max(28px,env(safe-area-inset-bottom))]">
+      {/* Hero 区域 */}
+      <div className="travel-route-line relative isolate min-h-[238px] overflow-hidden rounded-b-[clamp(26px,6vw,44px)] bg-gradient-to-br from-slate-800 via-slate-700 to-slate-600 p-[clamp(20px,5vw,44px)] pb-[70px] pt-[22px]">
+        {/* 背景点阵 */}
+        <div className="pointer-events-none absolute inset-0 -z-[1] bg-[radial-gradient(circle,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[length:24px_24px]" />
+        {/* 装饰渐变 */}
+        <div className="absolute right-[82%] top-[18%] h-[28%] w-[28%] rounded-full bg-travel-orange/26 blur-[100px]" />
+        <div className="absolute bottom-[82%] left-[16%] h-[26%] w-[26%] rounded-full bg-amber-500/18 blur-[100px]" />
+
         <button
           aria-label="返回上一页"
-          className="detail-page__back"
+          className="relative z-[2] flex h-11 w-11 items-center justify-center rounded-[14px] border border-white/15 bg-white/10 text-slate-100 transition-all hover:-translate-y-0.5 hover:bg-white/20"
           onClick={() => router.back()}
           type="button"
         >
           <ArrowLeft aria-hidden="true" />
         </button>
-        <p className="detail-page__label">ITINERARY</p>
-        <h1 className="detail-page__title" id="detail-title">
+
+        <p className="mt-7 w-fit rounded-full border border-white/15 bg-white/8 px-3 py-1.5 font-sans text-[10px] font-extrabold uppercase tracking-[4px] text-slate-400">
+          ITINERARY
+        </p>
+
+        <h1
+          className="mb-2 mt-2.5 max-w-[min(620px,86vw)] font-display text-[clamp(34px,8vw,58px)] font-black leading-[1.08] text-slate-50"
+          id="detail-title"
+        >
           {city || '旅行规划'}
         </h1>
+
         {hasValidParams ? (
-          <p className="detail-page__subtitle">
+          <p className="w-fit rounded-full border border-white/12 bg-transparent px-3.5 py-2 text-[13px] font-bold text-white/60">
             {days} 天行程 · 预算 ¥{budget}
           </p>
         ) : null}
       </div>
 
-      <div className="detail-page__content">
+      {/* 内容区域 */}
+      <div className="mx-auto w-full max-w-[960px] px-[clamp(14px,4vw,28px)]">
         {showLoading ? (
           <div
             aria-label="AI 正在规划行程"
             aria-live="polite"
-            className="detail-page__loading"
+            className="flex justify-center py-7"
             role="status"
           >
-            <div className="detail-page__loading-card">
-              <div className="detail-page__loading-header">
-                <span>AI 规划中</span>
-                <button aria-label="关闭行程规划并返回" onClick={() => router.back()} type="button">
+            <div className="w-full max-w-[min(100%,520px)] overflow-hidden rounded-3xl border border-[var(--travel-frosted-border)] bg-travel-surface shadow-[var(--shadow-paper)]">
+              <div className="flex items-center justify-between px-5 pb-2 pt-[18px]">
+                <span className="text-[11px] font-extrabold tracking-[2px] text-travel-ink">
+                  AI 规划中
+                </span>
+                <button
+                  aria-label="关闭行程规划并返回"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-stone-900/8 bg-white/72 text-sm text-stone-900/72 transition-all hover:rotate-[8deg] hover:scale-104 hover:bg-accent/20 hover:text-accent-strong"
+                  onClick={() => router.back()}
+                  type="button"
+                >
                   <X aria-hidden="true" />
                 </button>
               </div>
-              <div className="detail-page__loading-steps">
+              <div className="px-1 pb-3">
                 <AgentSteps currentStep={currentAgentStep} steps={agentSteps} />
               </div>
-              <div className="detail-page__loading-spinner">
-                <div aria-hidden="true" className="detail-page__spinner" />
-                <Compass aria-hidden="true" className="detail-page__spinner-icon" />
+              <div className="relative mx-auto flex h-[46px] w-[46px] items-center justify-center">
+                <div
+                  aria-hidden="true"
+                  className="absolute inset-0 animate-spin rounded-full border-2 border-dotted border-stone-900/22 border-t-accent"
+                />
+                <Compass aria-hidden="true" className="text-lg text-travel-ink" />
               </div>
-              <p className="detail-page__loading-text">正在为你规划行程...</p>
+              <p className="py-3 pb-[22px] text-center font-serif text-[13px] text-stone-900/70">
+                正在为你规划行程...
+              </p>
             </div>
           </div>
         ) : null}
 
         {!showLoading && errorMessage ? (
-          <div className="detail-page__empty" role="alert">
-            <div className="detail-page__empty-icon">
+          <div className="mx-auto -mt-9 flex w-full max-w-[560px] flex-col items-center gap-4 rounded-[26px] border border-[var(--travel-frosted-border)] bg-travel-surface p-[52px_22px] shadow-[var(--shadow-paper)]" role="alert">
+            <div className="flex h-[82px] w-[82px] items-center justify-center rounded-6xl bg-sand/15 text-[40px] text-travel-ink shadow-[0_16px_34px_rgba(var(--travel-ocean-rgb),0.1)]">
               <MapPin aria-hidden="true" />
             </div>
-            <p>{errorMessage}</p>
-            <button onClick={() => router.push('/')} type="button">
+            <p className="text-center font-serif text-sm leading-relaxed text-stone-900/74">
+              {errorMessage}
+            </p>
+            <button
+              className="min-h-11 rounded-[14px] border-none bg-primary px-6 text-sm font-extrabold text-white shadow-[0_14px_30px_rgba(var(--travel-primary-rgb),0.28)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(var(--travel-primary-rgb),0.34)]"
+              onClick={() => router.push('/')}
+              type="button"
+            >
               返回首页重新规划
             </button>
           </div>
@@ -227,18 +258,28 @@ export default function Detail() {
 
         {!showLoading && !errorMessage && itinerary.length === 0 ? (
           messages.length > 0 ? (
-            <div className="detail-page__ai-content">
-              <div className="detail-page__ai-header">
-                <span>AI 生成的行程规划</span>
-                {status !== 'ready' && <div aria-hidden="true" className="detail-page__spinner" />}
+            <div className="mx-auto -mt-9 w-full max-w-[560px] overflow-hidden rounded-[26px] border border-[var(--travel-frosted-border)] bg-travel-surface shadow-[var(--shadow-paper)]">
+              <div className="flex items-center justify-between px-5 pb-2 pt-[18px]">
+                <span className="text-[11px] font-extrabold tracking-[2px] text-travel-ink">
+                  AI 生成的行程规划
+                </span>
+                {status !== 'ready' && (
+                  <div
+                    aria-hidden="true"
+                    className="h-5 w-5 animate-spin rounded-full border-2 border-dotted border-stone-900/22 border-t-accent"
+                  />
+                )}
               </div>
-              <div className="detail-page__ai-messages">
+              <div className="px-5 pb-5">
                 {messages.map((message) => (
-                  <div className="detail-page__ai-message" key={message.id}>
+                  <div className="mb-4 last:mb-0" key={message.id}>
                     {message.parts.map((part, index) => {
                       if (part.type === 'text') {
                         return (
-                          <div className="detail-page__ai-text" key={index}>
+                          <div
+                            className="whitespace-pre-wrap break-words text-sm leading-[1.8] text-stone-900/85"
+                            key={index}
+                          >
                             {part.text}
                           </div>
                         )
@@ -249,8 +290,8 @@ export default function Detail() {
                 ))}
               </div>
               {chatError && (
-                <div className="detail-page__ai-error" role="alert">
-                  <p>
+                <div className="border-t border-red-500/10 bg-red-500/5 p-4 px-5" role="alert">
+                  <p className="text-center text-[13px] text-red-500">
                     生成失败：
                     {chatError.message}
                   </p>
@@ -258,12 +299,18 @@ export default function Detail() {
               )}
             </div>
           ) : (
-            <div className="detail-page__empty" role="status">
-              <div className="detail-page__empty-icon">
+            <div className="mx-auto -mt-9 flex w-full max-w-[560px] flex-col items-center gap-4 rounded-[26px] border border-[var(--travel-frosted-border)] bg-travel-surface p-[52px_22px] shadow-[var(--shadow-paper)]" role="status">
+              <div className="flex h-[82px] w-[82px] items-center justify-center rounded-6xl bg-sand/15 text-[40px] text-travel-ink shadow-[0_16px_34px_rgba(var(--travel-ocean-rgb),0.1)]">
                 <MapPin aria-hidden="true" />
               </div>
-              <p>暂无行程数据</p>
-              <button onClick={() => router.push('/chat')} type="button">
+              <p className="text-center font-serif text-sm leading-relaxed text-stone-900/74">
+                暂无行程数据
+              </p>
+              <button
+                className="min-h-11 rounded-[14px] border-none bg-primary px-6 text-sm font-extrabold text-white shadow-[0_14px_30px_rgba(var(--travel-primary-rgb),0.28)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(var(--travel-primary-rgb),0.34)]"
+                onClick={() => router.push('/chat')}
+                type="button"
+              >
                 咨询 AI 生成行程
               </button>
             </div>
@@ -273,20 +320,33 @@ export default function Detail() {
         {!showLoading && !errorMessage && itinerary.length > 0 ? (
           <>
             {/* 摘要卡片 */}
-            <div aria-label="行程摘要" className="detail-page__summary travel-ticket-edge">
-              <div className="detail-page__summary-item">
-                <span className="detail-page__summary-label">目的地</span>
-                <span className="detail-page__summary-value">{city}</span>
+            <div
+              aria-label="行程摘要"
+              className="travel-ticket-edge relative z-10 -mt-10 flex items-center overflow-hidden rounded-[22px] border border-[var(--travel-frosted-border)] bg-[var(--travel-surface-strong)] p-[18px_20px] shadow-[var(--shadow-paper)]"
+            >
+              <div className="flex min-w-0 flex-1 flex-col items-center gap-1.5">
+                <span className="text-[10px] font-extrabold uppercase tracking-[2px] text-stone-900/62">
+                  目的地
+                </span>
+                <span className="max-w-full overflow-wrap-anywhere text-center font-serif text-base font-extrabold text-travel-ink">
+                  {city}
+                </span>
               </div>
-              <div className="detail-page__summary-divider" />
-              <div className="detail-page__summary-item">
-                <span className="detail-page__summary-label">天数</span>
-                <span className="detail-page__summary-value">{days}天</span>
+              <div className="h-9 w-px bg-stone-900/12" />
+              <div className="flex min-w-0 flex-1 flex-col items-center gap-1.5">
+                <span className="text-[10px] font-extrabold uppercase tracking-[2px] text-stone-900/62">
+                  天数
+                </span>
+                <span className="max-w-full overflow-wrap-anywhere text-center font-serif text-base font-extrabold text-travel-ink">
+                  {days}天
+                </span>
               </div>
-              <div className="detail-page__summary-divider" />
-              <div className="detail-page__summary-item">
-                <span className="detail-page__summary-label">预算</span>
-                <span className="detail-page__summary-value detail-page__summary-value--accent">
+              <div className="h-9 w-px bg-stone-900/12" />
+              <div className="flex min-w-0 flex-1 flex-col items-center gap-1.5">
+                <span className="text-[10px] font-extrabold uppercase tracking-[2px] text-stone-900/62">
+                  预算
+                </span>
+                <span className="max-w-full overflow-wrap-anywhere text-center font-serif text-base font-extrabold tabular-nums text-accent-strong">
                   ¥{budget}
                 </span>
               </div>
@@ -294,9 +354,9 @@ export default function Detail() {
 
             {/* 天气 */}
             {weather ? (
-              <section aria-labelledby="detail-weather-title" className="detail-page__section">
-                <h2 className="detail-page__section-title" id="detail-weather-title">
-                  <span aria-hidden="true" className="detail-page__dot" />
+              <section aria-labelledby="detail-weather-title" className="pt-[22px]">
+                <h2 className="flex items-center gap-2.5 pb-3 pl-1 font-serif text-base font-extrabold text-travel-ink">
+                  <span aria-hidden="true" className="h-2 w-2 rounded-full bg-accent shadow-[0_0_0_5px_rgba(var(--travel-accent-rgb),0.15)]" />
                   实时天气
                 </h2>
                 <WeatherCard weather={weather} />
@@ -305,28 +365,28 @@ export default function Detail() {
 
             {/* 住宿推荐 */}
             {accommodation.length > 0 || nightlife.length > 0 ? (
-              <section aria-label="住宿和夜生活推荐" className="detail-page__section">
+              <section aria-label="住宿和夜生活推荐" className="pt-[22px]">
                 <AccommodationCard accommodation={accommodation} nightlife={nightlife} />
               </section>
             ) : null}
 
             {/* 每日行程 */}
-            <section aria-labelledby="detail-itinerary-title" className="detail-page__section">
-              <h2 className="detail-page__section-title" id="detail-itinerary-title">
-                <span aria-hidden="true" className="detail-page__dot" />
+            <section aria-labelledby="detail-itinerary-title" className="pt-[22px]">
+              <h2 className="flex items-center gap-2.5 pb-3 pl-1 font-serif text-base font-extrabold text-travel-ink" id="detail-itinerary-title">
+                <span aria-hidden="true" className="h-2 w-2 rounded-full bg-accent shadow-[0_0_0_5px_rgba(var(--travel-accent-rgb),0.15)]" />
                 每日行程
               </h2>
-              <div className="detail-page__itinerary">
+              <div className="overflow-hidden rounded-3xl border border-[var(--travel-frosted-border)] bg-travel-surface shadow-[var(--shadow-paper)]">
                 {itinerary.map((item) => {
                   const dayKey = String(item.day)
                   const panelId = `detail-day-panel-${dayKey}`
                   const isOpen = activeKeys.includes(dayKey)
                   return (
-                    <div className="detail-page__day" key={item.day}>
+                    <div className="border-b border-stone-900/8 last:border-b-0" key={item.day}>
                       <button
                         aria-controls={panelId}
                         aria-expanded={isOpen}
-                        className="detail-page__day-header"
+                        className="flex min-h-[56px] w-full items-center justify-between gap-4 bg-transparent p-[16px_20px] text-left text-[15px] font-extrabold text-travel-ink transition-colors hover:bg-stone-900/[0.03]"
                         onClick={() =>
                           setActiveKeys((prev) =>
                             isOpen ? prev.filter((k) => k !== dayKey) : [...prev, dayKey],
@@ -337,13 +397,15 @@ export default function Detail() {
                         <span>{item.date}</span>
                         <span
                           aria-hidden="true"
-                          className={`detail-page__day-arrow ${isOpen ? 'detail-page__day-arrow--open' : ''}`}
+                          className={`inline-flex h-[26px] w-[26px] flex-shrink-0 items-center justify-center rounded-full bg-stone-900/8 text-[10px] text-travel-ink transition-all ${
+                            isOpen ? 'rotate-180 bg-accent/22' : ''
+                          }`}
                         >
                           ▼
                         </span>
                       </button>
                       {isOpen ? (
-                        <div className="detail-page__day-body" id={panelId}>
+                        <div className="bg-stone-900/[0.015] p-[6px_14px_16px]" id={panelId}>
                           {item.morning && (
                             <SpotItem
                               attractionRef={findAttractionRef(item.morning.spot)}
@@ -378,15 +440,18 @@ export default function Detail() {
 
             {/* 温馨提示 */}
             {tips.length > 0 ? (
-              <section aria-labelledby="detail-tips-title" className="detail-page__section">
-                <h2 className="detail-page__section-title" id="detail-tips-title">
-                  <span aria-hidden="true" className="detail-page__dot" />
+              <section aria-labelledby="detail-tips-title" className="pt-[22px]">
+                <h2 className="flex items-center gap-2.5 pb-3 pl-1 font-serif text-base font-extrabold text-travel-ink" id="detail-tips-title">
+                  <span aria-hidden="true" className="h-2 w-2 rounded-full bg-accent shadow-[0_0_0_5px_rgba(var(--travel-accent-rgb),0.15)]" />
                   温馨提示
                 </h2>
-                <div className="detail-page__tips">
+                <div className="rounded-3xl border border-[var(--travel-frosted-border)] bg-travel-surface p-4 shadow-[var(--shadow-paper)]">
                   {tips.map((tip) => (
-                    <div className="detail-page__tip" key={tip}>
-                      <span aria-hidden="true" className="detail-page__tip-dot" />
+                    <div className="flex items-start gap-3 py-2 text-[13px] leading-relaxed text-stone-900/72" key={tip}>
+                      <span
+                        aria-hidden="true"
+                        className="mt-2 h-[7px] w-[7px] flex-shrink-0 rounded-full bg-sand shadow-[0_0_0_5px_rgba(var(--travel-sand-rgb),0.16)]"
+                      />
                       {tip}
                     </div>
                   ))}
@@ -395,10 +460,10 @@ export default function Detail() {
             ) : null}
 
             {/* 分享与咨询操作 */}
-            <div className="detail-page__actions">
+            <div className="grid gap-3 pt-6">
               <button
                 aria-label="分享到社区"
-                className="detail-page__chat-btn"
+                className="inline-flex min-h-[50px] w-full items-center justify-center gap-2 rounded-4xl border-none bg-primary text-[15px] font-black text-white shadow-[0_4px_16px_rgba(255,107,53,0.25)] transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(255,107,53,0.35)]"
                 onClick={shareToCommunity}
                 type="button"
               >
@@ -407,7 +472,7 @@ export default function Detail() {
               </button>
               <button
                 aria-label="咨询 AI 优化当前行程"
-                className="detail-page__chat-btn"
+                className="inline-flex min-h-[50px] w-full items-center justify-center gap-2 rounded-4xl border-none bg-primary text-[15px] font-black text-white shadow-[0_4px_16px_rgba(255,107,53,0.25)] transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(255,107,53,0.35)]"
                 onClick={() => router.push('/chat')}
                 type="button"
               >

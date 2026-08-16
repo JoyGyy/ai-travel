@@ -12,8 +12,6 @@ import { CommunityItineraryPreview } from '@/components/CommunityItineraryPrevie
 import { Button } from '@/components/ui/button'
 import { useAppToast } from '@/hooks/useAppToast'
 
-import './style.css'
-
 export default function CommunityPostCreate() {
   const router = useRouter()
   const toast = useAppToast()
@@ -95,14 +93,18 @@ export default function CommunityPostCreate() {
   }
 
   return (
-    <main aria-labelledby="community-create-title" className="community-create travel-page-shell">
-      <section className="community-create__hero travel-page-hero travel-ticket-edge travel-route-line">
-        <p className="community-create__label">NEW POSTCARD</p>
-        <h1 id="community-create-title">发布旅行分享</h1>
-        <p>写下路线、照片和现场感受，让这份行程成为下一位旅友的参考。</p>
+    <main aria-labelledby="community-create-title" className="travel-page-shell gap-7">
+      <section className="travel-page-hero travel-ticket-edge travel-route-line">
+        <p className="mb-2.5 text-accent text-[0.82rem] font-black tracking-[0.2em]">NEW POSTCARD</p>
+        <h1 className="text-[clamp(2.1rem,4.5vw,4rem)] leading-[1.08] text-travel-ink" id="community-create-title">
+          发布旅行分享
+        </h1>
+        <p className="mt-3.5 max-w-[720px] text-[1.05rem] leading-relaxed text-travel-muted">
+          写下路线、照片和现场感受，让这份行程成为下一位旅友的参考。
+        </p>
       </section>
 
-      <section className="community-create__panel travel-surface-card">
+      <section className="travel-surface-card rounded-3xl p-7">
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-2">
             <label className="text-sm font-medium" htmlFor="title">
@@ -149,8 +151,8 @@ export default function CommunityPostCreate() {
             />
           </div>
 
-          <div className="community-create__upload-block">
-            <div className="community-create__section-title">
+          <div className="mt-[22px]">
+            <div className="mb-3 flex items-center gap-2 font-black text-travel-ink">
               <ImageIcon aria-hidden="true" />
               <span>图片</span>
             </div>
@@ -169,15 +171,16 @@ export default function CommunityPostCreate() {
             >
               {uploading ? '上传中...' : '上传图片'}
             </Button>
-            <p className="community-create__hint">
+            <p className="mt-2 text-[0.92rem] text-travel-muted">
               最多 9 张，支持 JPG、PNG、WebP，单张不超过 5MB。
             </p>
             {images.length > 0 ? (
-              <div className="community-create__image-preview">
+              <div className="mt-3.5 grid gap-3">
                 <CommunityImageGrid images={images} />
-                <div className="community-create__image-actions">
+                <div className="flex flex-wrap gap-2">
                   {images.map((image) => (
                     <button
+                      className="inline-flex min-h-9 items-center gap-1.5 rounded-full border-0 bg-danger/8 px-3 font-bold text-danger"
                       key={image.storageKey || image.url}
                       onClick={() => removeImage(image)}
                       type="button"
@@ -192,7 +195,7 @@ export default function CommunityPostCreate() {
           </div>
 
           {snapshot ? (
-            <div className="community-create__itinerary">
+            <div className="mt-[22px]">
               <CommunityItineraryPreview
                 onRemove={() => setSnapshot(null)}
                 removable
@@ -202,10 +205,10 @@ export default function CommunityPostCreate() {
           ) : null}
 
           {!canSubmit ? (
-            <p className="community-create__requirement">正文、图片和行程快照至少需要提供一项。</p>
+            <p className="mt-[18px] font-bold text-danger">正文、图片和行程快照至少需要提供一项。</p>
           ) : null}
 
-          <div className="community-create__actions">
+          <div className="mt-7 flex justify-end gap-3">
             <Button onClick={() => router.push('/community')} type="button" variant="outline">
               取消
             </Button>

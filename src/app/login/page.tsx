@@ -15,8 +15,6 @@ import { useAppToast } from '@/hooks/useAppToast'
 import { imageUrl } from '@/lib/images'
 import { useAuthStore } from '@/stores/auth'
 
-import './style.css'
-
 /* ========== 表单文案配置 ========== */
 
 const formCopy = {
@@ -99,43 +97,57 @@ export default function Login() {
   /* ========== 渲染 ========== */
 
   return (
-    <main aria-labelledby="login-title" className="login-page">
+    <main
+      aria-labelledby="login-title"
+      className="flex min-h-screen flex-col bg-white md:flex-row"
+    >
       {/* 左侧品牌区 */}
-      <section aria-label="品牌介绍" className="login-page__hero-side">
-        <div aria-hidden="true" className="login-page__hero-bg">
+      <section
+        aria-label="品牌介绍"
+        className="relative flex flex-col justify-between overflow-hidden bg-gradient-to-br from-travel-ink to-travel-ink-light p-8 text-white md:w-[48%] md:p-12"
+      >
+        {/* 背景图片 */}
+        <div className="absolute inset-0 z-0">
           <Image
             alt=""
             fill
             src={imageUrl('/images/home/hero-boat.jpg')}
-            style={{ objectFit: 'cover' }}
+            className="object-cover opacity-16"
           />
         </div>
-        <div aria-hidden="true" className="login-page__hero-overlay" />
+        {/* 渐变遮罩 */}
+        <div className="absolute inset-0 z-[1] bg-gradient-to-br from-travel-ink/92 to-travel-ink-light/80" />
 
-        <div className="login-page__brand">
-          <span className="login-page__brand-icon">
+        {/* 品牌标识 */}
+        <div className="relative z-[2] flex items-center gap-3">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-travel-orange text-lg text-white">
             <Compass />
           </span>
-          <span className="login-page__brand-name">Travel AI</span>
+          <span className="text-lg font-semibold tracking-wide text-white">Travel AI</span>
         </div>
 
-        <div className="login-page__hero-content">
-          <p className="login-page__hero-eyebrow">AI Travel Planner</p>
-          <h1 className="login-page__hero-title">登录后保存你的智能旅行地图</h1>
-          <p className="login-page__hero-desc">
+        {/* 主标语 */}
+        <div className="relative z-[2] flex flex-1 flex-col justify-center gap-5 py-8 md:max-w-[440px]">
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-travel-orange">
+            AI Travel Planner
+          </p>
+          <h1 className="text-3xl font-bold leading-tight text-white md:text-[34px]">
+            登录后保存你的智能旅行地图
+          </h1>
+          <p className="text-base leading-relaxed text-stone-400">
             把目的地、天气灵感和预算计划沉淀下来，随时继续规划下一次出发。
           </p>
-          <div aria-label="核心功能" className="login-page__features">
-            <span className="login-page__feature">
-              <span aria-hidden="true" className="login-page__feature-dot" />
+          <div aria-label="核心功能" className="flex gap-6 pt-2">
+            <span className="flex items-center gap-2 text-sm text-stone-300">
+              <span aria-hidden="true" className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-travel-orange" />
               实时天气
             </span>
-            <span className="login-page__feature">
-              <span aria-hidden="true" className="login-page__feature-dot" />
+            <span className="flex items-center gap-2 text-sm text-stone-300">
+              <span aria-hidden="true" className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-travel-orange" />
               预算规划
             </span>
-            <span className="login-page__feature">
-              <span aria-hidden="true" className="login-page__feature-dot" />
+            <span className="flex items-center gap-2 text-sm text-stone-300">
+              <span aria-hidden="true" className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-travel-orange" />
               AI 咨询
             </span>
           </div>
@@ -147,12 +159,12 @@ export default function Login() {
       {/* 右侧表单区 */}
       <section
         aria-label={tab === 'login' ? '登录表单' : '注册表单'}
-        className="login-page__form-side"
+        className="flex flex-1 items-center justify-center bg-travel-surface p-8 md:p-12"
       >
-        <div className="login-page__form-wrapper">
+        <div className="w-full max-w-[400px]">
           <button
             aria-label="返回上一页"
-            className="login-page__back"
+            className="mb-8 inline-flex items-center gap-1.5 border-none bg-transparent p-0 text-sm text-travel-muted transition-colors hover:text-travel-ink"
             onClick={() => router.back()}
             type="button"
           >
@@ -160,18 +172,22 @@ export default function Login() {
             返回
           </button>
 
-          <div className="login-page__form-head">
-            <h2 className="login-page__form-title" id="login-title">
+          <div className="mb-8">
+            <h2 className="mb-2 text-2xl font-bold text-travel-ink" id="login-title">
               {currentCopy.title}
             </h2>
-            <p className="login-page__form-subtitle">{currentCopy.subtitle}</p>
+            <p className="text-sm leading-relaxed text-travel-muted">{currentCopy.subtitle}</p>
           </div>
 
-          <div aria-label="选择登录或注册" className="login-page__tabs" role="group">
+          <div aria-label="选择登录或注册" className="mb-7 flex border-b border-travel-border-light" role="group">
             {(['login', 'register'] as const).map((t) => (
               <button
                 aria-pressed={tab === t}
-                className={`login-page__tab ${tab === t ? 'login-page__tab--active' : ''}`}
+                className={`flex-1 border-b-2 px-0 py-2.5 text-sm font-medium transition-colors ${
+                  tab === t
+                    ? 'border-travel-orange text-travel-ink'
+                    : 'border-transparent text-travel-muted hover:text-stone-600'
+                }`}
                 key={t}
                 onClick={() => switchTab(t)}
                 type="button"
@@ -182,17 +198,20 @@ export default function Login() {
           </div>
 
           {formError && (
-            <div className="login-page__error" role="alert">
+            <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm leading-relaxed text-red-700" role="alert">
               {formError}
             </div>
           )}
 
-          <form aria-busy={loading} className="login-page__form" noValidate onSubmit={handleSubmit}>
-            <div className="login-page__field">
-              <label htmlFor="login-username">用户名</label>
+          <form aria-busy={loading} noValidate onSubmit={handleSubmit}>
+            <div className="mb-5">
+              <label className="mb-1.5 block text-sm font-medium text-stone-700" htmlFor="login-username">
+                用户名
+              </label>
               <input
                 aria-invalid={Boolean(formError && !username.trim())}
                 autoComplete="username"
+                className="h-11 w-full rounded-md border border-travel-border bg-white px-3.5 text-sm text-travel-ink outline-none transition-[border-color,box-shadow] placeholder:text-stone-400 focus:border-travel-orange focus:ring-2 focus:ring-travel-orange/10 aria-[invalid=true]:border-red-500"
                 id="login-username"
                 name="username"
                 onChange={(e) => {
@@ -206,13 +225,16 @@ export default function Login() {
               />
             </div>
 
-            <div className="login-page__field">
-              <label htmlFor="login-password">密码</label>
+            <div className="mb-5">
+              <label className="mb-1.5 block text-sm font-medium text-stone-700" htmlFor="login-password">
+                密码
+              </label>
               <input
                 aria-invalid={Boolean(
                   formError && (!password || (tab === 'register' && password.length < 6)),
                 )}
                 autoComplete={tab === 'register' ? 'new-password' : 'current-password'}
+                className="h-11 w-full rounded-md border border-travel-border bg-white px-3.5 text-sm text-travel-ink outline-none transition-[border-color,box-shadow] placeholder:text-stone-400 focus:border-travel-orange focus:ring-2 focus:ring-travel-orange/10 aria-[invalid=true]:border-red-500"
                 id="login-password"
                 name="password"
                 onChange={(e) => {
@@ -225,8 +247,17 @@ export default function Login() {
               />
             </div>
 
-            <button className="login-page__submit" disabled={loading} type="submit">
-              {loading && <span aria-hidden="true" className="login-page__submit-spinner" />}
+            <button
+              className="flex h-11 w-full items-center justify-center gap-2 rounded-md border-none bg-travel-orange text-sm font-semibold text-white transition-colors hover:bg-travel-orange-dark disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={loading}
+              type="submit"
+            >
+              {loading && (
+                <span
+                  aria-hidden="true"
+                  className="h-4 w-4 animate-spin-slow rounded-full border-2 border-white/30 border-t-white"
+                />
+              )}
               {loading ? currentCopy.loading : currentCopy.submit}
             </button>
           </form>

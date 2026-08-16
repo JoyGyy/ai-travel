@@ -14,8 +14,6 @@ import { HomeWeather } from '@/components/HomeWeather'
 import { allCities, hotCities } from '@/constants/cities'
 import { useWeather } from '@/hooks/useWeather'
 
-import './style.css'
-
 export default function Weather() {
   const [city, setCity] = useState('')
   const [showDropdown, setShowDropdown] = useState(false)
@@ -81,24 +79,33 @@ export default function Weather() {
   return (
     <main
       aria-labelledby="weather-title"
-      className="weather-page"
+      className="flex-1 overflow-x-hidden overflow-y-auto bg-background"
       onClick={() => showDropdown && setShowDropdown(false)}
     >
-      <div className="weather-page__hero">
-        <div aria-hidden="true" className="weather-page__deco" />
-        <p className="weather-page__label">WEATHER</p>
-        <h1 className="weather-page__title" id="weather-title">
+      {/* Hero 区域 */}
+      <div className="relative isolate min-h-[230px] overflow-hidden bg-[url('data:image/svg+xml,...')] bg-repeat p-[clamp(40px,8vw,80px)_clamp(20px,5vw,72px)_70px]">
+        {/* 装饰圆圈 */}
+        <div className="absolute -right-7 -top-[34px] h-[164px] w-[164px] animate-[morphBg_8s_ease-in-out_infinite] rounded-full border border-stone-900/6 bg-transparent opacity-60" />
+
+        <p className="relative mb-2.5 text-[11px] font-bold tracking-[0.03em] text-travel-muted animate-[fadeIn_var(--motion-choreography)_var(--ease-emphasized)_0.1s_both]">
+          WEATHER
+        </p>
+        <h1 className="relative font-display text-[clamp(28px,5vw,44px)] font-black leading-tight tracking-tight text-travel-ink animate-[slideUp_var(--motion-choreography)_var(--ease-emphasized)_both]" id="weather-title">
           天气查询
         </h1>
-        <p className="weather-page__subtitle">查看目的地实时天气，合理安排行程</p>
+        <p className="relative mt-2.5 max-w-[460px] text-[clamp(14px,2vw,16px)] font-semibold leading-relaxed text-travel-muted animate-[slideUp_var(--motion-choreography)_var(--ease-emphasized)_0.1s_both]">
+          查看目的地实时天气，合理安排行程
+        </p>
       </div>
 
-      <div className="weather-page__content">
-        <div className="weather-page__search" onClick={(e) => e.stopPropagation()}>
-          <div className="weather-page__search-inner">
+      {/* 内容区域 */}
+      <div className="relative z-[2] mx-auto -mt-[42px] max-w-[1200px] px-6 pb-[max(36px,env(safe-area-inset-bottom))]">
+        {/* 搜索框 */}
+        <div className="relative" onClick={(e) => e.stopPropagation()}>
+          <div className="flex items-center gap-2.5 rounded-xl border border-travel-border bg-white/90 p-3">
             <svg
               aria-hidden="true"
-              className="weather-page__search-icon"
+              className="h-[18px] w-[18px] text-travel-muted"
               fill="none"
               height="18"
               stroke="currentColor"
@@ -111,7 +118,7 @@ export default function Weather() {
               <circle cx="11" cy="11" r="8" />
               <line x1="21" x2="16.65" y1="21" y2="16.65" />
             </svg>
-            <label className="weather-page__search-label" htmlFor="weather-city-input">
+            <label className="text-[13px] font-medium text-travel-ink" htmlFor="weather-city-input">
               城市名称
             </label>
             <input
@@ -121,7 +128,7 @@ export default function Weather() {
               aria-expanded={showDropdown}
               aria-haspopup="listbox"
               autoComplete="off"
-              className="weather-page__input"
+              className="flex-1 bg-transparent text-sm text-travel-ink outline-none placeholder:text-travel-muted"
               id="weather-city-input"
               name="weather-city"
               onChange={handleInputChange}
@@ -133,12 +140,22 @@ export default function Weather() {
               value={city}
             />
           </div>
+
+          {/* 下拉列表 */}
           {showDropdown && (
-            <div className="weather-page__dropdown" id="weather-city-listbox" role="listbox">
+            <div
+              className="absolute left-0 right-0 z-10 mt-1 max-h-[300px] overflow-y-auto rounded-xl border border-travel-border bg-white shadow-lg"
+              id="weather-city-listbox"
+              role="listbox"
+            >
               {filteredCities.map((name, index) => (
                 <button
                   aria-selected={city === name}
-                  className={`weather-page__dropdown-item ${city === name || activeCityIndex === index ? 'weather-page__dropdown-item--active' : ''}`}
+                  className={`w-full px-4 py-2.5 text-left text-sm transition-colors ${
+                    city === name || activeCityIndex === index
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-travel-ink hover:bg-travel-surface'
+                  }`}
                   id={`weather-city-option-${index}`}
                   key={name}
                   onClick={() => selectCity(name)}
@@ -149,42 +166,52 @@ export default function Weather() {
                 </button>
               ))}
               {!filteredCities.length && (
-                <div className="weather-page__dropdown-empty">未找到匹配城市</div>
+                <div className="px-4 py-3 text-center text-sm text-travel-muted">
+                  未找到匹配城市
+                </div>
               )}
             </div>
           )}
         </div>
 
-        {/* ---- 天气结果展示 ---- */}
+        {/* 天气结果展示 */}
         {(loading || weather) && (
-          <div className="weather-page__result">
+          <div className="mt-6">
             <HomeWeather loading={loading} weather={weather} />
           </div>
         )}
 
-        {/* ---- 错误提示 ---- */}
+        {/* 错误提示 */}
         {error && (
-          <div className="weather-page__error" role="alert">
-            <span>{error}</span>
+          <div className="mt-4 flex items-center justify-between rounded-xl border border-red-200 bg-red-50 p-4" role="alert">
+            <span className="text-sm text-red-600">{error}</span>
             {city.trim() && (
-              <button className="weather-page__retry-btn" onClick={retryWeather} type="button">
+              <button
+                className="rounded-lg bg-red-100 px-4 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-200"
+                onClick={retryWeather}
+                type="button"
+              >
                 重试
               </button>
             )}
           </div>
         )}
 
-        {/* ---- 热门城市快捷入口 ---- */}
-        <div className="weather-page__hot">
-          <div className="weather-page__hot-header">
-            <div className="weather-page__hot-line" />
-            <h2>热门城市</h2>
-            <div className="weather-page__hot-line" />
+        {/* 热门城市快捷入口 */}
+        <div className="mt-12">
+          <div className="mb-6 flex items-center gap-4">
+            <div className="h-px flex-1 bg-travel-border" />
+            <h2 className="text-lg font-semibold text-travel-ink">热门城市</h2>
+            <div className="h-px flex-1 bg-travel-border" />
           </div>
-          <div className="weather-page__hot-list">
+          <div className="flex flex-wrap justify-center gap-3">
             {hotCities.map((name) => (
               <button
-                className={`weather-page__hot-btn ${city === name ? 'weather-page__hot-btn--active' : ''}`}
+                className={`rounded-full px-5 py-2.5 text-sm font-medium transition-all ${
+                  city === name
+                    ? 'bg-primary text-white shadow-md'
+                    : 'bg-travel-surface text-travel-ink hover:bg-travel-surface/80'
+                }`}
                 key={name}
                 onClick={() => selectCity(name)}
                 type="button"

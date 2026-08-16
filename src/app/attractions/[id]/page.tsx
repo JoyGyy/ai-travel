@@ -19,8 +19,6 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useAttractionFavorite } from '@/hooks/useAttractionFavorite'
 
-import './style.css'
-
 export default function AttractionDetail() {
   // ---- 路由参数与状态 ----
   const params = useParams()
@@ -77,18 +75,20 @@ export default function AttractionDetail() {
     return (
       <main
         aria-labelledby="attraction-loading-title"
-        className="attraction-detail travel-page-shell"
+        className="travel-page-shell"
       >
         <div
           aria-live="polite"
-          className="attraction-detail__state travel-surface-card"
+          className="flex flex-col items-center gap-3 rounded-xl p-6"
           role="status"
         >
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
           </div>
-          <h1 id="attraction-loading-title">加载景点详情中...</h1>
-          <p>正在取出这张目的地票根。</p>
+          <h1 className="text-xl font-bold text-travel-ink" id="attraction-loading-title">
+            加载景点详情中...
+          </h1>
+          <p className="text-travel-muted">正在取出这张目的地票根。</p>
         </div>
       </main>
     )
@@ -98,12 +98,14 @@ export default function AttractionDetail() {
     return (
       <main
         aria-labelledby="attraction-error-title"
-        className="attraction-detail travel-page-shell"
+        className="travel-page-shell"
       >
-        <div className="attraction-detail__state travel-surface-card" role="alert">
-          <h1 id="attraction-error-title">景点暂时无法打开</h1>
-          <p>{error || '景点不存在或已下架'}</p>
-          <div className="attraction-detail__state-actions">
+        <div className="flex flex-col items-center gap-3 rounded-xl p-6" role="alert">
+          <h1 className="text-xl font-bold text-travel-ink" id="attraction-error-title">
+            景点暂时无法打开
+          </h1>
+          <p className="text-travel-muted">{error || '景点不存在或已下架'}</p>
+          <div className="flex gap-3">
             <Button
               className="bg-primary text-primary-foreground hover:bg-primary/90"
               onClick={() => setReloadKey((prev) => prev + 1)}
@@ -129,26 +131,34 @@ export default function AttractionDetail() {
   const ticketTypeClass = attraction.ticketType === 'free' ? 'travel-tag--free' : 'travel-tag--paid'
 
   return (
-    <main aria-labelledby="attraction-detail-title" className="attraction-detail travel-page-shell">
-      <button className="attraction-detail__back" onClick={() => router.back()} type="button">
+    <main aria-labelledby="attraction-detail-title" className="travel-page-shell">
+      <button
+        className="inline-flex w-fit items-center gap-2 rounded-full bg-white/78 px-4 py-2.5 text-sm font-extrabold text-travel-ink shadow-sm transition-all hover:-translate-x-1 hover:text-accent hover:shadow-md"
+        onClick={() => router.back()}
+        type="button"
+      >
         <ArrowLeft aria-hidden="true" />
         <span>返回</span>
       </button>
+
       {/* ---- 封面与操作区 ---- */}
-      <section className="attraction-detail__hero travel-surface-card travel-ticket-edge travel-route-line">
+      <section className="travel-surface-card travel-ticket-edge travel-route-line overflow-hidden">
         <Image
           alt={`${attraction.name}，${attraction.city}景点封面`}
+          className="h-[500px] w-full object-cover"
           height={500}
           loading="eager"
           src={attraction.coverImage}
           unoptimized
           width={800}
         />
-        <div className="attraction-detail__hero-content">
-          <p className="attraction-detail__city">{attraction.city}</p>
-          <h1 id="attraction-detail-title">{attraction.name}</h1>
-          <p className="attraction-detail__summary">{attraction.summary}</p>
-          <div className="attraction-detail__tags">
+        <div className="p-6">
+          <p className="mb-2 text-sm font-medium text-primary">{attraction.city}</p>
+          <h1 className="mb-3 text-3xl font-bold text-travel-ink" id="attraction-detail-title">
+            {attraction.name}
+          </h1>
+          <p className="mb-4 text-travel-muted">{attraction.summary}</p>
+          <div className="mb-5 flex flex-wrap gap-2">
             <Badge className={`travel-tag ${ticketTypeClass}`}>
               {attraction.ticketType === 'free' ? '免费' : '收费'}
             </Badge>
@@ -159,7 +169,7 @@ export default function AttractionDetail() {
               </Badge>
             ))}
           </div>
-          <div className="attraction-detail__hero-actions">
+          <div className="flex gap-3">
             <Button
               aria-label={`${attraction.isFavorite ? '取消收藏' : '收藏'}${attraction.name}`}
               aria-pressed={Boolean(attraction.isFavorite)}
@@ -172,7 +182,10 @@ export default function AttractionDetail() {
               />
               {favoritePending ? '处理中...' : attraction.isFavorite ? '已收藏' : '收藏'}
             </Button>
-            <Link className="attraction-detail__primary-action" href={`/chat?prompt=${prompt}`}>
+            <Link
+              className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
+              href={`/chat?prompt=${prompt}`}
+            >
               让 AI 规划这站
             </Link>
           </div>
@@ -180,60 +193,65 @@ export default function AttractionDetail() {
       </section>
 
       {/* ---- 景点介绍 ---- */}
-      <section className="attraction-detail__section travel-surface-card">
-        <h2>景点介绍</h2>
-        <p>{attraction.description}</p>
+      <section className="travel-surface-card p-6">
+        <h2 className="mb-4 text-xl font-bold text-travel-ink">景点介绍</h2>
+        <p className="leading-relaxed text-travel-muted">{attraction.description}</p>
       </section>
+
       {/* ---- 实用信息 ---- */}
-      <section className="attraction-detail__section travel-surface-card">
-        <h2>实用信息</h2>
-        <dl className="attraction-detail__info-grid">
+      <section className="travel-surface-card p-6">
+        <h2 className="mb-4 text-xl font-bold text-travel-ink">实用信息</h2>
+        <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <dt>地址</dt>
-            <dd>{attraction.address}</dd>
+            <dt className="text-sm font-medium text-travel-muted">地址</dt>
+            <dd className="mt-1 text-travel-ink">{attraction.address}</dd>
           </div>
           <div>
-            <dt>开放时间</dt>
-            <dd>{attraction.openingHours}</dd>
+            <dt className="text-sm font-medium text-travel-muted">开放时间</dt>
+            <dd className="mt-1 text-travel-ink">{attraction.openingHours}</dd>
           </div>
           <div>
-            <dt>建议游玩</dt>
-            <dd>{attraction.recommendedDuration}</dd>
+            <dt className="text-sm font-medium text-travel-muted">建议游玩</dt>
+            <dd className="mt-1 text-travel-ink">{attraction.recommendedDuration}</dd>
           </div>
           <div>
-            <dt>票价</dt>
-            <dd>{attraction.priceText}</dd>
+            <dt className="text-sm font-medium text-travel-muted">票价</dt>
+            <dd className="mt-1 text-travel-ink">{attraction.priceText}</dd>
           </div>
         </dl>
       </section>
+
       {/* ---- 游玩亮点 ---- */}
-      <section className="attraction-detail__section travel-surface-card">
-        <h2>游玩亮点</h2>
-        <ul className="attraction-detail__list">
+      <section className="travel-surface-card p-6">
+        <h2 className="mb-4 text-xl font-bold text-travel-ink">游玩亮点</h2>
+        <ul className="list-inside list-disc space-y-2 text-travel-muted">
           {attraction.highlights.map((item) => (
             <li key={item}>{item}</li>
           ))}
         </ul>
       </section>
+
       {/* ---- 注意事项 ---- */}
-      <section className="attraction-detail__section travel-surface-card">
-        <h2>注意事项</h2>
-        <ul className="attraction-detail__list">
+      <section className="travel-surface-card p-6">
+        <h2 className="mb-4 text-xl font-bold text-travel-ink">注意事项</h2>
+        <ul className="list-inside list-disc space-y-2 text-travel-muted">
           {attraction.tips.map((item) => (
             <li key={item}>{item}</li>
           ))}
         </ul>
       </section>
+
       {/* ---- 购票入口 ---- */}
-      <section className="attraction-detail__section travel-surface-card">
-        <h2>购票入口</h2>
-        <p className="attraction-detail__notice">
+      <section className="travel-surface-card p-6">
+        <h2 className="mb-4 text-xl font-bold text-travel-ink">购票入口</h2>
+        <p className="mb-4 text-sm text-travel-muted">
           价格、库存和开放时间以第三方平台及景区官方公告为准。
         </p>
-        <div className="attraction-detail__booking">
+        <div className="flex flex-wrap gap-3">
           {buildBookingLinks(attraction).map((link) => (
             <a
               aria-label={`去${link.label}查看${attraction.name}门票，打开新窗口`}
+              className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-travel-ink shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
               href={link.href}
               key={link.key}
               rel="noopener noreferrer"

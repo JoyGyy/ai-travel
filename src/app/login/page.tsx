@@ -27,7 +27,7 @@ const formCopy = {
   },
   register: {
     loading: '创建中…',
-    passwordPlaceholder: '至少 6 位密码',
+    passwordPlaceholder: '至少 8 位，含大小写字母和数字',
     submit: '创建账号',
     subtitle: '注册新账号，保存你的目的地、天气灵感和 AI 行程方案。',
     title: '创建账号',
@@ -81,8 +81,16 @@ export default function Login() {
     if (!username.trim()) errors.username = '请输入用户名'
     if (!password) {
       errors.password = '请输入密码'
-    } else if (tab === 'register' && password.length < 6) {
-      errors.password = '密码长度至少 6 位'
+    } else if (tab === 'register') {
+      if (password.length < 8) {
+        errors.password = '密码长度至少 8 位'
+      } else if (!/[a-z]/.test(password)) {
+        errors.password = '密码需包含小写字母'
+      } else if (!/[A-Z]/.test(password)) {
+        errors.password = '密码需包含大写字母'
+      } else if (!/\d/.test(password)) {
+        errors.password = '密码需包含数字'
+      }
     }
     return errors
   }

@@ -20,10 +20,11 @@ END $$;
 
 -- 用户表
 CREATE TABLE IF NOT EXISTS users (
-  id          VARCHAR(64) PRIMARY KEY,
-  username    VARCHAR(64) UNIQUE NOT NULL,
-  password    VARCHAR(128) NOT NULL,
-  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  id            VARCHAR(64) PRIMARY KEY,
+  username      VARCHAR(64) UNIQUE NOT NULL,
+  password_hash VARCHAR(128) NOT NULL,
+  email         VARCHAR(255) NOT NULL,
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- AI 使用额度表

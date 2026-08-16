@@ -23,7 +23,7 @@ export default function Error({
       <div className="max-w-[400px] rounded-2xl bg-white p-10 text-center shadow-[0_4px_24px_rgba(0,0,0,0.08)]">
         <div className="mb-4 text-[48px]">⚠️</div>
         <h2 className="mb-3 text-xl font-semibold text-stone-900">页面出了点问题</h2>
-        <p className="mb-6 text-sm leading-relaxed text-gray-600">
+        <p className="mb-6 text-sm leading-relaxed text-gray-600" role="alert">
           {error.message || '发生了未知错误'}
         </p>
         <div className="flex justify-center gap-3">

@@ -175,6 +175,7 @@ export function HeroSearch() {
               <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-travel-muted" htmlFor="home-city-input">
                 <MapPin aria-hidden="true" className="h-3.5 w-3.5" />
                 目的地
+                <span className="text-destructive ml-1">*</span>
               </label>
               <input
                 aria-activedescendant={activeCityId}

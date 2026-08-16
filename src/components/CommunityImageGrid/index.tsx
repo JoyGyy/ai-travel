@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import type { CommunityImage } from '@/types/community'
 
@@ -34,6 +34,26 @@ function getImageAspectClasses(count: number, compact: boolean) {
 
 export function CommunityImageGrid({ compact = false, images }: CommunityImageGridProps) {
   const [previewIndex, setPreviewIndex] = useState<null | number>(null)
+  const dialogRef = useRef<HTMLDivElement>(null)
+
+  // 预览打开时聚焦到对话框容器
+  useEffect(() => {
+    if (previewIndex !== null && dialogRef.current) {
+      dialogRef.current.focus()
+    }
+  }, [previewIndex])
+
+  // ESC 键关闭预览
+  useEffect(() => {
+    if (previewIndex === null) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setPreviewIndex(null)
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [previewIndex])
 
   if (images.length === 0) return null
 
@@ -87,7 +107,15 @@ export function CommunityImageGrid({ compact = false, images }: CommunityImageGr
 
       {/* 图片预览模态框 */}
       {previewIndex !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80" onClick={handleClose}>
+        <div
+          aria-label="图片预览"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
+          onClick={handleClose}
+          ref={dialogRef}
+          role="dialog"
+          tabIndex={-1}
+        >
           <button
             aria-label="关闭预览"
             className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-3xl text-white backdrop-blur-sm transition-colors hover:bg-white/30 motion-reduce:transition-none"

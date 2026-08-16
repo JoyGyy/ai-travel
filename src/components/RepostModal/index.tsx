@@ -5,7 +5,7 @@
 'use client'
 
 import { Link, Repeat2 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 
@@ -37,6 +37,26 @@ export function RepostModal({
   targetTitle,
 }: RepostModalProps) {
   const [content, setContent] = useState('')
+  const dialogRef = useRef<HTMLDivElement>(null)
+
+  // 打开时聚焦对话框
+  useEffect(() => {
+    if (open && dialogRef.current) {
+      dialogRef.current.focus()
+    }
+  }, [open])
+
+  // ESC 键关闭
+  useEffect(() => {
+    if (!open) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose()
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [open, onClose])
 
   if (!open) return null
 
@@ -51,8 +71,19 @@ export function RepostModal({
   const Icon = icon === 'link' ? Link : Repeat2
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
-      <div className="bg-background rounded-2xl p-6 max-w-lg w-full mx-4">
+    <div
+      aria-label="转发"
+      aria-modal="true"
+      className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center"
+      onClick={onClose}
+      ref={dialogRef}
+      role="dialog"
+      tabIndex={-1}
+    >
+      <div
+        className="bg-background rounded-2xl p-6 max-w-lg w-full mx-4"
+        onClick={(e) => e.stopPropagation()}
+      >
         <h3 className="text-lg font-semibold mb-4">转发旅行分享</h3>
         <p className="text-muted-foreground mb-4">可以直接转发，也可以写一句给旅友的补充说明。</p>
         <textarea

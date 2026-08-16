@@ -34,7 +34,7 @@ export function WeatherCard({ weather }: WeatherCardProps) {
               °C
             </span>
           </div>
-          <p className="text-[13px] text-[rgba(var(--travel-ink-rgb),0.72)]">
+          <p className="text-[13px] text-[var(--travel-ink)]">
             {weather.weatherDesc} · 体感
             {weather.feelsLike}
             °C
@@ -61,7 +61,7 @@ export function WeatherCard({ weather }: WeatherCardProps) {
                 {day.minTemp}~{day.maxTemp}
                 °C
               </p>
-              <p className="mt-[3px] [overflow-wrap:anywhere] text-[10px] text-[rgba(var(--travel-ink-rgb),0.62)]">{day.weatherDesc}</p>
+              <p className="mt-[3px] [overflow-wrap:anywhere] text-[10px] text-[var(--travel-ink)]">{day.weatherDesc}</p>
             </div>
           ))}
         </div>

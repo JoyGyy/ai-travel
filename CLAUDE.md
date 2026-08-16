@@ -15,25 +15,23 @@ AI 驱动的智能旅行规划助手，基于 Next.js 16 全栈框架，集成 S
 - `pnpm typecheck` — TypeScript 类型检查
 - `pnpm test` — 启动 Vitest 测试（watch 模式）
 - `pnpm test:run` — 运行一次测试
-- `pnpm db:generate` — 生成 Drizzle 迁移文件
-- `pnpm db:migrate` — 执行数据库迁移
-- `pnpm db:studio` — 打开 Drizzle Studio
 
 ## 架构要点
 
 ### 技术栈
 - **前端**: Next.js 16、React 19、TypeScript、Tailwind CSS v4、shadcn/ui、Zustand 5
-- **后端**: Next.js Route Handlers、PostgreSQL、Drizzle ORM
+- **后端**: Next.js Route Handlers、PostgreSQL (pg)
 - **AI**: SiliconFlow/DeepSeek LLM、ReAct Agent、RAG
 - **认证**: jose (JWT)、bcryptjs
 - **测试**: Vitest
 - **代码规范**: ESLint + Prettier、Husky + lint-staged
 
 ### 样式方案
-项目采用**混合样式**策略：
-- `src/components/ui/` — shadcn/ui 组件，使用 **Tailwind CSS 工具类**
-- `src/components/` 其他组件和 `src/app/` 页面 — 使用**传统 CSS 文件**（BEM 风格类名）
-- Tailwind 配置中定义了 shadcn/ui 设计变量（primary、secondary、muted 等）
+项目采用 **Tailwind CSS** 为主：
+- `src/app/` 页面 — 使用 **Tailwind CSS 工具类**
+- `src/components/ui/` — shadcn/ui 组件，使用 **Tailwind CSS**
+- `src/components/` 其他组件 — 部分仍使用传统 CSS 文件（BEM 风格类名）
+- `src/app/globals.css` — 定义全局变量、自定义工具类和动画
 
 ### 目录结构
 ```
@@ -50,7 +48,7 @@ src/
 ├── stores/           # Zustand 状态管理
 ├── hooks/            # 自定义 Hooks
 ├── api/              # 前端 API 客户端
-├── db/               # Drizzle ORM schema + 数据库配置
+├── db/               # 数据库 schema (SQL)
 ├── constants/        # 常量数据
 ├── knowledge/        # RAG 知识库（JSON）
 ├── types/            # TypeScript 类型定义

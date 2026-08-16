@@ -6,6 +6,8 @@ import { Navigation } from '@/components/Navigation'
 
 import './globals.css'
 
+export const viewport = 'width=device-width, initial-scale=1'
+
 export const metadata: Metadata = {
   description: 'AI 驱动的智能旅行规划助手，为您定制专属行程',
   title: 'Travel AI - 智能旅行规划助手',
@@ -15,6 +17,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="zh-CN">
       <body>
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-lg focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring">
+          跳转到主要内容
+        </a>
         <AppProviders>
           <Navigation />
           <main id="main-content">{children}</main>

@@ -6,7 +6,7 @@
 
 import type { ChangeEvent, FormEvent, KeyboardEvent } from 'react'
 
-import { Bot, Calendar, CircleDollarSign, Cloud, Flame, MapPin } from 'lucide-react'
+import { Bot, Calendar, CircleDollarSign, Cloud, Flame, Loader2, MapPin } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -27,6 +27,7 @@ export function HeroSearch() {
   const [showDropdown, setShowDropdown] = useState(false)
   const [activeCityIndex, setActiveCityIndex] = useState(0)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const { fetchWeather, loading: weatherLoading, weather } = useWeather()
   const debounceRef = useRef<null | ReturnType<typeof setTimeout>>(null)
 
@@ -126,6 +127,7 @@ export function HeroSearch() {
     if (!user) return router.push('/login')
     const { budgetNum, isValid } = validatePlanner()
     if (!isValid) return
+    setIsSubmitting(true)
     router.push(`/detail?city=${encodeURIComponent(city.trim())}&budget=${budgetNum}&days=${days}`)
   }, [hasHydrated, user, router, validatePlanner, city, days, toast])
 
@@ -292,11 +294,22 @@ export function HeroSearch() {
 
             {/* 搜索按钮 */}
             <button
-              className="inline-flex h-[42px] items-center justify-center gap-2 rounded-lg bg-primary px-6 text-sm font-bold text-white shadow-[0_4px_12px_rgba(255,107,53,0.3)] transition-all hover:-translate-y-0.5 hover:bg-primary-strong hover:shadow-[0_6px_16px_rgba(255,107,53,0.4)] active:translate-y-0"
+              aria-label={isSubmitting ? '正在生成行程' : 'AI 规划行程'}
+              className="inline-flex h-[42px] items-center justify-center gap-2 rounded-lg bg-primary px-6 text-sm font-bold text-white shadow-[0_4px_12px_rgba(255,107,53,0.3)] transition-all hover:-translate-y-0.5 hover:bg-primary-strong hover:shadow-[0_6px_16px_rgba(255,107,53,0.4)] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-[0_4px_12px_rgba(255,107,53,0.3)]"
+              disabled={isSubmitting}
               type="submit"
             >
-              <Bot aria-hidden="true" className="h-4 w-4" />
-              <span>AI 规划</span>
+              {isSubmitting ? (
+                <>
+                  <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
+                  <span>生成中...</span>
+                </>
+              ) : (
+                <>
+                  <Bot aria-hidden="true" className="h-4 w-4" />
+                  <span>AI 规划</span>
+                </>
+              )}
             </button>
           </div>
 

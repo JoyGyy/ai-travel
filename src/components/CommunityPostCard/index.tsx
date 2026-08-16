@@ -165,7 +165,7 @@ export const CommunityPostCard = React.memo(
 
             {/* 操作栏 */}
             <div className="flex items-center justify-between mt-1 pt-2 border-t border-travel-border">
-              <div className="flex gap-1">
+              <div className="flex gap-2">
                 <Button
                   aria-label="点赞"
                   className={`text-travel-muted transition-colors transition-transform duration-200 ease-[var(--ease-standard)] hover:text-travel-ink hover:scale-105 active:scale-95 motion-reduce:transition-none motion-reduce:transform-none ${post.likedByMe ? 'text-destructive' : ''} ${isLikeAnimating ? 'animate-[likeHeartbeat_0.4s_var(--ease-spring)] motion-reduce:animate-none' : ''}`}

@@ -328,7 +328,7 @@ export default function Detail() {
                 <span className="text-[10px] font-extrabold uppercase tracking-[2px] text-stone-900/62">
                   目的地
                 </span>
-                <span className="max-w-full overflow-wrap-anywhere text-center font-serif text-base font-extrabold text-travel-ink">
+                <span className="max-w-full wrap-anywhere text-center font-serif text-base font-extrabold text-travel-ink">
                   {city}
                 </span>
               </div>
@@ -337,7 +337,7 @@ export default function Detail() {
                 <span className="text-[10px] font-extrabold uppercase tracking-[2px] text-stone-900/62">
                   天数
                 </span>
-                <span className="max-w-full overflow-wrap-anywhere text-center font-serif text-base font-extrabold text-travel-ink">
+                <span className="max-w-full wrap-anywhere text-center font-serif text-base font-extrabold text-travel-ink">
                   {days}天
                 </span>
               </div>
@@ -346,7 +346,7 @@ export default function Detail() {
                 <span className="text-[10px] font-extrabold uppercase tracking-[2px] text-stone-900/62">
                   预算
                 </span>
-                <span className="max-w-full overflow-wrap-anywhere text-center font-serif text-base font-extrabold tabular-nums text-accent-strong">
+                <span className="max-w-full wrap-anywhere text-center font-serif text-base font-extrabold tabular-nums text-[#d63350]">
                   ¥{budget}
                 </span>
               </div>

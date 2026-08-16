@@ -46,8 +46,8 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const [formError, setFormError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [fieldErrors, setFieldErrors] = useState<{ username?: string; password?: string }>({})
-  const [touched, setTouched] = useState<{ username?: boolean; password?: boolean }>({})
+  const [fieldErrors, setFieldErrors] = useState<{ password?: string; username?: string; }>({})
+  const [touched, setTouched] = useState<{ password?: boolean; username?: boolean; }>({})
   const usernameRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
   const currentCopy = formCopy[tab]
@@ -76,8 +76,8 @@ export default function Login() {
 
   /* ---------- 表单校验（返回字段级错误） ---------- */
 
-  function validateForm(): { username?: string; password?: string } {
-    const errors: { username?: string; password?: string } = {}
+  function validateForm(): { password?: string; username?: string; } {
+    const errors: { password?: string; username?: string; } = {}
     if (!username.trim()) errors.username = '请输入用户名'
     if (!password) {
       errors.password = '请输入密码'
@@ -89,7 +89,7 @@ export default function Login() {
 
   /* ---------- 单字段校验（onBlur 时调用） ---------- */
 
-  function validateField(field: 'username' | 'password') {
+  function validateField(field: 'password' | 'username') {
     const errors = validateForm()
     setFieldErrors((prev) => ({ ...prev, [field]: errors[field] }))
   }
@@ -144,9 +144,9 @@ export default function Login() {
         <div className="absolute inset-0 z-0">
           <Image
             alt=""
+            className="object-cover opacity-16"
             fill
             src={imageUrl('/images/home/hero-boat.jpg')}
-            className="object-cover opacity-16"
           />
         </div>
         {/* 渐变遮罩 */}

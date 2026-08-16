@@ -16,9 +16,9 @@ import type { Attraction, AttractionFilters, AttractionTicketType } from '@/type
 import { fetchAttractions } from '@/api/attractions'
 import { Pagination } from '@/components/Pagination'
 import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useAttractionFavorite } from '@/hooks/useAttractionFavorite'
 
 const ticketOptions = [

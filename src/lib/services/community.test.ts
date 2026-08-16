@@ -34,9 +34,9 @@ vi.mock('@/lib/db', () => ({
 function createMockClient() {
   const clientQuery = vi.fn()
   return {
+    _query: clientQuery,
     query: clientQuery,
     release: vi.fn(),
-    _query: clientQuery,
   }
 }
 

@@ -37,8 +37,8 @@ export default function ChatPage() {
             </p>
           </div>
           <button
-            className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[14px] border border-stone-900/8 bg-travel-surface text-travel-ink transition-all hover:-translate-y-px hover:bg-white hover:text-travel-orange-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900/28"
             aria-label="清空对话"
+            className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[14px] border border-stone-900/8 bg-travel-surface text-travel-ink transition-all hover:-translate-y-px hover:bg-white hover:text-travel-orange-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900/28"
             onClick={() => {
               if (window.confirm('确定要清空对话记录吗？')) {
                 setMessages([])
@@ -183,8 +183,8 @@ export default function ChatPage() {
             value={input}
           />
           <button
-            className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[14px] border-0 bg-primary text-white shadow-[0_12px_24px_rgba(var(--travel-primary-rgb),0.34)] transition-all hover:-translate-y-px hover:shadow-[0_16px_30px_rgba(var(--travel-primary-rgb),0.42)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900/24 disabled:cursor-not-allowed disabled:text-stone-900/42 disabled:bg-stone-900/10 disabled:shadow-none"
             aria-label="发送"
+            className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[14px] border-0 bg-primary text-white shadow-[0_12px_24px_rgba(var(--travel-primary-rgb),0.34)] transition-all hover:-translate-y-px hover:shadow-[0_16px_30px_rgba(var(--travel-primary-rgb),0.42)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900/24 disabled:cursor-not-allowed disabled:text-stone-900/42 disabled:bg-stone-900/10 disabled:shadow-none"
             disabled={!input.trim() || status !== 'ready'}
             title="发送"
             type="submit"

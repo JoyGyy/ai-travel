@@ -19,6 +19,19 @@ const globalForDb = globalThis as unknown as {
   _pgPool: null | pg.Pool
 }
 
+/** 将查询结果类型安全地转换为指定类型 */
+export function typedQuery<T>(result: unknown[]): T[] {
+  return result as unknown as T[]
+}
+
+// ========== 导出 ==========
+
+async function getClient(): Promise<PoolClient> {
+  const pool = getPool()
+  if (!pool) throw new Error('数据库未配置，请设置 DATABASE_URL 环境变量')
+  return pool.connect()
+}
+
 function getPool(): null | pg.Pool {
   if (!env.DATABASE_URL) return null
 
@@ -36,19 +49,6 @@ function getPool(): null | pg.Pool {
   }
 
   return globalForDb._pgPool
-}
-
-// ========== 导出 ==========
-
-/** 将查询结果类型安全地转换为指定类型 */
-export function typedQuery<T>(result: unknown[]): T[] {
-  return result as unknown as T[]
-}
-
-async function getClient(): Promise<PoolClient> {
-  const pool = getPool()
-  if (!pool) throw new Error('数据库未配置，请设置 DATABASE_URL 环境变量')
-  return pool.connect()
 }
 
 /** 执行 SQL 查询 */

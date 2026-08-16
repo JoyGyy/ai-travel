@@ -5,9 +5,8 @@
  *   pnpm db:migrate status   — 查看 migration 状态
  *   pnpm db:migrate fresh    — 清空数据库并重新执行所有 migration（危险！）
  */
-import { readFileSync, readdirSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
-
 import pg from 'pg'
 
 import { env } from '../src/lib/env'
@@ -15,6 +14,45 @@ import { env } from '../src/lib/env'
 const { Pool } = pg
 
 const MIGRATIONS_DIR = join(import.meta.dirname, 'migrations')
+
+/** 清空数据库并重新执行（危险操作） */
+async function freshDatabase(pool: pg.Pool) {
+  console.log('⚠️  即将清空数据库并重新执行所有 migration')
+  console.log('   这会删除所有数据！\n')
+
+  // 删除所有用户表（保留系统表）
+  const tablesResult = await pool.query(`
+    SELECT tablename FROM pg_tables
+    WHERE schemaname = 'public' AND tablename != '_migrations'
+  `)
+
+  const tables = tablesResult.rows.map((r: { tablename: string }) => r.tablename)
+
+  if (tables.length > 0) {
+    console.log(`🗑️  删除 ${tables.length} 张表: ${tables.join(', ')}`)
+    await pool.query(`DROP TABLE IF EXISTS ${tables.map((t: string) => `"${t}"`).join(', ')} CASCADE`)
+  }
+
+  // 清空 migration 记录
+  await pool.query('DELETE FROM _migrations')
+  console.log('🗑️  清空 migration 记录\n')
+
+  // 重新执行所有 migration
+  await runMigrations(pool)
+}
+
+/** 获取已应用的 migration 列表 */
+async function getAppliedMigrations(pool: pg.Pool): Promise<Set<string>> {
+  const result = await pool.query('SELECT name FROM _migrations ORDER BY id')
+  return new Set(result.rows.map((r: { name: string }) => r.name))
+}
+
+/** 获取所有 migration 文件（按文件名排序） */
+function getMigrationFiles(): string[] {
+  return readdirSync(MIGRATIONS_DIR)
+    .filter((f) => f.endsWith('.sql'))
+    .sort()
+}
 
 async function main() {
   const command = process.argv[2] || 'run'
@@ -37,11 +75,11 @@ async function main() {
     `)
 
     switch (command) {
-      case 'status':
-        await showStatus(pool)
-        break
       case 'fresh':
         await freshDatabase(pool)
+        break
+      case 'status':
+        await showStatus(pool)
         break
       case 'run':
       default:
@@ -54,19 +92,6 @@ async function main() {
   } finally {
     await pool.end()
   }
-}
-
-/** 获取所有 migration 文件（按文件名排序） */
-function getMigrationFiles(): string[] {
-  return readdirSync(MIGRATIONS_DIR)
-    .filter((f) => f.endsWith('.sql'))
-    .sort()
-}
-
-/** 获取已应用的 migration 列表 */
-async function getAppliedMigrations(pool: pg.Pool): Promise<Set<string>> {
-  const result = await pool.query('SELECT name FROM _migrations ORDER BY id')
-  return new Set(result.rows.map((r: { name: string }) => r.name))
 }
 
 /** 执行所有未应用的 migration */
@@ -101,7 +126,7 @@ async function showStatus(pool: pg.Pool) {
   const applied = await getAppliedMigrations(pool)
 
   console.log('\n📊 Migration 状态:\n')
-  console.log('状态'.padEnd(6) + '文件名')
+  console.log(`${'状态'.padEnd(6)  }文件名`)
   console.log('─'.repeat(50))
 
   for (const file of files) {
@@ -111,32 +136,6 @@ async function showStatus(pool: pg.Pool) {
 
   const pending = files.filter((f) => !applied.has(f))
   console.log(`\n共 ${files.length} 个 migration，${pending.length} 个待执行`)
-}
-
-/** 清空数据库并重新执行（危险操作） */
-async function freshDatabase(pool: pg.Pool) {
-  console.log('⚠️  即将清空数据库并重新执行所有 migration')
-  console.log('   这会删除所有数据！\n')
-
-  // 删除所有用户表（保留系统表）
-  const tablesResult = await pool.query(`
-    SELECT tablename FROM pg_tables
-    WHERE schemaname = 'public' AND tablename != '_migrations'
-  `)
-
-  const tables = tablesResult.rows.map((r: { tablename: string }) => r.tablename)
-
-  if (tables.length > 0) {
-    console.log(`🗑️  删除 ${tables.length} 张表: ${tables.join(', ')}`)
-    await pool.query(`DROP TABLE IF EXISTS ${tables.map((t: string) => `"${t}"`).join(', ')} CASCADE`)
-  }
-
-  // 清空 migration 记录
-  await pool.query('DELETE FROM _migrations')
-  console.log('🗑️  清空 migration 记录\n')
-
-  // 重新执行所有 migration
-  await runMigrations(pool)
 }
 
 main()

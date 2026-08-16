@@ -10,28 +10,6 @@ interface CommunityImageGridProps {
   images: CommunityImage[]
 }
 
-/** 根据图片数量和 compact 模式决定网格列数和最大宽度 */
-function getGridClasses(count: number, compact: boolean) {
-  const base = compact
-    ? 'gap-1.5 rounded-2xl max-sm:gap-1.5 max-sm:rounded-2xl'
-    : 'gap-2.5 rounded-[22px] max-sm:gap-1.5 max-sm:rounded-2xl'
-
-  if (count === 1) {
-    return `grid grid-cols-1 max-w-[520px] ${base}`
-  }
-  if (count === 2 || count === 4) {
-    return `grid grid-cols-2 max-w-[560px] ${base}`
-  }
-  return `grid grid-cols-3 ${base}`
-}
-
-/** 根据图片数量和 compact 模式决定图片宽高比 */
-function getImageAspectClasses(count: number, compact: boolean) {
-  if (compact) return 'aspect-[4/3]'
-  if (count === 1) return 'aspect-[16/10]'
-  return 'aspect-square'
-}
-
 export function CommunityImageGrid({ compact = false, images }: CommunityImageGridProps) {
   const [previewIndex, setPreviewIndex] = useState<null | number>(null)
   const dialogRef = useRef<HTMLDivElement>(null)
@@ -162,4 +140,26 @@ export function CommunityImageGrid({ compact = false, images }: CommunityImageGr
       )}
     </>
   )
+}
+
+/** 根据图片数量和 compact 模式决定网格列数和最大宽度 */
+function getGridClasses(count: number, compact: boolean) {
+  const base = compact
+    ? 'gap-1.5 rounded-2xl max-sm:gap-1.5 max-sm:rounded-2xl'
+    : 'gap-2.5 rounded-[22px] max-sm:gap-1.5 max-sm:rounded-2xl'
+
+  if (count === 1) {
+    return `grid grid-cols-1 max-w-[520px] ${base}`
+  }
+  if (count === 2 || count === 4) {
+    return `grid grid-cols-2 max-w-[560px] ${base}`
+  }
+  return `grid grid-cols-3 ${base}`
+}
+
+/** 根据图片数量和 compact 模式决定图片宽高比 */
+function getImageAspectClasses(count: number, compact: boolean) {
+  if (compact) return 'aspect-[4/3]'
+  if (count === 1) return 'aspect-[16/10]'
+  return 'aspect-square'
 }

@@ -357,6 +357,7 @@ export default function Profile() {
                 </p>
               )}
             </div>
+            <p className="text-sm text-muted-foreground">修改密码后需要重新登录</p>
             <Button disabled={changingPassword} type="submit">
               {changingPassword ? '正在修改...' : '修改密码'}
             </Button>

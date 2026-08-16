@@ -47,6 +47,7 @@ export default function Login() {
   const [formError, setFormError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<{ username?: string; password?: string }>({})
+  const [touched, setTouched] = useState<{ username?: boolean; password?: boolean }>({})
   const usernameRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
   const currentCopy = formCopy[tab]
@@ -69,6 +70,7 @@ export default function Login() {
     setPassword('')
     setFormError('')
     setFieldErrors({})
+    setTouched({})
     setShowPassword(false)
   }
 
@@ -85,6 +87,13 @@ export default function Login() {
     return errors
   }
 
+  /* ---------- 单字段校验（onBlur 时调用） ---------- */
+
+  function validateField(field: 'username' | 'password') {
+    const errors = validateForm()
+    setFieldErrors((prev) => ({ ...prev, [field]: errors[field] }))
+  }
+
   /* ---------- 提交登录/注册请求 ---------- */
 
   async function handleSubmit(event: { preventDefault: () => void }) {
@@ -94,11 +103,13 @@ export default function Login() {
     const errors = validateForm()
     if (errors.username || errors.password) {
       setFieldErrors(errors)
+      setTouched({ password: true, username: true })
       setFormError('')
       return
     }
 
     setFieldErrors({})
+    setTouched({})
     setFormError('')
     setLoading(true)
     try {
@@ -238,6 +249,10 @@ export default function Login() {
                 className="h-11 w-full rounded-md border border-travel-border bg-white px-3.5 text-sm text-travel-ink outline-none transition-[border-color,box-shadow] placeholder:text-stone-400 focus:border-travel-orange focus:ring-2 focus:ring-travel-orange/10 aria-[invalid=true]:border-red-500"
                 id="login-username"
                 name="username"
+                onBlur={() => {
+                  setTouched((prev) => ({ ...prev, username: true }))
+                  validateField('username')
+                }}
                 onChange={(e) => {
                   setUsername(e.target.value)
                   if (fieldErrors.username) setFieldErrors((prev) => ({ ...prev, username: undefined }))
@@ -249,7 +264,7 @@ export default function Login() {
                 type="text"
                 value={username}
               />
-              {fieldErrors.username && (
+              {touched.username && fieldErrors.username && (
                 <p aria-live="polite" className="mt-1.5 text-xs text-red-600">
                   {fieldErrors.username}
                 </p>
@@ -268,10 +283,14 @@ export default function Login() {
                   className="h-11 w-full rounded-md border border-travel-border bg-white pr-10 pl-3.5 text-sm text-travel-ink outline-none transition-[border-color,box-shadow] placeholder:text-stone-400 focus:border-travel-orange focus:ring-2 focus:ring-travel-orange/10 aria-[invalid=true]:border-red-500"
                   id="login-password"
                   name="password"
+                  onBlur={() => {
+                    setTouched((prev) => ({ ...prev, password: true }))
+                    validateField('password')
+                  }}
                   onChange={(e) => {
                     setPassword(e.target.value)
                     if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: undefined }))
-                  if (formError) setFormError('')
+                    if (formError) setFormError('')
                   }}
                   placeholder={currentCopy.passwordPlaceholder}
                   ref={passwordRef}
@@ -288,7 +307,7 @@ export default function Login() {
                   {showPassword ? <EyeOff aria-hidden="true" size={18} /> : <Eye aria-hidden="true" size={18} />}
                 </button>
               </div>
-              {fieldErrors.password && (
+              {touched.password && fieldErrors.password && (
                 <p aria-live="polite" className="mt-1.5 text-xs text-red-600">
                   {fieldErrors.password}
                 </p>

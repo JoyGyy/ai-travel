@@ -372,7 +372,7 @@ export default function Weather() {
                   tag: '避暑',
                 },
                 {
-                  color: 'from-amber-500 to-teal-600',
+                  color: 'from-teal-500 to-cyan-600',
                   cities: ['西安', '北京', '南京'],
                   desc: '秋高气爽，适合历史文化深度游',
                   icon: <MapPin size={20} />,

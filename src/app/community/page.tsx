@@ -1,7 +1,7 @@
 'use client'
 
 import type { CommunityPost, CommunityPostFilters } from '@/types/community'
-import { Bookmark, Camera, Heart, MapPin, MessageCircle, Plus, Quote, Star, TrendingUp, Users } from 'lucide-react'
+import { Camera, Heart, MapPin, Plus, Quote, Star, TrendingUp, Users } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'

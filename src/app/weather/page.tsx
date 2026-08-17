@@ -8,7 +8,7 @@
  */
 import type { ChangeEvent, KeyboardEvent } from 'react'
 
-import { CalendarDays, Clock, Cloud, Compass, Droplets, Lightbulb, MapPin, Search, Shirt, Star, Sun, Thermometer, Wind } from 'lucide-react'
+import { CalendarDays, Clock, Cloud, Droplets, Lightbulb, MapPin, Search, Shirt, Star, Sun, Thermometer, Wind } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
 import { HomeWeather } from '@/components/HomeWeather'

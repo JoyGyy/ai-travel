@@ -11,7 +11,7 @@ import type { Attraction } from '@/types/attraction'
 import { Bot, Clock, Eye, EyeOff, Heart, Key, LogOut, MapPin } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { fetchFavoriteAttractions, unfavoriteAttraction } from '@/api/attractions'
 import { changePasswordApi, getProfileApi } from '@/api/auth'
@@ -55,6 +55,8 @@ export default function Profile() {
   }>({})
   const [showLogoutDialog, setShowLogoutDialog] = useState(false)
   const toast = useAppToast()
+  const toastRef = useRef(toast)
+  toastRef.current = toast
 
   const loadProfile = useCallback(async () => {
     setLoading(true)
@@ -69,7 +71,7 @@ export default function Profile() {
     }
     catch (err: unknown) {
       if (err instanceof ApiError && err.status === 401) {
-        toast.info('登录已过期，请重新登录')
+        toastRef.current.info('登录已过期，请重新登录')
         logout()
         router.replace('/login')
         return
@@ -79,10 +81,10 @@ export default function Profile() {
     finally {
       setLoading(false)
     }
-  }, [toast, logout, router])
+  }, [logout, router])
 
   useEffect(() => {
-    queueMicrotask(() => loadProfile())
+    loadProfile()
   }, [loadProfile])
 
   async function handlePasswordChange(event: React.FormEvent<HTMLFormElement>) {

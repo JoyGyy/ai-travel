@@ -4,7 +4,7 @@
  * 首页（行程推荐）
  * OTA 旅行平台风格的落地页，包含搜索表单、热门目的地、精选推荐、AI 特色介绍等模块。
  */
-import { Bot, Cloud, Compass, Flame, Home, MapPin, Star, Users, Zap } from 'lucide-react'
+import { Bot, Cloud, Compass, Flame, MapPin, Star, Users, Zap } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -19,12 +19,11 @@ import { useAuthStore } from '@/stores/auth'
 import { featuredTrips, hotDestinations, userReviews } from './home-data'
 
 const quickEntries = [
-  { color: '#FF6B35', gradient: 'from-orange-500 to-red-500', href: '/', icon: <Home />, label: '酒店民宿' },
-  { color: '#F59E0B', gradient: 'from-amber-400 to-orange-500', href: '/detail', icon: <Compass />, label: 'AI 行程' },
-  { color: '#10B981', gradient: 'from-emerald-400 to-teal-500', href: '/attractions', icon: <MapPin />, label: '精选景点' },
-  { color: '#8B5CF6', gradient: 'from-violet-500 to-purple-600', href: '/community', icon: <Users />, label: '旅友社区' },
-  { color: '#3B82F6', gradient: 'from-blue-400 to-indigo-500', href: '/weather', icon: <Cloud />, label: '天气查询' },
-  { color: '#E84057', gradient: 'from-pink-500 to-rose-600', href: '/chat', icon: <Bot />, label: 'AI 咨询' },
+  { color: '#FF6B35', desc: '智能行程一键生成', gradient: 'from-orange-500 to-red-500', href: '/detail', icon: <Compass size={28} />, label: 'AI 行程规划', span: 'col-span-2 row-span-2' },
+  { color: '#10B981', desc: '发现身边好去处', gradient: 'from-emerald-400 to-teal-500', href: '/attractions', icon: <MapPin size={24} />, label: '精选景点', span: 'col-span-1 row-span-1' },
+  { color: '#8B5CF6', desc: '旅友分享攻略', gradient: 'from-violet-500 to-purple-600', href: '/community', icon: <Users size={24} />, label: '旅友社区', span: 'col-span-1 row-span-1' },
+  { color: '#3B82F6', desc: '实时天气预报', gradient: 'from-blue-400 to-indigo-500', href: '/weather', icon: <Cloud size={24} />, label: '天气查询', span: 'col-span-1 row-span-1' },
+  { color: '#E84057', desc: '24h 旅行顾问', gradient: 'from-pink-500 to-rose-600', href: '/chat', icon: <Bot size={24} />, label: 'AI 咨询', span: 'col-span-1 row-span-1' },
 ]
 
 export default function HomePage() {
@@ -48,30 +47,39 @@ export default function HomePage() {
       {/* Hero 搜索区 */}
       <HeroSearch />
 
-      {/* 快捷入口 */}
-      <section aria-label="快捷服务" className="relative mx-auto max-w-[1200px] px-6 py-12">
-        {/* 装饰背景 */}
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-primary/10 to-secondary/10 blur-3xl" />
-          <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-br from-sky/10 to-accent/10 blur-3xl" />
+      {/* Bento Grid 功能区 */}
+      <section aria-label="快捷服务" className="relative mx-auto max-w-[1200px] px-6 py-16">
+        <div className="mb-10 text-center">
+          <h2 className="text-2xl font-bold text-gray-900 md:text-3xl">探索旅行的无限可能</h2>
+          <p className="mt-2 text-gray-500">AI 帮你规划行程，发现精彩目的地</p>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 sm:grid-cols-6 animate-fade-in-up">
-          {quickEntries.map(entry => (
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:grid-rows-2">
+          {quickEntries.map((entry, index) => (
             <Link
-              className="group flex flex-col items-center gap-3 rounded-2xl p-4 transition-all duration-300 hover:bg-white hover:shadow-lg hover:-translate-y-1"
+              className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br ${entry.gradient} p-6 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl animate-fade-in-up ${entry.span}`}
               href={entry.href}
               key={entry.label}
+              style={{ animationDelay: `${index * 80}ms` }}
             >
-              <span
-                aria-hidden="true"
-                className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${entry.gradient} text-xl text-white shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3`}
-              >
-                {entry.icon}
-              </span>
-              <span className="text-sm font-semibold text-travel-ink transition-colors group-hover:text-primary">
-                {entry.label}
-              </span>
+              {/* 装饰光晕 */}
+              <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10 blur-2xl transition-transform duration-500 group-hover:scale-150" />
+              <div className="absolute -bottom-4 -left-4 h-20 w-20 rounded-full bg-white/5 blur-xl" />
+
+              <div className="relative z-10 flex h-full flex-col justify-between">
+                <div>
+                  <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
+                    {entry.icon}
+                  </div>
+                  <h3 className="text-xl font-bold">{entry.label}</h3>
+                  <p className="mt-1 text-sm text-white/80">{entry.desc}</p>
+                </div>
+                <div className="mt-4 flex items-center gap-1 text-xs font-semibold text-white/60 transition-all group-hover:text-white/90 group-hover:gap-2">
+                  了解更多
+                  {' '}
+                  <span>&rarr;</span>
+                </div>
+              </div>
             </Link>
           ))}
         </div>
@@ -107,7 +115,7 @@ export default function HomePage() {
         <div className="grid grid-cols-2 gap-5 sm:grid-cols-3">
           {hotDestinations.map((dest, index) => (
             <Link
-              className="group block overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-2 animate-fade-in-up"
+              className="group block overflow-hidden rounded-2xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] hover:-translate-y-2 hover:ring-2 hover:ring-orange-200 animate-fade-in-up"
               href={`/detail?city=${encodeURIComponent(dest.name)}`}
               key={dest.name}
               style={{ animationDelay: `${index * 100}ms` }}
@@ -168,7 +176,7 @@ export default function HomePage() {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {featuredTrips.map((trip, index) => (
             <Link
-              className="group block overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-2 animate-fade-in-up"
+              className="group block overflow-hidden rounded-2xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] hover:-translate-y-2 hover:ring-2 hover:ring-amber-200 animate-fade-in-up"
               href={`/detail?city=${encodeURIComponent(trip.city)}`}
               key={trip.title}
               style={{ animationDelay: `${index * 100}ms` }}

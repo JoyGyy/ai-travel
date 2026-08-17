@@ -119,10 +119,10 @@ export default function Weather() {
       onClick={() => showDropdown && setShowDropdown(false)}
     >
       {/* Hero 区域 */}
-      <div className="relative isolate min-h-[280px] overflow-hidden bg-gradient-to-br from-orange-50 via-amber-50 to-rose-50 p-[clamp(40px,8vw,80px)_clamp(20px,5vw,72px)_80px]">
+      <div className="relative isolate min-h-[280px] overflow-hidden bg-orange-50/60 p-[clamp(40px,8vw,80px)_clamp(20px,5vw,72px)_80px]">
         {/* 装饰元素 */}
-        <div className="absolute -right-20 -top-20 h-[300px] w-[300px] animate-[morphBg_8s_ease-in-out_infinite] rounded-full bg-gradient-to-br from-orange-200/30 to-red-200/30 blur-3xl" />
-        <div className="absolute -bottom-20 -left-20 h-[250px] w-[250px] rounded-full bg-gradient-to-br from-amber-200/20 to-yellow-200/20 blur-3xl" />
+        <div className="absolute -right-20 -top-20 h-[300px] w-[300px] animate-[morphBg_8s_ease-in-out_infinite] rounded-full bg-orange-200/15 blur-3xl" />
+        <div className="absolute -bottom-20 -left-20 h-[250px] w-[250px] rounded-full bg-amber-200/10 blur-3xl" />
         <div className="absolute right-[12%] top-1/2 h-20 w-20 -translate-y-1/2 rounded-full border-2 border-orange-200/40 bg-transparent" />
 
         <p className="relative mb-3 text-[11px] font-bold tracking-[0.16em] text-orange-500 animate-[fadeIn_var(--motion-choreography)_var(--ease-emphasized)_0.1s_both] uppercase">
@@ -278,7 +278,7 @@ export default function Weather() {
         <div className="mt-12 animate-fade-in-up">
           <Separator className="mb-8 bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
           <div className="mb-6 flex items-center gap-3">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-orange-400 to-red-500 text-white text-sm">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-500 text-white text-sm">
               🔥
             </span>
             <h2 className="text-lg font-bold text-gray-900">热门城市</h2>
@@ -410,7 +410,7 @@ export default function Weather() {
                           </Badge>
                         ))}
                       </div>
-                      <Badge className="mt-3 border-0 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-700" variant="outline">
+                      <Badge className="mt-3 border-0 bg-amber-100 text-amber-700" variant="outline">
                         <Star className="mr-1 h-3 w-3 fill-current" />
                         {item.tag}
                         推荐
@@ -434,7 +434,7 @@ export default function Weather() {
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {[
                 { color: 'from-blue-500 to-cyan-500', desc: '相对湿度高于 80% 时体感闷热，低于 30% 时皮肤易干燥', icon: <Droplets size={20} />, title: '湿度与舒适度' },
-                { color: 'from-orange-500 to-red-500', desc: '紫外线指数 6 以上建议涂抹 SPF30+ 防晒霜', icon: <Sun size={20} />, title: '紫外线防护' },
+                { color: 'bg-orange-500', desc: '紫外线指数 6 以上建议涂抹 SPF30+ 防晒霜', icon: <Sun size={20} />, title: '紫外线防护' },
                 { color: 'from-emerald-500 to-teal-500', desc: '气温每升高 10°C，体感温度可能高出 2-3°C', icon: <Thermometer size={20} />, title: '体感温度' },
               ].map(item => (
                 <Card

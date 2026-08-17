@@ -188,7 +188,7 @@ export default function Profile() {
   return (
     <main className="min-h-screen bg-[var(--travel-bg)]">
       {/* Hero 区域 */}
-      <div className="bg-gradient-to-br from-orange-50 via-amber-50 to-rose-50">
+      <div className="bg-orange-50/60">
         <div className="travel-container py-12">
           <div className="flex items-center justify-between">
             <div>
@@ -232,7 +232,7 @@ export default function Profile() {
           <div className="space-y-6">
             {/* 用户卡片 */}
             <Card className="overflow-hidden border-white/60 bg-white/80 backdrop-blur-sm">
-              <div className="bg-gradient-to-r from-orange-500 to-red-500 p-6">
+              <div className="bg-orange-500 p-6">
                 <div className="flex items-center gap-4">
                   <Avatar className="h-20 w-20 border-4 border-white/20">
                     <AvatarFallback className="bg-white/20 text-3xl font-bold text-white backdrop-blur-sm">
@@ -446,7 +446,7 @@ export default function Profile() {
                             key={item.id}
                           >
                             <div className="flex items-center gap-3">
-                              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-orange-100 to-red-100 text-orange-600">
+                              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100 text-orange-600">
                                 <MapPin size={18} />
                               </div>
                               <div>

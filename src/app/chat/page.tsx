@@ -25,10 +25,10 @@ export default function ChatPage() {
   return (
     <section className="flex h-full min-h-0 flex-col overflow-hidden bg-gradient-to-br from-gray-50 to-white text-travel-ink">
       {/* Hero 区域 */}
-      <div className="relative flex-shrink-0 overflow-hidden bg-gradient-to-br from-orange-50 via-amber-50 to-rose-50 pb-[40px] pl-5 pr-5 pt-[24px]">
+      <div className="relative flex-shrink-0 overflow-hidden bg-orange-50/60 pb-[40px] pl-5 pr-5 pt-[24px]">
         {/* 装饰元素 */}
-        <div className="absolute -right-16 -top-16 h-[200px] w-[200px] rounded-full bg-gradient-to-br from-orange-200/30 to-red-200/30 blur-3xl" />
-        <div className="absolute -bottom-16 -left-16 h-[180px] w-[180px] rounded-full bg-gradient-to-br from-amber-200/20 to-yellow-200/20 blur-3xl" />
+        <div className="absolute -right-16 -top-16 h-[200px] w-[200px] rounded-full bg-orange-200/15 blur-3xl" />
+        <div className="absolute -bottom-16 -left-16 h-[180px] w-[180px] rounded-full bg-amber-200/10 blur-3xl" />
         <div className="pointer-events-none absolute right-[12%] top-1/2 h-20 w-20 -translate-y-1/2 rounded-full border-2 border-orange-200/40 bg-transparent" />
 
         <div className="relative z-[1] mx-auto flex w-full max-w-[900px] items-start justify-between gap-4">
@@ -68,9 +68,9 @@ export default function ChatPage() {
           <div className="mx-auto w-full max-w-[680px] py-[clamp(12px,3vh,28px)]">
             {/* 空状态卡片 */}
             <div className="relative mb-[18px] overflow-hidden rounded-3xl border border-white/60 bg-white/80 p-8 text-center shadow-lg backdrop-blur-sm animate-fade-in-up">
-              <div className="absolute -bottom-[54px] -right-7 h-[164px] w-[164px] rounded-full bg-gradient-to-br from-orange-100 to-amber-100" />
-              <div className="absolute -top-[30px] -left-[30px] h-[120px] w-[120px] rounded-full bg-gradient-to-br from-red-100 to-rose-100" />
-              <div className="relative z-[1] mx-auto mb-[18px] flex h-[72px] w-[72px] items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 text-3xl text-white shadow-lg shadow-orange-500/25 animate-[pulseGlow_2.5s_infinite]">
+              <div className="absolute -bottom-[54px] -right-7 h-[164px] w-[164px] rounded-full bg-orange-100" />
+              <div className="absolute -top-[30px] -left-[30px] h-[120px] w-[120px] rounded-full bg-rose-100" />
+              <div className="relative z-[1] mx-auto mb-[18px] flex h-[72px] w-[72px] items-center justify-center rounded-2xl bg-orange-500 text-3xl text-white shadow-lg shadow-orange-500/20 animate-[pulseGlow_2.5s_infinite]">
                 ✈️
               </div>
               <h2 className="relative z-[1] mb-3 font-serif text-[22px] font-extrabold tracking-tight text-gray-900">
@@ -100,7 +100,7 @@ export default function ChatPage() {
                   style={{ animationDelay: `${index * 80}ms` }}
                   type="button"
                 >
-                  <span className="flex h-[28px] w-[28px] flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-orange-500 to-red-500 text-[11px] font-bold tabular-nums text-white shadow-sm">
+                  <span className="flex h-[28px] w-[28px] flex-shrink-0 items-center justify-center rounded-lg bg-orange-500 text-[11px] font-bold tabular-nums text-white shadow-sm">
                     {index + 1}
                   </span>
                   <span className="min-w-0 text-[13px] font-semibold leading-[1.45] text-gray-700">

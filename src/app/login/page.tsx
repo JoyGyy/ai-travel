@@ -172,12 +172,12 @@ export default function Login() {
         <div className="absolute inset-0 z-[1] bg-gradient-to-br from-gray-900/95 via-gray-900/80 to-gray-800/90" />
 
         {/* 装饰元素 */}
-        <div className="absolute -right-20 -top-20 z-[1] h-[400px] w-[400px] rounded-full bg-gradient-to-br from-orange-500/10 to-red-500/10 blur-3xl" />
+        <div className="absolute -right-20 -top-20 z-[1] h-[400px] w-[400px] rounded-full bg-orange-500/5 blur-3xl" />
         <div className="absolute -bottom-20 -left-20 z-[1] h-[300px] w-[300px] rounded-full bg-gradient-to-br from-blue-500/10 to-purple-500/10 blur-3xl" />
 
         {/* 品牌标识 */}
         <div className="relative z-[2] flex items-center gap-3 animate-fade-in-up">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-red-500 text-lg text-white shadow-lg shadow-orange-500/25">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500 text-lg text-white shadow-lg shadow-orange-500/20">
             <Compass />
           </span>
           <span className="text-lg font-bold tracking-wide text-white">Travel AI</span>
@@ -191,7 +191,7 @@ export default function Login() {
           <h1 className="text-3xl font-bold leading-tight text-white md:text-[36px] animate-fade-in-up" style={{ animationDelay: '100ms' }}>
             登录后保存你的
             <br />
-            <span className="bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
+            <span className="text-orange-400">
               智能旅行地图
             </span>
           </h1>
@@ -362,7 +362,7 @@ export default function Login() {
             </div>
 
             <Button
-              className="h-12 w-full gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/25 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-orange-500/30 disabled:hover:translate-y-0 animate-fade-in-up"
+              className="h-12 w-full gap-2 bg-orange-500 text-white shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-orange-500/25 disabled:hover:translate-y-0 animate-fade-in-up"
               disabled={loading}
               size="lg"
               style={{ animationDelay: '300ms' }}

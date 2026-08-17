@@ -169,10 +169,10 @@ export default function Community() {
   return (
     <main aria-labelledby="community-title" className="travel-page-shell gap-6">
       {/* Hero 区域 */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-orange-50 via-amber-50 to-rose-50 p-8">
+      <section className="relative overflow-hidden rounded-3xl bg-orange-50/60 p-8">
         {/* 装饰元素 */}
-        <div className="absolute -right-16 -top-16 h-[200px] w-[200px] rounded-full bg-gradient-to-br from-orange-200/30 to-red-200/30 blur-3xl" />
-        <div className="absolute -bottom-16 -left-16 h-[180px] w-[180px] rounded-full bg-gradient-to-br from-amber-200/20 to-yellow-200/20 blur-3xl" />
+        <div className="absolute -right-16 -top-16 h-[200px] w-[200px] rounded-full bg-orange-200/15 blur-3xl" />
+        <div className="absolute -bottom-16 -left-16 h-[180px] w-[180px] rounded-full bg-amber-200/10 blur-3xl" />
 
         <div className="relative flex items-center justify-between gap-5">
           <div className="animate-fade-in-up">
@@ -207,7 +207,7 @@ export default function Community() {
           {getStats(total).map(stat => (
             <Card className="border-white/60 bg-white/80 backdrop-blur-sm" key={stat.label}>
               <CardContent className="flex items-center gap-3 p-3">
-                <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-orange-100 to-amber-100 text-orange-600">
+                <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-orange-100 text-orange-600">
                   {stat.icon}
                 </span>
                 <div>
@@ -268,15 +268,15 @@ export default function Community() {
         </Card>
 
         {/* 城市聚焦 */}
-        <Card className="relative overflow-hidden border-white/60 bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 backdrop-blur-sm">
-          <div className="absolute -left-8 -bottom-8 h-24 w-24 rounded-full bg-gradient-to-br from-amber-200/30 to-orange-200/30 blur-2xl" />
+        <Card className="relative overflow-hidden border-white/60 bg-orange-50/60 backdrop-blur-sm">
+          <div className="absolute -left-8 -bottom-8 h-24 w-24 rounded-full bg-amber-200/15 blur-2xl" />
           <CardContent className="relative p-5">
             <div className="mb-3 flex items-center gap-2">
               <MapPin className="h-4 w-4 text-orange-400" />
               <span className="text-xs font-semibold text-orange-500 uppercase tracking-wider">城市聚焦</span>
             </div>
             <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-400 to-red-500 text-2xl text-white shadow-lg">
+              <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-orange-500 text-2xl text-white shadow-lg">
                 🐼
               </div>
               <div>

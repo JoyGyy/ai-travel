@@ -172,7 +172,7 @@ export function HeroSearch() {
 
       {/* 装饰光晕 */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute top-20 left-[10%] h-72 w-72 rounded-full bg-orange-500/10 blur-[100px]" />
+        <div className="absolute top-20 left-[10%] h-72 w-72 rounded-full bg-teal-500/10 blur-[100px]" />
         <div className="absolute bottom-20 right-[10%] h-72 w-72 rounded-full bg-blue-500/10 blur-[100px]" />
       </div>
 
@@ -180,7 +180,7 @@ export function HeroSearch() {
         {/* 标题区域 */}
         <div className="mb-12 text-center">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-md">
-            <Bot size={16} className="text-orange-400" />
+            <Bot size={16} className="text-teal-400" />
             <span className="text-sm font-medium text-white/90">AI 驱动的智能旅行规划</span>
           </div>
           <h1
@@ -189,7 +189,7 @@ export function HeroSearch() {
           >
             去你想去的地方
             <br />
-            <span className="bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-teal-400 via-cyan-400 to-sky-400 bg-clip-text text-transparent">
               AI 帮你规划
             </span>
           </h1>
@@ -248,7 +248,7 @@ export function HeroSearch() {
                           aria-selected={city === name}
                           className={`w-full justify-start gap-2 px-4 py-2.5 text-left text-sm ${
                             city === name || activeCityIndex === index
-                              ? 'bg-orange-50 text-orange-600'
+                              ? 'bg-teal-50 text-teal-600'
                               : 'text-gray-700 hover:bg-gray-50'
                           }`}
                           id={`home-city-option-${index}`}
@@ -316,7 +316,7 @@ export function HeroSearch() {
             {/* 搜索按钮 */}
             <Button
               aria-label={isSubmitting ? '正在生成行程' : 'AI 规划行程'}
-              className="h-12 gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-500 px-8 text-sm font-bold text-white shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/30 disabled:hover:shadow-lg lg:w-auto"
+              className="h-12 gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-slate-600 px-8 text-sm font-bold text-white shadow-lg shadow-teal-500/25 hover:shadow-xl hover:shadow-teal-500/30 disabled:hover:shadow-lg lg:w-auto"
               disabled={isSubmitting}
               type="submit"
             >
@@ -343,7 +343,7 @@ export function HeroSearch() {
                   {weatherLoading
                     ? (
                         <>
-                          <span aria-hidden="true" className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-gray-300 border-t-orange-500" />
+                          <span aria-hidden="true" className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-gray-300 border-t-teal-500" />
                           正在查询天气...
                         </>
                       )
@@ -368,7 +368,7 @@ export function HeroSearch() {
         {/* 热门搜索标签 */}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
           <span className="flex items-center gap-1 text-sm text-white/60">
-            <Flame aria-hidden="true" className="h-3.5 w-3.5 text-orange-400" />
+            <Flame aria-hidden="true" className="h-3.5 w-3.5 text-teal-400" />
             热门：
           </span>
           {['三亚', '丽江', '西安', '成都', '大理', '厦门'].map(tag => (

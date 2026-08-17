@@ -8,19 +8,28 @@
  */
 import type { ChangeEvent, KeyboardEvent } from 'react'
 
+import { Clock, Droplets, Lightbulb, Search, Shirt, Sun, Thermometer, Wind } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
 import { HomeWeather } from '@/components/HomeWeather'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
 import { allCities, hotCities } from '@/constants/cities'
 import { useWeather } from '@/hooks/useWeather'
+
+// 最近搜索本地存储键
+const RECENT_KEY = 'weather-recent-cities'
+const MAX_RECENT = 6
 
 export default function Weather() {
   const [city, setCity] = useState('')
   const [showDropdown, setShowDropdown] = useState(false)
   const [activeCityIndex, setActiveCityIndex] = useState(0)
+  const [recentCities, setRecentCities] = useState<string[]>(getRecentCities)
   const { error, fetchWeather, loading, weather } = useWeather()
 
   // ---- 城市搜索过滤 ----
@@ -41,6 +50,8 @@ export default function Weather() {
     setActiveCityIndex(0)
     setShowDropdown(false)
     fetchWeather(name)
+    saveRecentCity(name)
+    setRecentCities(getRecentCities())
   }
 
   // ---- 输入处理 ----
@@ -68,7 +79,11 @@ export default function Weather() {
       event.preventDefault()
       if (showDropdown && filteredCities[activeCityIndex])
         selectCity(filteredCities[activeCityIndex])
-      else if (city.trim()) fetchWeather(city.trim())
+      else if (city.trim()) {
+        fetchWeather(city.trim())
+        saveRecentCity(city.trim())
+        setRecentCities(getRecentCities())
+      }
     } else if (event.key === 'Escape') {
       setShowDropdown(false)
     }
@@ -78,6 +93,10 @@ export default function Weather() {
   function retryWeather() {
     if (city.trim()) fetchWeather(city.trim())
   }
+
+  const weatherTips = weather
+    ? getWeatherTips(weather.temperature, weather.weatherDesc, weather.humidity ?? 50)
+    : []
 
   return (
     <main
@@ -113,21 +132,7 @@ export default function Weather() {
         {/* 搜索框 */}
         <div className="relative" onClick={(e) => e.stopPropagation()}>
           <div className="flex items-center gap-3 rounded-2xl border border-white/60 bg-white/90 p-4 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl focus-within:border-blue-300 focus-within:shadow-xl focus-within:ring-2 focus-within:ring-blue-200">
-            <svg
-              aria-hidden="true"
-              className="h-5 w-5 text-blue-500"
-              fill="none"
-              height="20"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              width="20"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" x2="16.65" y1="21" y2="16.65" />
-            </svg>
+            <Search className="h-5 w-5 text-blue-500" />
             <Label className="text-sm font-semibold text-gray-700" htmlFor="weather-city-input">
               城市名称
             </Label>
@@ -191,6 +196,29 @@ export default function Weather() {
           </div>
         )}
 
+        {/* 天气小贴士 */}
+        {weather && weatherTips.length > 0 && (
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 animate-fade-in-up">
+            {weatherTips.map((tip, index) => (
+              <Card
+                className="border-white/60 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-md"
+                key={tip.title}
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <CardContent className="flex items-start gap-3 p-4">
+                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                    {tip.icon}
+                  </span>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">{tip.title}</p>
+                    <p className="mt-0.5 text-xs leading-relaxed text-gray-500">{tip.text}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+
         {/* 错误提示 */}
         {error && (
           <div
@@ -210,22 +238,41 @@ export default function Weather() {
           </div>
         )}
 
-        {/* 热门城市快捷入口 */}
-        <div className="mt-16 animate-fade-in-up">
-          <div className="mb-8 flex items-center gap-4">
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
-            <h2 className="flex items-center gap-2 text-lg font-bold text-gray-900">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-orange-400 to-red-500 text-white text-sm">
-                🔥
-              </span>
-              热门城市
-            </h2>
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+        {/* 最近搜索 */}
+        {recentCities.length > 0 && !weather && !loading && (
+          <div className="mt-10 animate-fade-in-up">
+            <div className="mb-4 flex items-center gap-3">
+              <Clock className="h-4 w-4 text-gray-400" />
+              <h2 className="text-sm font-semibold text-gray-600">最近搜索</h2>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {recentCities.map((name) => (
+                <Badge
+                  className="cursor-pointer border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 transition-all hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600"
+                  key={name}
+                  onClick={() => selectCity(name)}
+                  variant="outline"
+                >
+                  {name}
+                </Badge>
+              ))}
+            </div>
           </div>
-          <div className="flex flex-wrap justify-center gap-3">
+        )}
+
+        {/* 热门城市快捷入口 */}
+        <div className="mt-12 animate-fade-in-up">
+          <Separator className="mb-8 bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+          <div className="mb-6 flex items-center gap-3">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-orange-400 to-red-500 text-white text-sm">
+              🔥
+            </span>
+            <h2 className="text-lg font-bold text-gray-900">热门城市</h2>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
             {hotCities.map((name, index) => (
               <Button
-                className={`group relative rounded-2xl px-6 py-3 animate-fade-in-up ${
+                className={`group relative rounded-xl py-6 animate-fade-in-up ${
                   city === name
                     ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-200'
                     : 'bg-white text-gray-700 shadow-sm hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-blue-600'
@@ -235,7 +282,12 @@ export default function Weather() {
                 style={{ animationDelay: `${index * 50}ms` }}
                 variant={city === name ? 'default' : 'outline'}
               >
-                {name}
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-base font-bold">{name}</span>
+                  <span className="text-[10px] opacity-60">
+                    {index < 2 ? '热门' : index < 4 ? '推荐' : '精选'}
+                  </span>
+                </div>
                 {city === name && (
                   <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[10px] text-blue-600 shadow-sm">
                     ✓
@@ -245,7 +297,92 @@ export default function Weather() {
             ))}
           </div>
         </div>
+
+        {/* 天气知识卡 */}
+        {!weather && !loading && (
+          <div className="mt-12 animate-fade-in-up">
+            <Separator className="mb-8 bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+            <div className="mb-6 flex items-center gap-3">
+              <Lightbulb className="h-5 w-5 text-amber-500" />
+              <h2 className="text-lg font-bold text-gray-900">天气小知识</h2>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                { color: 'from-blue-500 to-cyan-500', desc: '相对湿度高于 80% 时体感闷热，低于 30% 时皮肤易干燥', icon: <Droplets size={20} />, title: '湿度与舒适度' },
+                { color: 'from-orange-500 to-red-500', desc: '紫外线指数 6 以上建议涂抹 SPF30+ 防晒霜', icon: <Sun size={20} />, title: '紫外线防护' },
+                { color: 'from-emerald-500 to-teal-500', desc: '气温每升高 10°C，体感温度可能高出 2-3°C', icon: <Thermometer size={20} />, title: '体感温度' },
+              ].map((item) => (
+                <Card
+                  className="border-white/60 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-md"
+                  key={item.title}
+                >
+                  <CardContent className="p-5">
+                    <span className={`mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${item.color} text-white`}>
+                      {item.icon}
+                    </span>
+                    <h3 className="mt-2 text-sm font-bold text-gray-900">{item.title}</h3>
+                    <p className="mt-1 text-xs leading-relaxed text-gray-500">{item.desc}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </main>
   )
+}
+
+function getRecentCities(): string[] {
+  if (typeof window === 'undefined') return []
+  try {
+    return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]')
+  } catch {
+    return []
+  }
+}
+
+// 根据天气生成小贴士
+function getWeatherTips(temp: number, desc: string, humidity: number, uv?: number) {
+  const tips: { icon: React.ReactNode; text: string; title: string }[] = []
+
+  // 穿衣建议
+  if (temp >= 30) {
+    tips.push({ icon: <Shirt size={18} />, text: '建议穿短袖、短裤，注意防暑防晒', title: '穿衣建议' })
+  } else if (temp >= 20) {
+    tips.push({ icon: <Shirt size={18} />, text: '薄外套或长袖，早晚温差注意添衣', title: '穿衣建议' })
+  } else if (temp >= 10) {
+    tips.push({ icon: <Shirt size={18} />, text: '建议穿夹克、毛衣，注意保暖', title: '穿衣建议' })
+  } else {
+    tips.push({ icon: <Shirt size={18} />, text: '厚外套、羽绒服必备，注意防寒', title: '穿衣建议' })
+  }
+
+  // 出行建议
+  if (desc.includes('雨')) {
+    tips.push({ icon: <Droplets size={18} />, text: '记得带伞，路面湿滑注意安全', title: '出行提醒' })
+  } else if (desc.includes('雪')) {
+    tips.push({ icon: <Droplets size={18} />, text: '注意防滑，驾车请减速慢行', title: '出行提醒' })
+  } else if (desc.includes('晴')) {
+    tips.push({ icon: <Sun size={18} />, text: '天气晴好，适合户外活动', title: '出行提醒' })
+  }
+
+  // 湿度建议
+  if (humidity >= 80) {
+    tips.push({ icon: <Wind size={18} />, text: '湿度较高，注意防潮除湿', title: '湿度提醒' })
+  } else if (humidity <= 30) {
+    tips.push({ icon: <Wind size={18} />, text: '空气干燥，多补充水分', title: '湿度提醒' })
+  }
+
+  // 紫外线
+  if (uv && uv >= 6) {
+    tips.push({ icon: <Sun size={18} />, text: '紫外线较强，外出请涂防晒霜', title: '防晒提醒' })
+  }
+
+  return tips
+}
+
+function saveRecentCity(city: string) {
+  const recent = getRecentCities().filter((c) => c !== city)
+  recent.unshift(city)
+  localStorage.setItem(RECENT_KEY, JSON.stringify(recent.slice(0, MAX_RECENT)))
 }

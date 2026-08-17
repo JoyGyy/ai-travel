@@ -1,6 +1,6 @@
 'use client'
 
-import { Camera, Compass, Heart, MapPin, MessageCircle, Plus, TrendingUp, Users } from 'lucide-react'
+import { Camera, Heart, MapPin, Plus, TrendingUp, Users } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -16,7 +16,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Separator } from '@/components/ui/separator'
 import { useCommunityActions } from '@/hooks/useCommunityActions'
 
 // 热门旅行标签

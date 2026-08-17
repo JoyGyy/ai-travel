@@ -21,6 +21,13 @@ import { useWeather } from '@/hooks/useWeather'
 import { imageUrl } from '@/lib/images'
 import { useAuthStore } from '@/stores/auth'
 
+interface CityResult {
+  adcode?: string
+  level?: string
+  name: string
+  parent?: string
+}
+
 export function HeroSearch() {
   const router = useRouter()
   const toast = useAppToast()
@@ -28,6 +35,8 @@ export function HeroSearch() {
   const hasHydrated = useAuthStore(state => state._hasHydrated)
 
   const [city, setCity] = useState('')
+  const [cityResults, setCityResults] = useState<CityResult[]>([])
+  const [isSearching, setIsSearching] = useState(false)
   const [budget, setBudget] = useState('')
   const [days, setDays] = useState(3)
   const [showDropdown, setShowDropdown] = useState(false)
@@ -35,19 +44,56 @@ export function HeroSearch() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { fetchWeather, loading: weatherLoading, weather } = useWeather()
-  const debounceRef = useRef<null | ReturnType<typeof setTimeout>>(null)
+  const searchTimerRef = useRef<null | ReturnType<typeof setTimeout>>(null)
+  const searchAbortRef = useRef<AbortController | null>(null)
 
-  const filteredCities = useMemo(() => {
-    const keyword = city.trim()
-    if (!keyword)
-      return allCities
-    return allCities.filter(c => c.includes(keyword))
-  }, [city])
+  // 当前显示的城市列表：API结果或本地过滤
+  const displayCities = useMemo(() => {
+    const trimmed = city.trim()
+    if (trimmed.length === 0)
+      return []
+    if (cityResults.length > 0)
+      return cityResults.map(c => c.name)
+    return allCities.filter(c => c.includes(trimmed))
+  }, [city, cityResults])
 
   const activeCityId
-    = showDropdown && filteredCities[activeCityIndex]
+    = showDropdown && displayCities[activeCityIndex]
       ? `home-city-option-${activeCityIndex}`
       : undefined
+
+  // 搜索城市（调用API）
+  const searchCities = useCallback(async (keyword: string) => {
+    if (keyword.length < 1) {
+      setCityResults([])
+      return
+    }
+
+    // 取消之前的请求
+    if (searchAbortRef.current) {
+      searchAbortRef.current.abort()
+    }
+    searchAbortRef.current = new AbortController()
+
+    setIsSearching(true)
+    try {
+      const response = await fetch(`/api/cities?keyword=${encodeURIComponent(keyword)}`, {
+        signal: searchAbortRef.current.signal,
+      })
+      const data = await response.json()
+      if (data.success) {
+        setCityResults(data.data || [])
+      }
+    }
+    catch (error) {
+      if (error instanceof Error && error.name !== 'AbortError') {
+        console.error('城市搜索失败:', error)
+      }
+    }
+    finally {
+      setIsSearching(false)
+    }
+  }, [])
 
   const clearFieldError = useCallback((field: string) => {
     setFieldErrors(prev => ({ ...prev, [field]: '' }))
@@ -58,6 +104,7 @@ export function HeroSearch() {
       setCity(name)
       clearFieldError('city')
       setShowDropdown(false)
+      setCityResults([])
       fetchWeather(name)
     },
     [clearFieldError, fetchWeather],
@@ -65,12 +112,26 @@ export function HeroSearch() {
 
   const handleCityChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      setCity(event.target.value)
+      const value = event.target.value
+      setCity(value)
       setActiveCityIndex(0)
       clearFieldError('city')
       setShowDropdown(true)
+
+      // debounce 搜索
+      if (searchTimerRef.current) {
+        clearTimeout(searchTimerRef.current)
+      }
+      if (value.trim().length >= 1) {
+        searchTimerRef.current = setTimeout(() => {
+          searchCities(value.trim())
+        }, 300)
+      }
+      else {
+        setCityResults([])
+      }
     },
-    [clearFieldError],
+    [clearFieldError, searchCities],
   )
 
   const handleCityKeyDown = useCallback(
@@ -81,40 +142,34 @@ export function HeroSearch() {
       }
       if (event.key === 'ArrowDown') {
         event.preventDefault()
-        if (filteredCities.length)
-          setActiveCityIndex(index => Math.min(index + 1, filteredCities.length - 1))
+        if (displayCities.length)
+          setActiveCityIndex(index => Math.min(index + 1, displayCities.length - 1))
       }
       else if (event.key === 'ArrowUp') {
         event.preventDefault()
-        if (filteredCities.length)
+        if (displayCities.length)
           setActiveCityIndex(index => Math.max(index - 1, 0))
       }
-      else if (event.key === 'Enter' && showDropdown && filteredCities[activeCityIndex]) {
+      else if (event.key === 'Enter' && showDropdown && displayCities[activeCityIndex]) {
         event.preventDefault()
-        selectCity(filteredCities[activeCityIndex])
+        selectCity(displayCities[activeCityIndex])
       }
       else if (event.key === 'Escape') {
         setShowDropdown(false)
       }
     },
-    [showDropdown, filteredCities, activeCityIndex, selectCity],
+    [showDropdown, displayCities, activeCityIndex, selectCity],
   )
 
+  // 清理搜索定时器
   useEffect(() => {
-    if (debounceRef.current)
-      clearTimeout(debounceRef.current)
-    const trimmed = city.trim()
-    if (!trimmed || trimmed.length < 2)
-      return
-    debounceRef.current = setTimeout(() => {
-      if (allCities.includes(trimmed))
-        fetchWeather(trimmed)
-    }, 800)
     return () => {
-      if (debounceRef.current)
-        clearTimeout(debounceRef.current)
+      if (searchTimerRef.current)
+        clearTimeout(searchTimerRef.current)
+      if (searchAbortRef.current)
+        searchAbortRef.current.abort()
     }
-  }, [city, fetchWeather])
+  }, [])
 
   const validatePlanner = useCallback(() => {
     const errors: Record<string, string> = {}
@@ -236,34 +291,42 @@ export function HeroSearch() {
               {fieldErrors.city
                 ? <span className="mt-1.5 text-xs text-red-500" id="home-city-error" role="alert">{fieldErrors.city}</span>
                 : null}
-              {showDropdown
+              {showDropdown && city.trim().length > 0
                 ? (
                     <div
                       className="absolute left-0 top-full z-50 mt-2 max-h-[280px] w-full overflow-y-auto rounded-xl border border-gray-100 bg-white py-1 shadow-xl"
                       id="home-city-dropdown"
                       role="listbox"
                     >
-                      {filteredCities.slice(0, 8).map((name, index) => (
-                        <Button
-                          aria-selected={city === name}
-                          className={`w-full justify-start gap-2 px-4 py-2.5 text-left text-sm hover:bg-teal-50 hover:text-teal-700 ${
-                            city === name || activeCityIndex === index
-                              ? 'bg-teal-50 text-teal-600'
-                              : 'text-gray-700'
-                          }`}
-                          id={`home-city-option-${index}`}
-                          key={name}
-                          onClick={() => selectCity(name)}
-                          role="option"
-                          variant="ghost"
-                        >
-                          <MapPin aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 opacity-40" />
-                          {name}
-                        </Button>
-                      ))}
-                      {filteredCities.length === 0
-                        ? <div className="px-4 py-6 text-center text-sm text-gray-400">未找到匹配城市</div>
-                        : null}
+                      {isSearching
+                        ? (
+                            <div className="flex items-center justify-center gap-2 px-4 py-6 text-sm text-gray-400">
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              搜索中...
+                            </div>
+                          )
+                        : displayCities.length > 0
+                          ? displayCities.slice(0, 10).map((name, index) => (
+                              <Button
+                                aria-selected={city === name}
+                                className={`w-full justify-start gap-2 px-4 py-2.5 text-left text-sm hover:bg-teal-50 hover:text-teal-700 ${
+                                  city === name || activeCityIndex === index
+                                    ? 'bg-teal-50 text-teal-600'
+                                    : 'text-gray-700'
+                                }`}
+                                id={`home-city-option-${index}`}
+                                key={name}
+                                onClick={() => selectCity(name)}
+                                role="option"
+                                variant="ghost"
+                              >
+                                <MapPin aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 opacity-40" />
+                                {name}
+                              </Button>
+                            ))
+                          : (
+                              <div className="px-4 py-6 text-center text-sm text-gray-400">未找到匹配城市</div>
+                            )}
                     </div>
                   )
                 : null}

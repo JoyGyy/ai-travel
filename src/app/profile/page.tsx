@@ -164,7 +164,7 @@ export default function Profile() {
   // 加载中骨架屏
   if (loading) {
     return (
-      <main className="min-h-screen bg-[var(--travel-bg)]">
+      <main className="min-h-screen bg-background">
         <div className="travel-container py-8">
           <div className="mb-8">
             <Skeleton className="h-10 w-48 mb-2" />
@@ -186,7 +186,7 @@ export default function Profile() {
   }
 
   return (
-    <main className="min-h-screen bg-[var(--travel-bg)]">
+    <main className="min-h-screen bg-background">
       {/* Hero 区域 */}
       <div className="bg-orange-50/60">
         <div className="travel-container py-12">

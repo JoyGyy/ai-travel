@@ -67,7 +67,7 @@ export function CommunityImageGrid({ compact = false, images }: CommunityImageGr
       <div className={`${gridClasses} overflow-hidden`}>
         {visibleImages.map((image, index) => (
           <button
-            className={`w-full bg-[rgba(var(--travel-sand-rgb),0.18)] ${imageAspectClasses}`}
+            className={`w-full bg-travel-sand/18 ${imageAspectClasses}`}
             key={image.id || image.storageKey || image.url}
             onClick={() => handlePreview(index)}
             type="button"

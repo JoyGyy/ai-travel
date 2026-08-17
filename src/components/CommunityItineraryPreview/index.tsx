@@ -39,21 +39,21 @@ export function CommunityItineraryPreview({
   return (
     <section
       aria-label={`${snapshot.city} 行程快照`}
-      className={`${mode === 'compact' ? 'p-4 sm:p-5' : 'p-5'} sm:rounded-3xl rounded-[20px] border border-[rgba(var(--travel-accent-rgb),0.18)] bg-[linear-gradient(135deg,rgba(255,255,255,0.92),rgba(var(--travel-sand-rgb),0.16)),radial-gradient(circle_at_100%_0%,rgba(var(--travel-ocean-rgb),0.12),transparent_38%)] travel-ticket-edge`}
+      className={`${mode === 'compact' ? 'p-4 sm:p-5' : 'p-5'} sm:rounded-3xl rounded-[20px] border border-accent/18 bg-[linear-gradient(135deg,rgba(255,255,255,0.92),rgba(212,167,106,0.16)),radial-gradient(circle_at_100%_0%,rgba(41,37,36,0.12),transparent_38%)] travel-ticket-edge`}
     >
       <div className="sm:flex-row flex-col flex items-start justify-between gap-4 mb-3">
         <div>
-          <p className="m-0 mb-1 text-[var(--travel-accent)] text-[0.78rem] font-extrabold tracking-[0.16em] uppercase">
+          <p className="m-0 mb-1 text-accent text-[0.78rem] font-extrabold tracking-[0.16em] uppercase">
             AI 行程快照
           </p>
-          <h3 className="m-0 text-[var(--travel-ink)] text-[clamp(1.25rem,2vw,1.7rem)]">
+          <h3 className="m-0 text-travel-ink text-[clamp(1.25rem,2vw,1.7rem)]">
             {snapshot.city}
           </h3>
         </div>
         {removable
           ? (
               <button
-                className="min-h-[38px] border-0 rounded-full text-[var(--travel-danger)] bg-[rgba(var(--travel-danger-rgb),0.08)] cursor-pointer px-3.5 font-bold"
+                className="min-h-[38px] border-0 rounded-full text-destructive bg-destructive/8 cursor-pointer px-3.5 font-bold"
                 onClick={onRemove}
                 type="button"
               >
@@ -86,10 +86,10 @@ export function CommunityItineraryPreview({
       <div className="grid gap-3">
         {days.map(day => (
           <article
-            className="p-3.5 border border-dashed border-[rgba(var(--travel-accent-rgb),0.26)] rounded-[18px] bg-[rgba(255,255,255,0.68)]"
+            className="p-3.5 border border-dashed border-accent/26 rounded-[18px] bg-[rgba(255,255,255,0.68)]"
             key={day.day}
           >
-            <h4 className="m-0 text-[var(--travel-ink)] text-base mb-1.5">
+            <h4 className="m-0 text-travel-ink text-base mb-1.5">
               Day
               {' '}
               {day.day}
@@ -136,8 +136,8 @@ export function CommunityItineraryPreview({
 
       {isDetail && snapshot.tips?.length
         ? (
-            <div className="mt-[18px] p-4 rounded-[18px] bg-[rgba(var(--travel-ocean-rgb),0.08)]">
-              <h4 className="m-0 text-[var(--travel-ink)] text-base mb-1.5">旅行贴士</h4>
+            <div className="mt-[18px] p-4 rounded-[18px] bg-travel-ocean/8">
+              <h4 className="m-0 text-travel-ink text-base mb-1.5">旅行贴士</h4>
               <ul className="m-0 mt-2.5 pl-5 text-travel-muted leading-[1.8]">
                 {snapshot.tips.map(tip => (
                   <li key={tip}>{tip}</li>

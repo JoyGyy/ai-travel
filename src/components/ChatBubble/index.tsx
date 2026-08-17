@@ -33,7 +33,7 @@ export function ChatBubble({ content, role }: ChatBubbleProps) {
       {!isUser && (
         <div
           aria-hidden="true"
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[rgba(28,25,23,0.06)] bg-[rgba(var(--travel-primary-rgb),0.08)] text-[15px] text-[var(--travel-ocean)]"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-travel-ink/6 bg-primary/8 text-[15px] text-travel-ocean"
         >
           <Bot size={20} />
         </div>
@@ -41,8 +41,8 @@ export function ChatBubble({ content, role }: ChatBubbleProps) {
       <div
         className={`min-w-0 max-w-[min(78%,640px)] overflow-wrap-anywhere break-words text-sm leading-[1.7] whitespace-pre-wrap max-sm:max-w-[84%] ${
           isUser
-            ? 'rounded-[20px_20px_6px] bg-[var(--color-primary)] px-4 py-[11px] text-white shadow-[0_14px_28px_rgba(var(--travel-primary-rgb),0.32)]'
-            : 'rounded-[6px_20px_20px] border border-[rgba(28,25,23,0.06)] bg-[var(--travel-surface)] px-4 py-3 text-[var(--travel-ocean)] shadow-[0_12px_30px_rgba(var(--travel-ocean-rgb),0.08)]'
+            ? 'rounded-[20px_20px_6px] bg-primary px-4 py-[11px] text-white shadow-[0_14px_28px_rgba(255,107,53,0.32)]'
+            : 'rounded-[6px_20px_20px] border border-travel-ink/6 bg-travel-surface px-4 py-3 text-travel-ocean shadow-[0_12px_30px_rgba(41,37,36,0.08)]'
         }`}
       >
         {/* 用户消息纯文本，AI 消息走 Markdown 渲染 */}
@@ -51,8 +51,8 @@ export function ChatBubble({ content, role }: ChatBubbleProps) {
               content
             )
           : (
-              <div className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_a]:font-bold [&_a]:text-[var(--travel-ocean)] [&_code]:rounded-md [&_code]:bg-[rgba(249,224,189,0.72)] [&_code]:text-[#7a4a1e]">
-                <Suspense fallback={<span className="text-[var(--travel-muted)]">加载中...</span>}>
+              <div className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_a]:font-bold [&_a]:text-travel-ocean [&_code]:rounded-md [&_code]:bg-[rgba(249,224,189,0.72)] [&_code]:text-[#7a4a1e]">
+                <Suspense fallback={<span className="text-travel-muted">加载中...</span>}>
                   <Markdown>{content}</Markdown>
                 </Suspense>
               </div>

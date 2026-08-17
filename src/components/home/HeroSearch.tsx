@@ -385,7 +385,7 @@ export function HeroSearch() {
       </div>
 
       {/* 底部渐变过渡 */}
-      <div aria-hidden="true" className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[var(--travel-bg)] to-transparent" />
+      <div aria-hidden="true" className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
     </section>
   )
 }

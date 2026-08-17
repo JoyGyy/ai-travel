@@ -26,11 +26,11 @@ const labels: Record<keyof BudgetData, string> = {
 }
 
 const barColors: Record<keyof BudgetData, string> = {
-  accommodation: 'var(--travel-budget-accommodation)',
-  food: 'var(--travel-budget-food)',
-  other: 'var(--travel-budget-other)',
-  tickets: 'var(--travel-budget-tickets)',
-  transportation: 'var(--travel-budget-transportation)',
+  accommodation: '#e84057',
+  food: '#d97706',
+  other: 'rgba(28, 25, 23, 0.5)',
+  tickets: '#ff6b35',
+  transportation: '#3b82f6',
 }
 
 export function BudgetTable({ data }: BudgetTableProps) {
@@ -43,29 +43,29 @@ export function BudgetTable({ data }: BudgetTableProps) {
   return (
     <section aria-labelledby="budget-table-title" className="pt-[22px] pb-2">
       <h2
-        className="flex items-center gap-2.5 px-1 pb-3 font-[var(--font-display)] text-base font-black text-[var(--travel-ocean)]"
+        className="flex items-center gap-2.5 px-1 pb-3 font-display text-base font-black text-travel-ocean"
         id="budget-table-title"
       >
         <span
           aria-hidden="true"
-          className="w-2 h-2 rounded-full bg-[var(--color-primary)] shadow-[0_0_0_5px_rgba(var(--travel-primary-rgb),0.15)]"
+          className="w-2 h-2 rounded-full bg-primary shadow-[0_0_0_5px_rgba(255,107,53,0.15)]"
         />
         <span>预算明细</span>
       </h2>
-      <div className="p-[18px] border border-[rgba(28,25,23,0.06)] rounded-3xl bg-travel-surface shadow-[var(--shadow-paper)]">
+      <div className="p-[18px] border border-travel-ink/6 rounded-3xl bg-travel-surface shadow-sm">
         {/* ---- 数值表格 ---- */}
         <table className="w-full border-collapse">
           <caption className="sr-only">旅行预算分类明细</caption>
           <tbody>
             {budgetKeys.map(key => (
               <tr
-                className="border-b border-dashed border-[rgba(var(--travel-ocean-rgb),0.14)] last:border-b-0"
+                className="border-b border-dashed border-travel-ocean/14 last:border-b-0"
                 key={key}
               >
-                <th className="py-[11px] text-[var(--travel-ocean)] text-sm font-extrabold text-left whitespace-nowrap">
+                <th className="py-[11px] text-travel-ocean text-sm font-extrabold text-left whitespace-nowrap">
                   {labels[key]}
                 </th>
-                <td className="py-[11px] text-[var(--color-primary-strong)] font-[var(--font-display)] text-[15px] font-black tabular-nums text-right whitespace-nowrap">
+                <td className="py-[11px] text-primary-strong font-display text-[15px] font-black tabular-nums text-right whitespace-nowrap">
                   ¥
                   {data[key] || 0}
                 </td>
@@ -76,16 +76,16 @@ export function BudgetTable({ data }: BudgetTableProps) {
         {/* ---- 柱状图可视化 ---- */}
         <div
           aria-label="预算占比可视化"
-          className="mt-3.5 pt-3.5 border-t border-[rgba(var(--travel-ocean-rgb),0.1)]"
+          className="mt-3.5 pt-3.5 border-t border-travel-ocean/10"
         >
           {budgetKeys.map(key => (
             <div className="flex items-center gap-2.5 mb-2 last:mb-0" key={key}>
-              <span className="w-[34px] shrink-0 text-[rgba(var(--travel-ink-rgb),0.62)] text-[11px] font-bold text-right">
+              <span className="w-[34px] shrink-0 text-travel-ink/62 text-[11px] font-bold text-right">
                 {labels[key]}
               </span>
               <div
                 aria-label={`${labels[key]}预算 ¥${data[key] || 0}`}
-                className="flex-1 h-[9px] overflow-hidden rounded-[100px] bg-[rgba(28,25,23,0.06)] shadow-[inset_0_0_0_1px_rgba(var(--travel-ocean-rgb),0.06)]"
+                className="flex-1 h-[9px] overflow-hidden rounded-[100px] bg-travel-ink/6 shadow-[inset_0_0_0_1px_rgba(41,37,36,0.06)]"
                 role="img"
               >
                 <div
@@ -100,9 +100,9 @@ export function BudgetTable({ data }: BudgetTableProps) {
           ))}
         </div>
         {/* ---- 总计行 ---- */}
-        <div className="flex items-center justify-between gap-3.5 mt-4 py-[15px] px-4 border border-[rgba(var(--travel-primary-rgb),0.08)] rounded-[18px] text-[var(--travel-ocean)] bg-[rgba(var(--travel-primary-rgb),0.04)] text-sm font-black">
+        <div className="flex items-center justify-between gap-3.5 mt-4 py-[15px] px-4 border border-primary/8 rounded-[18px] text-travel-ocean bg-primary/4 text-sm font-black">
           <span>总计</span>
-          <span className="text-[var(--color-primary-strong)] font-[var(--font-display)] text-[21px] font-black leading-none tabular-nums">
+          <span className="text-primary-strong font-display text-[21px] font-black leading-none tabular-nums">
             ¥
             {total}
           </span>

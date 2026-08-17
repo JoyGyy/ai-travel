@@ -337,7 +337,7 @@ export default function Detail() {
                 className="flex justify-center py-7"
                 role="status"
               >
-                <div className="w-full max-w-[min(100%,520px)] overflow-hidden rounded-3xl border border-[var(--travel-frosted-border)] bg-travel-surface shadow-[var(--shadow-paper)]">
+                <div className="w-full max-w-[min(100%,520px)] overflow-hidden rounded-3xl border border-travel-ink/8 bg-travel-surface shadow-sm">
                   <div className="flex items-center justify-between px-5 pb-2 pt-[18px]">
                     <span className="text-[11px] font-extrabold tracking-[2px] text-travel-ink">
                       AI 规划中
@@ -372,17 +372,17 @@ export default function Detail() {
         {!showLoading && errorMessage
           ? (
               <div
-                className="mx-auto -mt-9 flex w-full max-w-[560px] flex-col items-center gap-4 rounded-[26px] border border-[var(--travel-frosted-border)] bg-travel-surface p-[52px_22px] shadow-[var(--shadow-paper)]"
+                className="mx-auto -mt-9 flex w-full max-w-[560px] flex-col items-center gap-4 rounded-[26px] border border-travel-ink/8 bg-travel-surface p-[52px_22px] shadow-sm"
                 role="alert"
               >
-                <div className="flex h-[82px] w-[82px] items-center justify-center rounded-3xl bg-[#d4a76a]/15 text-[40px] text-travel-ink shadow-[0_16px_34px_rgba(var(--travel-ocean-rgb),0.1)]">
+                <div className="flex h-[82px] w-[82px] items-center justify-center rounded-3xl bg-[#d4a76a]/15 text-[40px] text-travel-ink shadow-[0_16px_34px_rgba(41,37,36,0.1)]">
                   <MapPin aria-hidden="true" />
                 </div>
                 <p className="text-center font-serif text-sm leading-relaxed text-stone-900/74">
                   {errorMessage}
                 </p>
                 <button
-                  className="min-h-11 rounded-[14px] border-none bg-primary px-6 text-sm font-extrabold text-white shadow-[0_14px_30px_rgba(var(--travel-primary-rgb),0.28)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(var(--travel-primary-rgb),0.34)]"
+                  className="min-h-11 rounded-[14px] border-none bg-primary px-6 text-sm font-extrabold text-white shadow-[0_14px_30px_rgba(255,107,53,0.28)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(255,107,53,0.34)]"
                   onClick={() => router.push('/')}
                   type="button"
                 >
@@ -396,7 +396,7 @@ export default function Detail() {
           ? (
               messages.length > 0
                 ? (
-                    <div className="mx-auto -mt-9 w-full max-w-[560px] overflow-hidden rounded-[26px] border border-[var(--travel-frosted-border)] bg-travel-surface shadow-[var(--shadow-paper)]">
+                    <div className="mx-auto -mt-9 w-full max-w-[560px] overflow-hidden rounded-[26px] border border-travel-ink/8 bg-travel-surface shadow-sm">
                       <div className="flex items-center justify-between px-5 pb-2 pt-[18px]">
                         <span className="text-[11px] font-extrabold tracking-[2px] text-travel-ink">
                           AI 生成的行程规划
@@ -439,17 +439,17 @@ export default function Detail() {
                   )
                 : (
                     <div
-                      className="mx-auto -mt-9 flex w-full max-w-[560px] flex-col items-center gap-4 rounded-[26px] border border-[var(--travel-frosted-border)] bg-travel-surface p-[52px_22px] shadow-[var(--shadow-paper)]"
+                      className="mx-auto -mt-9 flex w-full max-w-[560px] flex-col items-center gap-4 rounded-[26px] border border-travel-ink/8 bg-travel-surface p-[52px_22px] shadow-sm"
                       role="status"
                     >
-                      <div className="flex h-[82px] w-[82px] items-center justify-center rounded-3xl bg-[#d4a76a]/15 text-[40px] text-travel-ink shadow-[0_16px_34px_rgba(var(--travel-ocean-rgb),0.1)]">
+                      <div className="flex h-[82px] w-[82px] items-center justify-center rounded-3xl bg-[#d4a76a]/15 text-[40px] text-travel-ink shadow-[0_16px_34px_rgba(41,37,36,0.1)]">
                         <MapPin aria-hidden="true" />
                       </div>
                       <p className="text-center font-serif text-sm leading-relaxed text-stone-900/74">
                         暂无行程数据
                       </p>
                       <button
-                        className="min-h-11 rounded-[14px] border-none bg-primary px-6 text-sm font-extrabold text-white shadow-[0_14px_30px_rgba(var(--travel-primary-rgb),0.28)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(var(--travel-primary-rgb),0.34)]"
+                        className="min-h-11 rounded-[14px] border-none bg-primary px-6 text-sm font-extrabold text-white shadow-[0_14px_30px_rgba(255,107,53,0.28)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(255,107,53,0.34)]"
                         onClick={() => router.push('/chat')}
                         type="button"
                       >
@@ -465,7 +465,7 @@ export default function Detail() {
             {/* 摘要卡片 */}
             <div
               aria-label="行程摘要"
-              className="travel-ticket-edge relative z-10 -mt-10 flex items-center overflow-hidden rounded-[22px] border border-[var(--travel-frosted-border)] bg-[var(--travel-surface-strong)] p-[18px_20px] shadow-[var(--shadow-paper)]"
+              className="travel-ticket-edge relative z-10 -mt-10 flex items-center overflow-hidden rounded-[22px] border border-travel-ink/8 bg-travel-surface-strong p-[18px_20px] shadow-sm"
             >
               <div className="flex min-w-0 flex-1 flex-col items-center gap-1.5">
                 <span className="text-[10px] font-extrabold uppercase tracking-[2px] text-stone-900/62">
@@ -504,7 +504,7 @@ export default function Detail() {
                     <h2 className="flex items-center gap-2.5 pb-3 pl-1 font-serif text-base font-extrabold text-travel-ink">
                       <span
                         aria-hidden="true"
-                        className="h-2 w-2 rounded-full bg-accent shadow-[0_0_0_5px_rgba(var(--travel-accent-rgb),0.15)]"
+                        className="h-2 w-2 rounded-full bg-accent shadow-[0_0_0_5px_rgba(232,64,87,0.15)]"
                       />
                       实时天气
                     </h2>
@@ -530,7 +530,7 @@ export default function Detail() {
               >
                 <span
                   aria-hidden="true"
-                  className="h-2 w-2 rounded-full bg-accent shadow-[0_0_0_5px_rgba(var(--travel-accent-rgb),0.15)]"
+                  className="h-2 w-2 rounded-full bg-accent shadow-[0_0_0_5px_rgba(232,64,87,0.15)]"
                 />
                 每日行程
                 {isEditing && (
@@ -539,7 +539,7 @@ export default function Detail() {
                   </span>
                 )}
               </h2>
-              <div className="overflow-hidden rounded-3xl border border-[var(--travel-frosted-border)] bg-travel-surface shadow-[var(--shadow-paper)]">
+              <div className="overflow-hidden rounded-3xl border border-travel-ink/8 bg-travel-surface shadow-sm">
                 {itinerary.map((item, dayIndex) => {
                   const dayKey = String(item.day)
                   const panelId = `detail-day-panel-${dayKey}`
@@ -700,11 +700,11 @@ export default function Detail() {
                     >
                       <span
                         aria-hidden="true"
-                        className="h-2 w-2 rounded-full bg-accent shadow-[0_0_0_5px_rgba(var(--travel-accent-rgb),0.15)]"
+                        className="h-2 w-2 rounded-full bg-accent shadow-[0_0_0_5px_rgba(232,64,87,0.15)]"
                       />
                       温馨提示
                     </h2>
-                    <div className="rounded-3xl border border-[var(--travel-frosted-border)] bg-travel-surface p-4 shadow-[var(--shadow-paper)]">
+                    <div className="rounded-3xl border border-travel-ink/8 bg-travel-surface p-4 shadow-sm">
                       {tips.map(tip => (
                         <div
                           className="flex items-start gap-3 py-2 text-[13px] leading-relaxed text-stone-900/72"
@@ -712,7 +712,7 @@ export default function Detail() {
                         >
                           <span
                             aria-hidden="true"
-                            className="mt-2 h-[7px] w-[7px] flex-shrink-0 rounded-full bg-travel-sand shadow-[0_0_0_5px_rgba(var(--travel-sand-rgb),0.16)]"
+                            className="mt-2 h-[7px] w-[7px] flex-shrink-0 rounded-full bg-travel-sand shadow-[0_0_0_5px_rgba(212,167,106,0.16)]"
                           />
                           {tip}
                         </div>

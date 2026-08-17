@@ -83,11 +83,11 @@ export function AgentSteps({ currentStep, steps }: AgentStepsProps) {
   return (
     <div
       aria-live="polite"
-      className="mx-4 mb-4 overflow-hidden rounded-[20px] bg-travel-surface border border-[rgba(28,25,23,0.06)] shadow-[var(--shadow-paper)]"
+      className="mx-4 mb-4 overflow-hidden rounded-[20px] bg-travel-surface border border-travel-ink/6 shadow-sm"
     >
       {/* 标题栏 */}
       <div className="px-5 pt-4 pb-2">
-        <span className="text-xs font-black tracking-[2px] text-[var(--travel-ocean)]">
+        <span className="text-xs font-black tracking-[2px] text-travel-ocean">
           AGENT 执行过程
         </span>
       </div>
@@ -106,12 +106,12 @@ export function AgentSteps({ currentStep, steps }: AgentStepsProps) {
               {/* 左侧时间线：圆点 + 连接线 */}
               <div aria-hidden="true" className="flex flex-col items-center">
                 <div
-                  className={`w-[34px] h-[34px] rounded-full flex items-center justify-center shrink-0 text-sm border border-[rgba(var(--travel-white-rgb),0.78)] shadow-[inset_0_0_0_1px_rgba(var(--travel-white-rgb),0.28),_0_10px_22px_rgba(var(--travel-ocean-rgb),0.08)] ${
+                  className={`w-[34px] h-[34px] rounded-full flex items-center justify-center shrink-0 text-sm border border-white/78 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.28),_0_10px_22px_rgba(41,37,36,0.08)] ${
                     status === 'done'
-                      ? 'bg-[linear-gradient(135deg,var(--travel-ocean)_0%,var(--travel-ocean-light)_100%)] text-white'
+                      ? 'bg-gradient-to-br from-travel-ocean to-travel-ocean-light text-white'
                       : status === 'running'
-                        ? 'bg-[linear-gradient(135deg,var(--color-primary),var(--color-secondary))] text-white animate-[pulseGlow_1.5s_ease-in-out_infinite] motion-reduce:animate-none'
-                        : 'bg-[rgba(var(--travel-white-rgb),0.62)] text-[rgba(var(--travel-ocean-rgb),0.42)]'
+                        ? 'bg-gradient-to-br from-primary to-secondary text-white animate-[pulseGlow_1.5s_ease-in-out_infinite] motion-reduce:animate-none'
+                        : 'bg-white/62 text-travel-ocean/42'
                   }`}
                 >
                   {status === 'done' ? <CheckCircle2 size={16} /> : <config.Icon />}
@@ -120,8 +120,8 @@ export function AgentSteps({ currentStep, steps }: AgentStepsProps) {
                   <div
                     className={`w-px h-[22px] ${
                       status === 'done'
-                        ? 'bg-[linear-gradient(180deg,var(--travel-ocean),rgba(var(--travel-ocean-rgb),0.16))]'
-                        : 'bg-[rgba(var(--travel-ocean-rgb),0.12)]'
+                        ? 'bg-gradient-to-b from-travel-ocean to-travel-ocean/16'
+                        : 'bg-travel-ocean/12'
                     }`}
                   />
                 )}
@@ -131,14 +131,14 @@ export function AgentSteps({ currentStep, steps }: AgentStepsProps) {
                   <span
                     className={`text-sm font-extrabold ${
                       status === 'pending'
-                        ? 'text-[rgba(var(--travel-ink-rgb),0.5)]'
-                        : 'text-[var(--travel-ocean)]'
+                        ? 'text-travel-ink/50'
+                        : 'text-travel-ocean'
                     }`}
                   >
                     {config.name}
                   </span>
                   {status === 'running' && (
-                    <span className="px-2 py-0.5 rounded-full bg-[rgba(var(--travel-primary-rgb),0.12)] text-[11px] font-extrabold text-[var(--color-primary-strong)]">
+                    <span className="px-2 py-0.5 rounded-full bg-primary/12 text-[11px] font-extrabold text-primary-strong">
                       执行中...
                     </span>
                   )}
@@ -147,10 +147,10 @@ export function AgentSteps({ currentStep, steps }: AgentStepsProps) {
                   <div className="flex items-center gap-[5px] mt-px">
                     <ChevronRight
                       aria-hidden="true"
-                      className="shrink-0 text-[10px] text-[rgba(var(--travel-ocean-rgb),0.48)]"
+                      className="shrink-0 text-[10px] text-travel-ocean/48"
                       size={14}
                     />
-                    <span className="min-w-0 [overflow-wrap:anywhere] text-xs text-[rgba(var(--travel-ink-rgb),0.66)]">
+                    <span className="min-w-0 [overflow-wrap:anywhere] text-xs text-travel-ink/66">
                       {summary}
                     </span>
                   </div>

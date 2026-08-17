@@ -67,16 +67,16 @@ function TopNav() {
       <div className="max-w-[1200px] h-16 mx-auto px-4 sm:px-6 flex items-center gap-2.5 sm:gap-3.5">
         <Link
           aria-label="返回首页"
-          className="min-h-[44px] inline-flex items-center gap-2.5 mr-auto sm:mr-[18px] rounded-2xl no-underline text-[var(--travel-ocean)]"
+          className="min-h-[44px] inline-flex items-center gap-2.5 mr-auto sm:mr-[18px] rounded-2xl no-underline text-travel-ink"
           href="/"
         >
           <span
             aria-hidden="true"
-            className="w-10 h-10 inline-flex items-center justify-center rounded-[14px] text-white bg-[var(--color-primary)] shadow-[0_10px_24px_rgba(var(--travel-primary-rgb),0.28)] text-base"
+            className="w-10 h-10 inline-flex items-center justify-center rounded-[14px] text-white bg-primary shadow-[0_10px_24px_rgba(255,107,53,0.28)] text-base"
           >
             <Compass size={20} />
           </span>
-          <span className="text-[15px] font-black tracking-[0.08em] text-[var(--travel-ocean)] uppercase">
+          <span className="text-[15px] font-black tracking-[0.08em] text-travel-ink uppercase">
             Travel AI
           </span>
         </Link>
@@ -86,19 +86,19 @@ function TopNav() {
               = pathname === tab.key || (tab.key !== '/' && pathname?.startsWith(tab.key))
             return (
               <Link
-                className={`min-h-[44px] flex items-center gap-[7px] px-4 border border-transparent rounded-2xl text-[rgba(var(--travel-ocean-rgb),0.72)] text-sm font-extrabold relative transition-all hover:-translate-y-px hover:bg-[rgba(var(--travel-primary-rgb),0.08)] hover:text-[var(--travel-ocean)] motion-reduce:transition-none ${
+                className={`min-h-[44px] flex items-center gap-[7px] px-4 border border-transparent rounded-2xl text-travel-ink/72 text-sm font-extrabold relative transition-all hover:-translate-y-px hover:bg-primary/8 hover:text-travel-ink motion-reduce:transition-none ${
                   isActive
-                    ? 'bg-[rgba(var(--travel-primary-rgb),0.12)] text-[var(--travel-ocean)] border-[rgba(var(--travel-primary-rgb),0.24)]'
+                    ? 'bg-primary/12 text-travel-ink border-primary/24'
                     : ''
                 }`}
                 href={tab.key}
                 key={tab.key}
               >
-                <span className="text-base text-[var(--color-primary)]">{tab.icon}</span>
+                <span className="text-base text-primary">{tab.icon}</span>
                 <span>{tab.title}</span>
                 <span
                   aria-hidden="true"
-                  className={`absolute -bottom-[7px] left-1/2 w-[22px] h-[3px] rounded-full bg-[var(--color-primary)] opacity-0 -translate-x-1/2 scale-x-[0.6] transition-all motion-reduce:transition-none ${
+                  className={`absolute -bottom-[7px] left-1/2 w-[22px] h-[3px] rounded-full bg-primary opacity-0 -translate-x-1/2 scale-x-[0.6] transition-all motion-reduce:transition-none ${
                     isActive ? 'opacity-100 scale-x-100' : ''
                   }`}
                 />
@@ -111,9 +111,9 @@ function TopNav() {
             ? (
                 <Link
                   aria-label={`当前用户：${user.username}，进入个人中心`}
-                  className={`min-h-[44px] inline-flex items-center justify-center gap-1.5 px-4 rounded-full bg-[var(--travel-surface)] text-[var(--travel-ocean)] border border-[rgba(28,25,23,0.06)] text-sm font-extrabold transition-all hover:-translate-y-px hover:border-[rgba(var(--travel-primary-rgb),0.28)] hover:bg-[rgba(var(--travel-primary-rgb),0.1)] motion-reduce:transition-none no-underline ${
+                  className={`min-h-[44px] inline-flex items-center justify-center gap-1.5 px-4 rounded-full bg-travel-surface text-travel-ink border border-travel-ink/6 text-sm font-extrabold transition-all hover:-translate-y-px hover:border-primary/28 hover:bg-primary/10 motion-reduce:transition-none no-underline ${
                     pathname === '/profile'
-                      ? '-translate-y-px border-[rgba(var(--travel-primary-rgb),0.28)] bg-[rgba(var(--travel-primary-rgb),0.1)]'
+                      ? '-translate-y-px border-primary/28 bg-primary/10'
                       : ''
                   }`}
                   href="/profile"
@@ -124,7 +124,7 @@ function TopNav() {
               )
             : (
                 <Link
-                  className="min-h-[44px] inline-flex items-center justify-center gap-1.5 px-4 rounded-full bg-[var(--travel-surface)] text-[var(--travel-ocean)] border border-[rgba(var(--travel-primary-rgb),0.24)] text-sm font-extrabold transition-all hover:-translate-y-px hover:border-[rgba(var(--travel-primary-rgb),0.38)] hover:bg-[rgba(var(--travel-primary-rgb),0.1)] motion-reduce:transition-none no-underline"
+                  className="min-h-[44px] inline-flex items-center justify-center gap-1.5 px-4 rounded-full bg-travel-surface text-travel-ink border border-primary/24 text-sm font-extrabold transition-all hover:-translate-y-px hover:border-primary/38 hover:bg-primary/10 motion-reduce:transition-none no-underline"
                   href="/login"
                 >
                   <LogIn aria-hidden="true" size={16} />
@@ -134,7 +134,7 @@ function TopNav() {
           <Button
             aria-expanded={mobileMenuOpen}
             aria-label={mobileMenuOpen ? '关闭菜单' : '打开菜单'}
-            className="sm:hidden text-[var(--travel-ocean)] hover:bg-[rgba(var(--travel-primary-rgb),0.08)]"
+            className="sm:hidden text-travel-ink hover:bg-primary/8"
             onClick={() => setMobileMenuOpen(v => !v)}
             size="icon"
             variant="ghost"
@@ -145,22 +145,22 @@ function TopNav() {
       </div>
       {mobileMenuOpen
         ? (
-            <div className="sm:hidden border-t border-[rgba(28,25,23,0.06)] bg-[var(--travel-surface)] px-4 py-2">
+            <div className="sm:hidden border-t border-travel-ink/6 bg-travel-surface px-4 py-2">
               {tabs.map((tab) => {
                 const isActive
                   = pathname === tab.key || (tab.key !== '/' && pathname?.startsWith(tab.key))
                 return (
                   <Link
-                    className={`flex min-h-[44px] items-center gap-3 rounded-lg px-3 text-sm font-semibold no-underline transition-colors hover:bg-[rgba(var(--travel-primary-rgb),0.08)] ${
+                    className={`flex min-h-[44px] items-center gap-3 rounded-lg px-3 text-sm font-semibold no-underline transition-colors hover:bg-primary/8 ${
                       isActive
-                        ? 'bg-[rgba(var(--travel-primary-rgb),0.12)] text-[var(--travel-ocean)]'
-                        : 'text-[rgba(var(--travel-ocean-rgb),0.72)]'
+                        ? 'bg-primary/12 text-travel-ink'
+                        : 'text-travel-ink/72'
                     }`}
                     href={tab.key}
                     key={tab.key}
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <span className="text-[var(--color-primary)]">{tab.icon}</span>
+                    <span className="text-primary">{tab.icon}</span>
                     <span>{tab.title}</span>
                   </Link>
                 )

@@ -77,7 +77,7 @@ export function ChatAgentSteps({ currentStep, isLoading, steps }: ChatAgentSteps
   /* ========== 渲染：可折叠步骤卡片 ========== */
 
   return (
-    <div className="overflow-hidden mx-1 sm:mx-2 mb-3 border border-[rgba(28,25,23,0.06)] rounded-[18px] bg-[var(--travel-surface)] shadow-[var(--shadow-paper)]">
+    <div className="overflow-hidden mx-1 sm:mx-2 mb-3 border border-travel-ink/6 rounded-[18px] bg-travel-surface shadow-sm">
       {/* 可点击的折叠头：显示状态图标、标题和步骤计数 */}
       <button
         aria-controls="chat-agent-steps-list"
@@ -92,8 +92,8 @@ export function ChatAgentSteps({ currentStep, isLoading, steps }: ChatAgentSteps
             aria-hidden="true"
             className={`w-[22px] h-[22px] flex shrink-0 items-center justify-center rounded-full text-xs ${
               isLoading
-                ? 'bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] animate-[pulseGlow_1.5s_ease-in-out_infinite] motion-reduce:animate-none'
-                : 'text-white bg-gradient-to-br from-[var(--travel-ocean)] to-[var(--color-secondary)]'
+                ? 'bg-gradient-to-br from-primary to-secondary animate-[pulseGlow_1.5s_ease-in-out_infinite] motion-reduce:animate-none'
+                : 'text-white bg-gradient-to-br from-travel-ocean to-secondary'
             }`}
           >
             {isLoading
@@ -104,7 +104,7 @@ export function ChatAgentSteps({ currentStep, isLoading, steps }: ChatAgentSteps
                   <CheckCircle2 size={16} />
                 )}
           </span>
-          <span className="text-[var(--color-primary)] text-xs font-extrabold tracking-[0.08em]">
+          <span className="text-primary text-xs font-extrabold tracking-[0.08em]">
             Agent 思考过程
           </span>
           <span className="shrink-0 text-[rgba(41,37,36,0.58)] text-xs tabular-nums">
@@ -136,17 +136,17 @@ export function ChatAgentSteps({ currentStep, isLoading, steps }: ChatAgentSteps
                   <div
                     className={`w-6 h-6 flex shrink-0 items-center justify-center rounded-full text-xs font-bold ${
                       status === 'done'
-                        ? 'text-white bg-gradient-to-br from-[var(--travel-ocean)] to-[var(--color-secondary)]'
+                        ? 'text-white bg-gradient-to-br from-travel-ocean to-secondary'
                         : status === 'running'
-                          ? 'text-white bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] animate-[pulseGlow_1.5s_ease-in-out_infinite] motion-reduce:animate-none'
-                          : 'text-[var(--travel-muted)] bg-[rgba(var(--travel-ocean-rgb),0.1)]'
+                          ? 'text-white bg-gradient-to-br from-primary to-secondary animate-[pulseGlow_1.5s_ease-in-out_infinite] motion-reduce:animate-none'
+                          : 'text-travel-muted bg-travel-ocean/10'
                     }`}
                   >
                     {status === 'done' ? <CheckCircle2 size={14} /> : <span>{step.step}</span>}
                   </div>
                   {index < steps.length - 1 && (
                     <div
-                      className={`w-px h-4 ${status === 'done' ? 'bg-[var(--travel-ocean)]' : 'bg-[rgba(var(--travel-ocean-rgb),0.1)]'}`}
+                      className={`w-px h-4 ${status === 'done' ? 'bg-travel-ocean' : 'bg-travel-ocean/10'}`}
                     />
                   )}
                 </div>
@@ -156,14 +156,14 @@ export function ChatAgentSteps({ currentStep, isLoading, steps }: ChatAgentSteps
                     <span
                       className={`min-w-0 text-xs font-semibold [overflow-wrap:anywhere] ${
                         status === 'pending'
-                          ? 'text-[var(--travel-muted)]'
-                          : 'text-[var(--travel-ink)]'
+                          ? 'text-travel-muted'
+                          : 'text-travel-ink'
                       }`}
                     >
                       {step.name}
                     </span>
                     {status === 'running' && (
-                      <span className="shrink-0 text-[var(--color-primary)] text-xs font-semibold">
+                      <span className="shrink-0 text-primary text-xs font-semibold">
                         执行中...
                       </span>
                     )}

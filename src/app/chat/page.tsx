@@ -131,7 +131,7 @@ export default function ChatPage() {
             <div
               className={
                 message.role === 'user'
-                  ? 'inline-block max-w-[70%] rounded-[18px_18px_4px_18px] bg-primary p-3 px-4 text-white shadow-[0_8px_20px_rgba(var(--travel-primary-rgb),0.3)]'
+                  ? 'inline-block max-w-[70%] rounded-[18px_18px_4px_18px] bg-primary p-3 px-4 text-white shadow-[0_8px_20px_rgba(255,107,53,0.3)]'
                   : ''
               }
             >
@@ -200,7 +200,7 @@ export default function ChatPage() {
         >
           <Input
             aria-label="输入消息"
-            className="h-11 flex-1 rounded-[14px] border-stone-900/8 bg-white/72 shadow-[inset_0_1px_4px_rgba(41,37,36,0.06)] placeholder:text-stone-900/44 focus:border-primary/44 focus:shadow-[0_0_0_3px_rgba(var(--travel-primary-rgb),0.14),inset_0_1px_4px_rgba(var(--travel-ocean-rgb),0.06)] disabled:text-stone-900/46 disabled:bg-white/42"
+            className="h-11 flex-1 rounded-[14px] border-stone-900/8 bg-white/72 shadow-[inset_0_1px_4px_rgba(41,37,36,0.06)] placeholder:text-stone-900/44 focus:border-primary/44 focus:shadow-[0_0_0_3px_rgba(255,107,53,0.14),inset_0_1px_4px_rgba(41,37,36,0.06)] disabled:text-stone-900/46 disabled:bg-white/42"
             disabled={status !== 'ready'}
             onChange={event => setInput(event.target.value)}
             placeholder="例如：帮我规划杭州 3 天 2 晚，预算 3000 元"
@@ -208,7 +208,7 @@ export default function ChatPage() {
           />
           <Button
             aria-label="发送"
-            className="h-11 w-11 flex-shrink-0 rounded-[14px] shadow-[0_12px_24px_rgba(var(--travel-primary-rgb),0.34)] hover:-translate-y-px hover:shadow-[0_16px_30px_rgba(var(--travel-primary-rgb),0.42)] disabled:text-stone-900/42 disabled:bg-stone-900/10 disabled:shadow-none"
+            className="h-11 w-11 flex-shrink-0 rounded-[14px] shadow-[0_12px_24px_rgba(255,107,53,0.34)] hover:-translate-y-px hover:shadow-[0_16px_30px_rgba(255,107,53,0.42)] disabled:text-stone-900/42 disabled:bg-stone-900/10 disabled:shadow-none"
             disabled={!input.trim() || status !== 'ready'}
             size="icon"
             title="发送"

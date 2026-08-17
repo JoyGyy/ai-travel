@@ -86,13 +86,13 @@ export const CommunityPostCard = React.memo(
 
     return (
       <Card
-        className={`group overflow-hidden rounded-xl transition-transform transition-shadow duration-200 ease-[var(--ease-standard)] hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)] motion-reduce:transition-none motion-reduce:transform-none ${hasImages ? '' : ''}`}
+        className={`group overflow-hidden rounded-xl transition-transform transition-shadow duration-200 ease-standard hover:-translate-y-0.5 hover:shadow-md motion-reduce:transition-none motion-reduce:transform-none ${hasImages ? '' : ''}`}
       >
         <CardContent className="p-0">
           {/* 图片区域 - 占主要面积 */}
           {hasImages && (
             <Link
-              className="block overflow-hidden cursor-pointer [&_.community-image-grid]:rounded-none [&_.community-image-grid__image]:transition-transform [&_.community-image-grid__image]:duration-300 [&_.community-image-grid__image]:ease-[var(--ease-standard)] group-hover:[&_.community-image-grid__image]:scale-103 motion-reduce:[&_.community-image-grid__image]:transition-none"
+              className="block overflow-hidden cursor-pointer [&_.community-image-grid]:rounded-none [&_.community-image-grid__image]:transition-transform [&_.community-image-grid__image]:duration-300 [&_.community-image-grid__image]:ease-standard group-hover:[&_.community-image-grid__image]:scale-103 motion-reduce:[&_.community-image-grid__image]:transition-none"
               href={`/community/${post.id}`}
             >
               <CommunityImageGrid compact images={post.images} />
@@ -107,10 +107,10 @@ export const CommunityPostCard = React.memo(
                 className="flex items-center gap-2 no-underline text-inherit group/username"
                 href={`/community?authorId=${post.author.id}`}
               >
-                <Avatar className="h-7 w-7 shrink-0 bg-[linear-gradient(135deg,var(--color-primary),var(--travel-accent))] text-xs font-bold">
+                <Avatar className="h-7 w-7 shrink-0 bg-gradient-to-br from-primary to-accent text-xs font-bold">
                   <AvatarFallback>{post.author.username.slice(0, 1).toUpperCase()}</AvatarFallback>
                 </Avatar>
-                <span className="max-w-[120px] truncate text-[13px] font-semibold transition-colors duration-200 group-hover/username:text-[var(--color-primary)]">
+                <span className="max-w-[120px] truncate text-[13px] font-semibold transition-colors duration-200 group-hover/username:text-primary">
                   {displayAuthor}
                 </span>
               </Link>
@@ -125,7 +125,7 @@ export const CommunityPostCard = React.memo(
               href={`/community/${post.id}`}
             >
               {post.title && (
-                <p className="!m-0 text-[13px] sm:text-sm font-semibold leading-snug text-travel-ink transition-colors duration-200 hover:text-[var(--color-primary)] motion-reduce:transition-none line-clamp-2">
+                <p className="!m-0 text-[13px] sm:text-sm font-semibold leading-snug text-travel-ink transition-colors duration-200 hover:text-primary motion-reduce:transition-none line-clamp-2">
                   {post.title}
                 </p>
               )}
@@ -154,7 +154,7 @@ export const CommunityPostCard = React.memo(
             {/* 原帖引用 */}
             {post.originalPost && (
               <Link
-                className="flex flex-col gap-0.5 p-2 rounded-lg bg-[var(--travel-surface-muted)] no-underline text-inherit transition-colors duration-200 hover:bg-[var(--travel-frosted)] motion-reduce:transition-none"
+                className="flex flex-col gap-0.5 p-2 rounded-lg bg-travel-surface-muted no-underline text-inherit transition-colors duration-200 hover:bg-travel-frosted motion-reduce:transition-none"
                 href={`/community/${post.originalPost.id}`}
               >
                 <span className="text-[11px] uppercase tracking-wider text-muted-foreground">
@@ -174,7 +174,7 @@ export const CommunityPostCard = React.memo(
               <div className="flex gap-2">
                 <Button
                   aria-label="点赞"
-                  className={`text-travel-muted transition-colors transition-transform duration-200 ease-[var(--ease-standard)] hover:text-travel-ink hover:scale-105 active:scale-95 motion-reduce:transition-none motion-reduce:transform-none ${post.likedByMe ? 'text-destructive' : ''} ${isLikeAnimating ? 'animate-[likeHeartbeat_0.4s_var(--ease-spring)] motion-reduce:animate-none' : ''}`}
+                  className={`text-travel-muted transition-colors transition-transform duration-200 ease-standard hover:text-travel-ink hover:scale-105 active:scale-95 motion-reduce:transition-none motion-reduce:transform-none ${post.likedByMe ? 'text-destructive' : ''} ${isLikeAnimating ? 'animate-[likeHeartbeat_0.4s_var(--ease-spring)] motion-reduce:animate-none' : ''}`}
                   disabled={likePending}
                   onClick={handleLike}
                   size="sm"
@@ -185,7 +185,7 @@ export const CommunityPostCard = React.memo(
                 </Button>
                 <Button
                   aria-label="评论"
-                  className="text-travel-muted transition-colors transition-transform duration-200 ease-[var(--ease-standard)] hover:text-travel-ink hover:scale-105 active:scale-95 motion-reduce:transition-none motion-reduce:transform-none"
+                  className="text-travel-muted transition-colors transition-transform duration-200 ease-standard hover:text-travel-ink hover:scale-105 active:scale-95 motion-reduce:transition-none motion-reduce:transform-none"
                   onClick={() => onComment?.(post)}
                   size="sm"
                   variant="ghost"
@@ -195,7 +195,7 @@ export const CommunityPostCard = React.memo(
                 </Button>
                 <Button
                   aria-label="转发"
-                  className="text-travel-muted transition-colors transition-transform duration-200 ease-[var(--ease-standard)] hover:text-travel-ink hover:scale-105 active:scale-95 motion-reduce:transition-none motion-reduce:transform-none"
+                  className="text-travel-muted transition-colors transition-transform duration-200 ease-standard hover:text-travel-ink hover:scale-105 active:scale-95 motion-reduce:transition-none motion-reduce:transform-none"
                   disabled={repostPending}
                   onClick={() => onRepost?.(post)}
                   size="sm"

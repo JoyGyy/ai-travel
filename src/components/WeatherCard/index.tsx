@@ -23,24 +23,24 @@ export function WeatherCard({ weather }: WeatherCardProps) {
   return (
     <section
       aria-label={`${weather.city} 实时天气`}
-      className="max-w-[900px] mx-auto overflow-hidden rounded-3xl bg-[var(--travel-surface)] shadow-[var(--shadow-paper)] border border-[rgba(28,25,23,0.06)]"
+      className="max-w-[900px] mx-auto overflow-hidden rounded-3xl bg-travel-surface shadow-sm border border-travel-ink/6"
     >
       {/* ---- 当前天气信息 ---- */}
       <div
         className="relative flex items-center justify-between gap-5 p-[20px_22px] overflow-hidden max-[560px]:items-start max-[560px]:flex-col"
         style={{
-          background: 'var(--texture-dots) 12px 12px, rgba(var(--travel-primary-rgb), 0.04)',
+          background: 'radial-gradient(circle, rgba(28, 25, 23, 0.06) 1px, transparent 1px) 12px 12px, rgba(255, 107, 53, 0.04)',
         }}
       >
         <div className="relative z-[1]">
           <div className="flex items-center gap-2.5 mb-1.5">
             <WeatherIcon className="[--weather-icon-size:32px]" desc={weather.weatherDesc} />
-            <span className="text-[28px] leading-none font-extrabold font-serif text-[var(--travel-ocean)] tabular-nums">
+            <span className="text-[28px] leading-none font-extrabold font-serif text-travel-ocean tabular-nums">
               {weather.temperature}
               °C
             </span>
           </div>
-          <p className="text-[13px] text-[var(--travel-ink)]">
+          <p className="text-[13px] text-travel-ink">
             {weather.weatherDesc}
             {' '}
             · 体感
@@ -49,12 +49,12 @@ export function WeatherCard({ weather }: WeatherCardProps) {
           </p>
         </div>
         <div className="relative z-[1] text-right max-[560px]:w-full max-[560px]:text-left">
-          <p className="mb-1.5 text-xs font-extrabold text-[var(--travel-ocean)]">
+          <p className="mb-1.5 text-xs font-extrabold text-travel-ocean">
             {weather.city}
             {' '}
             · 实时天气
           </p>
-          <p className="w-fit ml-auto py-1 px-2.5 rounded-full bg-[rgba(var(--travel-white-rgb),0.48)] text-[rgba(var(--travel-ink-rgb),0.68)] text-[11px] font-bold tabular-nums max-[560px]:ml-0">
+          <p className="w-fit ml-auto py-1 px-2.5 rounded-full bg-white/48 text-travel-ink/68 text-[11px] font-bold tabular-nums max-[560px]:ml-0">
             湿度
             {weather.humidity}
             %
@@ -65,27 +65,27 @@ export function WeatherCard({ weather }: WeatherCardProps) {
       {weather.forecast && weather.forecast.length > 0 && (
         <div
           aria-label="未来三天天气预报"
-          className="flex gap-3 p-3.5 border-t border-[rgba(var(--travel-ocean-rgb),0.08)] bg-[rgba(var(--travel-white-rgb),0.28)] max-[560px]:gap-2 max-[560px]:p-2.5"
+          className="flex gap-3 p-3.5 border-t border-travel-ocean/8 bg-white/28 max-[560px]:gap-2 max-[560px]:p-2.5"
         >
           {weather.forecast.map((day, i) => (
             <div
-              className="flex-1 min-w-0 py-3 px-2 rounded-[18px] text-center bg-[rgba(var(--travel-white-rgb),0.5)] border border-[rgba(var(--travel-white-rgb),0.64)]"
+              className="flex-1 min-w-0 py-3 px-2 rounded-[18px] text-center bg-white/50 border border-white/64"
               key={day.date}
             >
-              <p className="mb-1.5 text-[11px] font-extrabold text-[rgba(var(--travel-ocean-rgb),0.64)]">
+              <p className="mb-1.5 text-[11px] font-extrabold text-travel-ocean/64">
                 {i === 0 ? '今天' : i === 1 ? '明天' : '后天'}
               </p>
               <WeatherIcon
                 className="mx-auto mb-1 [--weather-icon-size:24px]"
                 desc={day.weatherDesc}
               />
-              <p className="text-xs font-extrabold text-[var(--travel-ocean)] tabular-nums">
+              <p className="text-xs font-extrabold text-travel-ocean tabular-nums">
                 {day.minTemp}
                 ~
                 {day.maxTemp}
                 °C
               </p>
-              <p className="mt-[3px] [overflow-wrap:anywhere] text-[10px] text-[var(--travel-ink)]">
+              <p className="mt-[3px] [overflow-wrap:anywhere] text-[10px] text-travel-ink">
                 {day.weatherDesc}
               </p>
             </div>

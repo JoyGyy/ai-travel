@@ -246,10 +246,10 @@ export function HeroSearch() {
                       {filteredCities.slice(0, 8).map((name, index) => (
                         <Button
                           aria-selected={city === name}
-                          className={`w-full justify-start gap-2 px-4 py-2.5 text-left text-sm ${
+                          className={`w-full justify-start gap-2 px-4 py-2.5 text-left text-sm hover:bg-teal-50 hover:text-teal-700 ${
                             city === name || activeCityIndex === index
                               ? 'bg-teal-50 text-teal-600'
-                              : 'text-gray-700 hover:bg-gray-50'
+                              : 'text-gray-700'
                           }`}
                           id={`home-city-option-${index}`}
                           key={name}

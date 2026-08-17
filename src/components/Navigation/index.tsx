@@ -64,7 +64,7 @@ function TopNav() {
       aria-label="主导航"
       className="sticky top-0 z-50 bg-[var(--travel-surface)] border-b border-[rgba(28,25,23,0.06)] shadow-[0_12px_34px_rgba(var(--travel-ocean-rgb),0.08)]"
     >
-      <div className="max-w-[1200px] min-h-[72px] mx-auto px-4 sm:px-6 py-3 sm:py-0 flex items-center gap-2.5 sm:gap-3.5 flex-wrap sm:flex-nowrap">
+      <div className="max-w-[1200px] h-16 mx-auto px-4 sm:px-6 flex items-center gap-2.5 sm:gap-3.5">
         <Link
           aria-label="返回首页"
           className="min-h-[44px] inline-flex items-center gap-2.5 mr-auto sm:mr-[18px] rounded-2xl no-underline text-[var(--travel-ocean)]"

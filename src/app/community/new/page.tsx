@@ -10,6 +10,9 @@ import { createCommunityPost, uploadCommunityImages } from '@/api/community'
 import { CommunityImageGrid } from '@/components/CommunityImageGrid'
 import { CommunityItineraryPreview } from '@/components/CommunityItineraryPreview'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import { useAppToast } from '@/hooks/useAppToast'
 
 export default function CommunityPostCreate() {
@@ -112,11 +115,8 @@ export default function CommunityPostCreate() {
       <section className="travel-surface-card rounded-3xl p-7">
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-2">
-            <label className="text-sm font-medium" htmlFor="title">
-              标题
-            </label>
-            <input
-              className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
+            <Label htmlFor="title">标题</Label>
+            <Input
               id="title"
               maxLength={80}
               onChange={(event) => setTitle(event.target.value)}
@@ -127,11 +127,8 @@ export default function CommunityPostCreate() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium" htmlFor="content">
-              正文
-            </label>
-            <textarea
-              className="flex min-h-20 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
+            <Label htmlFor="content">正文</Label>
+            <Textarea
               id="content"
               maxLength={2000}
               onChange={(event) => setContent(event.target.value)}
@@ -142,11 +139,8 @@ export default function CommunityPostCreate() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium" htmlFor="city">
-              城市
-            </label>
-            <input
-              className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
+            <Label htmlFor="city">城市</Label>
+            <Input
               id="city"
               maxLength={50}
               onChange={(event) => setCity(event.target.value)}

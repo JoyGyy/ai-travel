@@ -10,6 +10,10 @@ import { Bot, Calendar, CircleDollarSign, Cloud, Flame, Loader2, MapPin } from '
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { allCities } from '@/constants/cities'
 import { useAppToast } from '@/hooks/useAppToast'
 import { useWeather } from '@/hooks/useWeather'
@@ -172,15 +176,15 @@ export function HeroSearch() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
             {/* 目的地 */}
             <div className="relative flex-1 text-left" onClick={(e) => e.stopPropagation()}>
-              <label
+              <Label
                 className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-travel-muted"
                 htmlFor="home-city-input"
               >
                 <MapPin aria-hidden="true" className="h-3.5 w-3.5" />
                 目的地
                 <span className="text-destructive ml-1">*</span>
-              </label>
-              <input
+              </Label>
+              <Input
                 aria-activedescendant={activeCityId}
                 aria-autocomplete="list"
                 aria-controls="home-city-dropdown"
@@ -188,7 +192,7 @@ export function HeroSearch() {
                 aria-expanded={showDropdown}
                 aria-invalid={Boolean(fieldErrors.city)}
                 autoComplete="off"
-                className="w-full rounded-lg border border-travel-border-light bg-travel-surface px-3 py-2.5 text-sm text-travel-ink outline-none transition-colors placeholder:text-travel-muted-light focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="w-full rounded-lg border-travel-border-light bg-travel-surface py-2.5 text-sm"
                 id="home-city-input"
                 onChange={handleCityChange}
                 onFocus={() => setShowDropdown(true)}
@@ -210,22 +214,22 @@ export function HeroSearch() {
                   role="listbox"
                 >
                   {filteredCities.slice(0, 12).map((name, index) => (
-                    <button
+                    <Button
                       aria-selected={city === name}
-                      className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors ${
+                      className={`w-full justify-start gap-2 px-3 py-2 text-left text-sm ${
                         city === name || activeCityIndex === index
                           ? 'bg-primary/8 text-primary'
-                          : 'text-travel-ink hover:bg-travel-surface'
+                          : 'text-travel-ink'
                       }`}
                       id={`home-city-option-${index}`}
                       key={name}
                       onClick={() => selectCity(name)}
                       role="option"
-                      type="button"
+                      variant="ghost"
                     >
                       <MapPin aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 opacity-50" />
                       {name}
-                    </button>
+                    </Button>
                   ))}
                   {filteredCities.length === 0 ? (
                     <div className="px-3 py-4 text-center text-sm text-travel-muted">
@@ -238,18 +242,18 @@ export function HeroSearch() {
 
             {/* 预算 */}
             <div className="w-full text-left sm:w-[140px]">
-              <label
+              <Label
                 className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-travel-muted"
                 htmlFor="home-budget-input"
               >
                 <CircleDollarSign aria-hidden="true" className="h-3.5 w-3.5" />
                 预算 (元)
                 <span className="text-destructive ml-1">*</span>
-              </label>
-              <input
+              </Label>
+              <Input
                 aria-describedby={fieldErrors.budget ? 'home-budget-error' : undefined}
                 aria-invalid={Boolean(fieldErrors.budget)}
-                className="w-full rounded-lg border border-travel-border-light bg-travel-surface px-3 py-2.5 text-sm text-travel-ink outline-none transition-colors placeholder:text-travel-muted-light focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="w-full rounded-lg border-travel-border-light bg-travel-surface py-2.5 text-sm"
                 id="home-budget-input"
                 inputMode="numeric"
                 min="1"
@@ -279,37 +283,41 @@ export function HeroSearch() {
                 aria-label="旅行天数"
                 className="flex items-center overflow-hidden rounded-lg border border-travel-border-light bg-travel-surface"
               >
-                <button
+                <Button
                   aria-label="减少天数"
-                  className="flex h-[42px] w-10 items-center justify-center text-lg text-travel-muted transition-colors hover:bg-travel-surface-strong hover:text-travel-ink disabled:opacity-40"
+                  className="h-[42px] w-10 text-lg text-travel-muted"
                   disabled={days <= 1}
                   onClick={() => setDays((prev) => Math.max(1, prev - 1))}
+                  size="icon"
                   type="button"
+                  variant="ghost"
                 >
                   -
-                </button>
+                </Button>
                 <span
                   aria-live="polite"
                   className="flex-1 text-center text-sm font-medium text-travel-ink"
                 >
                   {days}天
                 </span>
-                <button
+                <Button
                   aria-label="增加天数"
-                  className="flex h-[42px] w-10 items-center justify-center text-lg text-travel-muted transition-colors hover:bg-travel-surface-strong hover:text-travel-ink disabled:opacity-40"
+                  className="h-[42px] w-10 text-lg text-travel-muted"
                   disabled={days >= 30}
                   onClick={() => setDays((prev) => Math.min(30, prev + 1))}
+                  size="icon"
                   type="button"
+                  variant="ghost"
                 >
                   +
-                </button>
+                </Button>
               </div>
             </div>
 
             {/* 搜索按钮 */}
-            <button
+            <Button
               aria-label={isSubmitting ? '正在生成行程' : 'AI 规划行程'}
-              className="inline-flex h-[42px] items-center justify-center gap-2 rounded-lg bg-primary px-6 text-sm font-bold text-white shadow-[0_4px_12px_rgba(255,107,53,0.3)] transition-all hover:-translate-y-0.5 hover:bg-primary-strong hover:shadow-[0_6px_16px_rgba(255,107,53,0.4)] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-[0_4px_12px_rgba(255,107,53,0.3)]"
+              className="h-[42px] gap-2 bg-primary px-6 text-sm font-bold shadow-[0_4px_12px_rgba(255,107,53,0.3)] hover:-translate-y-0.5 hover:bg-primary-strong hover:shadow-[0_6px_16px_rgba(255,107,53,0.4)] active:translate-y-0 disabled:hover:translate-y-0 disabled:hover:shadow-[0_4px_12px_rgba(255,107,53,0.3)]"
               disabled={isSubmitting}
               type="submit"
             >
@@ -324,7 +332,7 @@ export function HeroSearch() {
                   <span>AI 规划</span>
                 </>
               )}
-            </button>
+            </Button>
           </div>
 
           {/* 天气提示 */}
@@ -358,14 +366,14 @@ export function HeroSearch() {
             热门：
           </span>
           {['三亚', '丽江', '西安', '成都', '大理', '厦门'].map((tag) => (
-            <button
-              className="rounded-full border border-travel-border-light bg-white px-3 py-1 text-xs font-medium text-travel-ink transition-all hover:border-primary/30 hover:bg-primary/5 hover:text-primary"
+            <Badge
+              className="cursor-pointer border-travel-border-light bg-white px-3 py-1 text-xs font-medium text-travel-ink transition-all hover:border-primary/30 hover:bg-primary/5 hover:text-primary"
               key={tag}
               onClick={() => selectCity(tag)}
-              type="button"
+              variant="outline"
             >
               {tag}
-            </button>
+            </Badge>
           ))}
         </div>
       </div>

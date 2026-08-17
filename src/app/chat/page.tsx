@@ -3,6 +3,9 @@
 import { Send, Trash2 } from 'lucide-react'
 import { type FormEvent, useState } from 'react'
 
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { useTravelChat } from '@/hooks/useTravelChat'
 
 export default function ChatPage() {
@@ -40,19 +43,20 @@ export default function ChatPage() {
               告诉我目的地、天数、预算和偏好，我会帮你规划路线。
             </p>
           </div>
-          <button
+          <Button
             aria-label="清空对话"
-            className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border border-white/60 bg-white/80 text-gray-500 shadow-sm backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-white hover:text-red-500 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-200"
+            className="flex-shrink-0 border-white/60 bg-white/80 text-gray-500 shadow-sm backdrop-blur-sm hover:-translate-y-0.5 hover:bg-white hover:text-red-500 hover:shadow-md"
             onClick={() => {
               if (window.confirm('确定要清空对话记录吗？')) {
                 setMessages([])
               }
             }}
+            size="icon"
             title="清空对话"
-            type="button"
+            variant="outline"
           >
             <Trash2 className="h-5 w-5" />
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -116,9 +120,11 @@ export default function ChatPage() {
             key={message.id}
           >
             {message.role === 'assistant' && (
-              <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl border border-stone-900/6 bg-primary/8 text-[15px] text-travel-ink">
-                🤖
-              </div>
+              <Avatar className="h-8 w-8 flex-shrink-0 rounded-xl">
+                <AvatarFallback className="rounded-xl border border-stone-900/6 bg-primary/8 text-[15px]">
+                  🤖
+                </AvatarFallback>
+              </Avatar>
             )}
             <div
               className={
@@ -153,9 +159,11 @@ export default function ChatPage() {
 
         {status === 'submitted' && (
           <div className="mx-2 mb-3 flex items-start gap-2.5">
-            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl border border-stone-900/6 bg-primary/8 text-[15px] text-travel-ink">
-              🤖
-            </div>
+            <Avatar className="h-8 w-8 flex-shrink-0 rounded-xl">
+              <AvatarFallback className="rounded-xl border border-stone-900/6 bg-primary/8 text-[15px]">
+                🤖
+              </AvatarFallback>
+            </Avatar>
             <div className="flex gap-1.5 rounded-[6px_18px_18px] border border-stone-900/6 bg-travel-surface p-3 px-4 shadow-[0_10px_28px_rgba(41,37,36,0.08)]">
               <span className="h-1.5 w-1.5 animate-[dotBounce_1.2s_infinite] rounded-full bg-primary" />
               <span className="h-1.5 w-1.5 animate-[dotBounce_1.2s_infinite_0.15s] rounded-full bg-primary" />
@@ -170,13 +178,14 @@ export default function ChatPage() {
             role="alert"
           >
             <span>{error.message}</span>
-            <button
-              className="min-h-9 rounded-full border border-red-500/22 bg-white/72 px-3.5 font-black text-destructive"
+            <Button
+              className="border-red-500/22 bg-white/72 font-black text-destructive"
               onClick={() => sendMessage({ text: '请重试' })}
-              type="button"
+              size="sm"
+              variant="outline"
             >
               重试
-            </button>
+            </Button>
           </div>
         )}
       </div>
@@ -187,23 +196,24 @@ export default function ChatPage() {
           className="mx-auto flex w-full max-w-[900px] items-center gap-2.5 rounded-[20px] border border-stone-900/8 bg-white p-2"
           onSubmit={handleSubmit}
         >
-          <input
+          <Input
             aria-label="输入消息"
-            className="h-11 flex-1 rounded-[14px] border border-stone-900/8 bg-white/72 px-4 text-sm text-travel-ink shadow-[inset_0_1px_4px_rgba(41,37,36,0.06)] outline-none placeholder:text-stone-900/44 focus:border-primary/44 focus:shadow-[0_0_0_3px_rgba(var(--travel-primary-rgb),0.14),inset_0_1px_4px_rgba(var(--travel-ocean-rgb),0.06)] disabled:cursor-not-allowed disabled:text-stone-900/46 disabled:bg-white/42"
+            className="h-11 flex-1 rounded-[14px] border-stone-900/8 bg-white/72 shadow-[inset_0_1px_4px_rgba(41,37,36,0.06)] placeholder:text-stone-900/44 focus:border-primary/44 focus:shadow-[0_0_0_3px_rgba(var(--travel-primary-rgb),0.14),inset_0_1px_4px_rgba(var(--travel-ocean-rgb),0.06)] disabled:text-stone-900/46 disabled:bg-white/42"
             disabled={status !== 'ready'}
             onChange={(event) => setInput(event.target.value)}
             placeholder="例如：帮我规划杭州 3 天 2 晚，预算 3000 元"
             value={input}
           />
-          <button
+          <Button
             aria-label="发送"
-            className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[14px] border-0 bg-primary text-white shadow-[0_12px_24px_rgba(var(--travel-primary-rgb),0.34)] transition-all hover:-translate-y-px hover:shadow-[0_16px_30px_rgba(var(--travel-primary-rgb),0.42)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900/24 disabled:cursor-not-allowed disabled:text-stone-900/42 disabled:bg-stone-900/10 disabled:shadow-none"
+            className="h-11 w-11 flex-shrink-0 rounded-[14px] shadow-[0_12px_24px_rgba(var(--travel-primary-rgb),0.34)] hover:-translate-y-px hover:shadow-[0_16px_30px_rgba(var(--travel-primary-rgb),0.42)] disabled:text-stone-900/42 disabled:bg-stone-900/10 disabled:shadow-none"
             disabled={!input.trim() || status !== 'ready'}
+            size="icon"
             title="发送"
             type="submit"
           >
             <Send className="h-5 w-5" />
-          </button>
+          </Button>
         </form>
       </div>
     </section>

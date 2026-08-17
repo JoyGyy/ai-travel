@@ -11,6 +11,9 @@ import type { ChangeEvent, KeyboardEvent } from 'react'
 import { useMemo, useState } from 'react'
 
 import { HomeWeather } from '@/components/HomeWeather'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { allCities, hotCities } from '@/constants/cities'
 import { useWeather } from '@/hooks/useWeather'
 
@@ -125,17 +128,17 @@ export default function Weather() {
               <circle cx="11" cy="11" r="8" />
               <line x1="21" x2="16.65" y1="21" y2="16.65" />
             </svg>
-            <label className="text-sm font-semibold text-gray-700" htmlFor="weather-city-input">
+            <Label className="text-sm font-semibold text-gray-700" htmlFor="weather-city-input">
               城市名称
-            </label>
-            <input
+            </Label>
+            <Input
               aria-activedescendant={activeCityId}
               aria-autocomplete="list"
               aria-controls="weather-city-listbox"
               aria-expanded={showDropdown}
               aria-haspopup="listbox"
               autoComplete="off"
-              className="flex-1 bg-transparent text-sm text-gray-900 outline-none placeholder:text-gray-400"
+              className="flex-1 border-0 bg-transparent p-0 text-sm text-gray-900 shadow-none focus-visible:ring-0"
               id="weather-city-input"
               name="weather-city"
               onChange={handleInputChange}
@@ -156,21 +159,21 @@ export default function Weather() {
               role="listbox"
             >
               {filteredCities.map((name, index) => (
-                <button
+                <Button
                   aria-selected={city === name}
-                  className={`w-full px-4 py-3 text-left text-sm transition-all duration-200 first:rounded-t-2xl last:rounded-b-2xl ${
+                  className={`w-full justify-start rounded-none px-4 py-3 text-left text-sm first:rounded-t-2xl last:rounded-b-2xl ${
                     city === name || activeCityIndex === index
                       ? 'bg-blue-50 text-blue-600 font-medium'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      : 'text-gray-700'
                   }`}
                   id={`weather-city-option-${index}`}
                   key={name}
                   onClick={() => selectCity(name)}
                   role="option"
-                  type="button"
+                  variant="ghost"
                 >
                   {name}
-                </button>
+                </Button>
               ))}
               {!filteredCities.length && (
                 <div className="px-4 py-4 text-center text-sm text-gray-500">
@@ -196,13 +199,13 @@ export default function Weather() {
           >
             <span className="text-sm font-medium text-red-600">{error}</span>
             {city.trim() && (
-              <button
-                className="rounded-xl bg-red-100 px-5 py-2.5 text-sm font-semibold text-red-700 transition-all duration-200 hover:bg-red-200 hover:shadow-md"
+              <Button
+                className="bg-red-100 text-red-700 hover:bg-red-200 hover:shadow-md"
                 onClick={retryWeather}
-                type="button"
+                variant="outline"
               >
                 重试
-              </button>
+              </Button>
             )}
           </div>
         )}
@@ -221,8 +224,8 @@ export default function Weather() {
           </div>
           <div className="flex flex-wrap justify-center gap-3">
             {hotCities.map((name, index) => (
-              <button
-                className={`group relative rounded-2xl px-6 py-3 text-sm font-semibold transition-all duration-300 hover:-translate-y-1 hover:shadow-lg animate-fade-in-up ${
+              <Button
+                className={`group relative rounded-2xl px-6 py-3 animate-fade-in-up ${
                   city === name
                     ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-200'
                     : 'bg-white text-gray-700 shadow-sm hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-blue-600'
@@ -230,7 +233,7 @@ export default function Weather() {
                 key={name}
                 onClick={() => selectCity(name)}
                 style={{ animationDelay: `${index * 50}ms` }}
-                type="button"
+                variant={city === name ? 'default' : 'outline'}
               >
                 {name}
                 {city === name && (
@@ -238,7 +241,7 @@ export default function Weather() {
                     ✓
                   </span>
                 )}
-              </button>
+              </Button>
             ))}
           </div>
         </div>

@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
+import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/stores/auth'
 
 /* ========== 导航标签配置 ========== */
@@ -126,15 +127,16 @@ function TopNav() {
               <span className="hidden sm:inline">登录</span>
             </Link>
           )}
-          <button
+          <Button
             aria-expanded={mobileMenuOpen}
             aria-label={mobileMenuOpen ? '关闭菜单' : '打开菜单'}
-            className="sm:hidden min-h-[44px] inline-flex items-center justify-center w-10 rounded-lg text-[var(--travel-ocean)] transition-colors hover:bg-[rgba(var(--travel-primary-rgb),0.08)]"
+            className="sm:hidden text-[var(--travel-ocean)] hover:bg-[rgba(var(--travel-primary-rgb),0.08)]"
             onClick={() => setMobileMenuOpen((v) => !v)}
-            type="button"
+            size="icon"
+            variant="ghost"
           >
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          </Button>
         </div>
       </div>
       {mobileMenuOpen ? (

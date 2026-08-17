@@ -10,6 +10,9 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 import { HeroSearch } from '@/components/home/HeroSearch'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { useAppToast } from '@/hooks/useAppToast'
 import { useAuthStore } from '@/stores/auth'
 
@@ -118,12 +121,12 @@ export default function HomePage() {
                   src={dest.img}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-primary shadow-sm backdrop-blur-sm">
+                <Badge className="absolute left-3 top-3 bg-white/90 text-xs font-bold text-primary shadow-sm backdrop-blur-sm">
                   {dest.tag}
-                </span>
-                <span className="absolute bottom-3 right-3 rounded-full bg-black/60 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
+                </Badge>
+                <Badge className="absolute bottom-3 right-3 border-0 bg-black/60 text-xs font-medium text-white backdrop-blur-sm" variant="outline">
                   {dest.temp}
-                </span>
+                </Badge>
               </div>
               <div className="flex items-center justify-between p-4">
                 <span className="text-lg font-bold text-travel-ink">{dest.name}</span>
@@ -179,9 +182,9 @@ export default function HomePage() {
                   src={trip.image}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-primary shadow-sm backdrop-blur-sm">
+                <Badge className="absolute left-3 top-3 bg-white/90 text-xs font-bold text-primary shadow-sm backdrop-blur-sm">
                   {trip.tag}
-                </span>
+                </Badge>
               </div>
               <div className="p-5">
                 <h3 className="mb-2 text-lg font-bold text-travel-ink transition-colors group-hover:text-primary">
@@ -189,10 +192,10 @@ export default function HomePage() {
                 </h3>
                 <p className="mb-4 text-sm leading-relaxed text-travel-muted">{trip.desc}</p>
                 <div className="mb-4 flex items-center gap-2">
-                  <span className="flex items-center gap-1 rounded-full bg-yellow-50 px-2 py-0.5 text-sm font-semibold text-yellow-600">
+                  <Badge className="gap-1 border-0 bg-yellow-50 text-sm font-semibold text-yellow-600">
                     <Star aria-hidden="true" className="h-3.5 w-3.5 fill-current" />
                     {trip.rating}
-                  </span>
+                  </Badge>
                   <span className="text-sm text-travel-muted">{trip.reviews} 条评价</span>
                 </div>
                 <div className="flex items-center gap-3">
@@ -200,9 +203,9 @@ export default function HomePage() {
                   <span className="text-sm text-travel-muted line-through">
                     ¥{trip.originalPrice}
                   </span>
-                  <span className="ml-auto rounded-full bg-gradient-to-r from-red-500 to-pink-500 px-3 py-1 text-xs font-bold text-white shadow-sm">
+                  <Badge className="ml-auto border-0 bg-gradient-to-r from-red-500 to-pink-500 text-xs font-bold text-white shadow-sm">
                     {Math.round((1 - trip.price / trip.originalPrice) * 100)}% OFF
-                  </span>
+                  </Badge>
                 </div>
               </div>
             </Link>
@@ -274,9 +277,11 @@ export default function HomePage() {
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <div className="mb-3 flex items-center gap-3">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 text-xl">
-                      {review.avatar}
-                    </span>
+                    <Avatar className="h-12 w-12">
+                      <AvatarFallback className="bg-gradient-to-br from-primary/20 to-secondary/20 text-xl">
+                        {review.avatar}
+                      </AvatarFallback>
+                    </Avatar>
                     <div>
                       <span className="block font-semibold text-travel-ink">{review.name}</span>
                       <span className="text-sm text-travel-muted">去了{review.dest}</span>
@@ -311,14 +316,14 @@ export default function HomePage() {
           <p className="mb-10 text-lg text-white/90">
             让 AI 为你量身定制下一段旅程
           </p>
-          <button
-            className="group inline-flex items-center gap-3 rounded-full bg-white px-10 py-5 text-lg font-bold text-primary shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-3xl hover:scale-105"
+          <Button
+            className="group gap-3 rounded-full bg-white px-10 py-5 text-lg font-bold text-primary shadow-2xl hover:-translate-y-1 hover:scale-105 hover:shadow-3xl"
             onClick={onStart}
-            type="button"
+            size="lg"
           >
             <Compass aria-hidden="true" className="transition-transform duration-300 group-hover:rotate-45" />
             {user ? '立即规划行程' : '登录开始规划'}
-          </button>
+          </Button>
         </div>
       </section>
     </main>

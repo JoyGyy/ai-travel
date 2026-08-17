@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useAppToast } from '@/hooks/useAppToast'
+import { useScrollReveal } from '@/hooks/useScrollReveal'
 import { useAuthStore } from '@/stores/auth'
 
 import { featuredTrips, hotDestinations, userReviews } from './home-data'
@@ -72,6 +73,8 @@ export default function HomePage() {
   const user = useAuthStore(state => state.user)
   const hasHydrated = useAuthStore(state => state._hasHydrated)
 
+  useScrollReveal()
+
   const onStart = () => {
     if (!hasHydrated) {
       toast.info('加载中...')
@@ -89,7 +92,7 @@ export default function HomePage() {
 
       {/* Bento Grid 功能区 */}
       <section aria-label="快捷服务" className="relative mx-auto max-w-[1200px] px-6 py-16">
-        <div className="mb-10 text-center">
+        <div className="mb-10 text-center scroll-reveal">
           <h2 className="text-2xl font-bold text-gray-900 md:text-3xl">探索旅行的无限可能</h2>
           <p className="mt-2 text-gray-500">AI 帮你规划行程，发现精彩目的地</p>
         </div>
@@ -97,12 +100,12 @@ export default function HomePage() {
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-2">
           {quickEntries.map((entry, index) => (
             <Link
-              className={`group relative overflow-hidden rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl animate-fade-in-up ${entry.span} ${
+              className={`group relative overflow-hidden rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl scroll-reveal ${entry.span} ${
                 entry.style === 'image' ? '' : entry.bgColor
               }`}
+              data-delay={index}
               href={entry.href}
               key={entry.label}
-              style={{ animationDelay: `${index * 80}ms` }}
             >
               {entry.style === 'image'
                 ? (
@@ -174,7 +177,7 @@ export default function HomePage() {
           <div className="absolute top-0 left-1/2 h-px w-3/4 -translate-x-1/2 bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
         </div>
 
-        <div className="mb-8 flex items-center justify-between animate-fade-in-up">
+        <div className="mb-8 flex items-center justify-between scroll-reveal">
           <h2
             className="flex items-center gap-3 text-2xl font-bold"
             id="hot-dest-title"
@@ -198,10 +201,10 @@ export default function HomePage() {
         <div className="grid grid-cols-2 gap-5 sm:grid-cols-3">
           {hotDestinations.map((dest, index) => (
             <Link
-              className="group block overflow-hidden rounded-2xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] hover:-translate-y-2 hover:ring-2 hover:ring-orange-200 animate-fade-in-up"
+              className="group block overflow-hidden rounded-2xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] hover:-translate-y-2 hover:ring-2 hover:ring-orange-200 scroll-reveal"
+              data-delay={index}
               href={`/detail?city=${encodeURIComponent(dest.name)}`}
               key={dest.name}
-              style={{ animationDelay: `${index * 100}ms` }}
             >
               <div className="relative h-[220px] w-full overflow-hidden">
                 <Image
@@ -235,7 +238,7 @@ export default function HomePage() {
           <div className="absolute top-0 left-1/2 h-px w-3/4 -translate-x-1/2 bg-gradient-to-r from-transparent via-secondary/20 to-transparent" />
         </div>
 
-        <div className="mb-8 flex items-center justify-between animate-fade-in-up">
+        <div className="mb-8 flex items-center justify-between scroll-reveal">
           <h2
             className="flex items-center gap-3 text-2xl font-bold"
             id="featured-title"
@@ -259,10 +262,10 @@ export default function HomePage() {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {featuredTrips.map((trip, index) => (
             <Link
-              className="group block overflow-hidden rounded-2xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] hover:-translate-y-2 hover:ring-2 hover:ring-amber-200 animate-fade-in-up"
+              className="group block overflow-hidden rounded-2xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] hover:-translate-y-2 hover:ring-2 hover:ring-amber-200 scroll-reveal"
+              data-delay={index}
               href={`/detail?city=${encodeURIComponent(trip.city)}`}
               key={trip.title}
-              style={{ animationDelay: `${index * 100}ms` }}
             >
               <div className="relative h-[200px] w-full overflow-hidden">
                 <Image
@@ -320,8 +323,8 @@ export default function HomePage() {
           <div className="absolute top-0 left-1/2 h-px w-3/4 -translate-x-1/2 bg-gradient-to-r from-transparent via-accent/20 to-transparent" />
         </div>
 
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 animate-fade-in-up">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 p-8 text-white">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 p-8 text-white scroll-reveal-left">
             {/* 装饰元素 */}
             <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-gradient-to-br from-yellow-400/20 to-orange-500/20 blur-3xl" />
             <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-gradient-to-br from-blue-400/20 to-purple-500/20 blur-3xl" />
@@ -363,7 +366,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="rounded-3xl bg-white p-8 shadow-lg">
+          <div className="rounded-3xl bg-white p-8 shadow-lg scroll-reveal-right">
             <h3 className="mb-8 flex items-center gap-3 text-xl font-bold text-travel-ink">
               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10">
                 <Users aria-hidden="true" className="text-primary" size={20} />
@@ -413,7 +416,7 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2230%22%20height%3D%2230%22%20viewBox%3D%220%200%2030%2030%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Ccircle%20cx%3D%2215%22%20cy%3D%2215%22%20r%3D%221%22%20fill%3D%22rgba(255%2C255%2C255%2C0.1)%22%2F%3E%3C%2Fsvg%3E')] opacity-50" />
         </div>
 
-        <div className="relative mx-auto max-w-[1200px] px-6 text-center animate-fade-in-up">
+        <div className="relative mx-auto max-w-[1200px] px-6 text-center scroll-reveal-scale">
           <h2 className="mb-4 text-4xl font-bold text-white drop-shadow-lg">
             准备好出发了吗？
           </h2>

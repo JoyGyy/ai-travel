@@ -1,6 +1,6 @@
 'use client'
 
-import { Camera, Heart, MapPin, Plus, TrendingUp, Users } from 'lucide-react'
+import { Bookmark, Camera, Heart, MapPin, MessageCircle, Plus, Quote, Star, TrendingUp, Users } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -236,6 +236,62 @@ export default function Community() {
           ))}
         </div>
       </section>
+
+      {/* 每日旅行语录 + 城市聚焦 */}
+      <div className="grid gap-4 sm:grid-cols-2 animate-fade-in-up" style={{ animationDelay: '250ms' }}>
+        {/* 旅行语录 */}
+        <Card className="relative overflow-hidden border-white/60 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 backdrop-blur-sm">
+          <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-gradient-to-br from-indigo-200/30 to-purple-200/30 blur-2xl" />
+          <CardContent className="relative p-5">
+            <div className="mb-3 flex items-center gap-2">
+              <Quote className="h-4 w-4 text-indigo-400" />
+              <span className="text-xs font-semibold text-indigo-500 uppercase tracking-wider">旅行语录</span>
+            </div>
+            <blockquote className="text-sm leading-relaxed text-gray-700 italic">
+              {[
+                '世界是一本书，不旅行的人只读了其中一页。',
+                '旅行不是为了到达目的地，而是为了享受沿途的风景。',
+                '生活不止眼前的苟且，还有诗和远方。',
+                '最好的时光在路上，最美的风景在心中。',
+              ][new Date().getDay() % 4]}
+            </blockquote>
+            <p className="mt-3 text-xs text-gray-400">— 每日一句，送给在路上的你</p>
+          </CardContent>
+        </Card>
+
+        {/* 城市聚焦 */}
+        <Card className="relative overflow-hidden border-white/60 bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 backdrop-blur-sm">
+          <div className="absolute -left-8 -bottom-8 h-24 w-24 rounded-full bg-gradient-to-br from-amber-200/30 to-orange-200/30 blur-2xl" />
+          <CardContent className="relative p-5">
+            <div className="mb-3 flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-orange-400" />
+              <span className="text-xs font-semibold text-orange-500 uppercase tracking-wider">城市聚焦</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-400 to-red-500 text-2xl text-white shadow-lg">
+                🐼
+              </div>
+              <div>
+                <p className="text-base font-bold text-gray-900">成都</p>
+                <p className="text-xs text-gray-500">美食之都 · 大熊猫故乡</p>
+                <div className="mt-1.5 flex items-center gap-1">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className={`h-3 w-3 ${i < 4 ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}`} />
+                  ))}
+                  <span className="ml-1 text-[10px] text-gray-400">旅友推荐</span>
+                </div>
+              </div>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {['火锅', '大熊猫', '宽窄巷子', '都江堰'].map((tag) => (
+                <Badge className="border-orange-200 bg-orange-50 text-[10px] text-orange-600" key={tag} variant="outline">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* 筛选区 */}
       <section

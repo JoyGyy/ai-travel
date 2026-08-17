@@ -8,7 +8,7 @@
  */
 import type { ChangeEvent, KeyboardEvent } from 'react'
 
-import { Clock, Droplets, Lightbulb, Search, Shirt, Sun, Thermometer, Wind } from 'lucide-react'
+import { CalendarDays, Clock, Cloud, Compass, Droplets, Lightbulb, MapPin, Search, Shirt, Star, Sun, Thermometer, Wind } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
 import { HomeWeather } from '@/components/HomeWeather'
@@ -303,6 +303,116 @@ export default function Weather() {
             ))}
           </div>
         </div>
+
+        {/* 多城天气速览 */}
+        {!weather && !loading && (
+          <div className="mt-12 animate-fade-in-up">
+            <Separator className="mb-8 bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+            <div className="mb-6 flex items-center gap-3">
+              <Cloud className="h-5 w-5 text-blue-500" />
+              <h2 className="text-lg font-bold text-gray-900">多城速览</h2>
+              <span className="text-xs text-gray-400">点击查看详情</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              {[
+                { emoji: '🏖️', gradient: 'from-sky-400 to-blue-500', name: '三亚', temp: '28°C', weather: '晴' },
+                { emoji: '🏔️', gradient: 'from-emerald-400 to-teal-500', name: '丽江', temp: '18°C', weather: '多云' },
+                { emoji: '🏯', gradient: 'from-amber-400 to-orange-500', name: '西安', temp: '22°C', weather: '晴' },
+                { emoji: '🐼', gradient: 'from-lime-400 to-green-500', name: '成都', temp: '24°C', weather: '阴' },
+                { emoji: '🌊', gradient: 'from-cyan-400 to-blue-500', name: '大理', temp: '20°C', weather: '晴' },
+                { emoji: '🎵', gradient: 'from-rose-400 to-pink-500', name: '厦门', temp: '26°C', weather: '多云' },
+                { emoji: '🌸', gradient: 'from-fuchsia-400 to-purple-500', name: '杭州', temp: '25°C', weather: '小雨' },
+                { emoji: '🏙️', gradient: 'from-slate-400 to-gray-500', name: '上海', temp: '27°C', weather: '阴' },
+              ].map((item) => (
+                <Card
+                  className="group cursor-pointer border-white/60 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                  key={item.name}
+                  onClick={() => selectCity(item.name)}
+                >
+                  <CardContent className="p-4">
+                    <div className="mb-3 flex items-center justify-between">
+                      <span className="text-2xl">{item.emoji}</span>
+                      <span className={`inline-flex items-center gap-1 rounded-full bg-gradient-to-r ${item.gradient} px-2 py-0.5 text-[10px] font-bold text-white`}>
+                        {item.weather}
+                      </span>
+                    </div>
+                    <p className="text-sm font-bold text-gray-900">{item.name}</p>
+                    <p className="mt-1 text-lg font-black text-gray-700">{item.temp}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 当季推荐 */}
+        {!weather && !loading && (
+          <div className="mt-12 animate-fade-in-up">
+            <Separator className="mb-8 bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+            <div className="mb-6 flex items-center gap-3">
+              <CalendarDays className="h-5 w-5 text-emerald-500" />
+              <h2 className="text-lg font-bold text-gray-900">当季推荐</h2>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {[
+                {
+                  color: 'from-sky-500 to-blue-600',
+                  cities: ['三亚', '厦门', '青岛'],
+                  desc: '阳光、沙滩、海浪，夏日避暑首选',
+                  icon: <Sun size={20} />,
+                  season: '夏季出游',
+                  tag: '避暑',
+                },
+                {
+                  color: 'from-amber-500 to-orange-600',
+                  cities: ['西安', '北京', '南京'],
+                  desc: '秋高气爽，适合历史文化深度游',
+                  icon: <MapPin size={20} />,
+                  season: '秋季赏景',
+                  tag: '赏秋',
+                },
+              ].map((item) => (
+                <Card
+                  className="group overflow-hidden border-white/60 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg"
+                  key={item.season}
+                >
+                  <CardContent className="p-0">
+                    <div className={`bg-gradient-to-r ${item.color} p-5 text-white`}>
+                      <div className="flex items-center gap-3">
+                        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
+                          {item.icon}
+                        </span>
+                        <div>
+                          <p className="text-lg font-bold">{item.season}</p>
+                          <p className="text-sm opacity-80">{item.desc}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <div className="flex flex-wrap gap-2">
+                        {item.cities.map((c) => (
+                          <Badge
+                            className="cursor-pointer transition-all hover:-translate-y-0.5"
+                            key={c}
+                            onClick={() => selectCity(c)}
+                            variant="secondary"
+                          >
+                            <MapPin className="mr-1 h-3 w-3" />
+                            {c}
+                          </Badge>
+                        ))}
+                      </div>
+                      <Badge className="mt-3 border-0 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-700" variant="outline">
+                        <Star className="mr-1 h-3 w-3 fill-current" />
+                        {item.tag}推荐
+                      </Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* 天气知识卡 */}
         {!weather && !loading && (

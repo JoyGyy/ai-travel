@@ -200,13 +200,13 @@ export function HeroSearch() {
 
         {/* 搜索表单 */}
         <form
-          className="mx-auto max-w-[860px] rounded-3xl bg-white/95 p-6 shadow-2xl backdrop-blur-xl"
+          className="relative z-10 mx-auto max-w-[860px] rounded-3xl bg-white/95 p-6 shadow-2xl backdrop-blur-xl"
           noValidate
           onSubmit={submitPlanner}
         >
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
             {/* 目的地 */}
-            <div className="relative flex-1 text-left" onClick={e => e.stopPropagation()}>
+            <div className="relative z-20 flex-1 text-left" onClick={e => e.stopPropagation()}>
               <Label className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-gray-500" htmlFor="home-city-input">
                 <MapPin aria-hidden="true" className="h-3.5 w-3.5" />
                 目的地

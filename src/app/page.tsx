@@ -19,11 +19,51 @@ import { useAuthStore } from '@/stores/auth'
 import { featuredTrips, hotDestinations, userReviews } from './home-data'
 
 const quickEntries = [
-  { color: '#FF6B35', desc: '智能行程一键生成', gradient: 'from-orange-500 to-red-500', href: '/detail', icon: <Compass size={28} />, label: 'AI 行程规划', span: 'col-span-2 row-span-2' },
-  { color: '#10B981', desc: '发现身边好去处', gradient: 'from-emerald-400 to-teal-500', href: '/attractions', icon: <MapPin size={24} />, label: '精选景点', span: 'col-span-1 row-span-1' },
-  { color: '#8B5CF6', desc: '旅友分享攻略', gradient: 'from-violet-500 to-purple-600', href: '/community', icon: <Users size={24} />, label: '旅友社区', span: 'col-span-1 row-span-1' },
-  { color: '#3B82F6', desc: '实时天气预报', gradient: 'from-blue-400 to-indigo-500', href: '/weather', icon: <Cloud size={24} />, label: '天气查询', span: 'col-span-1 row-span-1' },
-  { color: '#E84057', desc: '24h 旅行顾问', gradient: 'from-pink-500 to-rose-600', href: '/chat', icon: <Bot size={24} />, label: 'AI 咨询', span: 'col-span-1 row-span-1' },
+  {
+    desc: '告诉我目的地和预算，AI 实时生成专属行程',
+    href: '/detail',
+    icon: <Compass size={32} />,
+    image: '/images/home/hero-boat.jpg',
+    label: 'AI 行程规划',
+    span: 'col-span-2 row-span-2',
+    style: 'image' as const,
+  },
+  {
+    bgColor: 'bg-[#1a1a2e]',
+    desc: '发现身边好去处',
+    href: '/attractions',
+    icon: <MapPin size={20} />,
+    label: '精选景点',
+    span: 'col-span-1 row-span-1',
+    style: 'dark' as const,
+  },
+  {
+    bgColor: 'bg-[#f5f0eb]',
+    desc: '旅友分享攻略',
+    href: '/community',
+    icon: <Users size={20} />,
+    label: '旅友社区',
+    span: 'col-span-1 row-span-1',
+    style: 'light' as const,
+  },
+  {
+    bgColor: 'bg-[#e8f4f8]',
+    desc: '实时天气预报',
+    href: '/weather',
+    icon: <Cloud size={20} />,
+    label: '天气查询',
+    span: 'col-span-1 row-span-1',
+    style: 'cool' as const,
+  },
+  {
+    bgColor: 'bg-[#2d2d2d]',
+    desc: '24h 旅行顾问',
+    href: '/chat',
+    icon: <Bot size={20} />,
+    label: 'AI 咨询',
+    span: 'col-span-1 row-span-1',
+    style: 'dark' as const,
+  },
 ]
 
 export default function HomePage() {
@@ -54,32 +94,75 @@ export default function HomePage() {
           <p className="mt-2 text-gray-500">AI 帮你规划行程，发现精彩目的地</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:grid-rows-2">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-2">
           {quickEntries.map((entry, index) => (
             <Link
-              className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br ${entry.gradient} p-6 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl animate-fade-in-up ${entry.span}`}
+              className={`group relative overflow-hidden rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl animate-fade-in-up ${entry.span} ${
+                entry.style === 'image' ? '' : entry.bgColor
+              }`}
               href={entry.href}
               key={entry.label}
               style={{ animationDelay: `${index * 80}ms` }}
             >
-              {/* 装饰光晕 */}
-              <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10 blur-2xl transition-transform duration-500 group-hover:scale-150" />
-              <div className="absolute -bottom-4 -left-4 h-20 w-20 rounded-full bg-white/5 blur-xl" />
-
-              <div className="relative z-10 flex h-full flex-col justify-between">
-                <div>
-                  <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
-                    {entry.icon}
-                  </div>
-                  <h3 className="text-xl font-bold">{entry.label}</h3>
-                  <p className="mt-1 text-sm text-white/80">{entry.desc}</p>
-                </div>
-                <div className="mt-4 flex items-center gap-1 text-xs font-semibold text-white/60 transition-all group-hover:text-white/90 group-hover:gap-2">
-                  了解更多
-                  {' '}
-                  <span>&rarr;</span>
-                </div>
-              </div>
+              {entry.style === 'image'
+                ? (
+                    <>
+                      <Image
+                        alt=""
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        fill
+                        loading="lazy"
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        src={entry.image}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                      <div className="absolute inset-0 p-6 flex flex-col justify-end">
+                        <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm text-white">
+                          {entry.icon}
+                        </div>
+                        <h3 className="text-2xl font-bold text-white mb-1">{entry.label}</h3>
+                        <p className="text-sm text-white/70">{entry.desc}</p>
+                        <div className="mt-3 flex items-center gap-1 text-xs font-medium text-white/50 transition-all group-hover:text-white/80 group-hover:gap-2">
+                          开始规划
+                          {' '}
+                          <span>&rarr;</span>
+                        </div>
+                      </div>
+                    </>
+                  )
+                : entry.style === 'dark'
+                  ? (
+                      <div className="p-5 flex flex-col justify-between h-full">
+                        <div>
+                          <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 text-white/80">
+                            {entry.icon}
+                          </div>
+                          <h3 className="text-lg font-bold text-white mb-1">{entry.label}</h3>
+                          <p className="text-xs text-white/50">{entry.desc}</p>
+                        </div>
+                        <div className="mt-4 flex items-center gap-1 text-xs font-medium text-white/40 transition-all group-hover:text-white/70 group-hover:gap-2">
+                          了解更多
+                          {' '}
+                          <span>&rarr;</span>
+                        </div>
+                      </div>
+                    )
+                  : (
+                      <div className="p-5 flex flex-col justify-between h-full">
+                        <div>
+                          <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-gray-900/5 text-gray-700">
+                            {entry.icon}
+                          </div>
+                          <h3 className="text-lg font-bold text-gray-900 mb-1">{entry.label}</h3>
+                          <p className="text-xs text-gray-500">{entry.desc}</p>
+                        </div>
+                        <div className="mt-4 flex items-center gap-1 text-xs font-medium text-gray-400 transition-all group-hover:text-gray-700 group-hover:gap-2">
+                          了解更多
+                          {' '}
+                          <span>&rarr;</span>
+                        </div>
+                      </div>
+                    )}
             </Link>
           ))}
         </div>

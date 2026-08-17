@@ -5,6 +5,9 @@
  */
 import type * as httpUtils from '@/lib/utils/http'
 
+import { getAuthFromHeaders } from '@/lib/services/auth'
+
+import { createCommunityPost, listCommunityPosts } from '@/lib/services/community'
 import { GET, POST } from './route'
 
 vi.mock('@/lib/services/community', () => ({
@@ -28,21 +31,19 @@ vi.mock('@/lib/utils/http', async (importOriginal) => {
       (
         handler: (
           req: Request,
-          ctx: { user: { id: string; username: string } },
+          ctx: { user: { id: string, username: string } },
         ) => Promise<Response>,
       ) =>
-      async (req: Request) => {
-        try {
-          return await handler(req, { user: { id: 'u1', username: 'testuser' } })
-        } catch (err) {
-          return actual.errorResponse(err)
-        }
-      },
+        async (req: Request) => {
+          try {
+            return await handler(req, { user: { id: 'u1', username: 'testuser' } })
+          }
+          catch (err) {
+            return actual.errorResponse(err)
+          }
+        },
   }
 })
-
-import { getAuthFromHeaders } from '@/lib/services/auth'
-import { createCommunityPost, listCommunityPosts } from '@/lib/services/community'
 
 const mockListPosts = vi.mocked(listCommunityPosts)
 const mockCreatePost = vi.mocked(createCommunityPost)
@@ -73,7 +74,7 @@ describe('社区帖子 API', () => {
     vi.clearAllMocks()
   })
 
-  describe('GET /api/community/posts', () => {
+  describe('gET /api/community/posts', () => {
     it('返回帖子列表', async () => {
       mockGetAuth.mockResolvedValueOnce(null)
       mockListPosts.mockResolvedValueOnce({
@@ -127,7 +128,7 @@ describe('社区帖子 API', () => {
     })
   })
 
-  describe('POST /api/community/posts', () => {
+  describe('pOST /api/community/posts', () => {
     it('创建帖子成功', async () => {
       mockCreatePost.mockResolvedValueOnce({
         author: { id: 'u1', username: 'testuser' },

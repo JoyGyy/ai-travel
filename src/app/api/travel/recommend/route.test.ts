@@ -9,7 +9,7 @@ vi.mock('@/lib/ai/recommend', () => ({
   createTravelRecommendStream: vi.fn(() => new Response('recommend-ok', { status: 200 })),
 }))
 
-describe('POST /api/travel/recommend', () => {
+describe('pOST /api/travel/recommend', () => {
   it('校验城市参数', async () => {
     const req = new Request('http://localhost/api/travel/recommend', {
       body: JSON.stringify({ budget: 3000, city: '', days: 3 }),

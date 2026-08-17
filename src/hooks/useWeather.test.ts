@@ -1,6 +1,8 @@
+import type { WeatherResponse } from '@/types/api'
+
 import { act, renderHook, waitFor } from '@testing-library/react'
 
-import type { WeatherResponse } from '@/types/api'
+import { getWeatherApi } from '@/api/weather'
 
 import { clearWeatherCache } from '@/lib/weather-cache'
 
@@ -11,8 +13,6 @@ import { useWeather } from './useWeather'
 vi.mock('@/api/weather', () => ({
   getWeatherApi: vi.fn(),
 }))
-
-import { getWeatherApi } from '@/api/weather'
 
 const mockWeatherData: WeatherResponse = {
   city: '北京',
@@ -97,6 +97,7 @@ describe('useWeather', () => {
     })
 
     it('无 message 时应该使用默认错误信息', async () => {
+      // eslint-disable-next-line unicorn/error-message -- 测试无 message 时的默认错误信息
       const error = new Error()
       vi.mocked(getWeatherApi).mockRejectedValue(error)
 

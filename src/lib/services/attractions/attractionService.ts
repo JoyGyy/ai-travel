@@ -25,7 +25,8 @@ async function favoriteAttraction(
   attractionId: string,
 ): Promise<{ isFavorite: true }> {
   const attraction = await providerGetAttractionById(attractionId)
-  if (!attraction) throw httpError(404, '景点不存在')
+  if (!attraction)
+    throw httpError(404, '景点不存在')
 
   await addFavoriteAttraction(userId, attractionId)
   return { isFavorite: true }
@@ -34,9 +35,10 @@ async function favoriteAttraction(
 async function getAttractionById(
   id: string,
   userId?: string,
-): Promise<null | { attraction: AttractionItem & { isFavorite: boolean }; isFavorite: boolean }> {
+): Promise<null | { attraction: AttractionItem & { isFavorite: boolean }, isFavorite: boolean }> {
   const attraction = await providerGetAttractionById(id)
-  if (!attraction) return null
+  if (!attraction)
+    return null
 
   const favoriteIds = await getFavoriteIdSet(userId)
   return {
@@ -47,7 +49,8 @@ async function getAttractionById(
 
 /** 获取用户收藏的景点 ID 集合 */
 async function getFavoriteIdSet(userId: string | undefined): Promise<Set<string>> {
-  if (!userId) return new Set()
+  if (!userId)
+    return new Set()
   return new Set(await listFavoriteAttractionIds(userId))
 }
 
@@ -63,7 +66,7 @@ async function listAttractions(
   const rawItems = Array.isArray(result) ? result : result.items
   const total = Array.isArray(result) ? rawItems.length : result.total
 
-  const items = rawItems.map((item) => withFavorite(item, favoriteIds))
+  const items = rawItems.map(item => withFavorite(item, favoriteIds))
   const meta = await getAttractionMeta()
 
   return {
@@ -78,8 +81,8 @@ async function listFavoriteAttractions(
   userId: string,
 ): Promise<(AttractionItem & { isFavorite: boolean })[]> {
   const favoriteIds = await getFavoriteIdSet(userId)
-  const results = await Promise.all([...favoriteIds].map((id) => providerGetAttractionById(id)))
-  return results.filter(Boolean).map((item) => withFavorite(item!, favoriteIds))
+  const results = await Promise.all([...favoriteIds].map(id => providerGetAttractionById(id)))
+  return results.filter(Boolean).map(item => withFavorite(item!, favoriteIds))
 }
 
 async function searchAttractions(filters: Record<string, unknown> = {}) {

@@ -11,8 +11,8 @@ import { request } from './client'
 export async function changePasswordApi(
   currentPassword: string,
   newPassword: string,
-): Promise<{ message: string; success: true }> {
-  return request<{ message: string; success: true }>('/api/auth/password', {
+): Promise<{ message: string, success: true }> {
+  return request<{ message: string, success: true }>('/api/auth/password', {
     auth: true,
     body: { currentPassword, newPassword },
     method: 'PUT',
@@ -20,15 +20,15 @@ export async function changePasswordApi(
 }
 
 /** 获取当前登录用户信息（需认证） */
-export async function getMeApi(): Promise<{ success: true; user: AuthUser }> {
-  return request<{ success: true; user: AuthUser }>('/api/auth/me', {
+export async function getMeApi(): Promise<{ success: true, user: AuthUser }> {
+  return request<{ success: true, user: AuthUser }>('/api/auth/me', {
     auth: true,
   })
 }
 
 /** 获取个人资料（含 AI 额度等信息，需认证） */
-export async function getProfileApi(): Promise<{ profile: ProfileData; success: true }> {
-  return request<{ profile: ProfileData; success: true }>('/api/auth/profile', {
+export async function getProfileApi(): Promise<{ profile: ProfileData, success: true }> {
+  return request<{ profile: ProfileData, success: true }>('/api/auth/profile', {
     auth: true,
   })
 }

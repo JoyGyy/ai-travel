@@ -24,7 +24,8 @@ export function clearWeatherCache(): void {
 /** 从缓存获取天气数据，未命中或已过期时返回 null */
 export function getCachedWeather(city: string): null | WeatherResponse {
   const cached = weatherCache.get(city)
-  if (!cached) return null
+  if (!cached)
+    return null
 
   const now = Date.now()
   if (now - cached.timestamp > CACHE_TTL) {

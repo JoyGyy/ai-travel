@@ -34,7 +34,7 @@ export const travelTools = {
   searchProductAttractions: tool({
     description:
       '当用户询问免费景点、收费景点、亲子景点、夜游景点或购票信息时调用，返回可进入详情页的产品景点。',
-    execute: async (input) =>
+    execute: async input =>
       searchAttractions({
         city: input.city,
         keyword: input.keyword,

@@ -1,10 +1,5 @@
 'use client'
 
-import { Bot, Clock, Eye, EyeOff, Heart, Key, LogOut } from 'lucide-react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useState } from 'react'
-
 /**
  * 个人中心页面
  *
@@ -13,6 +8,11 @@ import { useCallback, useEffect, useState } from 'react'
  */
 import type { ProfileData } from '@/types/api'
 import type { Attraction } from '@/types/attraction'
+import { Bot, Clock, Eye, EyeOff, Heart, Key, LogOut } from 'lucide-react'
+import Link from 'next/link'
+
+import { useRouter } from 'next/navigation'
+import { useCallback, useEffect, useState } from 'react'
 
 import { fetchFavoriteAttractions, unfavoriteAttraction } from '@/api/attractions'
 import { changePasswordApi, getProfileApi } from '@/api/auth'
@@ -34,8 +34,8 @@ import { useAuthStore } from '@/stores/auth'
 export default function Profile() {
   // ---- 路由与全局状态 ----
   const router = useRouter()
-  const logout = useAuthStore((state) => state.logout)
-  const user = useAuthStore((state) => state.user)
+  const logout = useAuthStore(state => state.logout)
+  const user = useAuthStore(state => state.user)
 
   const [profile, setProfile] = useState<null | ProfileData>(null)
   const [favorites, setFavorites] = useState<Attraction[]>([])
@@ -64,7 +64,8 @@ export default function Profile() {
       ])
       setProfile(profileResult.profile)
       setFavorites(favResult.items)
-    } catch (err: unknown) {
+    }
+    catch (err: unknown) {
       if (err instanceof ApiError && err.status === 401) {
         toast.info('登录已过期，请重新登录')
         logout()
@@ -72,7 +73,8 @@ export default function Profile() {
         return
       }
       setLoadError(err instanceof Error ? err.message : '加载个人资料失败')
-    } finally {
+    }
+    finally {
       setLoading(false)
     }
   }, [toast, logout, router])
@@ -105,7 +107,8 @@ export default function Profile() {
         logout()
         router.replace('/login')
       }, 1500)
-    } catch (err: unknown) {
+    }
+    catch (err: unknown) {
       if (err instanceof ApiError && err.status === 401) {
         toast.info('登录已过期，请重新登录')
         logout()
@@ -115,21 +118,24 @@ export default function Profile() {
       setPasswordErrors({
         currentPassword: err instanceof Error ? err.message : '密码修改失败',
       })
-    } finally {
+    }
+    finally {
       setChangingPassword(false)
     }
   }
 
   // ---- 取消收藏 ----
   async function handleRemoveFavorite(attractionId: string) {
-    setRemovingFavoriteIds((prev) => new Set(prev).add(attractionId))
+    setRemovingFavoriteIds(prev => new Set(prev).add(attractionId))
     try {
       await unfavoriteAttraction(attractionId)
-      setFavorites((prev) => prev.filter((item) => item.id !== attractionId))
+      setFavorites(prev => prev.filter(item => item.id !== attractionId))
       toast.success('已取消收藏')
-    } catch (err: unknown) {
+    }
+    catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : '取消收藏失败')
-    } finally {
+    }
+    finally {
       setRemovingFavoriteIds((prev) => {
         const next = new Set(prev)
         next.delete(attractionId)
@@ -207,13 +213,15 @@ export default function Profile() {
       </section>
 
       <div className="mx-auto flex max-w-[760px] flex-col gap-[18px]">
-        {loadError ? (
-          <div className="overflow-hidden rounded-xl p-4" role="alert">
-            <h2 className="mb-2 text-lg font-bold text-travel-ocean">个人资料加载失败</h2>
-            <p className="mb-3.5 text-travel-muted">{loadError}</p>
-            <Button onClick={loadProfile}>重试</Button>
-          </div>
-        ) : null}
+        {loadError
+          ? (
+              <div className="overflow-hidden rounded-xl p-4" role="alert">
+                <h2 className="mb-2 text-lg font-bold text-travel-ocean">个人资料加载失败</h2>
+                <p className="mb-3.5 text-travel-muted">{loadError}</p>
+                <Button onClick={loadProfile}>重试</Button>
+              </div>
+            )
+          : null}
 
         {/* 用户信息卡 */}
         <div className="travel-surface-card travel-ticket-edge overflow-hidden bg-[radial-gradient(circle_at_88%_18%,rgba(var(--travel-primary-rgb),0.12),transparent_28%),var(--travel-surface)]">
@@ -229,7 +237,9 @@ export default function Profile() {
               <p className="mt-1 flex items-center gap-1.5 text-sm text-stone-900/72">
                 <Clock aria-hidden="true" className="h-4 w-4" />
                 <span>
-                  注册于 {profile?.createdAt ? formatFullDateTime(profile.createdAt) : '未知'}
+                  注册于
+                  {' '}
+                  {profile?.createdAt ? formatFullDateTime(profile.createdAt) : '未知'}
                 </span>
               </p>
             </div>
@@ -239,50 +249,56 @@ export default function Profile() {
         {/* AI 使用额度 */}
         <div className="travel-surface-card p-6">
           <h3 className="flex items-center gap-2 text-lg font-semibold">
-            <Bot aria-hidden="true" /> AI 使用额度
+            <Bot aria-hidden="true" />
+            {' '}
+            AI 使用额度
           </h3>
-          {quota ? (
-            <div className="mt-4">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="text-sm text-travel-muted">今日已使用</span>
-                <Badge
-                  className={`travel-tag ${quota.remaining > 0 ? 'travel-tag--success' : 'travel-tag--danger'}`}
-                >
-                  {quota.used}
-                  {' / '}
-                  {quota.limit}
-                </Badge>
-              </div>
-              <div
-                aria-label={`AI 额度已使用 ${quota.used} 次，共 ${quota.limit} 次`}
-                aria-valuemax={100}
-                aria-valuemin={0}
-                aria-valuenow={quotaPercent}
-                className="h-2 w-full rounded-full bg-muted"
-                role="progressbar"
-              >
-                <div
-                  className={`h-full rounded-full transition-all ${quotaDanger ? 'bg-destructive' : 'bg-primary'}`}
-                  style={{ width: `${quotaPercent}%` }}
-                />
-              </div>
-              <p className="mt-2 text-sm text-travel-muted">
-                {quota.remaining > 0
-                  ? `剩余 ${quota.remaining} 次，每日 ${quota.limit} 次重置`
-                  : '今日额度已用完，明天重置'}
-              </p>
-            </div>
-          ) : (
-            <div className="py-4 text-center text-muted-foreground">
-              <p>无法获取额度信息</p>
-            </div>
-          )}
+          {quota
+            ? (
+                <div className="mt-4">
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="text-sm text-travel-muted">今日已使用</span>
+                    <Badge
+                      className={`travel-tag ${quota.remaining > 0 ? 'travel-tag--success' : 'travel-tag--danger'}`}
+                    >
+                      {quota.used}
+                      {' / '}
+                      {quota.limit}
+                    </Badge>
+                  </div>
+                  <div
+                    aria-label={`AI 额度已使用 ${quota.used} 次，共 ${quota.limit} 次`}
+                    aria-valuemax={100}
+                    aria-valuemin={0}
+                    aria-valuenow={quotaPercent}
+                    className="h-2 w-full rounded-full bg-muted"
+                    role="progressbar"
+                  >
+                    <div
+                      className={`h-full rounded-full transition-all ${quotaDanger ? 'bg-destructive' : 'bg-primary'}`}
+                      style={{ width: `${quotaPercent}%` }}
+                    />
+                  </div>
+                  <p className="mt-2 text-sm text-travel-muted">
+                    {quota.remaining > 0
+                      ? `剩余 ${quota.remaining} 次，每日 ${quota.limit} 次重置`
+                      : '今日额度已用完，明天重置'}
+                  </p>
+                </div>
+              )
+            : (
+                <div className="py-4 text-center text-muted-foreground">
+                  <p>无法获取额度信息</p>
+                </div>
+              )}
         </div>
 
         {/* 修改密码 */}
         <div className="travel-surface-card p-6">
           <h3 className="flex items-center gap-2 text-lg font-semibold">
-            <Key aria-hidden="true" /> 修改密码
+            <Key aria-hidden="true" />
+            {' '}
+            修改密码
           </h3>
           <form className="mt-4 space-y-4" onSubmit={handlePasswordChange}>
             <div className="space-y-2">
@@ -302,14 +318,16 @@ export default function Profile() {
                 <button
                   aria-label={showCurrentPassword ? '隐藏当前密码' : '显示当前密码'}
                   className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
-                  onClick={() => setShowCurrentPassword((v) => !v)}
+                  onClick={() => setShowCurrentPassword(v => !v)}
                   type="button"
                 >
-                  {showCurrentPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
+                  {showCurrentPassword
+                    ? (
+                        <EyeOff className="h-4 w-4" />
+                      )
+                    : (
+                        <Eye className="h-4 w-4" />
+                      )}
                 </button>
               </div>
               {passwordErrors.currentPassword && (
@@ -336,7 +354,7 @@ export default function Profile() {
                 <button
                   aria-label={showNewPassword ? '隐藏新密码' : '显示新密码'}
                   className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
-                  onClick={() => setShowNewPassword((v) => !v)}
+                  onClick={() => setShowNewPassword(v => !v)}
                   type="button"
                 >
                   {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -372,61 +390,69 @@ export default function Profile() {
         {/* 我的收藏 */}
         <div className="travel-surface-card p-6">
           <h3 className="flex items-center gap-2 text-lg font-semibold">
-            <Heart aria-hidden="true" /> 我的收藏 ({favorites.length})
+            <Heart aria-hidden="true" />
+            {' '}
+            我的收藏 (
+            {favorites.length}
+            )
           </h3>
-          {favorites.length > 0 ? (
-            <div className="mt-4 space-y-4">
-              {favorites.map((item) => (
-                <div
-                  className="flex items-center justify-between rounded-xl border p-4"
-                  key={item.id}
-                >
-                  <div>
-                    <Link
-                      className="font-medium text-primary hover:underline"
-                      href={`/attractions/${item.id}`}
+          {favorites.length > 0
+            ? (
+                <div className="mt-4 space-y-4">
+                  {favorites.map(item => (
+                    <div
+                      className="flex items-center justify-between rounded-xl border p-4"
+                      key={item.id}
                     >
-                      {item.name}
-                    </Link>
-                    <div className="mt-2 flex gap-2">
-                      {item.city && <Badge variant="secondary">{item.city}</Badge>}
-                      {item.ticketType === 'free' ? (
-                        <Badge className="bg-green-100 text-green-800" variant="secondary">
-                          免费
-                        </Badge>
-                      ) : (
-                        item.priceText && (
-                          <Badge className="bg-yellow-100 text-yellow-800" variant="secondary">
-                            {item.priceText}
-                          </Badge>
-                        )
-                      )}
-                      {item.tags?.slice(0, 3).map((tag) => (
-                        <Badge key={tag} variant="outline">
-                          {tag}
-                        </Badge>
-                      ))}
+                      <div>
+                        <Link
+                          className="font-medium text-primary hover:underline"
+                          href={`/attractions/${item.id}`}
+                        >
+                          {item.name}
+                        </Link>
+                        <div className="mt-2 flex gap-2">
+                          {item.city && <Badge variant="secondary">{item.city}</Badge>}
+                          {item.ticketType === 'free'
+                            ? (
+                                <Badge className="bg-green-100 text-green-800" variant="secondary">
+                                  免费
+                                </Badge>
+                              )
+                            : (
+                                item.priceText && (
+                                  <Badge className="bg-yellow-100 text-yellow-800" variant="secondary">
+                                    {item.priceText}
+                                  </Badge>
+                                )
+                              )}
+                          {item.tags?.slice(0, 3).map(tag => (
+                            <Badge key={tag} variant="outline">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                      <Button
+                        disabled={removingFavoriteIds.has(item.id)}
+                        onClick={() => handleRemoveFavorite(item.id)}
+                        size="sm"
+                        variant="destructive"
+                      >
+                        取消收藏
+                      </Button>
                     </div>
-                  </div>
-                  <Button
-                    disabled={removingFavoriteIds.has(item.id)}
-                    onClick={() => handleRemoveFavorite(item.id)}
-                    size="sm"
-                    variant="destructive"
-                  >
-                    取消收藏
-                  </Button>
+                  ))}
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="py-8 text-center text-muted-foreground">
-              <p className="mb-4">还没有收藏景点</p>
-              <Link href="/attractions">
-                <Button>去逛逛</Button>
-              </Link>
-            </div>
-          )}
+              )
+            : (
+                <div className="py-8 text-center text-muted-foreground">
+                  <p className="mb-4">还没有收藏景点</p>
+                  <Link href="/attractions">
+                    <Button>去逛逛</Button>
+                  </Link>
+                </div>
+              )}
         </div>
 
         {/* 退出登录 */}

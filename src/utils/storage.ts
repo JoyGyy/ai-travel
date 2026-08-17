@@ -31,10 +31,12 @@ export function loadItineraryCache(
 ): ItineraryCache | null {
   const key = `detail_${city}_${budget}_${days}`
   const raw = localStorage.getItem(key)
-  if (!raw) return null
+  if (!raw)
+    return null
   try {
     return JSON.parse(raw) as ItineraryCache
-  } catch {
+  }
+  catch {
     return null
   }
 }

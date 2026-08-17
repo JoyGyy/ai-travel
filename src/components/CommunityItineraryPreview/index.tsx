@@ -1,7 +1,7 @@
-import { Calendar, MapPin, Wallet } from 'lucide-react'
-
 import type { AttractionRef, BudgetBreakdown, ItineraryDay } from '@/stores/itinerary'
+
 import type { CommunityItinerarySnapshot } from '@/types/community'
+import { Calendar, MapPin, Wallet } from 'lucide-react'
 
 import { BudgetTable } from '@/components/BudgetTable'
 import { SpotItem } from '@/components/SpotItem'
@@ -29,7 +29,8 @@ export function CommunityItineraryPreview({
   removable = false,
   snapshot,
 }: CommunityItineraryPreviewProps) {
-  if (!snapshot) return null
+  if (!snapshot)
+    return null
 
   const isDetail = mode === 'detail'
   const days = isDetail ? snapshot.itinerary : snapshot.itinerary.slice(0, 2)
@@ -49,24 +50,29 @@ export function CommunityItineraryPreview({
             {snapshot.city}
           </h3>
         </div>
-        {removable ? (
-          <button
-            className="min-h-[38px] border-0 rounded-full text-[var(--travel-danger)] bg-[rgba(var(--travel-danger-rgb),0.08)] cursor-pointer px-3.5 font-bold"
-            onClick={onRemove}
-            type="button"
-          >
-            移除行程
-          </button>
-        ) : null}
+        {removable
+          ? (
+              <button
+                className="min-h-[38px] border-0 rounded-full text-[var(--travel-danger)] bg-[rgba(var(--travel-danger-rgb),0.08)] cursor-pointer px-3.5 font-bold"
+                onClick={onRemove}
+                type="button"
+              >
+                移除行程
+              </button>
+            )
+          : null}
       </div>
 
       <div aria-label="行程概要" className="flex flex-wrap gap-2 mb-4">
         <Badge className="travel-tag travel-tag--info" variant="secondary">
           <Calendar aria-hidden="true" className="mr-1" size={12} />
-          {snapshot.days}天
+          {snapshot.days}
+          天
         </Badge>
         <Badge className="travel-tag travel-tag--success" variant="secondary">
-          <Wallet aria-hidden="true" className="mr-1" size={12} />¥{snapshot.budget}
+          <Wallet aria-hidden="true" className="mr-1" size={12} />
+          ¥
+          {snapshot.budget}
         </Badge>
         <Badge className="travel-tag travel-tag--warning" variant="secondary">
           <MapPin aria-hidden="true" className="mr-1" size={12} />
@@ -78,68 +84,86 @@ export function CommunityItineraryPreview({
       {snapshot.weather && isDetail ? <WeatherCard weather={snapshot.weather} /> : null}
 
       <div className="grid gap-3">
-        {days.map((day) => (
+        {days.map(day => (
           <article
             className="p-3.5 border border-dashed border-[rgba(var(--travel-accent-rgb),0.26)] rounded-[18px] bg-[rgba(255,255,255,0.68)]"
             key={day.day}
           >
             <h4 className="m-0 text-[var(--travel-ink)] text-base mb-1.5">
-              Day {day.day}
+              Day
+              {' '}
+              {day.day}
               {day.title ? ` · ${day.title}` : ''}
             </h4>
-            {!isDetail ? (
-              <p className="m-0 text-travel-muted leading-7">
-                {getDaySummary(day) || '这一天还没有详细路线'}
-              </p>
-            ) : null}
-            {isDetail ? (
-              <div className="grid gap-3 mt-3">
-                {renderDaySpots(day, snapshot.attractionRefs || [])}
-              </div>
-            ) : null}
+            {!isDetail
+              ? (
+                  <p className="m-0 text-travel-muted leading-7">
+                    {getDaySummary(day) || '这一天还没有详细路线'}
+                  </p>
+                )
+              : null}
+            {isDetail
+              ? (
+                  <div className="grid gap-3 mt-3">
+                    {renderDaySpots(day, snapshot.attractionRefs || [])}
+                  </div>
+                )
+              : null}
           </article>
         ))}
       </div>
 
-      {!isDetail && snapshot.itinerary.length > days.length ? (
-        <p className="m-0 mt-3 text-[0.92rem] text-travel-muted leading-7">
-          还有 {snapshot.itinerary.length - days.length} 天路线，进入详情查看完整行程。
-        </p>
-      ) : null}
+      {!isDetail && snapshot.itinerary.length > days.length
+        ? (
+            <p className="m-0 mt-3 text-[0.92rem] text-travel-muted leading-7">
+              还有
+              {' '}
+              {snapshot.itinerary.length - days.length}
+              {' '}
+              天路线，进入详情查看完整行程。
+            </p>
+          )
+        : null}
 
-      {isDetail && budget ? (
-        <details className="mt-[18px] bg-[rgba(255,255,255,0.72)] rounded-[18px]">
-          <summary className="cursor-pointer font-medium">查看预算明细</summary>
-          <BudgetTable data={budget} />
-        </details>
-      ) : null}
+      {isDetail && budget
+        ? (
+            <details className="mt-[18px] bg-[rgba(255,255,255,0.72)] rounded-[18px]">
+              <summary className="cursor-pointer font-medium">查看预算明细</summary>
+              <BudgetTable data={budget} />
+            </details>
+          )
+        : null}
 
-      {isDetail && snapshot.tips?.length ? (
-        <div className="mt-[18px] p-4 rounded-[18px] bg-[rgba(var(--travel-ocean-rgb),0.08)]">
-          <h4 className="m-0 text-[var(--travel-ink)] text-base mb-1.5">旅行贴士</h4>
-          <ul className="m-0 mt-2.5 pl-5 text-travel-muted leading-[1.8]">
-            {snapshot.tips.map((tip) => (
-              <li key={tip}>{tip}</li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
+      {isDetail && snapshot.tips?.length
+        ? (
+            <div className="mt-[18px] p-4 rounded-[18px] bg-[rgba(var(--travel-ocean-rgb),0.08)]">
+              <h4 className="m-0 text-[var(--travel-ink)] text-base mb-1.5">旅行贴士</h4>
+              <ul className="m-0 mt-2.5 pl-5 text-travel-muted leading-[1.8]">
+                {snapshot.tips.map(tip => (
+                  <li key={tip}>{tip}</li>
+                ))}
+              </ul>
+            </div>
+          )
+        : null}
     </section>
   )
 }
 
 function findAttractionRef(refs: AttractionRef[] = [], spot?: string) {
-  return refs.find((ref) => ref.name === spot)
+  return refs.find(ref => ref.name === spot)
 }
 
 function getDaySummary(day: ItineraryDay): string {
-  if (day.spots?.length) return day.spots.map((spot) => spot.name).join(' · ')
+  if (day.spots?.length)
+    return day.spots.map(spot => spot.name).join(' · ')
 
   return [day.morning?.spot, day.afternoon?.spot, day.evening?.spot].filter(Boolean).join(' · ')
 }
 
 function normalizeBudget(data?: BudgetBreakdown | null): BudgetTableData | null {
-  if (!data) return null
+  if (!data)
+    return null
 
   return {
     accommodation: data.accommodation,
@@ -160,16 +184,18 @@ function renderDaySpots(day: ItineraryDay, refs: AttractionRef[]) {
     { data: day.evening, period: '晚上' as const },
   ]
 
-  if (periods.some((item) => item.data)) {
-    return periods.map((item) =>
-      item.data ? (
-        <SpotItem
-          attractionRef={findAttractionRef(refs, item.data.spot)}
-          data={item.data}
-          key={item.period}
-          period={item.period}
-        />
-      ) : null,
+  if (periods.some(item => item.data)) {
+    return periods.map(item =>
+      item.data
+        ? (
+            <SpotItem
+              attractionRef={findAttractionRef(refs, item.data.spot)}
+              data={item.data}
+              key={item.period}
+              period={item.period}
+            />
+          )
+        : null,
     )
   }
 

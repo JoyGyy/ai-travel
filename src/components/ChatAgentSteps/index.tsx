@@ -1,14 +1,14 @@
 'use client'
 
-import { CheckCircle2, ChevronRight } from 'lucide-react'
-import { useEffect, useState } from 'react'
-
 /**
  * Chat Agent 思考过程可视化组件
  * 以可折叠卡片形式展示聊天页中 AI Agent 的推理步骤
  * 加载中自动展开，完成后延迟 800ms 自动收起，也可手动切换
  */
 import type { SSEEvent } from '@/types/api'
+import { CheckCircle2, ChevronRight } from 'lucide-react'
+
+import { useEffect, useState } from 'react'
 
 /* ========== 类型定义 ========== */
 
@@ -40,29 +40,37 @@ export function ChatAgentSteps({ currentStep, isLoading, steps }: ChatAgentSteps
   }, [isLoading, steps.length])
 
   // 无步骤时不渲染
-  if (steps.length === 0) return null
+  if (steps.length === 0)
+    return null
 
   /** 将步骤事件数组转为 Map，便于按步骤号快速查找 */
-  const stepMap = new Map(steps.map((s) => [s.step, s]))
+  const stepMap = new Map(steps.map(s => [s.step, s]))
   /** 已完成步骤数 */
-  const completedCount = steps.filter((s) => s.status === 'complete').length
+  const completedCount = steps.filter(s => s.status === 'complete').length
 
   /** 判断指定步骤的当前状态：已完成 / 执行中 / 等待中 */
   function getStepStatus(stepNum: number): 'done' | 'pending' | 'running' {
     const step = stepMap.get(stepNum)
-    if (step?.status === 'complete') return 'done'
-    if (currentStep === stepNum) return 'running'
+    if (step?.status === 'complete')
+      return 'done'
+    if (currentStep === stepNum)
+      return 'running'
     return 'pending'
   }
 
   /** 根据步骤数据提取人类可读的摘要文本 */
   function getSummary(step: StepEvent): string {
-    if (!step.data) return ''
+    if (!step.data)
+      return ''
     const d = step.data as Record<string, unknown>
-    if (d.city && d.attractionCount) return `${d.city} · ${d.attractionCount} 个景点`
-    if (d.cityCount) return `${d.cityCount} 个城市`
-    if (d.city_a && d.city_b) return `${d.city_a} vs ${d.city_b}`
-    if (d.city && d.tipCount) return `${d.city} · ${d.tipCount} 条贴士`
+    if (d.city && d.attractionCount)
+      return `${d.city} · ${d.attractionCount} 个景点`
+    if (d.cityCount)
+      return `${d.cityCount} 个城市`
+    if (d.city_a && d.city_b)
+      return `${d.city_a} vs ${d.city_b}`
+    if (d.city && d.tipCount)
+      return `${d.city} · ${d.tipCount} 条贴士`
     return ''
   }
 
@@ -88,17 +96,23 @@ export function ChatAgentSteps({ currentStep, isLoading, steps }: ChatAgentSteps
                 : 'text-white bg-gradient-to-br from-[var(--travel-ocean)] to-[var(--color-secondary)]'
             }`}
           >
-            {isLoading ? (
-              <span className="w-2 h-2 block rounded-full bg-white" />
-            ) : (
-              <CheckCircle2 size={16} />
-            )}
+            {isLoading
+              ? (
+                  <span className="w-2 h-2 block rounded-full bg-white" />
+                )
+              : (
+                  <CheckCircle2 size={16} />
+                )}
           </span>
           <span className="text-[var(--color-primary)] text-xs font-extrabold tracking-[0.08em]">
             Agent 思考过程
           </span>
           <span className="shrink-0 text-[rgba(41,37,36,0.58)] text-xs tabular-nums">
-            ({completedCount}/{steps.length})
+            (
+            {completedCount}
+            /
+            {steps.length}
+            )
           </span>
         </span>
         <span

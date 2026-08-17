@@ -1,3 +1,10 @@
+/**
+ * Agent 执行步骤可视化组件
+ * 展示 AI Agent 的多步骤推理过程（行程推荐流程）
+ * 包含步骤状态判定、结果摘要提取和步骤时间线渲染
+ */
+import type { SSEEvent } from '@/types/api'
+
 import {
   CheckCircle2,
   ChevronRight,
@@ -8,13 +15,6 @@ import {
   MapPin,
   Search,
 } from 'lucide-react'
-
-/**
- * Agent 执行步骤可视化组件
- * 展示 AI Agent 的多步骤推理过程（行程推荐流程）
- * 包含步骤状态判定、结果摘要提取和步骤时间线渲染
- */
-import type { SSEEvent } from '@/types/api'
 
 /* ========== 类型定义 ========== */
 
@@ -42,20 +42,23 @@ const STEP_CONFIG = [
 
 export function AgentSteps({ currentStep, steps }: AgentStepsProps) {
   /** 将步骤事件数组转为 Map，便于按步骤号快速查找 */
-  const stepMap = new Map(steps.map((s) => [s.step, s]))
+  const stepMap = new Map(steps.map(s => [s.step, s]))
 
   /** 判断指定步骤的当前状态：已完成 / 执行中 / 等待中 */
   function getStepStatus(stepNum: number): 'done' | 'pending' | 'running' {
     const step = stepMap.get(stepNum)
-    if (step?.status === 'complete') return 'done'
-    if (currentStep === stepNum) return 'running'
+    if (step?.status === 'complete')
+      return 'done'
+    if (currentStep === stepNum)
+      return 'running'
     return 'pending'
   }
 
   /** 根据步骤号从 step.data 中提取人类可读的结果摘要 */
   function getResultSummary(stepNum: number): string {
     const step = stepMap.get(stepNum)
-    if (!step?.data) return ''
+    if (!step?.data)
+      return ''
     const d = step.data as Record<string, unknown>
     switch (stepNum) {
       case 1:

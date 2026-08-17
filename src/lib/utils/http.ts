@@ -21,7 +21,7 @@ export interface AuthUser {
 
 /** 自定义 HTTP 错误类，携带状态码和可选的配额信息 */
 export class HttpError extends Error {
-  quota?: { limit: number; remaining: number; used: number }
+  quota?: { limit: number, remaining: number, used: number }
   status: number
 
   constructor(status: number, message: string) {
@@ -35,7 +35,8 @@ export class HttpError extends Error {
 export function errorResponse(err: unknown): NextResponse {
   if (err instanceof HttpError) {
     const payload: Record<string, unknown> = { message: err.message, success: false }
-    if (err.quota) payload.quota = err.quota
+    if (err.quota)
+      payload.quota = err.quota
     return NextResponse.json(payload, { status: err.status })
   }
 
@@ -66,7 +67,8 @@ export function httpError(status: number, message: string): HttpError {
  */
 export async function requireAuth(req: Request): Promise<AuthUser> {
   const user = await getAuthFromHeaders(req.headers)
-  if (!user) throw httpError(401, '未登录')
+  if (!user)
+    throw httpError(401, '未登录')
   return user
 }
 
@@ -76,7 +78,8 @@ export async function requireAuth(req: Request): Promise<AuthUser> {
  */
 export function requireCsrf(req: Request): void {
   const csrfToken = extractCsrfToken(req.headers, req.headers.get('cookie') || undefined)
-  if (!csrfToken || !verifyCsrfToken(csrfToken)) throw httpError(403, 'CSRF token 无效')
+  if (!csrfToken || !verifyCsrfToken(csrfToken))
+    throw httpError(403, 'CSRF token 无效')
 }
 
 /** 设置认证 cookie 的统一配置 */
@@ -105,7 +108,8 @@ export function withAuth<TContext = unknown>(
     try {
       const user = await requireAuth(req)
       return await handler(req, { user, ...context } as TContext & { user: AuthUser })
-    } catch (err) {
+    }
+    catch (err) {
       return errorResponse(err)
     }
   }
@@ -117,7 +121,8 @@ export function withAuthRaw(handler: (req: Request, ctx: { user: AuthUser }) => 
     try {
       const user = await requireAuth(req)
       return await handler(req, { user })
-    } catch (err) {
+    }
+    catch (err) {
       return errorResponse(err)
     }
   }
@@ -130,7 +135,8 @@ export function withErrorHandler(
   return async (req: Request, context?: unknown): Promise<NextResponse> => {
     try {
       return await handler(req, context)
-    } catch (err) {
+    }
+    catch (err) {
       return errorResponse(err)
     }
   }
@@ -151,7 +157,7 @@ export function withErrorHandler(
 export function withProtected<TContext = unknown>(
   handler: (req: Request, ctx: TContext & { user: AuthUser }) => Promise<NextResponse>,
   options?: {
-    rateLimit?: { max: number; name: string; windowMs?: number }
+    rateLimit?: { max: number, name: string, windowMs?: number }
   },
 ) {
   return async (req: Request, context?: TContext): Promise<NextResponse> => {
@@ -162,11 +168,13 @@ export function withProtected<TContext = unknown>(
       if (options?.rateLimit) {
         const { max, name, windowMs } = options.rateLimit
         const blocked = await checkRateLimit(req, name, max, windowMs)
-        if (blocked) return blocked
+        if (blocked)
+          return blocked
       }
 
       return await handler(req, { user, ...context } as TContext & { user: AuthUser })
-    } catch (err) {
+    }
+    catch (err) {
       return errorResponse(err)
     }
   }
@@ -185,7 +193,8 @@ export function withPublicPost(
   return async (req: Request): Promise<Response> => {
     try {
       const blocked = await checkRateLimit(req, name, max, windowMs)
-      if (blocked) return blocked
+      if (blocked)
+        return blocked
 
       // CSRF token 存在时验证有效性，不存在时放行（首次访问场景）
       const csrfToken = extractCsrfToken(req.headers, req.headers.get('cookie') || undefined)
@@ -194,7 +203,8 @@ export function withPublicPost(
       }
 
       return await handler(req)
-    } catch (err) {
+    }
+    catch (err) {
       return errorResponse(err)
     }
   }
@@ -210,9 +220,11 @@ export function withRateLimit(
   return async (req: Request): Promise<Response> => {
     try {
       const blocked = await checkRateLimit(req, name, max, windowMs)
-      if (blocked) return blocked
+      if (blocked)
+        return blocked
       return await handler(req)
-    } catch (err) {
+    }
+    catch (err) {
       return errorResponse(err)
     }
   }
@@ -234,5 +246,5 @@ function isSensitiveError(err: Error): boolean {
     'connect ECONNREFUSED',
   ]
   const msg = err.message.toLowerCase()
-  return sensitivePatterns.some((p) => msg.includes(p.toLowerCase()))
+  return sensitivePatterns.some(p => msg.includes(p.toLowerCase()))
 }

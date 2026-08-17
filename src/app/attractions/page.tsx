@@ -1,10 +1,5 @@
 'use client'
 
-import { Heart } from 'lucide-react'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useCallback, useEffect, useMemo, useState } from 'react'
-
 /**
  * 景点列表页面
  *
@@ -13,6 +8,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
  * 输入关键词后防抖 300ms 自动搜索，减少 API 请求。
  */
 import type { Attraction, AttractionFilters, AttractionTicketType } from '@/types/attraction'
+import { Heart } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
+
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { fetchAttractions } from '@/api/attractions'
 import { Pagination } from '@/components/Pagination'
@@ -42,8 +42,8 @@ export default function Attractions() {
 
   const { toggleFavorite } = useAttractionFavorite({
     onFavoriteSuccess: (attractionId, isFavorite) => {
-      setItems((prev) =>
-        prev.map((current) => (current.id === attractionId ? { ...current, isFavorite } : current)),
+      setItems(prev =>
+        prev.map(current => (current.id === attractionId ? { ...current, isFavorite } : current)),
       )
     },
   })
@@ -60,9 +60,11 @@ export default function Attractions() {
       setTotal(data.total)
       setCities(data.cities)
       setTags(data.tags)
-    } catch (err: unknown) {
+    }
+    catch (err: unknown) {
       setError(err instanceof Error ? err.message : '景点加载失败')
-    } finally {
+    }
+    finally {
       setLoading(false)
     }
   }, [])
@@ -93,7 +95,8 @@ export default function Attractions() {
       // 防抖搜索：空关键词时立即清除，否则防抖 300ms
       if (!value.trim()) {
         updateFilters({ keyword: '' })
-      } else {
+      }
+      else {
         debouncedSearch(value)
       }
     },
@@ -126,10 +129,11 @@ export default function Attractions() {
   // ---- 收藏切换 ----
   const handleToggleFavorite = useCallback(
     async (item: Attraction) => {
-      setFavoritePendingIds((prev) => new Set(prev).add(item.id))
+      setFavoritePendingIds(prev => new Set(prev).add(item.id))
       try {
         await toggleFavorite(item.id, item.isFavorite ?? false)
-      } finally {
+      }
+      finally {
         setFavoritePendingIds((prev) => {
           const next = new Set(prev)
           next.delete(item.id)
@@ -171,11 +175,13 @@ export default function Attractions() {
           <h2 className="text-lg font-semibold text-travel-ocean" id="attractions-filter-title">
             筛选景点
           </h2>
-          {hasActiveFilters ? (
-            <Button onClick={handleClearFilters} variant="link">
-              清空筛选
-            </Button>
-          ) : null}
+          {hasActiveFilters
+            ? (
+                <Button onClick={handleClearFilters} variant="link">
+                  清空筛选
+                </Button>
+              )
+            : null}
         </div>
         <form className="mt-3.5 grid gap-2" onSubmit={handleSearchSubmit}>
           <label
@@ -188,35 +194,37 @@ export default function Attractions() {
             <Input
               className="flex-1"
               id="attractions-keyword"
-              onChange={(event) => handleKeywordChange(event.target.value)}
+              onChange={event => handleKeywordChange(event.target.value)}
               placeholder="搜索景点、城市或标签（输入自动搜索）"
               value={keywordInput}
             />
             <Button type="submit">搜索</Button>
           </div>
         </form>
-        {cities.length > 0 ? (
-          <div aria-labelledby="attractions-city-filter" className="mt-3.5 grid gap-2">
-            <p
-              className="text-[13px] font-extrabold text-stone-900/72"
-              id="attractions-city-filter"
-            >
-              城市
-            </p>
-            <div className="flex flex-wrap items-center gap-2">
-              {cities.map((city) => (
-                <Button
-                  aria-pressed={filters.city === city}
-                  key={city}
-                  onClick={() => updateFilters({ city: filters.city === city ? '' : city })}
-                  variant={filters.city === city ? 'default' : 'outline'}
+        {cities.length > 0
+          ? (
+              <div aria-labelledby="attractions-city-filter" className="mt-3.5 grid gap-2">
+                <p
+                  className="text-[13px] font-extrabold text-stone-900/72"
+                  id="attractions-city-filter"
                 >
-                  {city}
-                </Button>
-              ))}
-            </div>
-          </div>
-        ) : null}
+                  城市
+                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  {cities.map(city => (
+                    <Button
+                      aria-pressed={filters.city === city}
+                      key={city}
+                      onClick={() => updateFilters({ city: filters.city === city ? '' : city })}
+                      variant={filters.city === city ? 'default' : 'outline'}
+                    >
+                      {city}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )
+          : null}
         <div className="mt-3.5 grid gap-2">
           <label
             className="text-[13px] font-extrabold text-stone-900/72"
@@ -227,86 +235,93 @@ export default function Attractions() {
           <select
             className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
             id="attractions-ticket-type"
-            onChange={(event) =>
-              updateFilters({ ticketType: event.target.value as '' | AttractionTicketType })
-            }
+            onChange={event =>
+              updateFilters({ ticketType: event.target.value as '' | AttractionTicketType })}
             value={filters.ticketType || ''}
           >
-            {ticketOptions.map((option) => (
+            {ticketOptions.map(option => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
             ))}
           </select>
         </div>
-        {tags.length > 0 ? (
-          <div aria-labelledby="attractions-tag-filter" className="mt-3.5 grid gap-2">
-            <p className="text-[13px] font-extrabold text-stone-900/72" id="attractions-tag-filter">
-              标签
-            </p>
-            <div className="flex flex-wrap items-center gap-2">
-              {tags.map((tag) => (
-                <Button
-                  aria-pressed={filters.tag === tag}
-                  key={tag}
-                  onClick={() => updateFilters({ tag: filters.tag === tag ? '' : tag })}
-                  variant={filters.tag === tag ? 'default' : 'outline'}
-                >
-                  {tag}
-                </Button>
-              ))}
-            </div>
-          </div>
-        ) : null}
+        {tags.length > 0
+          ? (
+              <div aria-labelledby="attractions-tag-filter" className="mt-3.5 grid gap-2">
+                <p className="text-[13px] font-extrabold text-stone-900/72" id="attractions-tag-filter">
+                  标签
+                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  {tags.map(tag => (
+                    <Button
+                      aria-pressed={filters.tag === tag}
+                      key={tag}
+                      onClick={() => updateFilters({ tag: filters.tag === tag ? '' : tag })}
+                      variant={filters.tag === tag ? 'default' : 'outline'}
+                    >
+                      {tag}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )
+          : null}
         <p aria-live="polite" className="mt-2 text-[13px] text-travel-muted">
           {loading ? '正在应用筛选...' : `共找到 ${total} 个景点`}
         </p>
       </section>
 
-      {loading ? (
-        <div
-          aria-live="polite"
-          className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-          role="status"
-        >
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div className="travel-surface-card travel-ticket-edge overflow-hidden" key={i}>
-              <Skeleton className="h-[250px] w-full rounded-none" />
-              <div className="p-5">
-                <div className="mb-2 flex items-center justify-between">
-                  <Skeleton className="h-5 w-2/5" />
-                  <Skeleton className="h-8 w-8 rounded-full" />
+      {loading
+        ? (
+            <div
+              aria-live="polite"
+              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+              role="status"
+            >
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div className="travel-surface-card travel-ticket-edge overflow-hidden" key={i}>
+                  <Skeleton className="h-[250px] w-full rounded-none" />
+                  <div className="p-5">
+                    <div className="mb-2 flex items-center justify-between">
+                      <Skeleton className="h-5 w-2/5" />
+                      <Skeleton className="h-8 w-8 rounded-full" />
+                    </div>
+                    <Skeleton className="mb-3 h-4 w-full" />
+                    <div className="mb-3 flex items-center gap-2">
+                      <Skeleton className="h-5 w-12" />
+                      <Skeleton className="h-4 w-16" />
+                      <Skeleton className="h-4 w-14" />
+                    </div>
+                    <div className="mb-4 flex gap-1.5">
+                      <Skeleton className="h-5 w-14" />
+                      <Skeleton className="h-5 w-14" />
+                    </div>
+                    <Skeleton className="h-4 w-16" />
+                  </div>
                 </div>
-                <Skeleton className="mb-3 h-4 w-full" />
-                <div className="mb-3 flex items-center gap-2">
-                  <Skeleton className="h-5 w-12" />
-                  <Skeleton className="h-4 w-16" />
-                  <Skeleton className="h-4 w-14" />
-                </div>
-                <div className="mb-4 flex gap-1.5">
-                  <Skeleton className="h-5 w-14" />
-                  <Skeleton className="h-5 w-14" />
-                </div>
-                <Skeleton className="h-4 w-16" />
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
-      ) : null}
-      {!loading && error ? (
-        <div className="flex items-center justify-between rounded-xl p-6" role="alert">
-          <span>{error}</span>
-          <Button onClick={() => load(filters)}>重试</Button>
-        </div>
-      ) : null}
-      {!loading && !error && items.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 rounded-xl p-6">
-          <div className="py-8 text-center text-muted-foreground">
-            <p>没有找到符合筛选条件的景点</p>
-          </div>
-          {hasActiveFilters ? <Button onClick={handleClearFilters}>清空筛选</Button> : null}
-        </div>
-      ) : null}
+          )
+        : null}
+      {!loading && error
+        ? (
+            <div className="flex items-center justify-between rounded-xl p-6" role="alert">
+              <span>{error}</span>
+              <Button onClick={() => load(filters)}>重试</Button>
+            </div>
+          )
+        : null}
+      {!loading && !error && items.length === 0
+        ? (
+            <div className="flex flex-col items-center gap-3 rounded-xl p-6">
+              <div className="py-8 text-center text-muted-foreground">
+                <p>没有找到符合筛选条件的景点</p>
+              </div>
+              {hasActiveFilters ? <Button onClick={handleClearFilters}>清空筛选</Button> : null}
+            </div>
+          )
+        : null}
 
       {/* ---- 景点卡片网格 ---- */}
       {!loading && !error && items.length > 0 ? (
@@ -366,7 +381,7 @@ export default function Attractions() {
                         <span className="text-sm text-travel-muted">{item.priceText}</span>
                       </div>
                       <div className="mb-4 flex flex-wrap gap-1.5">
-                        {item.tags.map((tag) => (
+                        {item.tags.map(tag => (
                           <Badge className="travel-tag travel-tag--info" key={tag}>
                             {tag}
                           </Badge>

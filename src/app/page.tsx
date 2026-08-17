@@ -30,15 +30,16 @@ const quickEntries = [
 export default function HomePage() {
   const router = useRouter()
   const toast = useAppToast()
-  const user = useAuthStore((state) => state.user)
-  const hasHydrated = useAuthStore((state) => state._hasHydrated)
+  const user = useAuthStore(state => state.user)
+  const hasHydrated = useAuthStore(state => state._hasHydrated)
 
   const onStart = () => {
     if (!hasHydrated) {
       toast.info('加载中...')
       return
     }
-    if (!user) return router.push('/login')
+    if (!user)
+      return router.push('/login')
     router.push('/detail')
   }
 
@@ -56,7 +57,7 @@ export default function HomePage() {
         </div>
 
         <div className="grid grid-cols-3 gap-4 sm:grid-cols-6 animate-fade-in-up">
-          {quickEntries.map((entry) => (
+          {quickEntries.map(entry => (
             <Link
               className="group flex flex-col items-center gap-3 rounded-2xl p-4 transition-all duration-300 hover:bg-white hover:shadow-lg hover:-translate-y-1"
               href={entry.href}
@@ -196,15 +197,24 @@ export default function HomePage() {
                     <Star aria-hidden="true" className="h-3.5 w-3.5 fill-current" />
                     {trip.rating}
                   </Badge>
-                  <span className="text-sm text-travel-muted">{trip.reviews} 条评价</span>
+                  <span className="text-sm text-travel-muted">
+                    {trip.reviews}
+                    {' '}
+                    条评价
+                  </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl font-bold text-primary">¥{trip.price}</span>
+                  <span className="text-2xl font-bold text-primary">
+                    ¥
+                    {trip.price}
+                  </span>
                   <span className="text-sm text-travel-muted line-through">
-                    ¥{trip.originalPrice}
+                    ¥
+                    {trip.originalPrice}
                   </span>
                   <Badge className="ml-auto border-0 bg-gradient-to-r from-red-500 to-pink-500 text-xs font-bold text-white shadow-sm">
-                    {Math.round((1 - trip.price / trip.originalPrice) * 100)}% OFF
+                    {Math.round((1 - trip.price / trip.originalPrice) * 100)}
+                    % OFF
                   </Badge>
                 </div>
               </div>
@@ -253,7 +263,7 @@ export default function HomePage() {
                 { label: '行程已生成', num: '50,000+' },
                 { label: '覆盖城市', num: '300+' },
                 { label: '满意率', num: '98%' },
-              ].map((stat) => (
+              ].map(stat => (
                 <div className="text-center" key={stat.label}>
                   <span className="block text-3xl font-bold text-yellow-400">{stat.num}</span>
                   <span className="mt-1 block text-sm text-slate-400">{stat.label}</span>
@@ -284,7 +294,10 @@ export default function HomePage() {
                     </Avatar>
                     <div>
                       <span className="block font-semibold text-travel-ink">{review.name}</span>
-                      <span className="text-sm text-travel-muted">去了{review.dest}</span>
+                      <span className="text-sm text-travel-muted">
+                        去了
+                        {review.dest}
+                      </span>
                     </div>
                     <span aria-label={`${review.rating} 星`} className="ml-auto flex items-center gap-0.5 text-yellow-500">
                       {Array.from({ length: review.rating }).map((_, i) => (

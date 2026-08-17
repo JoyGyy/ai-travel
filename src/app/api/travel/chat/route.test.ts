@@ -9,7 +9,7 @@ vi.mock('@/lib/ai/stream', () => ({
   createTravelChatStream: vi.fn(async () => new Response('ok', { status: 200 })),
 }))
 
-describe('POST /api/travel/chat', () => {
+describe('pOST /api/travel/chat', () => {
   it('拒绝空消息', async () => {
     const req = new Request('http://localhost/api/travel/chat', {
       body: JSON.stringify({ messages: [] }),

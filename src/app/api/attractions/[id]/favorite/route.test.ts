@@ -5,6 +5,11 @@
  */
 import type * as httpUtils from '@/lib/utils/http'
 
+import {
+  favoriteAttraction,
+  unfavoriteAttraction,
+} from '@/lib/services/attractions/attractionService'
+
 import { DELETE, POST } from './route'
 
 vi.mock('@/lib/services/attractions/attractionService', () => ({
@@ -20,26 +25,22 @@ vi.mock('@/lib/utils/http', async (importOriginal) => {
       (
         handler: (
           req: Request,
-          ctx: { params: Promise<{ id: string }>; user: { id: string; username: string } },
+          ctx: { params: Promise<{ id: string }>, user: { id: string, username: string } },
         ) => Promise<Response>,
       ) =>
-      async (req: Request, ctx: unknown) => {
-        try {
-          return await handler(req, {
-            ...(ctx as object),
-            user: { id: 'u1', username: 'testuser' },
-          } as { params: Promise<{ id: string }>; user: { id: string; username: string } })
-        } catch (err) {
-          return actual.errorResponse(err)
-        }
-      },
+        async (req: Request, ctx: unknown) => {
+          try {
+            return await handler(req, {
+              ...(ctx as object),
+              user: { id: 'u1', username: 'testuser' },
+            } as { params: Promise<{ id: string }>, user: { id: string, username: string } })
+          }
+          catch (err) {
+            return actual.errorResponse(err)
+          }
+        },
   }
 })
-
-import {
-  favoriteAttraction,
-  unfavoriteAttraction,
-} from '@/lib/services/attractions/attractionService'
 
 const mockFavorite = vi.mocked(favoriteAttraction)
 const mockUnfavorite = vi.mocked(unfavoriteAttraction)
@@ -49,7 +50,7 @@ describe('景点收藏 API', () => {
     vi.clearAllMocks()
   })
 
-  describe('POST /api/attractions/[id]/favorite', () => {
+  describe('pOST /api/attractions/[id]/favorite', () => {
     it('收藏成功返回成功消息', async () => {
       mockFavorite.mockResolvedValueOnce({
         isFavorite: true,
@@ -66,7 +67,7 @@ describe('景点收藏 API', () => {
     })
   })
 
-  describe('DELETE /api/attractions/[id]/favorite', () => {
+  describe('dELETE /api/attractions/[id]/favorite', () => {
     it('取消收藏返回成功消息', async () => {
       mockUnfavorite.mockResolvedValueOnce({
         isFavorite: false,

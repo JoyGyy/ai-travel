@@ -9,7 +9,7 @@ vi.mock('next/navigation', () => ({
 
 // Mock next/link
 vi.mock('next/link', () => ({
-  default: ({ children, href }: { children: React.ReactNode; href: string }) => (
+  default: ({ children, href }: { children: React.ReactNode, href: string }) => (
     <a href={href}>{children}</a>
   ),
 }))
@@ -22,7 +22,7 @@ vi.mock('@/stores/auth', () => ({
   }),
 }))
 
-describe('Navigation', () => {
+describe('navigation', () => {
   it('渲染导航栏', () => {
     render(<Navigation />)
     expect(screen.getByRole('navigation', { name: '主导航' })).toBeInTheDocument()

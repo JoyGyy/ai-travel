@@ -1,7 +1,3 @@
-import { Clock, Compass } from 'lucide-react'
-import Link from 'next/link'
-import React from 'react'
-
 /**
  * 景点项目组件
  *
@@ -10,6 +6,10 @@ import React from 'react'
  * 支持链接到景点详情页。
  */
 import type { AttractionRef } from '@/stores/itinerary'
+import { Clock, Compass } from 'lucide-react'
+import Link from 'next/link'
+
+import React from 'react'
 
 interface SpotData {
   description: string
@@ -61,24 +61,30 @@ export const SpotItem = React.memo(({ attractionRef, data, period }: SpotItemPro
         {/* ---- 标签：游玩时长 / 门票 / 交通方式 ---- */}
         <div className="flex gap-2 flex-wrap">
           <span className="inline-flex items-center gap-1 min-w-0 max-w-full px-[9px] py-1 rounded-full border border-[rgba(28,25,23,0.06)] bg-[rgba(28,25,23,0.03)] text-[rgba(var(--travel-ink-rgb),0.66)] text-xs font-bold [&>svg]:shrink-0 [&>svg]:text-[rgba(var(--travel-ocean-rgb),0.64)]">
-            <Clock size={14} /> {data.duration}
+            <Clock size={14} />
+            {' '}
+            {data.duration}
           </span>
           <span className="inline-flex items-center gap-1 min-w-0 max-w-full px-[9px] py-1 rounded-full border border-[rgba(28,25,23,0.06)] bg-[rgba(var(--travel-primary-rgb),0.12)] text-[var(--color-primary-strong)] text-xs font-black [&>svg]:shrink-0 [&>svg]:text-[rgba(var(--travel-ocean-rgb),0.64)]">
             {data.ticket}
           </span>
           <span className="inline-flex items-center gap-1 min-w-0 max-w-full px-[9px] py-1 rounded-full border border-[rgba(28,25,23,0.06)] bg-[rgba(28,25,23,0.03)] text-[rgba(var(--travel-ink-rgb),0.66)] text-xs font-bold [&>svg]:shrink-0 [&>svg]:text-[rgba(var(--travel-ocean-rgb),0.64)]">
-            <Compass size={14} /> {data.transportation}
+            <Compass size={14} />
+            {' '}
+            {data.transportation}
           </span>
         </div>
         {/* ---- 关联景点详情链接（有 attractionRef 时显示） ---- */}
-        {attractionRef ? (
-          <Link
-            className="inline-flex mt-2.5 text-[var(--travel-primary)] text-xs font-black hover:opacity-80"
-            href={`/attractions/${attractionRef.id}`}
-          >
-            {`查看${attractionRef.name}详情`}
-          </Link>
-        ) : null}
+        {attractionRef
+          ? (
+              <Link
+                className="inline-flex mt-2.5 text-[var(--travel-primary)] text-xs font-black hover:opacity-80"
+                href={`/attractions/${attractionRef.id}`}
+              >
+                {`查看${attractionRef.name}详情`}
+              </Link>
+            )
+          : null}
       </div>
     </div>
   )

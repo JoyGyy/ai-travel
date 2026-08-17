@@ -50,8 +50,8 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const [formError, setFormError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [fieldErrors, setFieldErrors] = useState<{ password?: string; username?: string }>({})
-  const [touched, setTouched] = useState<{ password?: boolean; username?: boolean }>({})
+  const [fieldErrors, setFieldErrors] = useState<{ password?: string, username?: string }>({})
+  const [touched, setTouched] = useState<{ password?: boolean, username?: boolean }>({})
   const usernameRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
   const currentCopy = formCopy[tab]
@@ -61,7 +61,8 @@ export default function Login() {
   useEffect(() => {
     if (fieldErrors.username) {
       usernameRef.current?.focus()
-    } else if (fieldErrors.password) {
+    }
+    else if (fieldErrors.password) {
       passwordRef.current?.focus()
     }
   }, [fieldErrors])
@@ -80,19 +81,24 @@ export default function Login() {
 
   /* ---------- 表单校验（返回字段级错误） ---------- */
 
-  function validateForm(): { password?: string; username?: string } {
-    const errors: { password?: string; username?: string } = {}
-    if (!username.trim()) errors.username = '请输入用户名'
+  function validateForm(): { password?: string, username?: string } {
+    const errors: { password?: string, username?: string } = {}
+    if (!username.trim())
+      errors.username = '请输入用户名'
     if (!password) {
       errors.password = '请输入密码'
-    } else if (tab === 'register') {
+    }
+    else if (tab === 'register') {
       if (password.length < 8) {
         errors.password = '密码长度至少 8 位'
-      } else if (!/[a-z]/.test(password)) {
+      }
+      else if (!/[a-z]/.test(password)) {
         errors.password = '密码需包含小写字母'
-      } else if (!/[A-Z]/.test(password)) {
+      }
+      else if (!/[A-Z]/.test(password)) {
         errors.password = '密码需包含大写字母'
-      } else if (!/\d/.test(password)) {
+      }
+      else if (!/\d/.test(password)) {
         errors.password = '密码需包含数字'
       }
     }
@@ -103,14 +109,15 @@ export default function Login() {
 
   function validateField(field: 'password' | 'username') {
     const errors = validateForm()
-    setFieldErrors((prev) => ({ ...prev, [field]: errors[field] }))
+    setFieldErrors(prev => ({ ...prev, [field]: errors[field] }))
   }
 
   /* ---------- 提交登录/注册请求 ---------- */
 
   async function handleSubmit(event: { preventDefault: () => void }) {
     event.preventDefault()
-    if (loading) return
+    if (loading)
+      return
 
     const errors = validateForm()
     if (errors.username || errors.password) {
@@ -127,15 +134,18 @@ export default function Login() {
     try {
       if (tab === 'login') {
         await login(username.trim(), password)
-      } else {
+      }
+      else {
         await register(username.trim(), password)
       }
       toast.success(tab === 'login' ? '登录成功' : '注册成功')
       router.push('/')
-    } catch (err: unknown) {
+    }
+    catch (err: unknown) {
       setFieldErrors({})
       setFormError(err instanceof Error ? err.message : '操作失败，请检查信息后重试')
-    } finally {
+    }
+    finally {
       setLoading(false)
     }
   }
@@ -189,7 +199,7 @@ export default function Login() {
             把目的地、天气灵感和预算计划沉淀下来，随时继续规划下一次出发。
           </p>
           <div aria-label="核心功能" className="flex flex-wrap gap-3 pt-2 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
-            {['实时天气', '预算规划', 'AI 咨询'].map((feature) => (
+            {['实时天气', '预算规划', 'AI 咨询'].map(feature => (
               <Badge
                 className="gap-2 border-white/10 bg-white/5 px-4 py-1.5 text-sm text-gray-300 backdrop-blur-sm"
                 key={feature}
@@ -236,7 +246,7 @@ export default function Login() {
             className="mb-8 flex rounded-2xl bg-gray-100 p-1.5"
             role="group"
           >
-            {(['login', 'register'] as const).map((t) => (
+            {(['login', 'register'] as const).map(t => (
               <button
                 aria-pressed={tab === t}
                 className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 ${
@@ -275,14 +285,15 @@ export default function Login() {
                 id="login-username"
                 name="username"
                 onBlur={() => {
-                  setTouched((prev) => ({ ...prev, username: true }))
+                  setTouched(prev => ({ ...prev, username: true }))
                   validateField('username')
                 }}
                 onChange={(e) => {
                   setUsername(e.target.value)
                   if (fieldErrors.username)
-                    setFieldErrors((prev) => ({ ...prev, username: undefined }))
-                  if (formError) setFormError('')
+                    setFieldErrors(prev => ({ ...prev, username: undefined }))
+                  if (formError)
+                    setFormError('')
                 }}
                 placeholder="请输入用户名"
                 ref={usernameRef}
@@ -310,14 +321,15 @@ export default function Login() {
                   id="login-password"
                   name="password"
                   onBlur={() => {
-                    setTouched((prev) => ({ ...prev, password: true }))
+                    setTouched(prev => ({ ...prev, password: true }))
                     validateField('password')
                   }}
                   onChange={(e) => {
                     setPassword(e.target.value)
                     if (fieldErrors.password)
-                      setFieldErrors((prev) => ({ ...prev, password: undefined }))
-                    if (formError) setFormError('')
+                      setFieldErrors(prev => ({ ...prev, password: undefined }))
+                    if (formError)
+                      setFormError('')
                   }}
                   placeholder={currentCopy.passwordPlaceholder}
                   ref={passwordRef}
@@ -327,17 +339,19 @@ export default function Login() {
                 <Button
                   aria-label={showPassword ? '隐藏密码' : '显示密码'}
                   className="absolute top-1/2 right-1 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  onClick={() => setShowPassword((v) => !v)}
+                  onClick={() => setShowPassword(v => !v)}
                   size="icon"
                   tabIndex={-1}
                   type="button"
                   variant="ghost"
                 >
-                  {showPassword ? (
-                    <EyeOff aria-hidden="true" size={18} />
-                  ) : (
-                    <Eye aria-hidden="true" size={18} />
-                  )}
+                  {showPassword
+                    ? (
+                        <EyeOff aria-hidden="true" size={18} />
+                      )
+                    : (
+                        <Eye aria-hidden="true" size={18} />
+                      )}
                 </Button>
               </div>
               {touched.password && fieldErrors.password && (

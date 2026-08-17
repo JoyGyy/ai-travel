@@ -1,9 +1,9 @@
 'use client'
 
-import Image from 'next/image'
-import { useEffect, useRef, useState } from 'react'
-
 import type { CommunityImage } from '@/types/community'
+import Image from 'next/image'
+
+import { useEffect, useRef, useState } from 'react'
 
 interface CommunityImageGridProps {
   compact?: boolean
@@ -23,7 +23,8 @@ export function CommunityImageGrid({ compact = false, images }: CommunityImageGr
 
   // ESC 键关闭预览
   useEffect(() => {
-    if (previewIndex === null) return
+    if (previewIndex === null)
+      return
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setPreviewIndex(null)
@@ -33,7 +34,8 @@ export function CommunityImageGrid({ compact = false, images }: CommunityImageGr
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [previewIndex])
 
-  if (images.length === 0) return null
+  if (images.length === 0)
+    return null
 
   const visibleImages = images.slice(0, 9)
 
@@ -159,7 +161,9 @@ function getGridClasses(count: number, compact: boolean) {
 
 /** 根据图片数量和 compact 模式决定图片宽高比 */
 function getImageAspectClasses(count: number, compact: boolean) {
-  if (compact) return 'aspect-[4/3]'
-  if (count === 1) return 'aspect-[16/10]'
+  if (compact)
+    return 'aspect-[4/3]'
+  if (count === 1)
+    return 'aspect-[16/10]'
   return 'aspect-square'
 }

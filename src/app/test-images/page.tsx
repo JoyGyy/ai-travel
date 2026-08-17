@@ -21,7 +21,7 @@ export default function TestImagesPage() {
   const [result, setResult] = useState<null | TestResult>(null)
   const [batchResults, setBatchResults] = useState<null | Record<string, string>>(null)
   const [error, setError] = useState<null | string>(null)
-  const [cacheStats, setCacheStats] = useState<null | { hitRate: number; size: number }>(null)
+  const [cacheStats, setCacheStats] = useState<null | { hitRate: number, size: number }>(null)
 
   // 单个查询测试
   const handleSingleTest = async () => {
@@ -37,12 +37,15 @@ export default function TestImagesPage() {
       if (data.success) {
         setResult(data.data)
         setCacheStats(data.cache)
-      } else {
+      }
+      else {
         setError(data.error)
       }
-    } catch (err) {
+    }
+    catch (err) {
       setError(err instanceof Error ? err.message : '请求失败')
-    } finally {
+    }
+    finally {
       setLoading(false)
     }
   }
@@ -60,12 +63,15 @@ export default function TestImagesPage() {
       if (data.success) {
         setBatchResults(data.data)
         setCacheStats(data.cache)
-      } else {
+      }
+      else {
         setError(data.error)
       }
-    } catch (err) {
+    }
+    catch (err) {
       setError(err instanceof Error ? err.message : '请求失败')
-    } finally {
+    }
+    finally {
       setLoading(false)
     }
   }
@@ -83,13 +89,13 @@ export default function TestImagesPage() {
           <div className="flex gap-4 mb-4">
             <Input
               className="flex-1"
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={e => setQuery(e.target.value)}
               placeholder="景点名称"
               value={query}
             />
             <Input
               className="w-32"
-              onChange={(e) => setCity(e.target.value)}
+              onChange={e => setCity(e.target.value)}
               placeholder="城市（可选）"
               value={city}
             />
@@ -101,7 +107,11 @@ export default function TestImagesPage() {
           {result && (
             <div className="mt-4">
               <p className="text-sm text-gray-600 mb-2">
-                查询: {result.query} {result.city && `(${result.city})`}
+                查询:
+                {' '}
+                {result.query}
+                {' '}
+                {result.city && `(${result.city})`}
               </p>
               <div className="border rounded-lg overflow-hidden">
                 <Image
@@ -116,7 +126,10 @@ export default function TestImagesPage() {
                   width={1024}
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-2 break-all">URL: {result.imageUrl}</p>
+              <p className="text-xs text-gray-500 mt-2 break-all">
+                URL:
+                {result.imageUrl}
+              </p>
             </div>
           )}
         </CardContent>
@@ -181,7 +194,10 @@ export default function TestImagesPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">命中率</p>
-                <p className="text-2xl font-bold">{(cacheStats.hitRate * 100).toFixed(1)}%</p>
+                <p className="text-2xl font-bold">
+                  {(cacheStats.hitRate * 100).toFixed(1)}
+                  %
+                </p>
               </div>
             </div>
           </CardContent>
@@ -198,29 +214,45 @@ export default function TestImagesPage() {
             <h4>API 端点</h4>
             <ul>
               <li>
-                <code>GET /api/images/test?query=故宫&city=北京</code> - 单个查询
+                <code>GET /api/images/test?query=故宫&city=北京</code>
+                {' '}
+                - 单个查询
               </li>
               <li>
-                <code>GET /api/images/test?batch=true</code> - 批量测试
+                <code>GET /api/images/test?batch=true</code>
+                {' '}
+                - 批量测试
               </li>
             </ul>
 
             <h4>图片源优先级</h4>
             <ol>
               <li>
-                <strong>Unsplash</strong> - 需要配置 <code>UNSPLASH_ACCESS_KEY</code>
+                <strong>Unsplash</strong>
+                {' '}
+                - 需要配置
+                <code>UNSPLASH_ACCESS_KEY</code>
               </li>
               <li>
-                <strong>Pexels</strong> - 需要配置 <code>PEXELS_API_KEY</code>
+                <strong>Pexels</strong>
+                {' '}
+                - 需要配置
+                <code>PEXELS_API_KEY</code>
               </li>
               <li>
-                <strong>维基百科</strong> - 无需配置，作为备选
+                <strong>维基百科</strong>
+                {' '}
+                - 无需配置，作为备选
               </li>
             </ol>
 
             <h4>环境变量配置</h4>
             <p>
-              在 <code>.env.local</code> 中添加：
+              在
+              {' '}
+              <code>.env.local</code>
+              {' '}
+              中添加：
             </p>
             <pre className="bg-gray-100 p-2 rounded">
               UNSPLASH_ACCESS_KEY=your_key_here PEXELS_API_KEY=your_key_here

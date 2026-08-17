@@ -1,11 +1,5 @@
 'use client'
 
-import { ArrowLeft, Heart } from 'lucide-react'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-
 /**
  * 景点详情页面
  *
@@ -13,6 +7,12 @@ import { useEffect, useState } from 'react'
  * 游玩亮点、注意事项和购票入口，支持收藏和 AI 行程规划跳转。
  */
 import type { Attraction } from '@/types/attraction'
+import { ArrowLeft, Heart } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useParams, useRouter } from 'next/navigation'
+
+import { useEffect, useState } from 'react'
 
 import { fetchAttractionDetail } from '@/api/attractions'
 import { Badge } from '@/components/ui/badge'
@@ -46,11 +46,16 @@ export default function AttractionDetail() {
       setError('')
       try {
         const data = await fetchAttractionDetail(id)
-        if (!cancelled) setAttraction({ ...data.attraction, isFavorite: data.isFavorite })
-      } catch (err: unknown) {
-        if (!cancelled) setError(err instanceof Error ? err.message : '景点加载失败')
-      } finally {
-        if (!cancelled) setLoading(false)
+        if (!cancelled)
+          setAttraction({ ...data.attraction, isFavorite: data.isFavorite })
+      }
+      catch (err: unknown) {
+        if (!cancelled)
+          setError(err instanceof Error ? err.message : '景点加载失败')
+      }
+      finally {
+        if (!cancelled)
+          setLoading(false)
       }
     }
     loadData()
@@ -61,11 +66,13 @@ export default function AttractionDetail() {
 
   /** 切换收藏状态 */
   async function handleToggleFavorite() {
-    if (!attraction) return
+    if (!attraction)
+      return
     setFavoritePending(true)
     try {
       await toggleFavorite(attraction.id, attraction.isFavorite ?? false)
-    } finally {
+    }
+    finally {
       setFavoritePending(false)
     }
   }
@@ -102,7 +109,7 @@ export default function AttractionDetail() {
           <div className="flex gap-3">
             <Button
               className="bg-primary text-primary-foreground hover:bg-primary/90"
-              onClick={() => setReloadKey((prev) => prev + 1)}
+              onClick={() => setReloadKey(prev => prev + 1)}
             >
               重试
             </Button>
@@ -157,7 +164,7 @@ export default function AttractionDetail() {
               {attraction.ticketType === 'free' ? '免费' : '收费'}
             </Badge>
             <Badge className="travel-tag travel-tag--warning">{attraction.priceText}</Badge>
-            {attraction.tags.map((tag) => (
+            {attraction.tags.map(tag => (
               <Badge className="travel-tag travel-tag--info" key={tag}>
                 {tag}
               </Badge>
@@ -219,7 +226,7 @@ export default function AttractionDetail() {
       <section className="travel-surface-card p-6">
         <h2 className="mb-4 text-xl font-bold text-travel-ink">游玩亮点</h2>
         <ul className="list-inside list-disc space-y-2 text-travel-muted">
-          {attraction.highlights.map((item) => (
+          {attraction.highlights.map(item => (
             <li key={item}>{item}</li>
           ))}
         </ul>
@@ -229,7 +236,7 @@ export default function AttractionDetail() {
       <section className="travel-surface-card p-6">
         <h2 className="mb-4 text-xl font-bold text-travel-ink">注意事项</h2>
         <ul className="list-inside list-disc space-y-2 text-travel-muted">
-          {attraction.tips.map((item) => (
+          {attraction.tips.map(item => (
             <li key={item}>{item}</li>
           ))}
         </ul>
@@ -242,7 +249,7 @@ export default function AttractionDetail() {
           价格、库存和开放时间以第三方平台及景区官方公告为准。
         </p>
         <div className="flex flex-wrap gap-3">
-          {buildBookingLinks(attraction).map((link) => (
+          {buildBookingLinks(attraction).map(link => (
             <a
               aria-label={`去${link.label}查看${attraction.name}门票，打开新窗口`}
               className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-travel-ink shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
@@ -251,7 +258,8 @@ export default function AttractionDetail() {
               rel="noopener noreferrer"
               target="_blank"
             >
-              去{link.label}
+              去
+              {link.label}
               查看
             </a>
           ))}
@@ -285,7 +293,9 @@ function buildBookingLinks(attraction: Attraction) {
 /** 生成搜索 URL 降级地址（无真实购票链接时使用） */
 function buildSearchUrl(platform: 'ctrip' | 'fliggy' | 'ly', attraction: Attraction) {
   const keyword = encodeURIComponent(`${attraction.city} ${attraction.name} 门票`)
-  if (platform === 'ctrip') return `https://you.ctrip.com/searchsite/?query=${keyword}`
-  if (platform === 'fliggy') return `https://s.taobao.com/search?q=${keyword}`
+  if (platform === 'ctrip')
+    return `https://you.ctrip.com/searchsite/?query=${keyword}`
+  if (platform === 'fliggy')
+    return `https://s.taobao.com/search?q=${keyword}`
   return `https://www.ly.com/scenery/scenerysearchlist_${keyword}.html`
 }

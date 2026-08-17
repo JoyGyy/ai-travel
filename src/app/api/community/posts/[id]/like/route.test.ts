@@ -5,6 +5,8 @@
  */
 import type * as httpUtils from '@/lib/utils/http'
 
+import { likeCommunityPost, unlikeCommunityPost } from '@/lib/services/community'
+
 import { DELETE, POST } from './route'
 
 vi.mock('@/lib/services/community', () => ({
@@ -20,23 +22,22 @@ vi.mock('@/lib/utils/http', async (importOriginal) => {
       (
         handler: (
           req: Request,
-          ctx: { params: Promise<{ id: string }>; user: { id: string; username: string } },
+          ctx: { params: Promise<{ id: string }>, user: { id: string, username: string } },
         ) => Promise<Response>,
       ) =>
-      async (req: Request, ctx: unknown) => {
-        try {
-          return await handler(req, {
-            ...(ctx as object),
-            user: { id: 'u1', username: 'testuser' },
-          } as { params: Promise<{ id: string }>; user: { id: string; username: string } })
-        } catch (err) {
-          return actual.errorResponse(err)
-        }
-      },
+        async (req: Request, ctx: unknown) => {
+          try {
+            return await handler(req, {
+              ...(ctx as object),
+              user: { id: 'u1', username: 'testuser' },
+            } as { params: Promise<{ id: string }>, user: { id: string, username: string } })
+          }
+          catch (err) {
+            return actual.errorResponse(err)
+          }
+        },
   }
 })
-
-import { likeCommunityPost, unlikeCommunityPost } from '@/lib/services/community'
 
 const mockLike = vi.mocked(likeCommunityPost)
 const mockUnlike = vi.mocked(unlikeCommunityPost)
@@ -46,7 +47,7 @@ describe('社区帖子点赞 API', () => {
     vi.clearAllMocks()
   })
 
-  describe('POST /api/community/posts/[id]/like', () => {
+  describe('pOST /api/community/posts/[id]/like', () => {
     it('点赞成功', async () => {
       mockLike.mockResolvedValueOnce({
         likeCount: 6,
@@ -64,7 +65,7 @@ describe('社区帖子点赞 API', () => {
     })
   })
 
-  describe('DELETE /api/community/posts/[id]/like', () => {
+  describe('dELETE /api/community/posts/[id]/like', () => {
     it('取消点赞成功', async () => {
       mockUnlike.mockResolvedValueOnce({
         likeCount: 4,

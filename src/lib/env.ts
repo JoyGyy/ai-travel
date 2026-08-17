@@ -41,7 +41,8 @@ export interface EnvConfig {
 
 function readNumber(name: string, fallback: number): number {
   const raw = readString(name)
-  if (!raw) return fallback
+  if (!raw)
+    return fallback
 
   const value = Number(raw)
   if (!Number.isFinite(value) || value <= 0) {
@@ -87,9 +88,9 @@ function validateEnv(): void {
 
   // DATABASE_URL 格式校验
   if (
-    env.DATABASE_URL &&
-    !env.DATABASE_URL.startsWith('postgresql://') &&
-    !env.DATABASE_URL.startsWith('postgres://')
+    env.DATABASE_URL
+    && !env.DATABASE_URL.startsWith('postgresql://')
+    && !env.DATABASE_URL.startsWith('postgres://')
   ) {
     throw new Error('DATABASE_URL 必须以 postgresql:// 或 postgres:// 开头')
   }
@@ -99,7 +100,8 @@ function validateEnv(): void {
 if (typeof window === 'undefined' && process.env.NODE_ENV !== undefined) {
   try {
     validateEnv()
-  } catch (err) {
+  }
+  catch (err) {
     // 生产环境必须通过校验，否则阻止启动
     if (env.IS_PRODUCTION) {
       throw err

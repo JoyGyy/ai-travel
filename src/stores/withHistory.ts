@@ -26,7 +26,7 @@ export interface TemporalState<_T = unknown> {
   /** 清空历史记录 */
   clear: () => void
   /** 获取历史记录大小 */
-  getHistorySize: () => { future: number; past: number }
+  getHistorySize: () => { future: number, past: number }
   /** 重做 */
   redo: () => void
   /** 保存当前状态快照 */
@@ -62,7 +62,8 @@ interface WithHistoryOptions {
 function deepClone<T>(value: T): T {
   try {
     return JSON.parse(JSON.stringify(value)) as T
-  } catch {
+  }
+  catch {
     return value
   }
 }
@@ -109,7 +110,8 @@ export const withHistory: WithHistory = (f, options = {}) => {
 
     // 撤销
     const undo = () => {
-      if (history.past.length === 0) return
+      if (history.past.length === 0)
+        return
 
       const currentState = get()
       const previousState = history.past.pop()!
@@ -120,7 +122,8 @@ export const withHistory: WithHistory = (f, options = {}) => {
 
     // 重做
     const redo = () => {
-      if (history.future.length === 0) return
+      if (history.future.length === 0)
+        return
 
       const currentState = get()
       const nextState = history.future.pop()!

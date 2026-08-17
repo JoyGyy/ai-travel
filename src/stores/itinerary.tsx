@@ -1,7 +1,4 @@
-import { create } from 'zustand'
-import { devtools } from 'zustand/middleware'
-import { immer } from 'zustand/middleware/immer'
-
+import type { TemporalState } from './withHistory'
 /**
  * 行程状态管理 Store
  *
@@ -16,8 +13,12 @@ import { immer } from 'zustand/middleware/immer'
  * - 支持行程编辑和 Undo/Redo
  */
 import type { SSEEvent, WeatherResponse } from '@/types/api'
+import { create } from 'zustand'
 
-import { type TemporalState, withHistory } from './withHistory'
+import { devtools } from 'zustand/middleware'
+
+import { immer } from 'zustand/middleware/immer'
+import { withHistory } from './withHistory'
 
 // --- 类型定义 ---
 
@@ -74,7 +75,7 @@ export interface ItineraryDay {
     ticket?: string
     transportation?: string
   }
-  spots: Array<{ description: string; duration: string; name: string }>
+  spots: Array<{ description: string, duration: string, name: string }>
   title: string
 }
 
@@ -135,17 +136,18 @@ const initialState = {
 export const useItineraryStore = create<ItineraryState>()(
   devtools(
     withHistory(
-      immer((set) => ({
+      immer(set => ({
         ...initialState,
 
         // --- 简单 Setter 操作 ---
 
-        addAgentStep: (step) =>
+        addAgentStep: step =>
           set((state) => {
-            const idx = state.agentSteps.findIndex((s) => s.step === step.step)
+            const idx = state.agentSteps.findIndex(s => s.step === step.step)
             if (idx >= 0) {
               state.agentSteps[idx] = step
-            } else {
+            }
+            else {
               state.agentSteps.push(step)
             }
           }),
@@ -159,8 +161,10 @@ export const useItineraryStore = create<ItineraryState>()(
           set((state) => {
             const fromDayData = state.itinerary[fromDay]
             const toDayData = state.itinerary[toDay]
-            if (!fromDayData || !toDayData) return
-            if (fromDayData.spots[fromSpot] === undefined) return
+            if (!fromDayData || !toDayData)
+              return
+            if (fromDayData.spots[fromSpot] === undefined)
+              return
 
             // 取出源景点
             const [movedSpot] = fromDayData.spots.splice(fromSpot, 1)
@@ -176,51 +180,51 @@ export const useItineraryStore = create<ItineraryState>()(
             }
           }),
         reset: () => set(() => initialState),
-        setAccommodation: (data) =>
+        setAccommodation: data =>
           set((state) => {
             state.accommodation = data
           }),
-        setAttractionRefs: (data) =>
+        setAttractionRefs: data =>
           set((state) => {
             state.attractionRefs = data
           }),
 
         // --- Agent 步骤操作（支持去重更新） ---
 
-        setBudgetBreakdown: (data) =>
+        setBudgetBreakdown: data =>
           set((state) => {
             state.budgetBreakdown = data
           }),
 
         // --- 状态控制和重置 ---
 
-        setCurrentAgentStep: (step) =>
+        setCurrentAgentStep: step =>
           set((state) => {
             state.currentAgentStep = step
           }),
-        setEditing: (editing) =>
+        setEditing: editing =>
           set((state) => {
             state.isEditing = editing
           }),
 
         // --- 行程编辑操作 ---
 
-        setItinerary: (data) =>
+        setItinerary: data =>
           set((state) => {
             state.itinerary = data
           }),
 
-        setNightlife: (data) =>
+        setNightlife: data =>
           set((state) => {
             state.nightlife = data
           }),
 
-        setTips: (tips) =>
+        setTips: tips =>
           set((state) => {
             state.tips = tips
           }),
 
-        setWeather: (weather) =>
+        setWeather: weather =>
           set((state) => {
             state.weather = weather
           }),

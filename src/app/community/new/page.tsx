@@ -1,10 +1,10 @@
 'use client'
 
+import type { CommunityImage, CommunityItinerarySnapshot } from '@/types/community'
 import { ImageIcon, Send, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useMemo, useRef, useState } from 'react'
 
-import type { CommunityImage, CommunityItinerarySnapshot } from '@/types/community'
+import { useMemo, useRef, useState } from 'react'
 
 import { createCommunityPost, uploadCommunityImages } from '@/api/community'
 import { CommunityImageGrid } from '@/components/CommunityImageGrid'
@@ -33,7 +33,8 @@ export default function CommunityPostCreate() {
   )
 
   async function handleUpload(files: FileList | null) {
-    if (!files || files.length === 0) return
+    if (!files || files.length === 0)
+      return
 
     const file = files[0]
     if (images.length >= 9) {
@@ -52,11 +53,13 @@ export default function CommunityPostCreate() {
     setUploading(true)
     try {
       const uploaded = await uploadCommunityImages([file])
-      setImages((prev) => [...prev, ...uploaded].slice(0, 9))
+      setImages(prev => [...prev, ...uploaded].slice(0, 9))
       toast.success('图片上传成功')
-    } catch (err: unknown) {
+    }
+    catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : '图片上传失败')
-    } finally {
+    }
+    finally {
       setUploading(false)
       if (fileInputRef.current) {
         fileInputRef.current.value = ''
@@ -65,8 +68,8 @@ export default function CommunityPostCreate() {
   }
 
   function removeImage(image: CommunityImage) {
-    setImages((prev) =>
-      prev.filter((item) => (item.storageKey || item.url) !== (image.storageKey || image.url)),
+    setImages(prev =>
+      prev.filter(item => (item.storageKey || item.url) !== (image.storageKey || image.url)),
     )
   }
 
@@ -88,9 +91,11 @@ export default function CommunityPostCreate() {
       })
       toast.success('已发布到社区')
       router.push(`/community/${post.id}`)
-    } catch (err: unknown) {
+    }
+    catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : '发布失败')
-    } finally {
+    }
+    finally {
       setSubmitting(false)
     }
   }
@@ -119,7 +124,7 @@ export default function CommunityPostCreate() {
             <Input
               id="title"
               maxLength={80}
-              onChange={(event) => setTitle(event.target.value)}
+              onChange={event => setTitle(event.target.value)}
               placeholder="例如：成都三天两晚松弛路线"
               type="text"
               value={title}
@@ -131,7 +136,7 @@ export default function CommunityPostCreate() {
             <Textarea
               id="content"
               maxLength={2000}
-              onChange={(event) => setContent(event.target.value)}
+              onChange={event => setContent(event.target.value)}
               placeholder="分享你的路线、体验、避坑提醒或适合的人群"
               rows={7}
               value={content}
@@ -143,7 +148,7 @@ export default function CommunityPostCreate() {
             <Input
               id="city"
               maxLength={50}
-              onChange={(event) => setCity(event.target.value)}
+              onChange={event => setCity(event.target.value)}
               placeholder="例如：成都"
               type="text"
               value={city}
@@ -158,7 +163,7 @@ export default function CommunityPostCreate() {
             <input
               accept="image/jpeg,image/png,image/webp"
               className="hidden"
-              onChange={(event) => handleUpload(event.target.files)}
+              onChange={event => handleUpload(event.target.files)}
               ref={fileInputRef}
               type="file"
             />
@@ -173,41 +178,47 @@ export default function CommunityPostCreate() {
             <p className="mt-2 text-[0.92rem] text-travel-muted">
               最多 9 张，支持 JPG、PNG、WebP，单张不超过 5MB。
             </p>
-            {images.length > 0 ? (
-              <div className="mt-3.5 grid gap-3">
-                <CommunityImageGrid images={images} />
-                <div className="flex flex-wrap gap-2">
-                  {images.map((image) => (
-                    <button
-                      className="inline-flex min-h-9 items-center gap-1.5 rounded-full border-0 bg-danger/8 px-3 font-bold text-danger"
-                      key={image.storageKey || image.url}
-                      onClick={() => removeImage(image)}
-                      type="button"
-                    >
-                      <X aria-hidden="true" />
-                      移除图片
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ) : null}
+            {images.length > 0
+              ? (
+                  <div className="mt-3.5 grid gap-3">
+                    <CommunityImageGrid images={images} />
+                    <div className="flex flex-wrap gap-2">
+                      {images.map(image => (
+                        <button
+                          className="inline-flex min-h-9 items-center gap-1.5 rounded-full border-0 bg-danger/8 px-3 font-bold text-danger"
+                          key={image.storageKey || image.url}
+                          onClick={() => removeImage(image)}
+                          type="button"
+                        >
+                          <X aria-hidden="true" />
+                          移除图片
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )
+              : null}
           </div>
 
-          {snapshot ? (
-            <div className="mt-[22px]">
-              <CommunityItineraryPreview
-                onRemove={() => setSnapshot(null)}
-                removable
-                snapshot={snapshot}
-              />
-            </div>
-          ) : null}
+          {snapshot
+            ? (
+                <div className="mt-[22px]">
+                  <CommunityItineraryPreview
+                    onRemove={() => setSnapshot(null)}
+                    removable
+                    snapshot={snapshot}
+                  />
+                </div>
+              )
+            : null}
 
-          {!canSubmit ? (
-            <p className="mt-[18px] font-bold text-danger">
-              正文、图片和行程快照至少需要提供一项。
-            </p>
-          ) : null}
+          {!canSubmit
+            ? (
+                <p className="mt-[18px] font-bold text-danger">
+                  正文、图片和行程快照至少需要提供一项。
+                </p>
+              )
+            : null}
 
           <div className="mt-7 flex justify-end gap-3">
             <Button onClick={() => router.push('/community')} type="button" variant="outline">

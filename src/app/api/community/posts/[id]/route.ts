@@ -11,19 +11,21 @@ import { deleteCommunityPost, getCommunityPostById } from '@/lib/services/commun
 import { httpError, withErrorHandler, withProtected } from '@/lib/utils/http'
 import { readRequiredString } from '@/lib/utils/validation'
 
-type Context = { params: Promise<{ id: string }> }
+interface Context { params: Promise<{ id: string }> }
 
 export const GET = withErrorHandler(async (req: Request, context?: unknown) => {
   const { params } = context as Context
   const rateLimited = await checkRateLimit(req, 'community:read', 60, 60_000)
-  if (rateLimited) return rateLimited
+  if (rateLimited)
+    return rateLimited
 
   const viewer = await getAuthFromHeaders(req.headers)
   const { id } = await params
   readRequiredString(id, '帖子ID', { max: 100, min: 1 })
 
   const post = await getCommunityPostById(id, viewer?.id)
-  if (!post) throw httpError(404, '帖子不存在或已删除')
+  if (!post)
+    throw httpError(404, '帖子不存在或已删除')
 
   return NextResponse.json({ data: post, message: 'ok', success: true })
 })

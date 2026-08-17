@@ -307,7 +307,7 @@ describe('auth 服务', () => {
       mockQuery.mockResolvedValueOnce({ rows: [{ used_count: 10 }] })
 
       // act & assert
-      const err = (await consumeAiQuota('user-1', '2024-01-15').catch((e) => e)) as Error & {
+      const err = (await consumeAiQuota('user-1', '2024-01-15').catch(e => e)) as Error & {
         status: number
       }
       expect(err.message).toBe('今日 AI 使用次数已达上限，请明天再试')

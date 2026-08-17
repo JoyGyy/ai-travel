@@ -1,10 +1,10 @@
 'use client'
 
+import type { CommunityPost, CommunityPostFilters } from '@/types/community'
 import { Bookmark, Camera, Heart, MapPin, MessageCircle, Plus, Quote, Star, TrendingUp, Users } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import type { CommunityPost, CommunityPostFilters } from '@/types/community'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { fetchCommunityPosts } from '@/api/community'
 import { CommunityPostCard } from '@/components/CommunityPostCard'
@@ -57,8 +57,8 @@ export default function Community() {
 
   const { hasHydrated, requireLogin, submitRepost, toggleLike, user } = useCommunityActions({
     onLikeSuccess: (postId, likedByMe, likeCount) => {
-      setItems((prev) =>
-        prev.map((item) => (item.id === postId ? { ...item, likeCount, likedByMe } : item)),
+      setItems(prev =>
+        prev.map(item => (item.id === postId ? { ...item, likeCount, likedByMe } : item)),
       )
     },
   })
@@ -71,9 +71,11 @@ export default function Community() {
       setItems(data.items)
       setTotal(data.total)
       setFilters({ ...nextFilters, page: data.page, pageSize: data.pageSize })
-    } catch (err: unknown) {
+    }
+    catch (err: unknown) {
       setError(err instanceof Error ? err.message : '社区内容加载失败')
-    } finally {
+    }
+    finally {
       setLoading(false)
     }
   }, [])
@@ -107,10 +109,11 @@ export default function Community() {
 
   const handleLike = useCallback(
     async (post: CommunityPost) => {
-      setLikePendingIds((prev) => new Set(prev).add(post.id))
+      setLikePendingIds(prev => new Set(prev).add(post.id))
       try {
         await toggleLike(post.id, post.likedByMe)
-      } finally {
+      }
+      finally {
         setLikePendingIds((prev) => {
           const next = new Set(prev)
           next.delete(post.id)
@@ -123,7 +126,8 @@ export default function Community() {
 
   const openRepost = useCallback(
     (post: CommunityPost) => {
-      if (!requireLogin('转发')) return
+      if (!requireLogin('转发'))
+        return
       setRepostTarget(post)
     },
     [requireLogin],
@@ -131,9 +135,10 @@ export default function Community() {
 
   const handleSubmitRepost = useCallback(
     async (content: string) => {
-      if (!repostTarget) return false
+      if (!repostTarget)
+        return false
 
-      setRepostPendingIds((prev) => new Set(prev).add(repostTarget.id))
+      setRepostPendingIds(prev => new Set(prev).add(repostTarget.id))
       try {
         const success = await submitRepost(repostTarget.id, content)
         if (success) {
@@ -144,7 +149,8 @@ export default function Community() {
           setRepostTarget(null)
         }
         return success
-      } finally {
+      }
+      finally {
         setRepostPendingIds((prev) => {
           const next = new Set(prev)
           next.delete(repostTarget.id)
@@ -198,7 +204,7 @@ export default function Community() {
 
         {/* 社区统计 */}
         <div className="relative mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
-          {getStats(total).map((stat) => (
+          {getStats(total).map(stat => (
             <Card className="border-white/60 bg-white/80 backdrop-blur-sm" key={stat.label}>
               <CardContent className="flex items-center gap-3 p-3">
                 <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-orange-100 to-amber-100 text-orange-600">
@@ -221,7 +227,7 @@ export default function Community() {
           <h2 className="text-sm font-semibold text-gray-700">热门话题</h2>
         </div>
         <div className="flex flex-wrap gap-2">
-          {TRENDING_TAGS.map((tag) => (
+          {TRENDING_TAGS.map(tag => (
             <Badge
               className={`cursor-pointer border px-3 py-1.5 text-xs font-semibold transition-all hover:-translate-y-0.5 hover:shadow-sm ${tag.color}`}
               key={tag.label}
@@ -231,7 +237,9 @@ export default function Community() {
               }}
               variant="outline"
             >
-              # {tag.label}
+              #
+              {' '}
+              {tag.label}
             </Badge>
           ))}
         </div>
@@ -283,7 +291,7 @@ export default function Community() {
               </div>
             </div>
             <div className="mt-3 flex flex-wrap gap-1.5">
-              {['火锅', '大熊猫', '宽窄巷子', '都江堰'].map((tag) => (
+              {['火锅', '大熊猫', '宽窄巷子', '都江堰'].map(tag => (
                 <Badge className="border-orange-200 bg-orange-50 text-[10px] text-orange-600" key={tag} variant="outline">
                   {tag}
                 </Badge>
@@ -302,11 +310,13 @@ export default function Community() {
           <h2 className="text-base font-semibold text-travel-ink" id="community-filter-title">
             筛选分享
           </h2>
-          {hasActiveFilters ? (
-            <Button onClick={clearFilters} variant="link">
-              清空筛选
-            </Button>
-          ) : null}
+          {hasActiveFilters
+            ? (
+                <Button onClick={clearFilters} variant="link">
+                  清空筛选
+                </Button>
+              )
+            : null}
         </div>
         <form className="grid gap-1.5" onSubmit={handleSearch}>
           <Label className="text-[13px] font-medium" htmlFor="community-city">
@@ -316,7 +326,7 @@ export default function Community() {
             <Input
               className="flex-1"
               id="community-city"
-              onChange={(event) => setCityInput(event.target.value)}
+              onChange={event => setCityInput(event.target.value)}
               placeholder="输入城市，例如 成都"
               value={cityInput}
             />
@@ -328,7 +338,7 @@ export default function Community() {
           <input
             aria-label="只看含行程分享"
             checked={Boolean(filters.withItinerary)}
-            onChange={(event) => updateFilters({ withItinerary: event.target.checked })}
+            onChange={event => updateFilters({ withItinerary: event.target.checked })}
             type="checkbox"
           />
         </div>
@@ -337,66 +347,74 @@ export default function Community() {
         </p>
       </section>
 
-      {loading ? (
-        <section aria-live="polite" className="columns-1 sm:columns-2 gap-4" role="status">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <CommunityPostCardSkeleton key={i} />
-          ))}
-        </section>
-      ) : null}
+      {loading
+        ? (
+            <section aria-live="polite" className="columns-1 sm:columns-2 gap-4" role="status">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <CommunityPostCardSkeleton key={i} />
+              ))}
+            </section>
+          )
+        : null}
 
-      {!loading && error ? (
-        <div
-          className="grid place-items-center gap-3 rounded-xl p-6 text-center text-travel-muted"
-          role="alert"
-        >
-          <p>{error}</p>
-          <Button onClick={() => load(filters)}>重试</Button>
-        </div>
-      ) : null}
+      {!loading && error
+        ? (
+            <div
+              className="grid place-items-center gap-3 rounded-xl p-6 text-center text-travel-muted"
+              role="alert"
+            >
+              <p>{error}</p>
+              <Button onClick={() => load(filters)}>重试</Button>
+            </div>
+          )
+        : null}
 
-      {!loading && !error && items.length === 0 ? (
-        <div className="grid place-items-center gap-3 rounded-xl p-6 text-center text-travel-muted">
-          <div className="py-8 text-center text-muted-foreground">
-            <p>还没有符合条件的旅行分享</p>
-          </div>
-          <Button
-            disabled={!hasHydrated}
-            onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}
-          >
-            {!hasHydrated ? '加载中...' : '发布第一条分享'}
-          </Button>
-        </div>
-      ) : null}
+      {!loading && !error && items.length === 0
+        ? (
+            <div className="grid place-items-center gap-3 rounded-xl p-6 text-center text-travel-muted">
+              <div className="py-8 text-center text-muted-foreground">
+                <p>还没有符合条件的旅行分享</p>
+              </div>
+              <Button
+                disabled={!hasHydrated}
+                onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}
+              >
+                {!hasHydrated ? '加载中...' : '发布第一条分享'}
+              </Button>
+            </div>
+          )
+        : null}
 
-      {!loading && !error && items.length > 0 ? (
-        <>
-          <section
-            aria-label="社区分享列表"
-            className="columns-1 sm:columns-2 gap-4 break-inside-avoid"
-          >
-            {items.map((post) => (
-              <CommunityPostCard
-                currentUserId={user?.id}
-                key={post.id}
-                likePending={likePendingIds.has(post.id)}
-                onComment={(item) => router.push(`/community/${item.id}`)}
-                onLike={handleLike}
-                onRepost={openRepost}
-                post={post}
-                repostPending={repostPendingIds.has(post.id)}
+      {!loading && !error && items.length > 0
+        ? (
+            <>
+              <section
+                aria-label="社区分享列表"
+                className="columns-1 sm:columns-2 gap-4 break-inside-avoid"
+              >
+                {items.map(post => (
+                  <CommunityPostCard
+                    currentUserId={user?.id}
+                    key={post.id}
+                    likePending={likePendingIds.has(post.id)}
+                    onComment={item => router.push(`/community/${item.id}`)}
+                    onLike={handleLike}
+                    onRepost={openRepost}
+                    post={post}
+                    repostPending={repostPendingIds.has(post.id)}
+                  />
+                ))}
+              </section>
+              <Pagination
+                className="flex justify-center py-2 pb-6"
+                onPageChange={page => updateFilters({ page })}
+                page={filters.page || 1}
+                pageSize={PAGE_SIZE}
+                total={total}
               />
-            ))}
-          </section>
-          <Pagination
-            className="flex justify-center py-2 pb-6"
-            onPageChange={(page) => updateFilters({ page })}
-            page={filters.page || 1}
-            pageSize={PAGE_SIZE}
-            total={total}
-          />
-        </>
-      ) : null}
+            </>
+          )
+        : null}
 
       <RepostModal
         onClose={() => setRepostTarget(null)}

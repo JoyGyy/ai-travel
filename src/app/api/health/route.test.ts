@@ -4,7 +4,7 @@
  */
 import { GET } from './route'
 
-describe('GET /api/health', () => {
+describe('gET /api/health', () => {
   it('返回状态 ok', async () => {
     const res = await GET()
     const data = await res.json()

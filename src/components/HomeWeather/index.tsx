@@ -59,7 +59,9 @@ export function HomeWeather({ loading, weather }: HomeWeatherProps) {
               <span className="text-[var(--color-primary)] text-[15px] font-black">°C</span>
             </div>
             <p className="min-w-0 mt-1.5 overflow-hidden text-[rgba(62,73,88,0.68)] text-xs font-bold leading-[1.35] text-ellipsis whitespace-nowrap">
-              {weather.weatherDesc} · 体感
+              {weather.weatherDesc}
+              {' '}
+              · 体感
               {weather.feelsLike}
               °C
             </p>
@@ -71,7 +73,8 @@ export function HomeWeather({ loading, weather }: HomeWeatherProps) {
           </p>
           <p className="mt-[5px] text-[rgba(62,73,88,0.62)] text-xs font-extrabold tabular-nums max-sm:flex-[0_0_auto] max-sm:mt-0">
             湿度
-            {weather.humidity}%
+            {weather.humidity}
+            %
           </p>
         </div>
       </div>
@@ -91,7 +94,10 @@ export function HomeWeather({ loading, weather }: HomeWeatherProps) {
               </span>
               <WeatherIcon className="[--weather-icon-size:22px]" desc={day.weatherDesc} />
               <span className="max-w-full overflow-hidden text-[var(--color-primary)] text-xs font-black leading-[1.25] text-ellipsis whitespace-nowrap tabular-nums">
-                {day.minTemp}~{day.maxTemp}°
+                {day.minTemp}
+                ~
+                {day.maxTemp}
+                °
               </span>
             </div>
           ))}
@@ -103,12 +109,18 @@ export function HomeWeather({ loading, weather }: HomeWeatherProps) {
 
 /** 根据天气描述文本匹配对应的图标类型 */
 function getWeatherIconType(desc = ''): string {
-  if (desc.includes('雷') || desc.includes('暴雨')) return 'storm'
-  if (desc.includes('雨')) return 'rain'
-  if (desc.includes('雪')) return 'snow'
-  if (desc.includes('雾')) return 'fog'
-  if (desc.includes('云') || desc.includes('阴')) return 'cloudy'
-  if (desc.includes('晴')) return 'sunny'
+  if (desc.includes('雷') || desc.includes('暴雨'))
+    return 'storm'
+  if (desc.includes('雨'))
+    return 'rain'
+  if (desc.includes('雪'))
+    return 'snow'
+  if (desc.includes('雾'))
+    return 'fog'
+  if (desc.includes('云') || desc.includes('阴'))
+    return 'cloudy'
+  if (desc.includes('晴'))
+    return 'sunny'
   return 'default'
 }
 

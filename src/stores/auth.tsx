@@ -1,6 +1,3 @@
-import { create } from 'zustand'
-import { devtools, persist } from 'zustand/middleware'
-
 /**
  * 认证状态管理 Store
  *
@@ -13,6 +10,9 @@ import { devtools, persist } from 'zustand/middleware'
  * - 水合状态检测（防止 hydration mismatch）
  */
 import type { AuthUser } from '@/types/api'
+import { create } from 'zustand'
+
+import { devtools, persist } from 'zustand/middleware'
 
 import { loginApi, registerApi } from '@/api/auth'
 
@@ -33,7 +33,7 @@ interface AuthState {
 export const useAuthStore = create<AuthState>()(
   devtools(
     persist(
-      (set) => ({
+      set => ({
         // --- 初始状态 ---
 
         _hasHydrated: false,
@@ -55,7 +55,7 @@ export const useAuthStore = create<AuthState>()(
 
         // --- 异步操作：登录/注册 ---
 
-        setHasHydrated: (v) => set({ _hasHydrated: v }),
+        setHasHydrated: v => set({ _hasHydrated: v }),
 
         token: null,
 

@@ -1,10 +1,10 @@
 'use client'
 
+import type { CommunityPost } from '@/types/community'
 import { Heart, MapPin, MessageCircle, Repeat2, Trash2 } from 'lucide-react'
 import Link from 'next/link'
-import React, { useState } from 'react'
 
-import type { CommunityPost } from '@/types/community'
+import React, { useState } from 'react'
 
 import { CommunityImageGrid } from '@/components/CommunityImageGrid'
 import { CommunityItineraryPreview } from '@/components/CommunityItineraryPreview'
@@ -27,7 +27,8 @@ interface CommunityPostCardProps {
 
 function formatTime(value: string) {
   const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return value
+  if (Number.isNaN(date.getTime()))
+    return value
 
   const now = new Date()
   const diff = now.getTime() - date.getTime()
@@ -35,16 +36,21 @@ function formatTime(value: string) {
   const hours = Math.floor(diff / 3600000)
   const days = Math.floor(diff / 86400000)
 
-  if (minutes < 1) return '刚刚'
-  if (minutes < 60) return `${minutes}分钟前`
-  if (hours < 24) return `${hours}小时前`
-  if (days < 7) return `${days}天前`
+  if (minutes < 1)
+    return '刚刚'
+  if (minutes < 60)
+    return `${minutes}分钟前`
+  if (hours < 24)
+    return `${hours}小时前`
+  if (days < 7)
+    return `${days}天前`
 
   return date.toLocaleDateString('zh-CN', { day: 'numeric', month: 'short' })
 }
 
 function getPostExcerpt(content: string) {
-  if (content.length <= 80) return content
+  if (content.length <= 80)
+    return content
   return `${content.slice(0, 80)}...`
 }
 
@@ -61,8 +67,8 @@ export const CommunityPostCard = React.memo(
     repostPending = false,
   }: CommunityPostCardProps) => {
     const isAuthor = currentUserId === post.author.id
-    const displayAuthor =
-      post.postType === 'repost' && post.originalPost
+    const displayAuthor
+      = post.postType === 'repost' && post.originalPost
         ? `${post.author.username} 转发了 ${post.originalPost.author.username}`
         : post.author.username
 

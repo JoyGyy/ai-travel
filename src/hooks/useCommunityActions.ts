@@ -24,8 +24,8 @@ interface UseCommunityActionsOptions {
 export function useCommunityActions(options: UseCommunityActionsOptions = {}) {
   const router = useRouter()
   const toast = useAppToast()
-  const user = useAuthStore((state) => state.user)
-  const hasHydrated = useAuthStore((state) => state._hasHydrated)
+  const user = useAuthStore(state => state.user)
+  const hasHydrated = useAuthStore(state => state._hasHydrated)
   const { onLikeSuccess, onRepostSuccess } = options
 
   /**
@@ -58,7 +58,8 @@ export function useCommunityActions(options: UseCommunityActionsOptions = {}) {
    */
   const toggleLike = useCallback(
     async (postId: string, currentlyLiked: boolean): Promise<boolean> => {
-      if (!requireLogin('点赞')) return false
+      if (!requireLogin('点赞'))
+        return false
 
       try {
         const result = currentlyLiked
@@ -67,7 +68,8 @@ export function useCommunityActions(options: UseCommunityActionsOptions = {}) {
         onLikeSuccess?.(postId, result.likedByMe, result.likeCount)
         toast.success(result.likedByMe ? '已点赞' : '已取消点赞')
         return true
-      } catch (err: unknown) {
+      }
+      catch (err: unknown) {
         toast.error(err instanceof Error ? err.message : '点赞操作失败')
         return false
       }
@@ -83,14 +85,16 @@ export function useCommunityActions(options: UseCommunityActionsOptions = {}) {
    */
   const submitRepost = useCallback(
     async (postId: string, content: string): Promise<boolean> => {
-      if (!requireLogin('转发')) return false
+      if (!requireLogin('转发'))
+        return false
 
       try {
         const repost = await repostCommunityPost(postId, content.trim())
         toast.success('已转发到社区')
         onRepostSuccess?.(repost.id)
         return true
-      } catch (err: unknown) {
+      }
+      catch (err: unknown) {
         toast.error(err instanceof Error ? err.message : '转发失败')
         return false
       }

@@ -1,10 +1,10 @@
 'use client'
 
+import type { CommunityComment, CommunityPost } from '@/types/community'
 import { ArrowLeft, Heart, Repeat2, Send, Share2, Trash2 } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
-import { startTransition, useEffect, useOptimistic, useState } from 'react'
 
-import type { CommunityComment, CommunityPost } from '@/types/community'
+import { startTransition, useEffect, useOptimistic, useState } from 'react'
 
 import {
   createCommunityComment,
@@ -76,11 +76,16 @@ export default function CommunityPostDetail() {
       setError('')
       try {
         const data = await fetchCommunityPost(id)
-        if (!cancelled) setPost(data)
-      } catch (err: unknown) {
-        if (!cancelled) setError(err instanceof Error ? err.message : '帖子加载失败')
-      } finally {
-        if (!cancelled) setLoading(false)
+        if (!cancelled)
+          setPost(data)
+      }
+      catch (err: unknown) {
+        if (!cancelled)
+          setError(err instanceof Error ? err.message : '帖子加载失败')
+      }
+      finally {
+        if (!cancelled)
+          setLoading(false)
       }
     }
     loadPost()
@@ -92,7 +97,8 @@ export default function CommunityPostDetail() {
   useEffect(() => {
     let cancelled = false
     async function loadComments() {
-      if (!id) return
+      if (!id)
+        return
       setCommentsLoading(true)
       try {
         const data = await fetchCommunityComments(id, {
@@ -103,10 +109,14 @@ export default function CommunityPostDetail() {
           setComments(data.items)
           setCommentTotal(data.total)
         }
-      } catch (err: unknown) {
-        if (!cancelled) toast.error(err instanceof Error ? err.message : '评论加载失败')
-      } finally {
-        if (!cancelled) setCommentsLoading(false)
+      }
+      catch (err: unknown) {
+        if (!cancelled)
+          toast.error(err instanceof Error ? err.message : '评论加载失败')
+      }
+      finally {
+        if (!cancelled)
+          setCommentsLoading(false)
       }
     }
     loadComments()
@@ -118,7 +128,8 @@ export default function CommunityPostDetail() {
   // requireLogin, toggleLike, submitRepost 已从 useCommunityActions hook 获取
 
   async function handleLike() {
-    if (!post || likePending) return
+    if (!post || likePending)
+      return
 
     // 触发动画
     if (!optimisticLike.likedByMe) {
@@ -135,15 +146,18 @@ export default function CommunityPostDetail() {
     setLikePending(true)
     try {
       await toggleLike(post.id, post.likedByMe)
-    } catch {
+    }
+    catch {
       // API 失败时，useOptimistic 会自动回滚到之前的状态
-    } finally {
+    }
+    finally {
       setLikePending(false)
     }
   }
 
   async function submitComment() {
-    if (!post || !requireLogin('评论')) return
+    if (!post || !requireLogin('评论'))
+      return
 
     const content = commentInput.trim()
     if (!content) {
@@ -154,14 +168,16 @@ export default function CommunityPostDetail() {
     setCommentSubmitting(true)
     try {
       const result = await createCommunityComment(post.id, { content })
-      setComments((prev) => (commentPage === 1 ? [...prev, result.comment] : prev))
+      setComments(prev => (commentPage === 1 ? [...prev, result.comment] : prev))
       setCommentTotal(result.commentCount)
       setPost({ ...post, commentCount: result.commentCount })
       setCommentInput('')
       toast.success('评论已发布')
-    } catch (err: unknown) {
+    }
+    catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : '评论发布失败')
-    } finally {
+    }
+    finally {
       setCommentSubmitting(false)
     }
   }
@@ -170,34 +186,41 @@ export default function CommunityPostDetail() {
     setDeletePendingId(comment.id)
     try {
       await deleteCommunityComment(comment.id)
-      setComments((prev) => prev.filter((item) => item.id !== comment.id))
-      setCommentTotal((prev) => Math.max(0, prev - 1))
-      if (post) setPost({ ...post, commentCount: Math.max(0, post.commentCount - 1) })
+      setComments(prev => prev.filter(item => item.id !== comment.id))
+      setCommentTotal(prev => Math.max(0, prev - 1))
+      if (post)
+        setPost({ ...post, commentCount: Math.max(0, post.commentCount - 1) })
       toast.success('评论已删除')
-    } catch (err: unknown) {
+    }
+    catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : '删除评论失败')
-    } finally {
+    }
+    finally {
       setDeletePendingId('')
     }
   }
 
   async function removePost() {
-    if (!post) return
+    if (!post)
+      return
 
     setPostDeletePending(true)
     try {
       await deleteCommunityPost(post.id)
       toast.success('帖子已删除')
       router.push('/community')
-    } catch (err: unknown) {
+    }
+    catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : '删除帖子失败')
-    } finally {
+    }
+    finally {
       setPostDeletePending(false)
     }
   }
 
   async function handleSubmitRepost(content: string) {
-    if (!post) return false
+    if (!post)
+      return false
 
     setRepostPending(true)
     try {
@@ -207,7 +230,8 @@ export default function CommunityPostDetail() {
         router.push('/community')
       }
       return success
-    } finally {
+    }
+    finally {
       setRepostPending(false)
     }
   }
@@ -222,7 +246,8 @@ export default function CommunityPostDetail() {
           url,
         })
         return
-      } catch {
+      }
+      catch {
         // 用户取消系统分享时降级复制链接
       }
     }
@@ -259,7 +284,7 @@ export default function CommunityPostDetail() {
           </h1>
           <p className="text-travel-muted">{error || '帖子不存在或已删除'}</p>
           <div className="flex gap-3">
-            <Button onClick={() => setReloadKey((prev) => prev + 1)}>重试</Button>
+            <Button onClick={() => setReloadKey(prev => prev + 1)}>重试</Button>
             <Button onClick={() => router.push('/community')}>返回社区</Button>
           </div>
         </div>
@@ -298,21 +323,29 @@ export default function CommunityPostDetail() {
           {post.title || `${post.city || '旅行'}分享`}
         </h1>
 
-        {post.content ? (
-          <p className="whitespace-pre-wrap leading-relaxed text-travel-ink">{post.content}</p>
-        ) : null}
+        {post.content
+          ? (
+              <p className="whitespace-pre-wrap leading-relaxed text-travel-ink">{post.content}</p>
+            )
+          : null}
 
         <CommunityImageGrid images={post.images} />
 
-        {post.itinerarySnapshot ? (
-          <CommunityItineraryPreview mode="detail" snapshot={post.itinerarySnapshot} />
-        ) : null}
+        {post.itinerarySnapshot
+          ? (
+              <CommunityItineraryPreview mode="detail" snapshot={post.itinerarySnapshot} />
+            )
+          : null}
 
-        {post.originalPost ? (
-          <CommunityPostCard post={{ ...post.originalPost, originalPost: null }} />
-        ) : post.postType === 'repost' ? (
-          <div className="rounded-xl bg-muted/50 p-4 text-center text-travel-muted">原帖已删除</div>
-        ) : null}
+        {post.originalPost
+          ? (
+              <CommunityPostCard post={{ ...post.originalPost, originalPost: null }} />
+            )
+          : post.postType === 'repost'
+            ? (
+                <div className="rounded-xl bg-muted/50 p-4 text-center text-travel-muted">原帖已删除</div>
+              )
+            : null}
 
         <div aria-label="帖子操作" className="flex flex-wrap gap-2">
           <Button
@@ -340,12 +373,14 @@ export default function CommunityPostDetail() {
             <Share2 aria-hidden="true" className="mr-1 h-4 w-4" />
             分享链接
           </Button>
-          {isAuthor ? (
-            <Button disabled={postDeletePending} onClick={removePost} variant="destructive">
-              <Trash2 aria-hidden="true" className="mr-1 h-4 w-4" />
-              {postDeletePending ? '删除中...' : '删除帖子'}
-            </Button>
-          ) : null}
+          {isAuthor
+            ? (
+                <Button disabled={postDeletePending} onClick={removePost} variant="destructive">
+                  <Trash2 aria-hidden="true" className="mr-1 h-4 w-4" />
+                  {postDeletePending ? '删除中...' : '删除帖子'}
+                </Button>
+              )
+            : null}
         </div>
       </section>
 
@@ -357,14 +392,18 @@ export default function CommunityPostDetail() {
           <h2 className="text-lg font-bold text-travel-ink" id="community-comments-title">
             评论
           </h2>
-          <span className="text-sm text-travel-muted">{commentTotal} 条</span>
+          <span className="text-sm text-travel-muted">
+            {commentTotal}
+            {' '}
+            条
+          </span>
         </div>
 
         <div className="grid gap-3">
           <textarea
             className="flex min-h-[80px] w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
             maxLength={500}
-            onChange={(event) => setCommentInput(event.target.value)}
+            onChange={event => setCommentInput(event.target.value)}
             placeholder="写下你的建议、问题或补充体验"
             rows={4}
             value={commentInput}
@@ -375,47 +414,55 @@ export default function CommunityPostDetail() {
           </Button>
         </div>
 
-        {commentsLoading ? (
-          <div className="flex items-center justify-center gap-3 py-8">
-            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
-            <span className="text-travel-muted">加载评论中...</span>
-          </div>
-        ) : null}
+        {commentsLoading
+          ? (
+              <div className="flex items-center justify-center gap-3 py-8">
+                <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
+                <span className="text-travel-muted">加载评论中...</span>
+              </div>
+            )
+          : null}
 
-        {!commentsLoading && comments.length === 0 ? (
-          <div className="py-8 text-center text-muted-foreground">
-            <p>还没有评论，来写第一条吧</p>
-          </div>
-        ) : null}
+        {!commentsLoading && comments.length === 0
+          ? (
+              <div className="py-8 text-center text-muted-foreground">
+                <p>还没有评论，来写第一条吧</p>
+              </div>
+            )
+          : null}
 
-        {!commentsLoading && comments.length > 0 ? (
-          <div className="space-y-4">
-            {comments.map((comment) => (
-              <article className="grid gap-2 rounded-xl border p-4" key={comment.id}>
-                <div className="flex items-center gap-2">
-                  <strong className="text-sm font-semibold text-travel-ink">
-                    {comment.author.username}
-                  </strong>
-                  <span className="text-xs text-travel-muted">
-                    {formatRelativeTime(comment.createdAt)}
-                  </span>
-                </div>
-                <p className="text-sm text-travel-ink">{comment.content}</p>
-                {comment.author.id === user?.id ? (
-                  <Button
-                    className="justify-self-start text-destructive"
-                    disabled={deletePendingId === comment.id}
-                    onClick={() => removeComment(comment)}
-                    size="sm"
-                    variant="link"
-                  >
-                    {deletePendingId === comment.id ? '删除中...' : '删除'}
-                  </Button>
-                ) : null}
-              </article>
-            ))}
-          </div>
-        ) : null}
+        {!commentsLoading && comments.length > 0
+          ? (
+              <div className="space-y-4">
+                {comments.map(comment => (
+                  <article className="grid gap-2 rounded-xl border p-4" key={comment.id}>
+                    <div className="flex items-center gap-2">
+                      <strong className="text-sm font-semibold text-travel-ink">
+                        {comment.author.username}
+                      </strong>
+                      <span className="text-xs text-travel-muted">
+                        {formatRelativeTime(comment.createdAt)}
+                      </span>
+                    </div>
+                    <p className="text-sm text-travel-ink">{comment.content}</p>
+                    {comment.author.id === user?.id
+                      ? (
+                          <Button
+                            className="justify-self-start text-destructive"
+                            disabled={deletePendingId === comment.id}
+                            onClick={() => removeComment(comment)}
+                            size="sm"
+                            variant="link"
+                          >
+                            {deletePendingId === comment.id ? '删除中...' : '删除'}
+                          </Button>
+                        )
+                      : null}
+                  </article>
+                ))}
+              </div>
+            )
+          : null}
 
         <Pagination
           className="flex justify-center"

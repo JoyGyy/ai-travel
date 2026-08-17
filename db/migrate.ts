@@ -50,7 +50,7 @@ async function getAppliedMigrations(pool: pg.Pool): Promise<Set<string>> {
 /** 获取所有 migration 文件（按文件名排序） */
 function getMigrationFiles(): string[] {
   return readdirSync(MIGRATIONS_DIR)
-    .filter((f) => f.endsWith('.sql'))
+    .filter(f => f.endsWith('.sql'))
     .sort()
 }
 
@@ -86,10 +86,12 @@ async function main() {
         await runMigrations(pool)
         break
     }
-  } catch (err) {
+  }
+  catch (err) {
     console.error('❌ Migration 失败:', err)
     process.exit(1)
-  } finally {
+  }
+  finally {
     await pool.end()
   }
 }
@@ -99,7 +101,7 @@ async function runMigrations(pool: pg.Pool) {
   const files = getMigrationFiles()
   const applied = await getAppliedMigrations(pool)
 
-  const pending = files.filter((f) => !applied.has(f))
+  const pending = files.filter(f => !applied.has(f))
 
   if (pending.length === 0) {
     console.log('✅ 所有 migration 已应用，无需操作')
@@ -126,7 +128,7 @@ async function showStatus(pool: pg.Pool) {
   const applied = await getAppliedMigrations(pool)
 
   console.log('\n📊 Migration 状态:\n')
-  console.log(`${'状态'.padEnd(6)  }文件名`)
+  console.log(`${'状态'.padEnd(6)}文件名`)
   console.log('─'.repeat(50))
 
   for (const file of files) {
@@ -134,7 +136,7 @@ async function showStatus(pool: pg.Pool) {
     console.log(`${status}  ${file}`)
   }
 
-  const pending = files.filter((f) => !applied.has(f))
+  const pending = files.filter(f => !applied.has(f))
   console.log(`\n共 ${files.length} 个 migration，${pending.length} 个待执行`)
 }
 

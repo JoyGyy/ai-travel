@@ -72,7 +72,7 @@ async function getAttractionById(id: string): Promise<AttractionItem | null> {
 }
 
 /** 获取所有城市列表（按预设排序）和标签列表 */
-async function getAttractionMeta(): Promise<{ cities: string[]; tags: string[] }> {
+async function getAttractionMeta(): Promise<{ cities: string[], tags: string[] }> {
   const [cityResult, tagResult] = await Promise.all([
     query('SELECT DISTINCT city FROM attractions ORDER BY city'),
     query('SELECT name FROM tags ORDER BY name'),
@@ -80,8 +80,8 @@ async function getAttractionMeta(): Promise<{ cities: string[]; tags: string[] }
 
   const dbCities = cityResult.rows.map((r: { city: string }) => r.city)
   const orderedCities = [
-    ...CITY_ORDER.filter((c) => dbCities.includes(c)),
-    ...dbCities.filter((c) => !CITY_ORDER.includes(c)),
+    ...CITY_ORDER.filter(c => dbCities.includes(c)),
+    ...dbCities.filter(c => !CITY_ORDER.includes(c)),
   ]
 
   return {
@@ -93,7 +93,7 @@ async function getAttractionMeta(): Promise<{ cities: string[]; tags: string[] }
 /** 分页查询景点列表，支持城市、关键词、票型、标签等多条件过滤 */
 async function listAttractions(
   filters: ListFilters = {},
-): Promise<{ items: AttractionItem[]; total: number }> {
+): Promise<{ items: AttractionItem[], total: number }> {
   const conditions: string[] = []
   const params: unknown[] = []
   let paramIndex = 1
@@ -181,7 +181,7 @@ function mapRow(row: AttractionRow): AttractionItem {
 
 async function searchAttractions(
   filters: ListFilters = {},
-): Promise<{ items: AttractionItem[]; total: number }> {
+): Promise<{ items: AttractionItem[], total: number }> {
   return listAttractions(filters)
 }
 

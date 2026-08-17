@@ -28,12 +28,14 @@ export function typedQuery<T>(result: unknown[]): T[] {
 
 async function getClient(): Promise<PoolClient> {
   const pool = getPool()
-  if (!pool) throw new Error('数据库未配置，请设置 DATABASE_URL 环境变量')
+  if (!pool)
+    throw new Error('数据库未配置，请设置 DATABASE_URL 环境变量')
   return pool.connect()
 }
 
 function getPool(): null | pg.Pool {
-  if (!env.DATABASE_URL) return null
+  if (!env.DATABASE_URL)
+    return null
 
   if (!globalForDb._pgPool) {
     globalForDb._pgPool = new Pool({
@@ -54,7 +56,8 @@ function getPool(): null | pg.Pool {
 /** 执行 SQL 查询 */
 async function query(text: string, params?: unknown[]): Promise<QueryResult> {
   const pool = getPool()
-  if (!pool) throw new Error('数据库未配置，请设置 DATABASE_URL 环境变量')
+  if (!pool)
+    throw new Error('数据库未配置，请设置 DATABASE_URL 环境变量')
   return pool.query(text, params)
 }
 

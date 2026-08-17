@@ -91,7 +91,8 @@ async function searchPexels(query: string): Promise<null | string> {
       return data.photos[0].src.large
     }
     return null
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Pexels search failed:', error)
     return null
   }
@@ -128,7 +129,8 @@ async function searchUnsplash(query: string): Promise<null | string> {
       return data.results[0].urls.regular
     }
     return null
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Unsplash search failed:', error)
     return null
   }
@@ -155,7 +157,8 @@ async function searchWikipedia(query: string): Promise<null | string> {
       return data.thumbnail.source.replace(/\/\d+px-/, '/1280px-')
     }
     return null
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Wikipedia search failed:', error)
     return null
   }
@@ -186,7 +189,7 @@ const imageSources: ImageSource[] = [
  * @returns 景点名称到图片URL的映射
  */
 export async function batchGetAttractionImages(
-  attractions: Array<{ city?: string; name: string }>,
+  attractions: Array<{ city?: string, name: string }>,
 ): Promise<Map<string, string>> {
   const results = new Map<string, string>()
 
@@ -248,7 +251,8 @@ export async function getAttractionImage(attractionName: string, city?: string):
         console.log(`Image found from ${source.name}: ${query}`)
         return url
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.error(`Failed to search ${source.name}:`, error)
       continue
     }
@@ -262,7 +266,7 @@ export async function getAttractionImage(attractionName: string, city?: string):
 /**
  * 获取缓存统计
  */
-export function getCacheStats(): { hitRate: number; size: number } {
+export function getCacheStats(): { hitRate: number, size: number } {
   return {
     hitRate: 0, // TODO: 实现命中率统计
     size: imageCache.size,

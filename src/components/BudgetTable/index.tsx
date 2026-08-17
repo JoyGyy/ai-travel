@@ -36,7 +36,7 @@ const barColors: Record<keyof BudgetData, string> = {
 export function BudgetTable({ data }: BudgetTableProps) {
   // 计算预算总和与最大单项值（用于柱状图宽度归一化）
   const total = Object.values(data).reduce((sum, v) => sum + (v || 0), 0)
-  const max = Math.max(...Object.values(data).map((v) => v || 0), 1)
+  const max = Math.max(...Object.values(data).map(v => v || 0), 1)
 
   const budgetKeys = Object.keys(labels) as Array<keyof BudgetData>
 
@@ -57,7 +57,7 @@ export function BudgetTable({ data }: BudgetTableProps) {
         <table className="w-full border-collapse">
           <caption className="sr-only">旅行预算分类明细</caption>
           <tbody>
-            {budgetKeys.map((key) => (
+            {budgetKeys.map(key => (
               <tr
                 className="border-b border-dashed border-[rgba(var(--travel-ocean-rgb),0.14)] last:border-b-0"
                 key={key}
@@ -66,7 +66,8 @@ export function BudgetTable({ data }: BudgetTableProps) {
                   {labels[key]}
                 </th>
                 <td className="py-[11px] text-[var(--color-primary-strong)] font-[var(--font-display)] text-[15px] font-black tabular-nums text-right whitespace-nowrap">
-                  ¥{data[key] || 0}
+                  ¥
+                  {data[key] || 0}
                 </td>
               </tr>
             ))}
@@ -77,7 +78,7 @@ export function BudgetTable({ data }: BudgetTableProps) {
           aria-label="预算占比可视化"
           className="mt-3.5 pt-3.5 border-t border-[rgba(var(--travel-ocean-rgb),0.1)]"
         >
-          {budgetKeys.map((key) => (
+          {budgetKeys.map(key => (
             <div className="flex items-center gap-2.5 mb-2 last:mb-0" key={key}>
               <span className="w-[34px] shrink-0 text-[rgba(var(--travel-ink-rgb),0.62)] text-[11px] font-bold text-right">
                 {labels[key]}
@@ -102,7 +103,8 @@ export function BudgetTable({ data }: BudgetTableProps) {
         <div className="flex items-center justify-between gap-3.5 mt-4 py-[15px] px-4 border border-[rgba(var(--travel-primary-rgb),0.08)] rounded-[18px] text-[var(--travel-ocean)] bg-[rgba(var(--travel-primary-rgb),0.04)] text-sm font-black">
           <span>总计</span>
           <span className="text-[var(--color-primary-strong)] font-[var(--font-display)] text-[21px] font-black leading-none tabular-nums">
-            ¥{total}
+            ¥
+            {total}
           </span>
         </div>
       </div>

@@ -21,7 +21,8 @@ export interface Logger {
 export function createLogger(module: string): Logger {
   return {
     debug(message: string, ...args: unknown[]) {
-      if (process.env.NODE_ENV === 'production') return
+      if (process.env.NODE_ENV === 'production')
+        return
       console.warn(`[${formatTime()}] [${LEVEL_LABELS.debug}] [${module}] ${message}`, ...args)
     },
     error(message: string, ...args: unknown[]) {

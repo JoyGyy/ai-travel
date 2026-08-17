@@ -1,4 +1,3 @@
-import { nanoid } from 'nanoid'
 /**
  * 分享服务
  * 提供行程分享的创建和查询功能
@@ -7,6 +6,7 @@ import { nanoid } from 'nanoid'
 import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
+import { nanoid } from 'nanoid'
 
 const DATA_PATH = path.join(process.cwd(), 'data/shared_itineraries.json')
 
@@ -37,7 +37,7 @@ export function createShare({
   const contentHash = hashItinerary(itinerary)
 
   const existing = shares.find(
-    (s) =>
+    s =>
       s.city === city && s.days === days && s.budget === budget && s.contentHash === contentHash,
   )
   if (existing) {
@@ -65,7 +65,7 @@ export function createShare({
 /** 获取分享记录并自增浏览次数 */
 export function getShare(id: string): null | ShareRecord {
   const shares = readShares()
-  const share = shares.find((s) => s.id === id)
+  const share = shares.find(s => s.id === id)
 
   if (!share) {
     return null
@@ -87,7 +87,8 @@ function readShares(): ShareRecord[] {
   try {
     const raw = fs.readFileSync(DATA_PATH, 'utf-8')
     return JSON.parse(raw) as ShareRecord[]
-  } catch {
+  }
+  catch {
     return []
   }
 }

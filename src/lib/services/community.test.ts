@@ -252,7 +252,7 @@ describe('community 服务', () => {
 
       // act & assert
       const err = (await deleteCommunityPost('nonexistent', 'author-1').catch(
-        (e) => e,
+        e => e,
       )) as Error & { status: number }
       expect(err.status).toBe(404)
       expect(err.message).toBe('帖子不存在或已删除')
@@ -263,7 +263,7 @@ describe('community 服务', () => {
       mockQuery.mockResolvedValueOnce({ rows: [{ author_id: 'other-author' }] }) // SELECT
 
       // act & assert
-      const err = (await deleteCommunityPost('post-1', 'author-1').catch((e) => e)) as Error & {
+      const err = (await deleteCommunityPost('post-1', 'author-1').catch(e => e)) as Error & {
         status: number
       }
       expect(err.status).toBe(403)
@@ -296,7 +296,7 @@ describe('community 服务', () => {
       mockQuery.mockResolvedValueOnce({ rows: [] }) // ensurePostExists
 
       // act & assert
-      const err = (await likeCommunityPost('nonexistent', 'user-1').catch((e) => e)) as Error & {
+      const err = (await likeCommunityPost('nonexistent', 'user-1').catch(e => e)) as Error & {
         status: number
       }
       expect(err.status).toBe(404)
@@ -326,7 +326,7 @@ describe('community 服务', () => {
       mockQuery.mockResolvedValueOnce({ rows: [] }) // ensurePostExists
 
       // act & assert
-      const err = (await unlikeCommunityPost('nonexistent', 'user-1').catch((e) => e)) as Error & {
+      const err = (await unlikeCommunityPost('nonexistent', 'user-1').catch(e => e)) as Error & {
         status: number
       }
       expect(err.status).toBe(404)
@@ -419,7 +419,7 @@ describe('community 服务', () => {
 
       // act & assert
       const err = (await deleteCommunityComment('nonexistent', 'user-1').catch(
-        (e) => e,
+        e => e,
       )) as Error & { status: number }
       expect(err.status).toBe(404)
       expect(err.message).toBe('评论不存在或已删除')
@@ -430,7 +430,7 @@ describe('community 服务', () => {
       mockQuery.mockResolvedValueOnce({ rows: [{ author_id: 'other-user' }] }) // SELECT
 
       // act & assert
-      const err = (await deleteCommunityComment('comment-1', 'user-1').catch((e) => e)) as Error & {
+      const err = (await deleteCommunityComment('comment-1', 'user-1').catch(e => e)) as Error & {
         status: number
       }
       expect(err.status).toBe(403)
@@ -484,7 +484,7 @@ describe('community 服务', () => {
 
       // act & assert
       const err = (await repostCommunityPost('nonexistent', 'author-1').catch(
-        (e) => e,
+        e => e,
       )) as Error & { status: number }
       expect(err.status).toBe(404)
     })

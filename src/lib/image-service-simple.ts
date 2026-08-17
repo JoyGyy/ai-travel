@@ -9,13 +9,13 @@
 
 // 缓存配置
 const CACHE_TTL = 24 * 60 * 60 * 1000 // 24小时
-const imageCache = new Map<string, { timestamp: number; url: string }>()
+const imageCache = new Map<string, { timestamp: number, url: string }>()
 
 /**
  * 批量获取景点图片
  */
 export async function batchGetAttractionImages(
-  attractions: Array<{ city?: string; name: string }>,
+  attractions: Array<{ city?: string, name: string }>,
 ): Promise<Map<string, string>> {
   const results = new Map<string, string>()
 
@@ -60,7 +60,8 @@ export async function getAttractionImage(attractionName: string, city?: string):
 
   // 检查缓存
   const cached = getFromCache(query)
-  if (cached) return cached
+  if (cached)
+    return cached
 
   // 依次尝试各个图片源
   const sources = [
@@ -105,7 +106,8 @@ function getFromCache(key: string): null | string {
  */
 async function searchPexels(query: string): Promise<null | string> {
   const apiKey = process.env.PEXELS_API_KEY
-  if (!apiKey) return null
+  if (!apiKey)
+    return null
 
   try {
     const response = await fetch(
@@ -113,11 +115,13 @@ async function searchPexels(query: string): Promise<null | string> {
       { headers: { Authorization: apiKey } },
     )
 
-    if (!response.ok) return null
+    if (!response.ok)
+      return null
 
     const data = await response.json()
     return data.photos?.[0]?.src?.large || null
-  } catch {
+  }
+  catch {
     return null
   }
 }
@@ -127,7 +131,8 @@ async function searchPexels(query: string): Promise<null | string> {
  */
 async function searchUnsplash(query: string): Promise<null | string> {
   const accessKey = process.env.UNSPLASH_ACCESS_KEY
-  if (!accessKey) return null
+  if (!accessKey)
+    return null
 
   try {
     const response = await fetch(
@@ -135,11 +140,13 @@ async function searchUnsplash(query: string): Promise<null | string> {
       { headers: { Authorization: `Client-ID ${accessKey}` } },
     )
 
-    if (!response.ok) return null
+    if (!response.ok)
+      return null
 
     const data = await response.json()
     return data.results?.[0]?.urls?.regular || null
-  } catch {
+  }
+  catch {
     return null
   }
 }
@@ -153,14 +160,16 @@ async function searchWikipedia(query: string): Promise<null | string> {
       `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`,
     )
 
-    if (!response.ok) return null
+    if (!response.ok)
+      return null
 
     const data = await response.json()
     if (data.thumbnail?.source) {
       return data.thumbnail.source.replace(/\/\d+px-/, '/1280px-')
     }
     return null
-  } catch {
+  }
+  catch {
     return null
   }
 }

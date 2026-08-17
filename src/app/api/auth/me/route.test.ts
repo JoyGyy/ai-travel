@@ -4,6 +4,8 @@
  */
 import type * as httpUtils from '@/lib/utils/http'
 
+import { query } from '@/lib/db'
+
 import { GET } from './route'
 
 vi.mock('@/lib/db', () => ({
@@ -18,24 +20,23 @@ vi.mock('@/lib/utils/http', async (importOriginal) => {
       (
         handler: (
           req: Request,
-          ctx: { user: { id: string; username: string } },
+          ctx: { user: { id: string, username: string } },
         ) => Promise<Response>,
       ) =>
-      async (req: Request) => {
-        try {
-          return await handler(req, { user: { id: 'u1', username: 'testuser' } })
-        } catch (err) {
-          return actual.errorResponse(err)
-        }
-      },
+        async (req: Request) => {
+          try {
+            return await handler(req, { user: { id: 'u1', username: 'testuser' } })
+          }
+          catch (err) {
+            return actual.errorResponse(err)
+          }
+        },
   }
 })
 
-import { query } from '@/lib/db'
-
 const mockQuery = vi.mocked(query)
 
-describe('GET /api/auth/me', () => {
+describe('gET /api/auth/me', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })

@@ -23,7 +23,7 @@ export interface AiQuotaStatus {
 
 export interface AuthResult {
   token: string
-  user: { createdAt: string; id: string; username: string }
+  user: { createdAt: string, id: string, username: string }
 }
 
 export interface JwtPayload {
@@ -46,7 +46,8 @@ export async function getAuthFromHeaders(headers: Headers): Promise<JwtPayload |
   if (authHeader?.startsWith('Bearer ')) {
     try {
       return await verifyToken(authHeader.slice(7))
-    } catch {
+    }
+    catch {
       return null
     }
   }
@@ -59,7 +60,8 @@ export async function getAuthFromHeaders(headers: Headers): Promise<JwtPayload |
     if (match) {
       try {
         return await verifyToken(match[1])
-      } catch {
+      }
+      catch {
         return null
       }
     }
@@ -78,8 +80,10 @@ export async function requireAuthFromHeaders(headers: Headers): Promise<JwtPaylo
 }
 
 async function addFavoriteAttraction(userId: string, attractionId: string): Promise<void> {
-  if (!userId) throw new Error('用户信息无效')
-  if (!attractionId) throw new Error('景点信息无效')
+  if (!userId)
+    throw new Error('用户信息无效')
+  if (!attractionId)
+    throw new Error('景点信息无效')
 
   await query(
     'INSERT INTO user_favorite_attractions (user_id, attraction_id) VALUES ($1, $2) ON CONFLICT DO NOTHING',
@@ -92,15 +96,19 @@ async function changePassword(
   currentPassword: string,
   newPassword: string,
 ): Promise<void> {
-  if (!userId) throw new Error('用户信息无效')
-  if (!currentPassword || !newPassword) throw new Error('当前密码和新密码不能为空')
+  if (!userId)
+    throw new Error('用户信息无效')
+  if (!currentPassword || !newPassword)
+    throw new Error('当前密码和新密码不能为空')
   validatePassword(newPassword)
 
   const result = await query('SELECT password_hash FROM users WHERE id = $1', [userId])
-  if (result.rows.length === 0) throw new Error('用户不存在')
+  if (result.rows.length === 0)
+    throw new Error('用户不存在')
 
   const match = await bcrypt.compare(currentPassword, result.rows[0].password_hash)
-  if (!match) throw new Error('当前密码错误')
+  if (!match)
+    throw new Error('当前密码错误')
 
   const newHashed = await bcrypt.hash(newPassword, SALT_ROUNDS)
   await query('UPDATE users SET password_hash = $1 WHERE id = $2', [newHashed, userId])
@@ -108,7 +116,8 @@ async function changePassword(
 
 /** 消耗一次 AI 配额（单条 SQL UPSERT + RETURNING），超限抛出 429 错误 */
 async function consumeAiQuota(userId: string, date = getTodayKey()): Promise<AiQuotaStatus> {
-  if (!userId) throw new Error('用户信息无效')
+  if (!userId)
+    throw new Error('用户信息无效')
 
   const updatedAt = new Date().toISOString()
 
@@ -148,7 +157,8 @@ async function getAiQuotaStatus(
   userId: string | undefined,
   date = getTodayKey(),
 ): Promise<AiQuotaStatus> {
-  if (!userId) throw new Error('用户信息无效')
+  if (!userId)
+    throw new Error('用户信息无效')
 
   const result = await query(
     'SELECT used_count FROM ai_usage WHERE user_id = $1 AND usage_date = $2',
@@ -170,10 +180,12 @@ function getJwtKey(): Uint8Array {
 }
 
 async function getProfile(userId: string): Promise<UserProfile> {
-  if (!userId) throw new Error('用户信息无效')
+  if (!userId)
+    throw new Error('用户信息无效')
 
   const result = await query('SELECT id, username, created_at FROM users WHERE id = $1', [userId])
-  if (result.rows.length === 0) throw new Error('用户不存在')
+  if (result.rows.length === 0)
+    throw new Error('用户不存在')
 
   const user = result.rows[0]
   const aiQuota = await getAiQuotaStatus(userId)
@@ -198,7 +210,8 @@ function getTodayKey(): string {
 }
 
 async function listFavoriteAttractionIds(userId: string): Promise<string[]> {
-  if (!userId) throw new Error('用户信息无效')
+  if (!userId)
+    throw new Error('用户信息无效')
 
   const result = await query(
     'SELECT attraction_id FROM user_favorite_attractions WHERE user_id = $1 ORDER BY created_at DESC',
@@ -210,18 +223,21 @@ async function listFavoriteAttractionIds(userId: string): Promise<string[]> {
 
 /** 用户登录：验证用户名密码，签发 JWT（有效期 7 天） */
 async function login(username: string, password: string): Promise<AuthResult> {
-  if (!username || !password) throw new Error('用户名和密码不能为空')
+  if (!username || !password)
+    throw new Error('用户名和密码不能为空')
 
   const result = await query(
     'SELECT id, username, password_hash, created_at FROM users WHERE username = $1',
     [username],
   )
 
-  if (result.rows.length === 0) throw new Error('用户名或密码错误')
+  if (result.rows.length === 0)
+    throw new Error('用户名或密码错误')
 
   const user = result.rows[0]
   const match = await bcrypt.compare(password, user.password_hash)
-  if (!match) throw new Error('用户名或密码错误')
+  if (!match)
+    throw new Error('用户名或密码错误')
 
   const token = await signJwt({ id: user.id, username: user.username })
   return {
@@ -236,12 +252,15 @@ async function login(username: string, password: string): Promise<AuthResult> {
 
 /** 用户注册：校验参数、密码哈希、写入数据库、签发 JWT */
 async function register(username: string, password: string, email?: string): Promise<AuthResult> {
-  if (!username || !password) throw new Error('用户名和密码不能为空')
-  if (username.length < 2 || username.length > 20) throw new Error('用户名长度为 2-20 个字符')
+  if (!username || !password)
+    throw new Error('用户名和密码不能为空')
+  if (username.length < 2 || username.length > 20)
+    throw new Error('用户名长度为 2-20 个字符')
   validatePassword(password)
 
   const existing = await query('SELECT id FROM users WHERE username = $1', [username])
-  if (existing.rows.length > 0) throw new Error('用户名已存在')
+  if (existing.rows.length > 0)
+    throw new Error('用户名已存在')
 
   const hashed = await bcrypt.hash(password, SALT_ROUNDS)
   const id = nanoid()
@@ -258,8 +277,10 @@ async function register(username: string, password: string, email?: string): Pro
 }
 
 async function removeFavoriteAttraction(userId: string, attractionId: string): Promise<void> {
-  if (!userId) throw new Error('用户信息无效')
-  if (!attractionId) throw new Error('景点信息无效')
+  if (!userId)
+    throw new Error('用户信息无效')
+  if (!attractionId)
+    throw new Error('景点信息无效')
 
   await query('DELETE FROM user_favorite_attractions WHERE user_id = $1 AND attraction_id = $2', [
     userId,
@@ -268,7 +289,7 @@ async function removeFavoriteAttraction(userId: string, attractionId: string): P
 }
 
 /** 签发 JWT（有效期 7 天） */
-async function signJwt(payload: { id: string; username: string }): Promise<string> {
+async function signJwt(payload: { id: string, username: string }): Promise<string> {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setExpirationTime('7d')
@@ -277,10 +298,14 @@ async function signJwt(payload: { id: string; username: string }): Promise<strin
 
 /** 密码复杂度校验：至少 8 位，包含大小写字母和数字 */
 function validatePassword(password: string): void {
-  if (password.length < 8) throw new Error('密码长度至少 8 个字符')
-  if (!/[a-z]/.test(password)) throw new Error('密码需包含小写字母')
-  if (!/[A-Z]/.test(password)) throw new Error('密码需包含大写字母')
-  if (!/\d/.test(password)) throw new Error('密码需包含数字')
+  if (password.length < 8)
+    throw new Error('密码长度至少 8 个字符')
+  if (!/[a-z]/.test(password))
+    throw new Error('密码需包含小写字母')
+  if (!/[A-Z]/.test(password))
+    throw new Error('密码需包含大写字母')
+  if (!/\d/.test(password))
+    throw new Error('密码需包含数字')
 }
 
 /** 验证 JWT token，无效时抛出异常 */

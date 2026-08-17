@@ -4,6 +4,9 @@
  */
 import type * as httpUtils from '@/lib/utils/http'
 
+import { login } from '@/lib/services/auth'
+
+import { setAuthCookie } from '@/lib/utils/http'
 import { POST } from './route'
 
 vi.mock('@/lib/services/auth', () => ({
@@ -23,22 +26,20 @@ vi.mock('@/lib/utils/http', async (importOriginal) => {
         _windowMs: number,
         handler: (req: Request) => Promise<Response>,
       ) =>
-      async (req: Request) => {
-        try {
-          return await handler(req)
-        } catch (err) {
-          return actual.errorResponse(err)
-        }
-      },
+        async (req: Request) => {
+          try {
+            return await handler(req)
+          }
+          catch (err) {
+            return actual.errorResponse(err)
+          }
+        },
   }
 })
 
-import { login } from '@/lib/services/auth'
-import { setAuthCookie } from '@/lib/utils/http'
-
 const mockLogin = vi.mocked(login)
 
-describe('POST /api/auth/login', () => {
+describe('pOST /api/auth/login', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })

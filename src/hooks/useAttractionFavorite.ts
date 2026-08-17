@@ -35,7 +35,8 @@ export function useAttractionFavorite(options: UseAttractionFavoriteOptions = {}
         onFavoriteSuccess?.(attractionId, result.isFavorite)
         toast.success(result.isFavorite ? '已收藏' : '已取消收藏')
         return result.isFavorite
-      } catch (err: unknown) {
+      }
+      catch (err: unknown) {
         toast.error(err instanceof Error ? err.message : '收藏操作失败')
         return currentlyFavorited // 失败时保持原状态
       }

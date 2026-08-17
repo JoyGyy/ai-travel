@@ -21,7 +21,7 @@ export class ApiError extends Error {
   data?: unknown
   status?: number
 
-  constructor(message: string, { data, status }: { data?: unknown; status?: number } = {}) {
+  constructor(message: string, { data, status }: { data?: unknown, status?: number } = {}) {
     super(message)
     this.name = 'ApiError'
     this.status = status
@@ -41,11 +41,13 @@ export function hasAuthToken(): boolean {
 /** 安全解析 JSON 响应，非 JSON 类型返回 null */
 async function parseResponse<T>(res: Response): Promise<null | T> {
   const contentType = res.headers.get('content-type') || ''
-  if (!contentType.includes('application/json')) return null
+  if (!contentType.includes('application/json'))
+    return null
 
   try {
     return (await res.json()) as T
-  } catch {
+  }
+  catch {
     return null
   }
 }
@@ -54,11 +56,13 @@ async function parseResponse<T>(res: Response): Promise<null | T> {
 function readPersistedToken(): string {
   try {
     const raw = localStorage.getItem(AUTH_STORAGE_KEY)
-    if (!raw) return ''
+    if (!raw)
+      return ''
 
     const parsed = JSON.parse(raw)
     return parsed?.state?.token || ''
-  } catch {
+  }
+  catch {
     return ''
   }
 }
@@ -77,7 +81,8 @@ export async function request<T = ApiSuccess>(
   const { auth = false, body, headers, method = 'GET', signal } = options
 
   const isWriteMethod = !SAFE_METHODS.has(method.toUpperCase())
-  if (isWriteMethod) await ensureCsrfToken()
+  if (isWriteMethod)
+    await ensureCsrfToken()
 
   const isFormData = body instanceof FormData
 
@@ -101,8 +106,8 @@ export async function request<T = ApiSuccess>(
 
   // CSRF 403 自动刷新重试一次
   if (!res.ok && res.status === 403 && isWriteMethod) {
-    const errMsg =
-      data && typeof data === 'object'
+    const errMsg
+      = data && typeof data === 'object'
         ? (data as Record<string, unknown>).message || (data as Record<string, unknown>).error
         : ''
     if (/csrf/i.test(String(errMsg))) {
@@ -115,8 +120,8 @@ export async function request<T = ApiSuccess>(
   // 非 2xx 响应抛出 ApiError
   if (!res.ok) {
     const fallback = data && typeof data === 'object' ? (data as Record<string, unknown>) : {}
-    const message =
-      (fallback.message as string) || (fallback.error as string) || `请求失败: HTTP ${res.status}`
+    const message
+      = (fallback.message as string) || (fallback.error as string) || `请求失败: HTTP ${res.status}`
     throw new ApiError(message, { data, status: res.status })
   }
 
@@ -125,7 +130,8 @@ export async function request<T = ApiSuccess>(
 
 /** 写请求前确保浏览器已有有效的 CSRF cookie */
 async function ensureCsrfToken(): Promise<void> {
-  if (readCsrfToken()) return
+  if (readCsrfToken())
+    return
 
   await refreshCsrfToken()
 }
@@ -140,7 +146,8 @@ function getCsrfHeader(): Record<string, string> {
  */
 function readCsrfToken(): string {
   const raw = document.cookie.match(/csrf_token=([^;]+)/)?.[1] || ''
-  if (!raw) return ''
+  if (!raw)
+    return ''
 
   const token = decodeURIComponent(raw)
 
@@ -161,5 +168,6 @@ function readCsrfToken(): string {
 async function refreshCsrfToken(): Promise<void> {
   document.cookie = 'csrf_token=; max-age=0; path=/'
   const res = await fetch('/api/auth/csrf-token', { credentials: 'include' })
-  if (!res.ok) throw new ApiError('CSRF token 获取失败', { status: res.status })
+  if (!res.ok)
+    throw new ApiError('CSRF token 获取失败', { status: res.status })
 }

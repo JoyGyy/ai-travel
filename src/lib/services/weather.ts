@@ -95,24 +95,44 @@ interface WttrInResponse {
 
 /** 根据温度、天气、湿度生成穿衣和出行建议 */
 function getDressAdvice(weather: null | WeatherData): string[] {
-  if (!weather) return []
+  if (!weather)
+    return []
   const tips: string[] = []
   const { humidity, temperature, weatherCode } = weather
 
   if (temperature > 30) {
     tips.push('天气炎热，建议穿透气短袖、短裤，注意防晒')
-  } else if (temperature > 25) {
+  }
+  else if (temperature > 25) {
     tips.push('天气温暖，建议穿轻薄长袖或短袖')
-  } else if (temperature > 15) {
+  }
+  else if (temperature > 15) {
     tips.push('天气舒适，建议穿长袖外套')
-  } else if (temperature > 5) {
+  }
+  else if (temperature > 5) {
     tips.push('天气较冷，建议穿厚外套或薄羽绒服')
-  } else {
+  }
+  else {
     tips.push('天气寒冷，建议穿羽绒服、围巾、手套')
   }
 
   const rainyCodes = [
-    176, 179, 200, 263, 266, 293, 296, 299, 302, 305, 308, 353, 356, 359, 386, 389,
+    176,
+    179,
+    200,
+    263,
+    266,
+    293,
+    296,
+    299,
+    302,
+    305,
+    308,
+    353,
+    356,
+    359,
+    386,
+    389,
   ]
   if (rainyCodes.includes(weatherCode)) {
     tips.push('有雨，记得携带雨伞或雨衣')
@@ -137,14 +157,16 @@ async function getWeather(city: string): Promise<null | WeatherData> {
       signal: controller.signal,
     })
 
-    if (!res.ok) return null
+    if (!res.ok)
+      return null
 
     const data = (await res.json()) as WttrInResponse
     const current = data.current_condition?.[0]
-    if (!current) return null
+    if (!current)
+      return null
 
     const weatherCode = Number(current.weatherCode)
-    const forecast: WeatherForecast[] = (data.weather || []).slice(0, 3).map((day) => ({
+    const forecast: WeatherForecast[] = (data.weather || []).slice(0, 3).map(day => ({
       date: day.date,
       maxTemp: Number(day.maxtempC),
       minTemp: Number(day.mintempC),
@@ -165,24 +187,29 @@ async function getWeather(city: string): Promise<null | WeatherData> {
       weatherDesc: WEATHER_CODE_MAP[weatherCode] || current.lang_zh?.[0]?.value || '未知',
       windSpeed: Number(current.windspeedKmph),
     }
-  } catch {
+  }
+  catch {
     return null
-  } finally {
+  }
+  finally {
     clearTimeout(timeout)
   }
 }
 
 /** 判断当前天气是否适合户外活动（排除雨天和极端温度） */
 function isGoodForOutdoor(weather: null | WeatherData): boolean {
-  if (!weather) return true
+  if (!weather)
+    return true
   const { temperature, weatherCode } = weather
   if (
     [176, 179, 200, 263, 266, 293, 296, 299, 302, 305, 308, 353, 356, 359, 386, 389].includes(
       weatherCode,
     )
-  )
+  ) {
     return false
-  if (temperature > 38 || temperature < -5) return false
+  }
+  if (temperature > 38 || temperature < -5)
+    return false
   return true
 }
 

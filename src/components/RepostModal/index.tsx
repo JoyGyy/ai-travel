@@ -48,7 +48,8 @@ export function RepostModal({
 
   // ESC 键关闭
   useEffect(() => {
-    if (!open) return
+    if (!open)
+      return
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose()
@@ -58,7 +59,8 @@ export function RepostModal({
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [open, onClose])
 
-  if (!open) return null
+  if (!open)
+    return null
 
   const handleSubmit = async () => {
     const success = await onSubmit(content)
@@ -82,14 +84,14 @@ export function RepostModal({
     >
       <div
         className="bg-background rounded-2xl p-6 max-w-lg w-full mx-4"
-        onClick={(e) => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
       >
         <h3 className="text-lg font-semibold mb-4">转发旅行分享</h3>
         <p className="text-muted-foreground mb-4">可以直接转发，也可以写一句给旅友的补充说明。</p>
         <textarea
           className="flex min-h-20 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm mb-4"
           maxLength={500}
-          onChange={(event) => setContent(event.target.value)}
+          onChange={event => setContent(event.target.value)}
           placeholder="例如：这条路线适合第一次去成都的朋友"
           rows={4}
           value={content}

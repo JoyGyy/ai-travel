@@ -1,9 +1,10 @@
 import path from 'node:path'
 
-const buildEslintCommand = (filenames) =>
-  `eslint --fix ${filenames
-    .map((f) => `"${path.relative(process.cwd(), f)}"`)
+function buildEslintCommand(filenames) {
+  return `eslint --fix ${filenames
+    .map(f => `"${path.relative(process.cwd(), f)}"`)
     .join(' ')}`
+}
 
 export default {
   '*.{js,jsx,ts,tsx,json,css,scss,md}': ['prettier --write'],

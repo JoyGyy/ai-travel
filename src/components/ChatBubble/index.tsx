@@ -46,15 +46,17 @@ export function ChatBubble({ content, role }: ChatBubbleProps) {
         }`}
       >
         {/* 用户消息纯文本，AI 消息走 Markdown 渲染 */}
-        {isUser ? (
-          content
-        ) : (
-          <div className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_a]:font-bold [&_a]:text-[var(--travel-ocean)] [&_code]:rounded-md [&_code]:bg-[rgba(249,224,189,0.72)] [&_code]:text-[#7a4a1e]">
-            <Suspense fallback={<span className="text-[var(--travel-muted)]">加载中...</span>}>
-              <Markdown>{content}</Markdown>
-            </Suspense>
-          </div>
-        )}
+        {isUser
+          ? (
+              content
+            )
+          : (
+              <div className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_a]:font-bold [&_a]:text-[var(--travel-ocean)] [&_code]:rounded-md [&_code]:bg-[rgba(249,224,189,0.72)] [&_code]:text-[#7a4a1e]">
+                <Suspense fallback={<span className="text-[var(--travel-muted)]">加载中...</span>}>
+                  <Markdown>{content}</Markdown>
+                </Suspense>
+              </div>
+            )}
       </div>
     </div>
   )

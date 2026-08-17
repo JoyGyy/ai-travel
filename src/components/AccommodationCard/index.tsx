@@ -19,7 +19,8 @@ interface AccommodationItem {
 
 export function AccommodationCard({ accommodation, nightlife }: AccommodationCardProps) {
   // 两项均为空时不渲染
-  if (!accommodation.length && !nightlife.length) return null
+  if (!accommodation.length && !nightlife.length)
+    return null
 
   return (
     <div className="max-w-[900px] mx-auto">

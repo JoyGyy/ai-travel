@@ -1,5 +1,3 @@
-import { nanoid } from 'nanoid'
-import { NextResponse } from 'next/server'
 /**
  * 社区路由 — 图片上传
  * POST /api/community/uploads/images
@@ -8,9 +6,10 @@ import { NextResponse } from 'next/server'
  */
 import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
+import { nanoid } from 'nanoid'
+import { NextResponse } from 'next/server'
 
-import { withProtected } from '@/lib/utils/http'
-import { httpError } from '@/lib/utils/http'
+import { httpError, withProtected } from '@/lib/utils/http'
 
 const MAX_IMAGES_PER_POST = 9
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024 // 5MB
@@ -37,21 +36,24 @@ export const POST = withProtected(
     const formData = await req.formData()
     const files = formData.getAll('files').filter((f): f is File => f instanceof File)
 
-    if (files.length === 0) throw httpError(400, '请选择要上传的图片')
+    if (files.length === 0)
+      throw httpError(400, '请选择要上传的图片')
 
     if (files.length > MAX_IMAGES_PER_POST)
       throw httpError(400, `每次最多上传 ${MAX_IMAGES_PER_POST} 张图片`)
 
     const { folder, month, year } = await currentUploadFolder()
-    const images: Array<{ altText: string; storageKey: string; url: string }> = []
+    const images: Array<{ altText: string, storageKey: string, url: string }> = []
 
     // 并行写入所有文件，用 map 返回结果保证顺序与用户选择一致
     const results = await Promise.all(
       files.map(async (file) => {
         const ext = allowedMimeTypes.get(file.type)
-        if (!ext) throw httpError(400, '仅支持 JPG、PNG 或 WebP 图片')
+        if (!ext)
+          throw httpError(400, '仅支持 JPG、PNG 或 WebP 图片')
 
-        if (file.size > MAX_IMAGE_SIZE) throw httpError(413, '单张图片不能超过 5MB')
+        if (file.size > MAX_IMAGE_SIZE)
+          throw httpError(413, '单张图片不能超过 5MB')
 
         const filename = `${nanoid(16)}.${ext}`
         const filePath = path.join(folder, filename)

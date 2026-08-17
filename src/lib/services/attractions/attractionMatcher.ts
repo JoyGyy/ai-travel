@@ -25,7 +25,8 @@ function collectSpotNames(itinerary: ItineraryDay[] = []): string[] {
   for (const day of itinerary) {
     for (const period of ['morning', 'afternoon', 'evening'] as const) {
       const name = day?.[period]?.spot
-      if (typeof name === 'string' && name.trim()) names.push(name.trim())
+      if (typeof name === 'string' && name.trim())
+        names.push(name.trim())
     }
   }
   return names
@@ -41,9 +42,10 @@ async function matchAttractionRefsFromItinerary(
   for (const spotName of collectSpotNames(itinerary)) {
     const result = await searchAttractions({ keyword: spotName })
     const matched = result.items.find(
-      (item) => item.name === spotName || (item.aliases || []).includes(spotName),
+      item => item.name === spotName || (item.aliases || []).includes(spotName),
     )
-    if (!matched || seen.has(matched.id)) continue
+    if (!matched || seen.has(matched.id))
+      continue
 
     seen.add(matched.id)
     refs.push({

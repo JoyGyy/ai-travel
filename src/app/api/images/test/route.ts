@@ -37,7 +37,8 @@ export async function GET(request: NextRequest) {
         message: `成功获取 ${results.size} 个景点图片`,
         success: true,
       })
-    } catch (error) {
+    }
+    catch (error) {
       return NextResponse.json(
         {
           error: error instanceof Error ? error.message : 'Unknown error',
@@ -72,7 +73,8 @@ export async function GET(request: NextRequest) {
       },
       success: true,
     })
-  } catch (error) {
+  }
+  catch (error) {
     return NextResponse.json(
       {
         error: error instanceof Error ? error.message : 'Unknown error',

@@ -7,8 +7,8 @@
  * npx tsx scripts/update-attraction-images.ts
  */
 
-import fs from 'fs'
-import path from 'path'
+import fs from 'node:fs'
+import path from 'node:path'
 
 import { getAttractionImage } from '../src/lib/image-service'
 
@@ -61,7 +61,8 @@ async function main() {
 
       // 避免API限流，等待1秒
       await delay(1000)
-    } catch (error) {
+    }
+    catch (error) {
       console.error(`  ✗ 失败: ${error}`)
       // 保留原图片URL
       updatedAttractions.push(attraction)

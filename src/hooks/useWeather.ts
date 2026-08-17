@@ -1,5 +1,3 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-
 /**
  * 天气查询 Hook
  *
@@ -8,6 +6,8 @@ import { useCallback, useEffect, useRef, useState } from 'react'
  * 集成 5 分钟内存缓存，避免重复请求相同城市的天气数据。
  */
 import type { WeatherResponse } from '@/types/api'
+
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { getWeatherApi } from '@/api/weather'
 import { clearWeatherCache, getCachedWeather, setCachedWeather } from '@/lib/weather-cache'

@@ -1,7 +1,8 @@
 'use client'
 
+import type { FormEvent } from 'react'
 import { Send, Trash2 } from 'lucide-react'
-import { type FormEvent, useState } from 'react'
+import { useState } from 'react'
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -10,12 +11,13 @@ import { useTravelChat } from '@/hooks/useTravelChat'
 
 export default function ChatPage() {
   const [input, setInput] = useState('')
-  const { error, messages, sendMessage, setMessages, status, stop } = useTravelChat()
+  const { error, messages, sendMessage, setMessages, status } = useTravelChat()
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const text = input.trim()
-    if (!text || status !== 'ready') return
+    if (!text || status !== 'ready')
+      return
     sendMessage({ text })
     setInput('')
   }
@@ -110,7 +112,7 @@ export default function ChatPage() {
           </div>
         )}
 
-        {messages.map((message) => (
+        {messages.map(message => (
           <div
             className={
               message.role === 'user'
@@ -200,7 +202,7 @@ export default function ChatPage() {
             aria-label="输入消息"
             className="h-11 flex-1 rounded-[14px] border-stone-900/8 bg-white/72 shadow-[inset_0_1px_4px_rgba(41,37,36,0.06)] placeholder:text-stone-900/44 focus:border-primary/44 focus:shadow-[0_0_0_3px_rgba(var(--travel-primary-rgb),0.14),inset_0_1px_4px_rgba(var(--travel-ocean-rgb),0.06)] disabled:text-stone-900/46 disabled:bg-white/42"
             disabled={status !== 'ready'}
-            onChange={(event) => setInput(event.target.value)}
+            onChange={event => setInput(event.target.value)}
             placeholder="例如：帮我规划杭州 3 天 2 晚，预算 3000 元"
             value={input}
           />

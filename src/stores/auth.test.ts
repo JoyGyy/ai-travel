@@ -1,5 +1,7 @@
 import type { AuthUser } from '@/types/api'
 
+import { loginApi, registerApi } from '@/api/auth'
+
 import { useAuthStore } from './auth'
 
 // --- Mock API 模块 ---
@@ -8,8 +10,6 @@ vi.mock('@/api/auth', () => ({
   loginApi: vi.fn(),
   registerApi: vi.fn(),
 }))
-
-import { loginApi, registerApi } from '@/api/auth'
 
 const mockUser: AuthUser = { id: '1', username: 'testuser' }
 const mockToken = 'mock-jwt-token'
@@ -56,7 +56,7 @@ describe('useAuthStore', () => {
       expect(loginApi).toHaveBeenCalledWith('testuser', 'password123')
     })
 
-    it('API 返回空值时不更新状态', async () => {
+    it('aPI 返回空值时不更新状态', async () => {
       vi.mocked(loginApi).mockResolvedValue(null as never)
 
       await useAuthStore.getState().login('testuser', 'wrong')

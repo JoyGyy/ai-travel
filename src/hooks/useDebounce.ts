@@ -89,9 +89,11 @@ export function useDebouncedCallback<TArgs extends unknown[], TReturn>(
           try {
             const result = await fn(...args)
             resolve(result)
-          } catch (err) {
+          }
+          catch (err) {
             reject(err)
-          } finally {
+          }
+          finally {
             setIsPending(false)
             timerRef.current = null
           }

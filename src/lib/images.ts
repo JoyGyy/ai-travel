@@ -14,7 +14,8 @@ const BASE_URL: string = process.env.NEXT_PUBLIC_IMAGE_BASE_URL || ''
  * @returns 完整的图片 URL
  */
 export function imageUrl(path: string): string {
-  if (!BASE_URL) return path
+  if (!BASE_URL)
+    return path
   // 确保 BASE_URL 不以 / 结尾，path 以 / 开头
   const base = BASE_URL.replace(/\/$/, '')
   const imgPath = path.startsWith('/') ? path : `/${path}`

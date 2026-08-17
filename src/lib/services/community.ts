@@ -195,12 +195,15 @@ export async function createCommunityPost(
     await client.query('COMMIT')
 
     const post = await getCommunityPostById(id, authorId)
-    if (!post) throw httpError(500, '帖子创建后读取失败')
+    if (!post)
+      throw httpError(500, '帖子创建后读取失败')
     return post
-  } catch (err) {
+  }
+  catch (err) {
     await client.query('ROLLBACK')
     throw err
-  } finally {
+  }
+  finally {
     client.release()
   }
 }
@@ -212,8 +215,10 @@ export async function deleteCommunityComment(commentId: string, authorId: string
     [commentId],
   )
 
-  if (result.rows.length === 0) throw httpError(404, '评论不存在或已删除')
-  if (result.rows[0].author_id !== authorId) throw httpError(403, '只能删除自己的评论')
+  if (result.rows.length === 0)
+    throw httpError(404, '评论不存在或已删除')
+  if (result.rows[0].author_id !== authorId)
+    throw httpError(403, '只能删除自己的评论')
 
   await query(
     'UPDATE community_post_comments SET deleted_at = NOW(), updated_at = NOW() WHERE id = $1',
@@ -228,8 +233,10 @@ export async function deleteCommunityPost(postId: string, authorId: string): Pro
     [postId],
   )
 
-  if (result.rows.length === 0) throw httpError(404, '帖子不存在或已删除')
-  if (result.rows[0].author_id !== authorId) throw httpError(403, '只能删除自己的帖子')
+  if (result.rows.length === 0)
+    throw httpError(404, '帖子不存在或已删除')
+  if (result.rows[0].author_id !== authorId)
+    throw httpError(403, '只能删除自己的帖子')
 
   await query('UPDATE community_posts SET deleted_at = NOW(), updated_at = NOW() WHERE id = $1', [
     postId,
@@ -247,7 +254,8 @@ export async function getCommunityPostById(
     [id],
   )
 
-  if (result.rows.length === 0) return null
+  if (result.rows.length === 0)
+    return null
 
   const [post] = await hydratePosts(typedQuery<CommunityPostRow>(result.rows), viewerId)
   return post
@@ -381,15 +389,18 @@ export async function repostCommunityPost(
       postType: 'repost',
     })
     await client.query('COMMIT')
-  } catch (err) {
+  }
+  catch (err) {
     await client.query('ROLLBACK')
     throw err
-  } finally {
+  }
+  finally {
     client.release()
   }
 
   const post = await getCommunityPostById(newPostId, authorId)
-  if (!post) throw httpError(500, '转发创建后读取失败')
+  if (!post)
+    throw httpError(500, '转发创建后读取失败')
   return post
 }
 
@@ -455,7 +466,8 @@ async function ensurePostExists(postId: string): Promise<void> {
     [postId],
   )
 
-  if (result.rows.length === 0) throw httpError(404, '帖子不存在或已删除')
+  if (result.rows.length === 0)
+    throw httpError(404, '帖子不存在或已删除')
 }
 
 async function getCommentCount(postId: string): Promise<number> {
@@ -471,7 +483,8 @@ async function getImagesByPostIds(postIds: string[]): Promise<Map<string, Commun
   const imageMap = new Map<string, CommunityImage[]>()
   for (const postId of postIds) imageMap.set(postId, [])
 
-  if (postIds.length === 0) return imageMap
+  if (postIds.length === 0)
+    return imageMap
 
   const result = await query(
     `SELECT id, post_id, url, storage_key, alt_text, sort_order, created_at
@@ -514,7 +527,8 @@ async function getOriginalSummaryMap(
   viewerId?: string,
 ): Promise<Map<string, CommunityPostSummary>> {
   const summaryMap = new Map<string, CommunityPostSummary>()
-  if (originalIds.length === 0) return summaryMap
+  if (originalIds.length === 0)
+    return summaryMap
 
   const viewerIdValue = viewerId || ''
   const result = await query(
@@ -523,7 +537,7 @@ async function getOriginalSummaryMap(
   )
 
   const postRows = typedQuery<CommunityPostRow>(result.rows)
-  const imageMap = await getImagesByPostIds(postRows.map((row) => row.id))
+  const imageMap = await getImagesByPostIds(postRows.map(row => row.id))
   for (const row of postRows)
     summaryMap.set(row.id, mapPostSummary(row, imageMap.get(row.id) || []))
 
@@ -538,7 +552,8 @@ async function getRepostTarget(postId: string): Promise<RepostTargetRow> {
     [postId],
   )
 
-  if (result.rows.length === 0) throw httpError(404, '帖子不存在或已删除')
+  if (result.rows.length === 0)
+    throw httpError(404, '帖子不存在或已删除')
 
   return {
     city: result.rows[0].city,
@@ -549,14 +564,14 @@ async function getRepostTarget(postId: string): Promise<RepostTargetRow> {
 }
 
 async function hydratePosts(rows: CommunityPostRow[], viewerId?: string): Promise<CommunityPost[]> {
-  const postIds = rows.map((row) => row.id)
+  const postIds = rows.map(row => row.id)
   const imageMap = await getImagesByPostIds(postIds)
   const originalIds = [
-    ...new Set(rows.map((row) => row.original_post_id).filter((id): id is string => Boolean(id))),
+    ...new Set(rows.map(row => row.original_post_id).filter((id): id is string => Boolean(id))),
   ]
   const originalMap = await getOriginalSummaryMap(originalIds, viewerId)
 
-  return rows.map((row) =>
+  return rows.map(row =>
     mapPost(
       row,
       imageMap.get(row.id) || [],
@@ -569,12 +584,12 @@ async function hydratePosts(rows: CommunityPostRow[], viewerId?: string): Promis
 async function insertPost(
   client: PoolClient,
   authorId: string,
-  input: CreateCommunityPostInput & { originalPostId?: null | string; postType: CommunityPostType },
+  input: CreateCommunityPostInput & { originalPostId?: null | string, postType: CommunityPostType },
 ): Promise<string> {
   const { nanoid } = await import('nanoid')
   const id = nanoid(12)
-  const itinerarySnapshot =
-    input.itinerarySnapshot === undefined || input.itinerarySnapshot === null
+  const itinerarySnapshot
+    = input.itinerarySnapshot === undefined || input.itinerarySnapshot === null
       ? null
       : JSON.stringify(input.itinerarySnapshot)
 

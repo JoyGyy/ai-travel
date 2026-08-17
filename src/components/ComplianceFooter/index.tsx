@@ -32,21 +32,21 @@ export function ComplianceFooter({
 }: ComplianceFooterProps) {
   const isOverlay = variant === 'overlay'
 
-  const footerBase =
-    'flex flex-wrap items-center justify-center gap-x-4 gap-y-2.5 px-6 py-[18px] pb-[22px] text-xs leading-normal max-sm:px-4'
+  const footerBase
+    = 'flex flex-wrap items-center justify-center gap-x-4 gap-y-2.5 px-6 py-[18px] pb-[22px] text-xs leading-normal max-sm:px-4'
   const footerVariant = isOverlay
     ? 'justify-start gap-x-3.5 gap-y-2 p-0 text-white/62 max-sm:p-0'
     : 'border-t border-[rgba(28,25,23,0.06)] bg-[var(--travel-surface)] text-[var(--travel-muted)]'
 
   const copyrightColor = isOverlay ? 'text-white/58' : 'text-[rgba(var(--travel-ocean-rgb),0.56)]'
 
-  const linkBase =
-    'inline-flex items-center gap-1.5 no-underline transition-colors duration-[var(--motion-fast)] ease-[var(--ease-standard)] motion-reduce:transition-none'
+  const linkBase
+    = 'inline-flex items-center gap-1.5 no-underline transition-colors duration-[var(--motion-fast)] ease-[var(--ease-standard)] motion-reduce:transition-none'
   const linkColor = isOverlay
     ? 'text-white/66 hover:text-[var(--travel-white)] focus-visible:outline-[rgba(255,255,255,0.72)]'
     : 'text-[rgba(var(--travel-ocean-rgb),0.6)] hover:text-[var(--travel-ocean)] focus-visible:outline-[rgba(var(--travel-primary-rgb),0.46)]'
-  const linkFocus =
-    'focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:rounded-md'
+  const linkFocus
+    = 'focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:rounded-md'
 
   return (
     <footer

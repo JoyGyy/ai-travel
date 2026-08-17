@@ -12,12 +12,13 @@ import { readPositiveInteger, readRequiredString } from '@/lib/utils/validation'
 
 const MAX_COMMENT_LENGTH = 500
 
-type Context = { params: Promise<{ id: string }> }
+interface Context { params: Promise<{ id: string }> }
 
 export const GET = withErrorHandler(async (req: Request, context?: unknown) => {
   const { params } = context as Context
   const rateLimited = await checkRateLimit(req, 'community:read', 60, 60_000)
-  if (rateLimited) return rateLimited
+  if (rateLimited)
+    return rateLimited
 
   const { id } = await params
   readRequiredString(id, '帖子ID', { max: 100, min: 1 })

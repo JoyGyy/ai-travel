@@ -12,14 +12,17 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   try {
     // 限流
     const rateLimited = await checkRateLimit(req, 'share:get', 30, 60_000)
-    if (rateLimited) return rateLimited
+    if (rateLimited)
+      return rateLimited
 
     const { id } = await params
     const share = getShare(id)
-    if (!share) throw httpError(404, '分享不存在')
+    if (!share)
+      throw httpError(404, '分享不存在')
 
     return NextResponse.json({ data: share, success: true })
-  } catch (err) {
+  }
+  catch (err) {
     return errorResponse(err)
   }
 }

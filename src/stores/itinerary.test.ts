@@ -1,6 +1,6 @@
-import type { SSEEvent, WeatherResponse } from '@/types/api'
-
 import type { Accommodation, AttractionRef, BudgetBreakdown, ItineraryDay } from './itinerary'
+
+import type { SSEEvent, WeatherResponse } from '@/types/api'
 
 import { getItineraryTemporal, useItineraryStore } from './itinerary'
 
@@ -313,7 +313,7 @@ describe('useItineraryStore', () => {
 
   // ========== Undo/Redo ==========
 
-  describe('Undo/Redo 历史记录', () => {
+  describe('undo/Redo 历史记录', () => {
     it('进入编辑模式保存快照后，修改行程可以撤销', () => {
       // 准备行程数据
       useItineraryStore.getState().setItinerary([

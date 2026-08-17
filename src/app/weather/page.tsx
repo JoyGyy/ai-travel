@@ -32,7 +32,8 @@ export default function Weather() {
   const [recentCities, setRecentCities] = useState<string[]>(() => {
     try {
       return getRecentCities()
-    } catch {
+    }
+    catch {
       return []
     }
   })
@@ -41,12 +42,13 @@ export default function Weather() {
   // ---- 城市搜索过滤 ----
   const filteredCities = useMemo(() => {
     const keyword = city.trim()
-    if (!keyword) return allCities
-    return allCities.filter((c) => c.includes(keyword))
+    if (!keyword)
+      return allCities
+    return allCities.filter(c => c.includes(keyword))
   }, [city])
 
-  const activeCityId =
-    showDropdown && filteredCities[activeCityIndex]
+  const activeCityId
+    = showDropdown && filteredCities[activeCityIndex]
       ? `weather-city-option-${activeCityIndex}`
       : undefined
 
@@ -77,27 +79,33 @@ export default function Weather() {
     if (event.key === 'ArrowDown') {
       event.preventDefault()
       if (filteredCities.length)
-        setActiveCityIndex((index) => Math.min(index + 1, filteredCities.length - 1))
-    } else if (event.key === 'ArrowUp') {
+        setActiveCityIndex(index => Math.min(index + 1, filteredCities.length - 1))
+    }
+    else if (event.key === 'ArrowUp') {
       event.preventDefault()
-      if (filteredCities.length) setActiveCityIndex((index) => Math.max(index - 1, 0))
-    } else if (event.key === 'Enter') {
+      if (filteredCities.length)
+        setActiveCityIndex(index => Math.max(index - 1, 0))
+    }
+    else if (event.key === 'Enter') {
       event.preventDefault()
-      if (showDropdown && filteredCities[activeCityIndex])
+      if (showDropdown && filteredCities[activeCityIndex]) {
         selectCity(filteredCities[activeCityIndex])
+      }
       else if (city.trim()) {
         fetchWeather(city.trim())
         saveRecentCity(city.trim())
         setRecentCities(getRecentCities())
       }
-    } else if (event.key === 'Escape') {
+    }
+    else if (event.key === 'Escape') {
       setShowDropdown(false)
     }
   }
 
   // ---- 错误重试 ----
   function retryWeather() {
-    if (city.trim()) fetchWeather(city.trim())
+    if (city.trim())
+      fetchWeather(city.trim())
   }
 
   const weatherTips = weather
@@ -136,7 +144,7 @@ export default function Weather() {
       {/* 内容区域 */}
       <div className="relative z-[2] mx-auto -mt-[52px] max-w-[1200px] px-6 pb-[max(36px,env(safe-area-inset-bottom))]">
         {/* 搜索框 */}
-        <div className="relative" onClick={(e) => e.stopPropagation()}>
+        <div className="relative" onClick={e => e.stopPropagation()}>
           <div className="flex items-center gap-3 rounded-2xl border border-white/60 bg-white/90 p-4 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl focus-within:border-blue-300 focus-within:shadow-xl focus-within:ring-2 focus-within:ring-blue-200">
             <Search className="h-5 w-5 text-blue-500" />
             <Label className="text-sm font-semibold text-gray-700" htmlFor="weather-city-input">
@@ -252,7 +260,7 @@ export default function Weather() {
               <h2 className="text-sm font-semibold text-gray-600">最近搜索</h2>
             </div>
             <div className="flex flex-wrap gap-2">
-              {recentCities.map((name) => (
+              {recentCities.map(name => (
                 <Badge
                   className="cursor-pointer border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 transition-all hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600"
                   key={name}
@@ -323,7 +331,7 @@ export default function Weather() {
                 { emoji: '🎵', gradient: 'from-rose-400 to-pink-500', name: '厦门', temp: '26°C', weather: '多云' },
                 { emoji: '🌸', gradient: 'from-fuchsia-400 to-purple-500', name: '杭州', temp: '25°C', weather: '小雨' },
                 { emoji: '🏙️', gradient: 'from-slate-400 to-gray-500', name: '上海', temp: '27°C', weather: '阴' },
-              ].map((item) => (
+              ].map(item => (
                 <Card
                   className="group cursor-pointer border-white/60 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
                   key={item.name}
@@ -371,7 +379,7 @@ export default function Weather() {
                   season: '秋季赏景',
                   tag: '赏秋',
                 },
-              ].map((item) => (
+              ].map(item => (
                 <Card
                   className="group overflow-hidden border-white/60 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg"
                   key={item.season}
@@ -390,7 +398,7 @@ export default function Weather() {
                     </div>
                     <div className="p-4">
                       <div className="flex flex-wrap gap-2">
-                        {item.cities.map((c) => (
+                        {item.cities.map(c => (
                           <Badge
                             className="cursor-pointer transition-all hover:-translate-y-0.5"
                             key={c}
@@ -404,7 +412,8 @@ export default function Weather() {
                       </div>
                       <Badge className="mt-3 border-0 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-700" variant="outline">
                         <Star className="mr-1 h-3 w-3 fill-current" />
-                        {item.tag}推荐
+                        {item.tag}
+                        推荐
                       </Badge>
                     </div>
                   </CardContent>
@@ -427,7 +436,7 @@ export default function Weather() {
                 { color: 'from-blue-500 to-cyan-500', desc: '相对湿度高于 80% 时体感闷热，低于 30% 时皮肤易干燥', icon: <Droplets size={20} />, title: '湿度与舒适度' },
                 { color: 'from-orange-500 to-red-500', desc: '紫外线指数 6 以上建议涂抹 SPF30+ 防晒霜', icon: <Sun size={20} />, title: '紫外线防护' },
                 { color: 'from-emerald-500 to-teal-500', desc: '气温每升高 10°C，体感温度可能高出 2-3°C', icon: <Thermometer size={20} />, title: '体感温度' },
-              ].map((item) => (
+              ].map(item => (
                 <Card
                   className="border-white/60 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-md"
                   key={item.title}
@@ -450,42 +459,50 @@ export default function Weather() {
 }
 
 function getRecentCities(): string[] {
-  if (typeof window === 'undefined') return []
+  if (typeof window === 'undefined')
+    return []
   try {
     return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]')
-  } catch {
+  }
+  catch {
     return []
   }
 }
 
 // 根据天气生成小贴士
 function getWeatherTips(temp: number, desc: string, humidity: number, uv?: number) {
-  const tips: { icon: React.ReactNode; text: string; title: string }[] = []
+  const tips: { icon: React.ReactNode, text: string, title: string }[] = []
 
   // 穿衣建议
   if (temp >= 30) {
     tips.push({ icon: <Shirt size={18} />, text: '建议穿短袖、短裤，注意防暑防晒', title: '穿衣建议' })
-  } else if (temp >= 20) {
+  }
+  else if (temp >= 20) {
     tips.push({ icon: <Shirt size={18} />, text: '薄外套或长袖，早晚温差注意添衣', title: '穿衣建议' })
-  } else if (temp >= 10) {
+  }
+  else if (temp >= 10) {
     tips.push({ icon: <Shirt size={18} />, text: '建议穿夹克、毛衣，注意保暖', title: '穿衣建议' })
-  } else {
+  }
+  else {
     tips.push({ icon: <Shirt size={18} />, text: '厚外套、羽绒服必备，注意防寒', title: '穿衣建议' })
   }
 
   // 出行建议
   if (desc.includes('雨')) {
     tips.push({ icon: <Droplets size={18} />, text: '记得带伞，路面湿滑注意安全', title: '出行提醒' })
-  } else if (desc.includes('雪')) {
+  }
+  else if (desc.includes('雪')) {
     tips.push({ icon: <Droplets size={18} />, text: '注意防滑，驾车请减速慢行', title: '出行提醒' })
-  } else if (desc.includes('晴')) {
+  }
+  else if (desc.includes('晴')) {
     tips.push({ icon: <Sun size={18} />, text: '天气晴好，适合户外活动', title: '出行提醒' })
   }
 
   // 湿度建议
   if (humidity >= 80) {
     tips.push({ icon: <Wind size={18} />, text: '湿度较高，注意防潮除湿', title: '湿度提醒' })
-  } else if (humidity <= 30) {
+  }
+  else if (humidity <= 30) {
     tips.push({ icon: <Wind size={18} />, text: '空气干燥，多补充水分', title: '湿度提醒' })
   }
 
@@ -498,7 +515,7 @@ function getWeatherTips(temp: number, desc: string, humidity: number, uv?: numbe
 }
 
 function saveRecentCity(city: string) {
-  const recent = getRecentCities().filter((c) => c !== city)
+  const recent = getRecentCities().filter(c => c !== city)
   recent.unshift(city)
   localStorage.setItem(RECENT_KEY, JSON.stringify(recent.slice(0, MAX_RECENT)))
 }

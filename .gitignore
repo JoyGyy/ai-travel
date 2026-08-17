@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -44,11 +45,18 @@ next-env.d.ts
 /data/
 /logs/
 
-# env
-!.env.example
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 
 # Claude Code
 .claude/
+
+# MiMoCode
+.mimocode/
 
 # Playwright MCP
 .playwright-mcp/
@@ -58,5 +66,20 @@ nginx.conf
 
 # 项目文档
 /docs/
+
+# 测试覆盖率
+*.lcov
+.nyc_output/
+
+# 临时文件
+*.tmp
+*.temp
+tmp/
+temp/
+
+# 操作系统文件
+Thumbs.db
+ehthumbs.db
+Desktop.ini
 
 CLAUDE.md

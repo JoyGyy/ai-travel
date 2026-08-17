@@ -4,6 +4,8 @@
  */
 import type * as httpUtils from '@/lib/utils/http'
 
+import { listAttractions } from '@/lib/services/attractions/attractionService'
+
 import { GET } from './route'
 
 vi.mock('@/lib/services/attractions/attractionService', () => ({
@@ -18,20 +20,19 @@ vi.mock('@/lib/utils/http', async (importOriginal) => {
       (
         handler: (
           req: Request,
-          ctx: { user: { id: string; username: string } },
+          ctx: { user: { id: string, username: string } },
         ) => Promise<Response>,
       ) =>
-      async (req: Request) => {
-        try {
-          return await handler(req, { user: { id: 'u1', username: 'testuser' } })
-        } catch (err) {
-          return actual.errorResponse(err)
-        }
-      },
+        async (req: Request) => {
+          try {
+            return await handler(req, { user: { id: 'u1', username: 'testuser' } })
+          }
+          catch (err) {
+            return actual.errorResponse(err)
+          }
+        },
   }
 })
-
-import { listAttractions } from '@/lib/services/attractions/attractionService'
 
 const mockListAttractions = vi.mocked(listAttractions)
 
@@ -49,7 +50,7 @@ const mockAttractions = [
   },
 ]
 
-describe('GET /api/attractions', () => {
+describe('gET /api/attractions', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })

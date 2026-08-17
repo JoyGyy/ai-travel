@@ -160,7 +160,8 @@ export function useSearchCache<T>(options: UseSearchCacheOptions = {}) {
     for (const entry of cache.values()) {
       if (now - entry.timestamp < ttl) {
         validCount++
-      } else {
+      }
+      else {
         expiredCount++
       }
     }

@@ -122,8 +122,10 @@ export async function uploadCommunityImages(files: File[]): Promise<CommunityIma
 
 function buildCommentQuery(filters: CommunityCommentFilters = {}) {
   const params = new URLSearchParams()
-  if (filters.page) params.set('page', String(filters.page))
-  if (filters.pageSize) params.set('pageSize', String(filters.pageSize))
+  if (filters.page)
+    params.set('page', String(filters.page))
+  if (filters.pageSize)
+    params.set('pageSize', String(filters.pageSize))
 
   const query = params.toString()
   return query ? `?${query}` : ''
@@ -131,11 +133,16 @@ function buildCommentQuery(filters: CommunityCommentFilters = {}) {
 
 function buildPostQuery(filters: CommunityPostFilters = {}) {
   const params = new URLSearchParams()
-  if (filters.page) params.set('page', String(filters.page))
-  if (filters.pageSize) params.set('pageSize', String(filters.pageSize))
-  if (filters.city) params.set('city', filters.city)
-  if (filters.withItinerary) params.set('withItinerary', 'true')
-  if (filters.authorId) params.set('authorId', filters.authorId)
+  if (filters.page)
+    params.set('page', String(filters.page))
+  if (filters.pageSize)
+    params.set('pageSize', String(filters.pageSize))
+  if (filters.city)
+    params.set('city', filters.city)
+  if (filters.withItinerary)
+    params.set('withItinerary', 'true')
+  if (filters.authorId)
+    params.set('authorId', filters.authorId)
 
   const query = params.toString()
   return query ? `?${query}` : ''

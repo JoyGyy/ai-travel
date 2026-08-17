@@ -4,6 +4,8 @@
  */
 import type * as httpUtils from '@/lib/utils/http'
 
+import { getAttractionById } from '@/lib/services/attractions/attractionService'
+
 import { GET } from './route'
 
 vi.mock('@/lib/services/attractions/attractionService', () => ({
@@ -18,23 +20,22 @@ vi.mock('@/lib/utils/http', async (importOriginal) => {
       (
         handler: (
           req: Request,
-          ctx: { params: Promise<{ id: string }>; user: { id: string; username: string } },
+          ctx: { params: Promise<{ id: string }>, user: { id: string, username: string } },
         ) => Promise<Response>,
       ) =>
-      async (req: Request, ctx: unknown) => {
-        try {
-          return await handler(req, {
-            ...(ctx as object),
-            user: { id: 'u1', username: 'testuser' },
-          } as { params: Promise<{ id: string }>; user: { id: string; username: string } })
-        } catch (err) {
-          return actual.errorResponse(err)
-        }
-      },
+        async (req: Request, ctx: unknown) => {
+          try {
+            return await handler(req, {
+              ...(ctx as object),
+              user: { id: 'u1', username: 'testuser' },
+            } as { params: Promise<{ id: string }>, user: { id: string, username: string } })
+          }
+          catch (err) {
+            return actual.errorResponse(err)
+          }
+        },
   }
 })
-
-import { getAttractionById } from '@/lib/services/attractions/attractionService'
 
 const mockGetAttractionById = vi.mocked(getAttractionById)
 
@@ -61,7 +62,7 @@ const mockAttraction = {
   updatedAt: '2024-01-01T00:00:00Z',
 }
 
-describe('GET /api/attractions/[id]', () => {
+describe('gET /api/attractions/[id]', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })

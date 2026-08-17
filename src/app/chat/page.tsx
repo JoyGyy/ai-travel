@@ -69,7 +69,7 @@ export default function ChatPage() {
             {/* 空状态卡片 */}
             <div className="relative mb-[18px] overflow-hidden rounded-3xl border border-white/60 bg-white/80 p-8 text-center shadow-lg backdrop-blur-sm animate-fade-in-up">
               <div className="absolute -bottom-[54px] -right-7 h-[164px] w-[164px] rounded-full bg-teal-100" />
-              <div className="absolute -top-[30px] -left-[30px] h-[120px] w-[120px] rounded-full bg-rose-100" />
+              <div className="absolute -top-[30px] -left-[30px] h-[120px] w-[120px] rounded-full bg-cyan-100" />
               <div className="relative z-[1] mx-auto mb-[18px] flex h-[72px] w-[72px] items-center justify-center rounded-2xl bg-teal-500 text-3xl text-white shadow-lg shadow-teal-500/20 animate-[pulseGlow_2.5s_infinite]">
                 ✈️
               </div>

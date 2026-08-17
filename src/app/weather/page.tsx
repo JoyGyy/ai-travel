@@ -328,7 +328,7 @@ export default function Weather() {
                 { emoji: '🏯', gradient: 'from-cyan-400 to-teal-500', name: '西安', temp: '22°C', weather: '晴' },
                 { emoji: '🐼', gradient: 'from-lime-400 to-green-500', name: '成都', temp: '24°C', weather: '阴' },
                 { emoji: '🌊', gradient: 'from-cyan-400 to-blue-500', name: '大理', temp: '20°C', weather: '晴' },
-                { emoji: '🎵', gradient: 'from-rose-400 to-pink-500', name: '厦门', temp: '26°C', weather: '多云' },
+                { emoji: '🎵', gradient: 'from-teal-400 to-emerald-500', name: '厦门', temp: '26°C', weather: '多云' },
                 { emoji: '🌸', gradient: 'from-fuchsia-400 to-purple-500', name: '杭州', temp: '25°C', weather: '小雨' },
                 { emoji: '🏙️', gradient: 'from-slate-400 to-gray-500', name: '上海', temp: '27°C', weather: '阴' },
               ].map(item => (

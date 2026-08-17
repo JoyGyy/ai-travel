@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { hostname: '*.aliyuncs.com' },
       { hostname: '*.githubusercontent.com' },
+      { hostname: 'upload.wikimedia.org' },
     ],
   },
 
@@ -30,7 +31,7 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https://*.aliyuncs.com https://*.githubusercontent.com",
+              "img-src 'self' data: blob: https://*.aliyuncs.com https://*.githubusercontent.com https://upload.wikimedia.org",
               "font-src 'self' data:",
               "connect-src 'self' https://api.siliconflow.cn https://api.deepseek.com",
               "frame-ancestors 'none'",

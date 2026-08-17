@@ -18,27 +18,31 @@ export default function ChatPage() {
   }
 
   return (
-    <section className="flex h-full min-h-0 flex-col overflow-hidden bg-background text-travel-ink">
+    <section className="flex h-full min-h-0 flex-col overflow-hidden bg-gradient-to-br from-gray-50 to-white text-travel-ink">
       {/* Hero 区域 */}
-      <div className="relative flex-shrink-0 overflow-hidden bg-[url('data:image/svg+xml,...')] bg-repeat pb-[34px] pl-5 pr-5 pt-[18px]">
-        {/* 装饰圆圈 */}
-        <div className="pointer-events-none absolute right-[12%] top-1/2 h-20 w-20 -translate-y-1/2 rounded-full border border-stone-900/6 bg-transparent" />
+      <div className="relative flex-shrink-0 overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 pb-[40px] pl-5 pr-5 pt-[24px]">
+        {/* 装饰元素 */}
+        <div className="absolute -right-16 -top-16 h-[200px] w-[200px] rounded-full bg-gradient-to-br from-blue-200/30 to-indigo-200/30 blur-3xl" />
+        <div className="absolute -bottom-16 -left-16 h-[180px] w-[180px] rounded-full bg-gradient-to-br from-purple-200/20 to-pink-200/20 blur-3xl" />
+        <div className="pointer-events-none absolute right-[12%] top-1/2 h-20 w-20 -translate-y-1/2 rounded-full border-2 border-blue-200/40 bg-transparent" />
 
         <div className="relative z-[1] mx-auto flex w-full max-w-[900px] items-start justify-between gap-4">
-          <div>
-            <p className="mb-1.5 text-[11px] font-extrabold uppercase tracking-[0.16em] text-travel-muted">
+          <div className="animate-fade-in-up">
+            <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-blue-500">
               AI 旅行助手
             </p>
-            <h1 className="font-serif text-[clamp(24px,5vw,32px)] font-extrabold leading-[1.16] tracking-tight text-travel-ink">
-              AI 旅行规划师
+            <h1 className="font-serif text-[clamp(24px,5vw,32px)] font-extrabold leading-[1.16] tracking-tight">
+              <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
+                AI 旅行规划师
+              </span>
             </h1>
-            <p className="mt-1.5 text-[13px] leading-relaxed text-travel-muted">
+            <p className="mt-2 text-[13px] leading-relaxed text-gray-500">
               告诉我目的地、天数、预算和偏好，我会帮你规划路线。
             </p>
           </div>
           <button
             aria-label="清空对话"
-            className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[14px] border border-stone-900/8 bg-travel-surface text-travel-ink transition-all hover:-translate-y-px hover:bg-white hover:text-travel-orange-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900/28"
+            className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border border-white/60 bg-white/80 text-gray-500 shadow-sm backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-white hover:text-red-500 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-200"
             onClick={() => {
               if (window.confirm('确定要清空对话记录吗？')) {
                 setMessages([])
@@ -53,29 +57,30 @@ export default function ChatPage() {
       </div>
 
       {/* 消息列表 */}
-      <div className="relative z-[2] mx-auto -mt-5 flex w-full max-w-[900px] flex-1 flex-col gap-4 overflow-x-hidden overflow-y-auto overscroll-contain rounded-t-[28px] border border-stone-900/8 bg-travel-surface p-4 pb-[22px] shadow-[0_18px_54px_rgba(41,37,36,0.12)] scrollbar-thin scrollbar-thumb-stone-900/20">
+      <div className="relative z-[2] mx-auto -mt-6 flex w-full max-w-[900px] flex-1 flex-col gap-4 overflow-x-hidden overflow-y-auto overscroll-contain rounded-t-[28px] border border-white/60 bg-white/90 p-4 pb-[22px] shadow-[0_18px_54px_rgba(0,0,0,0.08)] backdrop-blur-sm scrollbar-thin scrollbar-thumb-gray-200">
         {messages.length === 0 && (
           <div className="mx-auto w-full max-w-[680px] py-[clamp(12px,3vh,28px)]">
             {/* 空状态卡片 */}
-            <div className="relative mb-[18px] overflow-hidden rounded-3xl border border-stone-900/6 bg-travel-surface p-7 text-center shadow-[var(--shadow-paper)]">
-              <div className="absolute -bottom-[54px] -right-7 h-[164px] w-[164px] rounded-full bg-amber-200/62" />
-              <div className="relative z-[1] mx-auto mb-[18px] flex h-[66px] w-[66px] items-center justify-center rounded-[22px] border border-stone-900/6 bg-primary/8 text-3xl text-travel-ink animate-[pulseGlow_2.5s_infinite]">
+            <div className="relative mb-[18px] overflow-hidden rounded-3xl border border-white/60 bg-white/80 p-8 text-center shadow-lg backdrop-blur-sm animate-fade-in-up">
+              <div className="absolute -bottom-[54px] -right-7 h-[164px] w-[164px] rounded-full bg-gradient-to-br from-blue-100 to-indigo-100" />
+              <div className="absolute -top-[30px] -left-[30px] h-[120px] w-[120px] rounded-full bg-gradient-to-br from-orange-100 to-red-100" />
+              <div className="relative z-[1] mx-auto mb-[18px] flex h-[72px] w-[72px] items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-3xl text-white shadow-lg shadow-blue-500/25 animate-[pulseGlow_2.5s_infinite]">
                 ✈️
               </div>
-              <h2 className="relative z-[1] mb-2 font-serif text-[22px] font-extrabold tracking-tight text-travel-ink">
+              <h2 className="relative z-[1] mb-3 font-serif text-[22px] font-extrabold tracking-tight text-gray-900">
                 开始规划你的旅行
               </h2>
-              <p className="relative z-[1] mb-1.5 text-[13px] leading-relaxed text-slate-600/82">
+              <p className="relative z-[1] mb-2 text-[13px] leading-relaxed text-gray-500">
                 告诉我你想去哪里，我会为你制定详细的行程计划
               </p>
-              <p className="relative z-[1] text-xs text-stone-900/50">试试下方的快捷问题</p>
+              <p className="relative z-[1] text-xs text-gray-400">试试下方的快捷问题</p>
             </div>
 
             {/* 快捷问题 */}
-            <p className="mb-3 ml-0.5 font-serif text-[13px] font-extrabold tracking-[0.1em] text-travel-ink">
+            <p className="mb-4 ml-0.5 font-serif text-[13px] font-bold tracking-[0.1em] text-gray-900">
               快捷问题
             </p>
-            <div className="flex flex-wrap gap-2.5">
+            <div className="flex flex-wrap gap-3">
               {[
                 '帮我规划杭州3天2晚行程',
                 '推荐上海周末游路线',
@@ -83,16 +88,16 @@ export default function ChatPage() {
                 '成都美食之旅怎么安排',
               ].map((question, index) => (
                 <button
-                  className="inline-flex min-w-[min(260px,100%)] flex-1 basis-[calc(50%-10px)] items-center gap-2.5 rounded-full border border-stone-900/6 bg-travel-surface p-3.5 text-left shadow-[0_12px_30px_rgba(41,37,36,0.08)] transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:bg-primary/10 hover:shadow-[0_16px_36px_rgba(41,37,36,0.11),inset_0_1px_0_rgba(255,255,255,0.78)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900/22 animate-[fadeUp_0.4s_cubic-bezier(0.16,1,0.3,1)_both]"
+                  className="inline-flex min-w-[min(260px,100%)] flex-1 basis-[calc(50%-12px)] items-center gap-3 rounded-2xl border border-white/60 bg-white/80 p-4 text-left shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:bg-blue-50/50 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-200 animate-fade-in-up"
                   key={index}
                   onClick={() => sendMessage({ text: question })}
-                  style={{ animationDelay: `${index * 0.08}s` }}
+                  style={{ animationDelay: `${index * 80}ms` }}
                   type="button"
                 >
-                  <span className="flex h-[26px] w-[26px] flex-shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-extrabold tabular-nums text-white shadow-[0_8px_18px_rgba(var(--travel-primary-rgb),0.3)]">
+                  <span className="flex h-[28px] w-[28px] flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-[11px] font-bold tabular-nums text-white shadow-sm">
                     {index + 1}
                   </span>
-                  <span className="min-w-0 text-[13px] font-bold leading-[1.45] text-travel-ink">
+                  <span className="min-w-0 text-[13px] font-semibold leading-[1.45] text-gray-700">
                     {question}
                   </span>
                 </button>

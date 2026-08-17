@@ -83,45 +83,49 @@ export default function Weather() {
       onClick={() => showDropdown && setShowDropdown(false)}
     >
       {/* Hero 区域 */}
-      <div className="relative isolate min-h-[230px] overflow-hidden bg-[url('data:image/svg+xml,...')] bg-repeat p-[clamp(40px,8vw,80px)_clamp(20px,5vw,72px)_70px]">
-        {/* 装饰圆圈 */}
-        <div className="absolute -right-7 -top-[34px] h-[164px] w-[164px] animate-[morphBg_8s_ease-in-out_infinite] rounded-full border border-stone-900/6 bg-transparent opacity-60" />
+      <div className="relative isolate min-h-[280px] overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-[clamp(40px,8vw,80px)_clamp(20px,5vw,72px)_80px]">
+        {/* 装饰元素 */}
+        <div className="absolute -right-20 -top-20 h-[300px] w-[300px] animate-[morphBg_8s_ease-in-out_infinite] rounded-full bg-gradient-to-br from-blue-200/30 to-indigo-200/30 blur-3xl" />
+        <div className="absolute -bottom-20 -left-20 h-[250px] w-[250px] rounded-full bg-gradient-to-br from-purple-200/20 to-pink-200/20 blur-3xl" />
+        <div className="absolute right-[12%] top-1/2 h-20 w-20 -translate-y-1/2 rounded-full border-2 border-blue-200/40 bg-transparent" />
 
-        <p className="relative mb-2.5 text-[11px] font-bold tracking-[0.03em] text-travel-muted animate-[fadeIn_var(--motion-choreography)_var(--ease-emphasized)_0.1s_both]">
+        <p className="relative mb-3 text-[11px] font-bold tracking-[0.16em] text-blue-500 animate-[fadeIn_var(--motion-choreography)_var(--ease-emphasized)_0.1s_both] uppercase">
           WEATHER
         </p>
         <h1
-          className="relative font-display text-[clamp(28px,5vw,44px)] font-black leading-tight tracking-tight text-travel-ink animate-[slideUp_var(--motion-choreography)_var(--ease-emphasized)_both]"
+          className="relative font-display text-[clamp(32px,5vw,48px)] font-black leading-tight tracking-tight animate-[slideUp_var(--motion-choreography)_var(--ease-emphasized)_both]"
           id="weather-title"
         >
-          天气查询
+          <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
+            天气查询
+          </span>
         </h1>
-        <p className="relative mt-2.5 max-w-[460px] text-[clamp(14px,2vw,16px)] font-semibold leading-relaxed text-travel-muted animate-[slideUp_var(--motion-choreography)_var(--ease-emphasized)_0.1s_both]">
+        <p className="relative mt-3 max-w-[460px] text-[clamp(14px,2vw,16px)] font-semibold leading-relaxed text-gray-600 animate-[slideUp_var(--motion-choreography)_var(--ease-emphasized)_0.1s_both]">
           查看目的地实时天气，合理安排行程
         </p>
       </div>
 
       {/* 内容区域 */}
-      <div className="relative z-[2] mx-auto -mt-[42px] max-w-[1200px] px-6 pb-[max(36px,env(safe-area-inset-bottom))]">
+      <div className="relative z-[2] mx-auto -mt-[52px] max-w-[1200px] px-6 pb-[max(36px,env(safe-area-inset-bottom))]">
         {/* 搜索框 */}
         <div className="relative" onClick={(e) => e.stopPropagation()}>
-          <div className="flex items-center gap-2.5 rounded-xl border border-travel-border bg-white/90 p-3">
+          <div className="flex items-center gap-3 rounded-2xl border border-white/60 bg-white/90 p-4 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl focus-within:border-blue-300 focus-within:shadow-xl focus-within:ring-2 focus-within:ring-blue-200">
             <svg
               aria-hidden="true"
-              className="h-[18px] w-[18px] text-travel-muted"
+              className="h-5 w-5 text-blue-500"
               fill="none"
-              height="18"
+              height="20"
               stroke="currentColor"
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth="2"
               viewBox="0 0 24 24"
-              width="18"
+              width="20"
             >
               <circle cx="11" cy="11" r="8" />
               <line x1="21" x2="16.65" y1="21" y2="16.65" />
             </svg>
-            <label className="text-[13px] font-medium text-travel-ink" htmlFor="weather-city-input">
+            <label className="text-sm font-semibold text-gray-700" htmlFor="weather-city-input">
               城市名称
             </label>
             <input
@@ -131,7 +135,7 @@ export default function Weather() {
               aria-expanded={showDropdown}
               aria-haspopup="listbox"
               autoComplete="off"
-              className="flex-1 bg-transparent text-sm text-travel-ink outline-none placeholder:text-travel-muted"
+              className="flex-1 bg-transparent text-sm text-gray-900 outline-none placeholder:text-gray-400"
               id="weather-city-input"
               name="weather-city"
               onChange={handleInputChange}
@@ -147,17 +151,17 @@ export default function Weather() {
           {/* 下拉列表 */}
           {showDropdown && (
             <div
-              className="absolute left-0 right-0 z-10 mt-1 max-h-[300px] overflow-y-auto rounded-xl border border-travel-border bg-white shadow-lg"
+              className="absolute left-0 right-0 z-10 mt-2 max-h-[300px] overflow-y-auto rounded-2xl border border-white/60 bg-white/95 shadow-xl backdrop-blur-sm"
               id="weather-city-listbox"
               role="listbox"
             >
               {filteredCities.map((name, index) => (
                 <button
                   aria-selected={city === name}
-                  className={`w-full px-4 py-2.5 text-left text-sm transition-colors ${
+                  className={`w-full px-4 py-3 text-left text-sm transition-all duration-200 first:rounded-t-2xl last:rounded-b-2xl ${
                     city === name || activeCityIndex === index
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-travel-ink hover:bg-travel-surface'
+                      ? 'bg-blue-50 text-blue-600 font-medium'
+                      : 'text-gray-700 hover:bg-gray-50'
                   }`}
                   id={`weather-city-option-${index}`}
                   key={name}
@@ -169,7 +173,7 @@ export default function Weather() {
                 </button>
               ))}
               {!filteredCities.length && (
-                <div className="px-4 py-3 text-center text-sm text-travel-muted">
+                <div className="px-4 py-4 text-center text-sm text-gray-500">
                   未找到匹配城市
                 </div>
               )}
@@ -179,7 +183,7 @@ export default function Weather() {
 
         {/* 天气结果展示 */}
         {(loading || weather) && (
-          <div className="mt-6">
+          <div className="mt-8 animate-fade-in-up">
             <HomeWeather loading={loading} weather={weather} />
           </div>
         )}
@@ -187,13 +191,13 @@ export default function Weather() {
         {/* 错误提示 */}
         {error && (
           <div
-            className="mt-4 flex items-center justify-between rounded-xl border border-red-200 bg-red-50 p-4"
+            className="mt-6 flex items-center justify-between rounded-2xl border border-red-200/60 bg-red-50/80 p-5 backdrop-blur-sm animate-fade-in-up"
             role="alert"
           >
-            <span className="text-sm text-red-600">{error}</span>
+            <span className="text-sm font-medium text-red-600">{error}</span>
             {city.trim() && (
               <button
-                className="rounded-lg bg-red-100 px-4 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-200"
+                className="rounded-xl bg-red-100 px-5 py-2.5 text-sm font-semibold text-red-700 transition-all duration-200 hover:bg-red-200 hover:shadow-md"
                 onClick={retryWeather}
                 type="button"
               >
@@ -204,25 +208,36 @@ export default function Weather() {
         )}
 
         {/* 热门城市快捷入口 */}
-        <div className="mt-12">
-          <div className="mb-6 flex items-center gap-4">
-            <div className="h-px flex-1 bg-travel-border" />
-            <h2 className="text-lg font-semibold text-travel-ink">热门城市</h2>
-            <div className="h-px flex-1 bg-travel-border" />
+        <div className="mt-16 animate-fade-in-up">
+          <div className="mb-8 flex items-center gap-4">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+            <h2 className="flex items-center gap-2 text-lg font-bold text-gray-900">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-orange-400 to-red-500 text-white text-sm">
+                🔥
+              </span>
+              热门城市
+            </h2>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
           </div>
           <div className="flex flex-wrap justify-center gap-3">
-            {hotCities.map((name) => (
+            {hotCities.map((name, index) => (
               <button
-                className={`rounded-full px-5 py-2.5 text-sm font-medium transition-all ${
+                className={`group relative rounded-2xl px-6 py-3 text-sm font-semibold transition-all duration-300 hover:-translate-y-1 hover:shadow-lg animate-fade-in-up ${
                   city === name
-                    ? 'bg-primary text-white shadow-md'
-                    : 'bg-travel-surface text-travel-ink hover:bg-travel-surface/80'
+                    ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-200'
+                    : 'bg-white text-gray-700 shadow-sm hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-blue-600'
                 }`}
                 key={name}
                 onClick={() => selectCity(name)}
+                style={{ animationDelay: `${index * 50}ms` }}
                 type="button"
               >
                 {name}
+                {city === name && (
+                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[10px] text-blue-600 shadow-sm">
+                    ✓
+                  </span>
+                )}
               </button>
             ))}
           </div>

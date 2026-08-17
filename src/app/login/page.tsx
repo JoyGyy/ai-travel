@@ -143,58 +143,66 @@ export default function Login() {
       {/* 左侧品牌区 */}
       <section
         aria-label="品牌介绍"
-        className="relative flex flex-col justify-between overflow-hidden bg-gradient-to-br from-travel-ink to-travel-ink-light p-8 text-white md:w-[48%] md:p-12"
+        className="relative flex flex-col justify-between overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-8 text-white md:w-[48%] md:p-12"
       >
         {/* 背景图片 */}
         <div className="absolute inset-0 z-0">
           <Image
             alt=""
-            className="object-cover opacity-16"
+            className="object-cover opacity-20"
             fill
             src={imageUrl('/images/home/hero-boat.jpg')}
           />
         </div>
         {/* 渐变遮罩 */}
-        <div className="absolute inset-0 z-[1] bg-gradient-to-br from-travel-ink/92 to-travel-ink-light/80" />
+        <div className="absolute inset-0 z-[1] bg-gradient-to-br from-gray-900/95 via-gray-900/80 to-gray-800/90" />
+
+        {/* 装饰元素 */}
+        <div className="absolute -right-20 -top-20 z-[1] h-[400px] w-[400px] rounded-full bg-gradient-to-br from-orange-500/10 to-red-500/10 blur-3xl" />
+        <div className="absolute -bottom-20 -left-20 z-[1] h-[300px] w-[300px] rounded-full bg-gradient-to-br from-blue-500/10 to-purple-500/10 blur-3xl" />
 
         {/* 品牌标识 */}
-        <div className="relative z-[2] flex items-center gap-3">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-travel-orange text-lg text-white">
+        <div className="relative z-[2] flex items-center gap-3 animate-fade-in-up">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-red-500 text-lg text-white shadow-lg shadow-orange-500/25">
             <Compass />
           </span>
-          <span className="text-lg font-semibold tracking-wide text-white">Travel AI</span>
+          <span className="text-lg font-bold tracking-wide text-white">Travel AI</span>
         </div>
 
         {/* 主标语 */}
-        <div className="relative z-[2] flex flex-1 flex-col justify-center gap-5 py-8 md:max-w-[440px]">
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-travel-orange">
+        <div className="relative z-[2] flex flex-1 flex-col justify-center gap-6 py-8 md:max-w-[440px]">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-orange-400 animate-fade-in-up">
             AI Travel Planner
           </p>
-          <h1 className="text-3xl font-bold leading-tight text-white md:text-[34px]">
-            登录后保存你的智能旅行地图
+          <h1 className="text-3xl font-bold leading-tight text-white md:text-[36px] animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+            登录后保存你的
+            <br />
+            <span className="bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
+              智能旅行地图
+            </span>
           </h1>
-          <p className="text-base leading-relaxed text-stone-400">
+          <p className="text-base leading-relaxed text-gray-400 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
             把目的地、天气灵感和预算计划沉淀下来，随时继续规划下一次出发。
           </p>
-          <div aria-label="核心功能" className="flex gap-6 pt-2">
-            <span className="flex items-center gap-2 text-sm text-stone-300">
+          <div aria-label="核心功能" className="flex flex-wrap gap-4 pt-2 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
+            <span className="flex items-center gap-2 rounded-full bg-white/5 px-4 py-2 text-sm text-gray-300 backdrop-blur-sm">
               <span
                 aria-hidden="true"
-                className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-travel-orange"
+                className="h-2 w-2 flex-shrink-0 rounded-full bg-orange-400"
               />
               实时天气
             </span>
-            <span className="flex items-center gap-2 text-sm text-stone-300">
+            <span className="flex items-center gap-2 rounded-full bg-white/5 px-4 py-2 text-sm text-gray-300 backdrop-blur-sm">
               <span
                 aria-hidden="true"
-                className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-travel-orange"
+                className="h-2 w-2 flex-shrink-0 rounded-full bg-orange-400"
               />
               预算规划
             </span>
-            <span className="flex items-center gap-2 text-sm text-stone-300">
+            <span className="flex items-center gap-2 rounded-full bg-white/5 px-4 py-2 text-sm text-gray-300 backdrop-blur-sm">
               <span
                 aria-hidden="true"
-                className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-travel-orange"
+                className="h-2 w-2 flex-shrink-0 rounded-full bg-orange-400"
               />
               AI 咨询
             </span>
@@ -207,38 +215,38 @@ export default function Login() {
       {/* 右侧表单区 */}
       <section
         aria-label={tab === 'login' ? '登录表单' : '注册表单'}
-        className="flex flex-1 items-center justify-center bg-travel-surface p-8 md:p-12"
+        className="flex flex-1 items-center justify-center bg-gradient-to-br from-gray-50 to-white p-8 md:p-12"
       >
-        <div className="w-full max-w-[400px]">
+        <div className="w-full max-w-[420px]">
           <button
             aria-label="返回上一页"
-            className="mb-8 inline-flex items-center gap-1.5 border-none bg-transparent p-0 text-sm text-travel-muted transition-colors hover:text-travel-ink"
+            className="mb-8 inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-medium text-gray-600 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:text-gray-900"
             onClick={() => router.back()}
             type="button"
           >
-            <ArrowLeft aria-hidden="true" />
+            <ArrowLeft aria-hidden="true" size={16} />
             返回
           </button>
 
-          <div className="mb-8">
-            <h2 className="mb-2 text-2xl font-bold text-travel-ink" id="login-title">
+          <div className="mb-8 animate-fade-in-up">
+            <h2 className="mb-3 text-2xl font-bold text-gray-900" id="login-title">
               {currentCopy.title}
             </h2>
-            <p className="text-sm leading-relaxed text-travel-muted">{currentCopy.subtitle}</p>
+            <p className="text-sm leading-relaxed text-gray-500">{currentCopy.subtitle}</p>
           </div>
 
           <div
             aria-label="选择登录或注册"
-            className="mb-7 flex border-b border-travel-border-light"
+            className="mb-8 flex rounded-2xl bg-gray-100 p-1.5"
             role="group"
           >
             {(['login', 'register'] as const).map((t) => (
               <button
                 aria-pressed={tab === t}
-                className={`flex-1 border-b-2 px-0 py-2.5 text-sm font-medium transition-colors ${
+                className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 ${
                   tab === t
-                    ? 'border-travel-orange text-travel-ink'
-                    : 'border-transparent text-travel-muted hover:text-stone-600'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
                 }`}
                 key={t}
                 onClick={() => switchTab(t)}
@@ -251,7 +259,7 @@ export default function Login() {
 
           {formError && (
             <div
-              className="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm leading-relaxed text-red-700"
+              className="mb-6 rounded-2xl border border-red-200/60 bg-red-50/80 p-4 text-sm leading-relaxed text-red-600 backdrop-blur-sm animate-fade-in-up"
               role="alert"
             >
               {formError}
@@ -259,20 +267,20 @@ export default function Login() {
           )}
 
           <form aria-busy={loading} noValidate onSubmit={handleSubmit}>
-            <div className="mb-5">
+            <div className="mb-6 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
               <label
-                className="mb-1.5 block text-sm font-medium text-stone-700"
+                className="mb-2 block text-sm font-semibold text-gray-700"
                 htmlFor="login-username"
               >
                 用户名
-                <span aria-hidden="true" className="ml-1 text-destructive">
+                <span aria-hidden="true" className="ml-1 text-red-500">
                   *
                 </span>
               </label>
               <input
                 aria-invalid={Boolean(fieldErrors.username)}
                 autoComplete="username"
-                className="h-11 w-full rounded-md border border-travel-border bg-white px-3.5 text-sm text-travel-ink outline-none transition-[border-color,box-shadow] placeholder:text-stone-400 focus:border-travel-orange focus:ring-2 focus:ring-travel-orange/10 aria-[invalid=true]:border-red-500"
+                className="h-12 w-full rounded-xl border border-gray-200 bg-white px-4 text-sm text-gray-900 outline-none transition-all duration-200 placeholder:text-gray-400 focus:border-orange-300 focus:ring-2 focus:ring-orange-100 hover:border-gray-300 aria-[invalid=true]:border-red-400 aria-[invalid=true]:ring-2 aria-[invalid=true]:ring-red-100"
                 id="login-username"
                 name="username"
                 onBlur={() => {
@@ -292,19 +300,19 @@ export default function Login() {
                 value={username}
               />
               {touched.username && fieldErrors.username && (
-                <p aria-live="polite" className="mt-1.5 text-xs text-red-600">
+                <p aria-live="polite" className="mt-2 text-xs font-medium text-red-500">
                   {fieldErrors.username}
                 </p>
               )}
             </div>
 
-            <div className="mb-5">
+            <div className="mb-6 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
               <label
-                className="mb-1.5 block text-sm font-medium text-stone-700"
+                className="mb-2 block text-sm font-semibold text-gray-700"
                 htmlFor="login-password"
               >
                 密码
-                <span aria-hidden="true" className="ml-1 text-destructive">
+                <span aria-hidden="true" className="ml-1 text-red-500">
                   *
                 </span>
               </label>
@@ -312,7 +320,7 @@ export default function Login() {
                 <input
                   aria-invalid={Boolean(fieldErrors.password)}
                   autoComplete={tab === 'register' ? 'new-password' : 'current-password'}
-                  className="h-11 w-full rounded-md border border-travel-border bg-white pr-10 pl-3.5 text-sm text-travel-ink outline-none transition-[border-color,box-shadow] placeholder:text-stone-400 focus:border-travel-orange focus:ring-2 focus:ring-travel-orange/10 aria-[invalid=true]:border-red-500"
+                  className="h-12 w-full rounded-xl border border-gray-200 bg-white pr-12 pl-4 text-sm text-gray-900 outline-none transition-all duration-200 placeholder:text-gray-400 focus:border-orange-300 focus:ring-2 focus:ring-orange-100 hover:border-gray-300 aria-[invalid=true]:border-red-400 aria-[invalid=true]:ring-2 aria-[invalid=true]:ring-red-100"
                   id="login-password"
                   name="password"
                   onBlur={() => {
@@ -332,7 +340,7 @@ export default function Login() {
                 />
                 <button
                   aria-label={showPassword ? '隐藏密码' : '显示密码'}
-                  className="absolute top-1/2 right-2.5 -translate-y-1/2 border-none bg-transparent p-0.5 text-stone-400 transition-colors hover:text-stone-600"
+                  className="absolute top-1/2 right-3 -translate-y-1/2 rounded-lg p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
                   onClick={() => setShowPassword((v) => !v)}
                   tabIndex={-1}
                   type="button"
@@ -345,15 +353,16 @@ export default function Login() {
                 </button>
               </div>
               {touched.password && fieldErrors.password && (
-                <p aria-live="polite" className="mt-1.5 text-xs text-red-600">
+                <p aria-live="polite" className="mt-2 text-xs font-medium text-red-500">
                   {fieldErrors.password}
                 </p>
               )}
             </div>
 
             <button
-              className="flex h-11 w-full items-center justify-center gap-2 rounded-md border-none bg-travel-orange text-sm font-semibold text-white transition-colors hover:bg-travel-orange-dark disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex h-12 w-full items-center justify-center gap-2 rounded-xl border-none bg-gradient-to-r from-orange-500 to-red-500 text-sm font-semibold text-white shadow-lg shadow-orange-500/25 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-orange-500/30 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 animate-fade-in-up"
               disabled={loading}
+              style={{ animationDelay: '300ms' }}
               type="submit"
             >
               {loading && (

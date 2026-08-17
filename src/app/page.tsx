@@ -16,12 +16,12 @@ import { useAuthStore } from '@/stores/auth'
 import { featuredTrips, hotDestinations, userReviews } from './home-data'
 
 const quickEntries = [
-  { color: '#FF6B35', href: '/', icon: <Home />, label: '酒店民宿' },
-  { color: '#F59E0B', href: '/detail', icon: <Compass />, label: 'AI 行程' },
-  { color: '#10B981', href: '/attractions', icon: <MapPin />, label: '精选景点' },
-  { color: '#8B5CF6', href: '/community', icon: <Users />, label: '旅友社区' },
-  { color: '#3B82F6', href: '/weather', icon: <Cloud />, label: '天气查询' },
-  { color: '#E84057', href: '/chat', icon: <Bot />, label: 'AI 咨询' },
+  { color: '#FF6B35', gradient: 'from-orange-500 to-red-500', href: '/', icon: <Home />, label: '酒店民宿' },
+  { color: '#F59E0B', gradient: 'from-amber-400 to-orange-500', href: '/detail', icon: <Compass />, label: 'AI 行程' },
+  { color: '#10B981', gradient: 'from-emerald-400 to-teal-500', href: '/attractions', icon: <MapPin />, label: '精选景点' },
+  { color: '#8B5CF6', gradient: 'from-violet-500 to-purple-600', href: '/community', icon: <Users />, label: '旅友社区' },
+  { color: '#3B82F6', gradient: 'from-blue-400 to-indigo-500', href: '/weather', icon: <Cloud />, label: '天气查询' },
+  { color: '#E84057', gradient: 'from-pink-500 to-rose-600', href: '/chat', icon: <Bot />, label: 'AI 咨询' },
 ]
 
 export default function HomePage() {
@@ -45,64 +45,89 @@ export default function HomePage() {
       <HeroSearch />
 
       {/* 快捷入口 */}
-      <section aria-label="快捷服务" className="mx-auto max-w-[1200px] px-6 py-8">
-        <div className="grid grid-cols-3 gap-4 sm:grid-cols-6">
+      <section aria-label="快捷服务" className="relative mx-auto max-w-[1200px] px-6 py-12">
+        {/* 装饰背景 */}
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-primary/10 to-secondary/10 blur-3xl" />
+          <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-br from-sky/10 to-accent/10 blur-3xl" />
+        </div>
+
+        <div className="grid grid-cols-3 gap-4 sm:grid-cols-6 animate-fade-in-up">
           {quickEntries.map((entry) => (
             <Link
-              className="flex flex-col items-center gap-3 rounded-xl p-4 transition-all hover:bg-travel-surface hover:shadow-md"
+              className="group flex flex-col items-center gap-3 rounded-2xl p-4 transition-all duration-300 hover:bg-white hover:shadow-lg hover:-translate-y-1"
               href={entry.href}
               key={entry.label}
             >
               <span
                 aria-hidden="true"
-                className="flex h-12 w-12 items-center justify-center rounded-xl text-xl text-white"
-                style={{ background: entry.color }}
+                className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${entry.gradient} text-xl text-white shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3`}
               >
                 {entry.icon}
               </span>
-              <span className="text-sm font-medium text-travel-ink">{entry.label}</span>
+              <span className="text-sm font-semibold text-travel-ink transition-colors group-hover:text-primary">
+                {entry.label}
+              </span>
             </Link>
           ))}
         </div>
       </section>
 
       {/* 热门目的地 */}
-      <section aria-labelledby="hot-dest-title" className="mx-auto max-w-[1200px] px-6 py-8">
-        <div className="mb-6 flex items-center justify-between">
+      <section aria-labelledby="hot-dest-title" className="relative mx-auto max-w-[1200px] px-6 py-12">
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute top-0 left-1/2 h-px w-3/4 -translate-x-1/2 bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+        </div>
+
+        <div className="mb-8 flex items-center justify-between animate-fade-in-up">
           <h2
-            className="flex items-center gap-2 text-xl font-bold text-travel-ink"
+            className="flex items-center gap-3 text-2xl font-bold"
             id="hot-dest-title"
           >
-            <Flame aria-hidden="true" className="text-primary" /> 热门目的地
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-red-500 text-white shadow-lg">
+              <Flame aria-hidden="true" size={20} />
+            </span>
+            <span className="bg-gradient-to-r from-travel-ink to-travel-ink/70 bg-clip-text text-transparent">
+              热门目的地
+            </span>
           </h2>
-          <span className="text-sm text-primary">查看更多 &gt;</span>
+          <Link
+            className="group flex items-center gap-1 text-sm font-semibold text-primary transition-colors hover:text-primary-strong"
+            href="/attractions"
+          >
+            查看更多
+            <span className="transition-transform group-hover:translate-x-1">&rarr;</span>
+          </Link>
         </div>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-          {hotDestinations.map((dest) => (
+
+        <div className="grid grid-cols-2 gap-5 sm:grid-cols-3">
+          {hotDestinations.map((dest, index) => (
             <Link
-              className="group overflow-hidden rounded-xl bg-white shadow-sm transition-all hover:shadow-md"
+              className="group block overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-2 animate-fade-in-up"
               href={`/detail?city=${encodeURIComponent(dest.name)}`}
               key={dest.name}
+              style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className="relative h-[200px] w-full overflow-hidden">
+              <div className="relative h-[220px] w-full overflow-hidden">
                 <Image
                   alt={dest.name}
-                  className="object-cover transition-transform group-hover:scale-105"
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
                   fill
                   loading="lazy"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   src={dest.img}
                 />
-                <span className="absolute left-2 top-2 rounded-full bg-primary px-2 py-1 text-xs font-bold text-white">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-primary shadow-sm backdrop-blur-sm">
                   {dest.tag}
                 </span>
-                <span className="absolute bottom-2 right-2 rounded-full bg-black/50 px-2 py-1 text-xs text-white">
+                <span className="absolute bottom-3 right-3 rounded-full bg-black/60 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
                   {dest.temp}
                 </span>
               </div>
-              <div className="flex items-center justify-between p-3">
-                <span className="font-semibold text-travel-ink">{dest.name}</span>
-                <span className="text-sm font-bold text-primary">{dest.price}</span>
+              <div className="flex items-center justify-between p-4">
+                <span className="text-lg font-bold text-travel-ink">{dest.name}</span>
+                <span className="text-lg font-bold text-primary">{dest.price}</span>
               </div>
             </Link>
           ))}
@@ -110,52 +135,72 @@ export default function HomePage() {
       </section>
 
       {/* 精选推荐 */}
-      <section aria-labelledby="featured-title" className="mx-auto max-w-[1200px] px-6 py-8">
-        <div className="mb-6 flex items-center justify-between">
+      <section aria-labelledby="featured-title" className="relative mx-auto max-w-[1200px] px-6 py-12">
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute top-0 left-1/2 h-px w-3/4 -translate-x-1/2 bg-gradient-to-r from-transparent via-secondary/20 to-transparent" />
+        </div>
+
+        <div className="mb-8 flex items-center justify-between animate-fade-in-up">
           <h2
-            className="flex items-center gap-2 text-xl font-bold text-travel-ink"
+            className="flex items-center gap-3 text-2xl font-bold"
             id="featured-title"
           >
-            <Star aria-hidden="true" className="text-yellow-500" /> 精选推荐
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 text-white shadow-lg">
+              <Star aria-hidden="true" size={20} />
+            </span>
+            <span className="bg-gradient-to-r from-travel-ink to-travel-ink/70 bg-clip-text text-transparent">
+              精选推荐
+            </span>
           </h2>
-          <span className="text-sm text-primary">更多行程 &gt;</span>
+          <Link
+            className="group flex items-center gap-1 text-sm font-semibold text-primary transition-colors hover:text-primary-strong"
+            href="/detail"
+          >
+            更多行程
+            <span className="transition-transform group-hover:translate-x-1">&rarr;</span>
+          </Link>
         </div>
+
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {featuredTrips.map((trip) => (
+          {featuredTrips.map((trip, index) => (
             <Link
-              className="group overflow-hidden rounded-xl bg-white shadow-sm transition-all hover:shadow-md"
+              className="group block overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-2 animate-fade-in-up"
               href={`/detail?city=${encodeURIComponent(trip.city)}`}
               key={trip.title}
+              style={{ animationDelay: `${index * 100}ms` }}
             >
               <div className="relative h-[200px] w-full overflow-hidden">
                 <Image
                   alt={trip.title}
-                  className="object-cover transition-transform group-hover:scale-105"
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
                   fill
                   loading="lazy"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   src={trip.image}
                 />
-                <span className="absolute left-2 top-2 rounded-full bg-primary px-2 py-1 text-xs font-bold text-white">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-primary shadow-sm backdrop-blur-sm">
                   {trip.tag}
                 </span>
               </div>
-              <div className="p-4">
-                <h3 className="mb-2 text-lg font-bold text-travel-ink">{trip.title}</h3>
-                <p className="mb-3 text-sm text-travel-muted">{trip.desc}</p>
-                <div className="mb-3 flex items-center gap-2">
-                  <span className="flex items-center gap-1 text-sm text-yellow-500">
-                    <Star aria-hidden="true" className="h-4 w-4 fill-current" />
+              <div className="p-5">
+                <h3 className="mb-2 text-lg font-bold text-travel-ink transition-colors group-hover:text-primary">
+                  {trip.title}
+                </h3>
+                <p className="mb-4 text-sm leading-relaxed text-travel-muted">{trip.desc}</p>
+                <div className="mb-4 flex items-center gap-2">
+                  <span className="flex items-center gap-1 rounded-full bg-yellow-50 px-2 py-0.5 text-sm font-semibold text-yellow-600">
+                    <Star aria-hidden="true" className="h-3.5 w-3.5 fill-current" />
                     {trip.rating}
                   </span>
                   <span className="text-sm text-travel-muted">{trip.reviews} 条评价</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xl font-bold text-primary">¥{trip.price}</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl font-bold text-primary">¥{trip.price}</span>
                   <span className="text-sm text-travel-muted line-through">
                     ¥{trip.originalPrice}
                   </span>
-                  <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-bold text-red-600">
+                  <span className="ml-auto rounded-full bg-gradient-to-r from-red-500 to-pink-500 px-3 py-1 text-xs font-bold text-white shadow-sm">
                     {Math.round((1 - trip.price / trip.originalPrice) * 100)}% OFF
                   </span>
                 </div>
@@ -166,62 +211,80 @@ export default function HomePage() {
       </section>
 
       {/* AI 特色 + 用户评价 */}
-      <section aria-labelledby="ai-feature-title" className="mx-auto max-w-[1200px] px-6 py-8">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          <div className="rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 p-8 text-white">
-            <div className="mb-6 flex items-center gap-3">
-              <Zap aria-hidden="true" className="h-8 w-8 text-yellow-400" />
+      <section aria-labelledby="ai-feature-title" className="relative mx-auto max-w-[1200px] px-6 py-12">
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute top-0 left-1/2 h-px w-3/4 -translate-x-1/2 bg-gradient-to-r from-transparent via-accent/20 to-transparent" />
+        </div>
+
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 animate-fade-in-up">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 p-8 text-white">
+            {/* 装饰元素 */}
+            <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-gradient-to-br from-yellow-400/20 to-orange-500/20 blur-3xl" />
+            <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-gradient-to-br from-blue-400/20 to-purple-500/20 blur-3xl" />
+
+            <div className="relative mb-8 flex items-center gap-4">
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 shadow-lg">
+                <Zap aria-hidden="true" size={24} />
+              </span>
               <h3 className="text-2xl font-bold" id="ai-feature-title">
                 为什么选择 AI 规划？
               </h3>
             </div>
-            <ul className="mb-8 space-y-4">
+            <ul className="relative mb-10 space-y-5">
               {[
                 '实时天气 + 预算智能匹配',
                 '景点、酒店、交通一站式规划',
                 '支持 300+ 国内城市',
                 '行程可随时调整优化',
-              ].map((text) => (
-                <li className="flex items-center gap-3" key={text}>
-                  <span aria-hidden="true" className="h-2 w-2 rounded-full bg-yellow-400" />
-                  <span>{text}</span>
+              ].map((text, index) => (
+                <li className="flex items-center gap-4" key={text}>
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-sm font-bold text-yellow-400 backdrop-blur-sm">
+                    {index + 1}
+                  </span>
+                  <span className="text-base">{text}</span>
                 </li>
               ))}
             </ul>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="relative grid grid-cols-3 gap-6 rounded-2xl bg-white/5 p-6 backdrop-blur-sm">
               {[
                 { label: '行程已生成', num: '50,000+' },
                 { label: '覆盖城市', num: '300+' },
                 { label: '满意率', num: '98%' },
               ].map((stat) => (
                 <div className="text-center" key={stat.label}>
-                  <span className="block text-2xl font-bold text-yellow-400">{stat.num}</span>
-                  <span className="text-sm text-slate-400">{stat.label}</span>
+                  <span className="block text-3xl font-bold text-yellow-400">{stat.num}</span>
+                  <span className="mt-1 block text-sm text-slate-400">{stat.label}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="rounded-2xl bg-white p-8 shadow-sm">
-            <h3 className="mb-6 flex items-center gap-2 text-xl font-bold text-travel-ink">
-              <Users aria-hidden="true" /> 用户怎么说
+          <div className="rounded-3xl bg-white p-8 shadow-lg">
+            <h3 className="mb-8 flex items-center gap-3 text-xl font-bold text-travel-ink">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10">
+                <Users aria-hidden="true" className="text-primary" size={20} />
+              </span>
+              用户怎么说
             </h3>
             <div className="space-y-6">
-              {userReviews.map((review) => (
+              {userReviews.map((review, index) => (
                 <div
-                  className="border-b border-travel-border pb-6 last:border-0 last:pb-0"
+                  className="rounded-2xl border border-travel-border/50 p-4 transition-all duration-300 hover:border-primary/20 hover:shadow-sm animate-fade-in-up"
                   key={review.name}
+                  style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <div className="mb-3 flex items-center gap-3">
-                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-lg">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 text-xl">
                       {review.avatar}
                     </span>
                     <div>
                       <span className="block font-semibold text-travel-ink">{review.name}</span>
                       <span className="text-sm text-travel-muted">去了{review.dest}</span>
                     </div>
-                    <span aria-label={`${review.rating} 星`} className="ml-auto text-yellow-500">
-                      {'★'.repeat(review.rating)}
+                    <span aria-label={`${review.rating} 星`} className="ml-auto flex items-center gap-0.5 text-yellow-500">
+                      {Array.from({ length: review.rating }).map((_, i) => (
+                        <Star className="h-4 w-4 fill-current" key={i} />
+                      ))}
                     </span>
                   </div>
                   <p className="text-sm leading-relaxed text-travel-muted">{review.text}</p>
@@ -233,16 +296,27 @@ export default function HomePage() {
       </section>
 
       {/* 底部 CTA */}
-      <section aria-label="立即开始" className="bg-gradient-to-r from-primary to-orange-600 py-16">
-        <div className="mx-auto max-w-[1200px] px-6 text-center">
-          <h2 className="mb-4 text-3xl font-bold text-white">准备好出发了吗？</h2>
-          <p className="mb-8 text-lg text-white/80">让 AI 为你量身定制下一段旅程</p>
+      <section aria-label="立即开始" className="relative overflow-hidden bg-gradient-to-r from-primary via-orange-500 to-accent py-20">
+        {/* 装饰元素 */}
+        <div className="absolute inset-0">
+          <div className="absolute top-0 left-1/4 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
+          <div className="absolute bottom-0 right-1/4 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2230%22%20height%3D%2230%22%20viewBox%3D%220%200%2030%2030%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Ccircle%20cx%3D%2215%22%20cy%3D%2215%22%20r%3D%221%22%20fill%3D%22rgba(255%2C255%2C255%2C0.1)%22%2F%3E%3C%2Fsvg%3E')] opacity-50" />
+        </div>
+
+        <div className="relative mx-auto max-w-[1200px] px-6 text-center animate-fade-in-up">
+          <h2 className="mb-4 text-4xl font-bold text-white drop-shadow-lg">
+            准备好出发了吗？
+          </h2>
+          <p className="mb-10 text-lg text-white/90">
+            让 AI 为你量身定制下一段旅程
+          </p>
           <button
-            className="inline-flex items-center gap-2 rounded-full bg-white px-8 py-4 text-lg font-bold text-primary shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl"
+            className="group inline-flex items-center gap-3 rounded-full bg-white px-10 py-5 text-lg font-bold text-primary shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-3xl hover:scale-105"
             onClick={onStart}
             type="button"
           >
-            <Compass aria-hidden="true" />
+            <Compass aria-hidden="true" className="transition-transform duration-300 group-hover:rotate-45" />
             {user ? '立即规划行程' : '登录开始规划'}
           </button>
         </div>
@@ -250,4 +324,3 @@ export default function HomePage() {
     </main>
   )
 }
-

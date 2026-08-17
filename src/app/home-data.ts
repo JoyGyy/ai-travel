@@ -5,16 +5,16 @@ import { imageUrl } from '@/lib/images'
 
 /** 真实目的地图片（维基百科 1280px 高清） */
 const IMAGES = {
-  sanya:
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Yalong_Bay_01.jpg/1280px-Yalong_Bay_01.jpg',
-  lijiang:
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Black_Dragon_%E9%BB%91%E9%BE%99%E6%BD%AD_%285496141333%29.jpg/1280px-Black_Dragon_%E9%BB%91%E9%BE%99%E6%BD%AD_%285496141333%29.jpg',
-  xian: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/City_wall_of_Xi%27an_51550-Xian_%2827959363326%29.jpg/1280px-City_wall_of_Xi%27an_51550-Xian_%2827959363326%29.jpg',
   chengdu:
     'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Chengdu_Research_Base_Eingang.jpg/1280px-Chengdu_Research_Base_Eingang.jpg',
   dali: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Erhai_lake%2C_Yunnan%2C_China.jpg/1280px-Erhai_lake%2C_Yunnan%2C_China.jpg',
+  lijiang:
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Black_Dragon_%E9%BB%91%E9%BE%99%E6%BD%AD_%285496141333%29.jpg/1280px-Black_Dragon_%E9%BB%91%E9%BE%99%E6%BD%AD_%285496141333%29.jpg',
+  sanya:
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Yalong_Bay_01.jpg/1280px-Yalong_Bay_01.jpg',
   xiamen:
     'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/2018%E5%B9%B4%E7%9A%84%E9%BC%93%E6%B5%AA%E5%B1%BF.jpg/1280px-2018%E5%B9%B4%E7%9A%84%E9%BC%93%E6%B5%AA%E5%B1%BF.jpg',
+  xian: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/City_wall_of_Xi%27an_51550-Xian_%2827959363326%29.jpg/1280px-City_wall_of_Xi%27an_51550-Xian_%2827959363326%29.jpg',
 }
 
 /** 热门目的地 */

@@ -921,6 +921,28 @@ a:focus-visible {
   color: var(--travel-muted);
 }
 
+/* 入场动画 */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s cubic-bezier(0.2, 0, 0, 1) forwards;
+  opacity: 0;
+}
+
+/* 支持交错延迟 */
+.animate-fade-in-up[style*="animation-delay"] {
+  opacity: 0;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -929,5 +951,9 @@ a:focus-visible {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .animate-fade-in-up {
+    opacity: 1;
   }
 }

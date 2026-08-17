@@ -182,7 +182,7 @@ export default function HomePage() {
             className="flex items-center gap-3 text-2xl font-bold"
             id="hot-dest-title"
           >
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500 text-white shadow-lg">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-500 text-white shadow-lg">
               <Flame aria-hidden="true" size={20} />
             </span>
             <span className="bg-gradient-to-r from-travel-ink to-travel-ink/70 bg-clip-text text-transparent">
@@ -201,7 +201,7 @@ export default function HomePage() {
         <div className="grid grid-cols-2 gap-5 sm:grid-cols-3">
           {hotDestinations.map((dest, index) => (
             <Link
-              className="group block overflow-hidden rounded-2xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] hover:-translate-y-2 hover:ring-2 hover:ring-orange-200 scroll-reveal"
+              className="group block overflow-hidden rounded-2xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] hover:-translate-y-2 hover:ring-2 hover:ring-teal-200 scroll-reveal"
               data-delay={index}
               href={`/detail?city=${encodeURIComponent(dest.name)}`}
               key={dest.name}
@@ -243,7 +243,7 @@ export default function HomePage() {
             className="flex items-center gap-3 text-2xl font-bold"
             id="featured-title"
           >
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500 text-white shadow-lg">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500 text-white shadow-lg">
               <Star aria-hidden="true" size={20} />
             </span>
             <span className="bg-gradient-to-r from-travel-ink to-travel-ink/70 bg-clip-text text-transparent">
@@ -262,7 +262,7 @@ export default function HomePage() {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {featuredTrips.map((trip, index) => (
             <Link
-              className="group block overflow-hidden rounded-2xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] hover:-translate-y-2 hover:ring-2 hover:ring-amber-200 scroll-reveal"
+              className="group block overflow-hidden rounded-2xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] hover:-translate-y-2 hover:ring-2 hover:ring-cyan-200 scroll-reveal"
               data-delay={index}
               href={`/detail?city=${encodeURIComponent(trip.city)}`}
               key={trip.title}
@@ -287,7 +287,7 @@ export default function HomePage() {
                 </h3>
                 <p className="mb-4 text-sm leading-relaxed text-travel-muted">{trip.desc}</p>
                 <div className="mb-4 flex items-center gap-2">
-                  <Badge className="gap-1 border-0 bg-yellow-50 text-sm font-semibold text-yellow-600">
+                  <Badge className="gap-1 border-0 bg-cyan-50 text-sm font-semibold text-cyan-600">
                     <Star aria-hidden="true" className="h-3.5 w-3.5 fill-current" />
                     {trip.rating}
                   </Badge>
@@ -326,11 +326,11 @@ export default function HomePage() {
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 p-8 text-white scroll-reveal-left">
             {/* 装饰元素 */}
-            <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-amber-400/10 blur-3xl" />
+            <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-cyan-400/10 blur-3xl" />
             <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-gradient-to-br from-blue-400/20 to-purple-500/20 blur-3xl" />
 
             <div className="relative mb-8 flex items-center gap-4">
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500 shadow-lg">
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500 shadow-lg">
                 <Zap aria-hidden="true" size={24} />
               </span>
               <h3 className="text-2xl font-bold" id="ai-feature-title">
@@ -345,7 +345,7 @@ export default function HomePage() {
                 '行程可随时调整优化',
               ].map((text, index) => (
                 <li className="flex items-center gap-4" key={text}>
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-sm font-bold text-yellow-400 backdrop-blur-sm">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-sm font-bold text-cyan-400 backdrop-blur-sm">
                     {index + 1}
                   </span>
                   <span className="text-base">{text}</span>
@@ -359,7 +359,7 @@ export default function HomePage() {
                 { label: '满意率', num: '98%' },
               ].map(stat => (
                 <div className="text-center" key={stat.label}>
-                  <span className="block text-3xl font-bold text-yellow-400">{stat.num}</span>
+                  <span className="block text-3xl font-bold text-cyan-400">{stat.num}</span>
                   <span className="mt-1 block text-sm text-slate-400">{stat.label}</span>
                 </div>
               ))}
@@ -393,7 +393,7 @@ export default function HomePage() {
                         {review.dest}
                       </span>
                     </div>
-                    <span aria-label={`${review.rating} 星`} className="ml-auto flex items-center gap-0.5 text-yellow-500">
+                    <span aria-label={`${review.rating} 星`} className="ml-auto flex items-center gap-0.5 text-cyan-500">
                       {Array.from({ length: review.rating }).map((_, i) => (
                         <Star className="h-4 w-4 fill-current" key={i} />
                       ))}
@@ -408,7 +408,7 @@ export default function HomePage() {
       </section>
 
       {/* 底部 CTA */}
-      <section aria-label="立即开始" className="relative overflow-hidden bg-orange-500 py-20">
+      <section aria-label="立即开始" className="relative overflow-hidden bg-teal-500 py-20">
         {/* 装饰元素 */}
         <div className="absolute inset-0">
           <div className="absolute top-0 left-1/4 h-64 w-64 rounded-full bg-white/10 blur-3xl" />

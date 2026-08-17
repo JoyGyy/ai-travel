@@ -252,7 +252,7 @@ export default function Detail() {
         <div className="pointer-events-none absolute inset-0 -z-[1] bg-[radial-gradient(circle,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[length:24px_24px]" />
         {/* 装饰渐变 */}
         <div className="absolute right-[82%] top-[18%] h-[28%] w-[28%] rounded-full bg-travel-orange/26 blur-[100px]" />
-        <div className="absolute bottom-[82%] left-[16%] h-[26%] w-[26%] rounded-full bg-amber-500/18 blur-[100px]" />
+        <div className="absolute bottom-[82%] left-[16%] h-[26%] w-[26%] rounded-full bg-cyan-500/18 blur-[100px]" />
 
         <div className="relative z-[2] flex items-center justify-between">
           <button

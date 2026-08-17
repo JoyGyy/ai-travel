@@ -172,12 +172,12 @@ export default function Login() {
         <div className="absolute inset-0 z-[1] bg-gradient-to-br from-gray-900/95 via-gray-900/80 to-gray-800/90" />
 
         {/* 装饰元素 */}
-        <div className="absolute -right-20 -top-20 z-[1] h-[400px] w-[400px] rounded-full bg-orange-500/5 blur-3xl" />
+        <div className="absolute -right-20 -top-20 z-[1] h-[400px] w-[400px] rounded-full bg-teal-500/5 blur-3xl" />
         <div className="absolute -bottom-20 -left-20 z-[1] h-[300px] w-[300px] rounded-full bg-gradient-to-br from-blue-500/10 to-purple-500/10 blur-3xl" />
 
         {/* 品牌标识 */}
         <div className="relative z-[2] flex items-center gap-3 animate-fade-in-up">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500 text-lg text-white shadow-lg shadow-orange-500/20">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-500 text-lg text-white shadow-lg shadow-teal-500/20">
             <Compass />
           </span>
           <span className="text-lg font-bold tracking-wide text-white">Travel AI</span>
@@ -185,13 +185,13 @@ export default function Login() {
 
         {/* 主标语 */}
         <div className="relative z-[2] flex flex-1 flex-col justify-center gap-6 py-8 md:max-w-[440px]">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-orange-400 animate-fade-in-up">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-teal-400 animate-fade-in-up">
             AI Travel Planner
           </p>
           <h1 className="text-3xl font-bold leading-tight text-white md:text-[36px] animate-fade-in-up" style={{ animationDelay: '100ms' }}>
             登录后保存你的
             <br />
-            <span className="text-orange-400">
+            <span className="text-teal-400">
               智能旅行地图
             </span>
           </h1>
@@ -207,7 +207,7 @@ export default function Login() {
               >
                 <span
                   aria-hidden="true"
-                  className="h-2 w-2 flex-shrink-0 rounded-full bg-orange-400"
+                  className="h-2 w-2 flex-shrink-0 rounded-full bg-teal-400"
                 />
                 {feature}
               </Badge>
@@ -362,7 +362,7 @@ export default function Login() {
             </div>
 
             <Button
-              className="h-12 w-full gap-2 bg-orange-500 text-white shadow-lg shadow-orange-500/20 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-orange-500/25 disabled:hover:translate-y-0 animate-fade-in-up"
+              className="h-12 w-full gap-2 bg-teal-500 text-white shadow-lg shadow-teal-500/20 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-teal-500/25 disabled:hover:translate-y-0 animate-fade-in-up"
               disabled={loading}
               size="lg"
               style={{ animationDelay: '300ms' }}

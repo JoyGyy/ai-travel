@@ -23,10 +23,10 @@ const TRENDING_TAGS = [
   { color: 'bg-blue-50 text-blue-600 border-blue-200', label: '周末游' },
   { color: 'bg-emerald-50 text-emerald-600 border-emerald-200', label: '亲子游' },
   { color: 'bg-purple-50 text-purple-600 border-purple-200', label: '自驾游' },
-  { color: 'bg-orange-50 text-orange-600 border-orange-200', label: '美食探店' },
+  { color: 'bg-teal-50 text-teal-600 border-teal-200', label: '美食探店' },
   { color: 'bg-pink-50 text-pink-600 border-pink-200', label: '网红打卡' },
   { color: 'bg-cyan-50 text-cyan-600 border-cyan-200', label: '海边度假' },
-  { color: 'bg-amber-50 text-amber-600 border-amber-200', label: '古镇漫游' },
+  { color: 'bg-cyan-50 text-cyan-600 border-cyan-200', label: '古镇漫游' },
   { color: 'bg-indigo-50 text-indigo-600 border-indigo-200', label: '徒步登山' },
 ]
 
@@ -169,14 +169,14 @@ export default function Community() {
   return (
     <main aria-labelledby="community-title" className="travel-page-shell gap-6">
       {/* Hero 区域 */}
-      <section className="relative overflow-hidden rounded-3xl bg-orange-50/60 p-8">
+      <section className="relative overflow-hidden rounded-3xl bg-teal-50/60 p-8">
         {/* 装饰元素 */}
-        <div className="absolute -right-16 -top-16 h-[200px] w-[200px] rounded-full bg-orange-200/15 blur-3xl" />
-        <div className="absolute -bottom-16 -left-16 h-[180px] w-[180px] rounded-full bg-amber-200/10 blur-3xl" />
+        <div className="absolute -right-16 -top-16 h-[200px] w-[200px] rounded-full bg-teal-200/15 blur-3xl" />
+        <div className="absolute -bottom-16 -left-16 h-[180px] w-[180px] rounded-full bg-cyan-200/10 blur-3xl" />
 
         <div className="relative flex items-center justify-between gap-5">
           <div className="animate-fade-in-up">
-            <p className="mb-2 text-[0.75rem] font-bold uppercase tracking-[0.15em] text-orange-500">
+            <p className="mb-2 text-[0.75rem] font-bold uppercase tracking-[0.15em] text-teal-500">
               TRAVEL COMMUNITY
             </p>
             <h1
@@ -192,7 +192,7 @@ export default function Community() {
             </p>
           </div>
           <Button
-            className="gap-2 shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/30"
+            className="gap-2 shadow-lg shadow-teal-500/25 hover:shadow-xl hover:shadow-teal-500/30"
             disabled={!hasHydrated}
             onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}
             size="lg"
@@ -207,7 +207,7 @@ export default function Community() {
           {getStats(total).map(stat => (
             <Card className="border-white/60 bg-white/80 backdrop-blur-sm" key={stat.label}>
               <CardContent className="flex items-center gap-3 p-3">
-                <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-orange-100 text-orange-600">
+                <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-teal-100 text-teal-600">
                   {stat.icon}
                 </span>
                 <div>
@@ -223,7 +223,7 @@ export default function Community() {
       {/* 热门标签 */}
       <section className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
         <div className="mb-4 flex items-center gap-3">
-          <TrendingUp className="h-4 w-4 text-orange-500" />
+          <TrendingUp className="h-4 w-4 text-teal-500" />
           <h2 className="text-sm font-semibold text-gray-700">热门话题</h2>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -248,12 +248,12 @@ export default function Community() {
       {/* 每日旅行语录 + 城市聚焦 */}
       <div className="grid gap-4 sm:grid-cols-2 animate-fade-in-up" style={{ animationDelay: '250ms' }}>
         {/* 旅行语录 */}
-        <Card className="relative overflow-hidden border-white/60 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 backdrop-blur-sm">
-          <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-gradient-to-br from-indigo-200/30 to-purple-200/30 blur-2xl" />
+        <Card className="relative overflow-hidden border-white/60 bg-gradient-to-br from-teal-50 via-cyan-50 to-sky-50 backdrop-blur-sm">
+          <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-gradient-to-br from-teal-200/30 to-cyan-200/30 blur-2xl" />
           <CardContent className="relative p-5">
             <div className="mb-3 flex items-center gap-2">
-              <Quote className="h-4 w-4 text-indigo-400" />
-              <span className="text-xs font-semibold text-indigo-500 uppercase tracking-wider">旅行语录</span>
+              <Quote className="h-4 w-4 text-teal-400" />
+              <span className="text-xs font-semibold text-teal-500 uppercase tracking-wider">旅行语录</span>
             </div>
             <blockquote className="text-sm leading-relaxed text-gray-700 italic">
               {[
@@ -268,15 +268,15 @@ export default function Community() {
         </Card>
 
         {/* 城市聚焦 */}
-        <Card className="relative overflow-hidden border-white/60 bg-orange-50/60 backdrop-blur-sm">
-          <div className="absolute -left-8 -bottom-8 h-24 w-24 rounded-full bg-amber-200/15 blur-2xl" />
+        <Card className="relative overflow-hidden border-white/60 bg-teal-50/60 backdrop-blur-sm">
+          <div className="absolute -left-8 -bottom-8 h-24 w-24 rounded-full bg-cyan-200/15 blur-2xl" />
           <CardContent className="relative p-5">
             <div className="mb-3 flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-orange-400" />
-              <span className="text-xs font-semibold text-orange-500 uppercase tracking-wider">城市聚焦</span>
+              <MapPin className="h-4 w-4 text-teal-400" />
+              <span className="text-xs font-semibold text-teal-500 uppercase tracking-wider">城市聚焦</span>
             </div>
             <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-orange-500 text-2xl text-white shadow-lg">
+              <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-teal-500 text-2xl text-white shadow-lg">
                 🐼
               </div>
               <div>
@@ -284,7 +284,7 @@ export default function Community() {
                 <p className="text-xs text-gray-500">美食之都 · 大熊猫故乡</p>
                 <div className="mt-1.5 flex items-center gap-1">
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className={`h-3 w-3 ${i < 4 ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}`} />
+                    <Star key={i} className={`h-3 w-3 ${i < 4 ? 'fill-cyan-400 text-cyan-400' : 'text-gray-300'}`} />
                   ))}
                   <span className="ml-1 text-[10px] text-gray-400">旅友推荐</span>
                 </div>
@@ -292,7 +292,7 @@ export default function Community() {
             </div>
             <div className="mt-3 flex flex-wrap gap-1.5">
               {['火锅', '大熊猫', '宽窄巷子', '都江堰'].map(tag => (
-                <Badge className="border-orange-200 bg-orange-50 text-[10px] text-orange-600" key={tag} variant="outline">
+                <Badge className="border-teal-200 bg-teal-50 text-[10px] text-teal-600" key={tag} variant="outline">
                   {tag}
                 </Badge>
               ))}

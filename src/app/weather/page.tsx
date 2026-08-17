@@ -119,13 +119,13 @@ export default function Weather() {
       onClick={() => showDropdown && setShowDropdown(false)}
     >
       {/* Hero 区域 */}
-      <div className="relative isolate min-h-[280px] overflow-hidden bg-orange-50/60 p-[clamp(40px,8vw,80px)_clamp(20px,5vw,72px)_80px]">
+      <div className="relative isolate min-h-[280px] overflow-hidden bg-teal-50/60 p-[clamp(40px,8vw,80px)_clamp(20px,5vw,72px)_80px]">
         {/* 装饰元素 */}
-        <div className="absolute -right-20 -top-20 h-[300px] w-[300px] animate-[morphBg_8s_ease-in-out_infinite] rounded-full bg-orange-200/15 blur-3xl" />
-        <div className="absolute -bottom-20 -left-20 h-[250px] w-[250px] rounded-full bg-amber-200/10 blur-3xl" />
-        <div className="absolute right-[12%] top-1/2 h-20 w-20 -translate-y-1/2 rounded-full border-2 border-orange-200/40 bg-transparent" />
+        <div className="absolute -right-20 -top-20 h-[300px] w-[300px] animate-[morphBg_8s_ease-in-out_infinite] rounded-full bg-teal-200/15 blur-3xl" />
+        <div className="absolute -bottom-20 -left-20 h-[250px] w-[250px] rounded-full bg-cyan-200/10 blur-3xl" />
+        <div className="absolute right-[12%] top-1/2 h-20 w-20 -translate-y-1/2 rounded-full border-2 border-teal-200/40 bg-transparent" />
 
-        <p className="relative mb-3 text-[11px] font-bold tracking-[0.16em] text-orange-500 animate-[fadeIn_var(--motion-choreography)_var(--ease-emphasized)_0.1s_both] uppercase">
+        <p className="relative mb-3 text-[11px] font-bold tracking-[0.16em] text-teal-500 animate-[fadeIn_var(--motion-choreography)_var(--ease-emphasized)_0.1s_both] uppercase">
           WEATHER
         </p>
         <h1
@@ -220,7 +220,7 @@ export default function Weather() {
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <CardContent className="flex items-start gap-3 p-4">
-                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-600">
+                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-600">
                     {tip.icon}
                   </span>
                   <div>
@@ -278,7 +278,7 @@ export default function Weather() {
         <div className="mt-12 animate-fade-in-up">
           <Separator className="mb-8 bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
           <div className="mb-6 flex items-center gap-3">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-500 text-white text-sm">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-500 text-white text-sm">
               🔥
             </span>
             <h2 className="text-lg font-bold text-gray-900">热门城市</h2>
@@ -317,7 +317,7 @@ export default function Weather() {
           <div className="mt-12 animate-fade-in-up">
             <Separator className="mb-8 bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
             <div className="mb-6 flex items-center gap-3">
-              <Cloud className="h-5 w-5 text-orange-500" />
+              <Cloud className="h-5 w-5 text-teal-500" />
               <h2 className="text-lg font-bold text-gray-900">多城速览</h2>
               <span className="text-xs text-gray-400">点击查看详情</span>
             </div>
@@ -325,7 +325,7 @@ export default function Weather() {
               {[
                 { emoji: '🏖️', gradient: 'from-sky-400 to-blue-500', name: '三亚', temp: '28°C', weather: '晴' },
                 { emoji: '🏔️', gradient: 'from-emerald-400 to-teal-500', name: '丽江', temp: '18°C', weather: '多云' },
-                { emoji: '🏯', gradient: 'from-amber-400 to-orange-500', name: '西安', temp: '22°C', weather: '晴' },
+                { emoji: '🏯', gradient: 'from-cyan-400 to-teal-500', name: '西安', temp: '22°C', weather: '晴' },
                 { emoji: '🐼', gradient: 'from-lime-400 to-green-500', name: '成都', temp: '24°C', weather: '阴' },
                 { emoji: '🌊', gradient: 'from-cyan-400 to-blue-500', name: '大理', temp: '20°C', weather: '晴' },
                 { emoji: '🎵', gradient: 'from-rose-400 to-pink-500', name: '厦门', temp: '26°C', weather: '多云' },
@@ -372,7 +372,7 @@ export default function Weather() {
                   tag: '避暑',
                 },
                 {
-                  color: 'from-amber-500 to-orange-600',
+                  color: 'from-amber-500 to-teal-600',
                   cities: ['西安', '北京', '南京'],
                   desc: '秋高气爽，适合历史文化深度游',
                   icon: <MapPin size={20} />,
@@ -410,7 +410,7 @@ export default function Weather() {
                           </Badge>
                         ))}
                       </div>
-                      <Badge className="mt-3 border-0 bg-amber-100 text-amber-700" variant="outline">
+                      <Badge className="mt-3 border-0 bg-cyan-100 text-cyan-700" variant="outline">
                         <Star className="mr-1 h-3 w-3 fill-current" />
                         {item.tag}
                         推荐
@@ -428,13 +428,13 @@ export default function Weather() {
           <div className="mt-12 animate-fade-in-up">
             <Separator className="mb-8 bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
             <div className="mb-6 flex items-center gap-3">
-              <Lightbulb className="h-5 w-5 text-amber-500" />
+              <Lightbulb className="h-5 w-5 text-cyan-500" />
               <h2 className="text-lg font-bold text-gray-900">天气小知识</h2>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {[
                 { color: 'from-blue-500 to-cyan-500', desc: '相对湿度高于 80% 时体感闷热，低于 30% 时皮肤易干燥', icon: <Droplets size={20} />, title: '湿度与舒适度' },
-                { color: 'bg-orange-500', desc: '紫外线指数 6 以上建议涂抹 SPF30+ 防晒霜', icon: <Sun size={20} />, title: '紫外线防护' },
+                { color: 'bg-teal-500', desc: '紫外线指数 6 以上建议涂抹 SPF30+ 防晒霜', icon: <Sun size={20} />, title: '紫外线防护' },
                 { color: 'from-emerald-500 to-teal-500', desc: '气温每升高 10°C，体感温度可能高出 2-3°C', icon: <Thermometer size={20} />, title: '体感温度' },
               ].map(item => (
                 <Card

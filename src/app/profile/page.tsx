@@ -188,11 +188,11 @@ export default function Profile() {
   return (
     <main className="min-h-screen bg-background">
       {/* Hero 区域 */}
-      <div className="bg-orange-50/60">
+      <div className="bg-teal-50/60">
         <div className="travel-container py-12">
           <div className="flex items-center justify-between">
             <div>
-              <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-orange-500">
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-teal-500">
                 PROFILE
               </p>
               <h1 className="text-3xl font-black tracking-tight text-gray-900 lg:text-4xl">
@@ -232,7 +232,7 @@ export default function Profile() {
           <div className="space-y-6">
             {/* 用户卡片 */}
             <Card className="overflow-hidden border-white/60 bg-white/80 backdrop-blur-sm">
-              <div className="bg-orange-500 p-6">
+              <div className="bg-teal-500 p-6">
                 <div className="flex items-center gap-4">
                   <Avatar className="h-20 w-20 border-4 border-white/20">
                     <AvatarFallback className="bg-white/20 text-3xl font-bold text-white backdrop-blur-sm">
@@ -341,7 +341,7 @@ export default function Profile() {
             <Card className="border-white/60 bg-white/80 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Key size={20} className="text-amber-500" />
+                  <Key size={20} className="text-cyan-500" />
                   修改密码
                 </CardTitle>
               </CardHeader>
@@ -446,7 +446,7 @@ export default function Profile() {
                             key={item.id}
                           >
                             <div className="flex items-center gap-3">
-                              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100 text-orange-600">
+                              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-100 text-teal-600">
                                 <MapPin size={18} />
                               </div>
                               <div>

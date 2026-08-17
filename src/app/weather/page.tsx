@@ -29,7 +29,13 @@ export default function Weather() {
   const [city, setCity] = useState('')
   const [showDropdown, setShowDropdown] = useState(false)
   const [activeCityIndex, setActiveCityIndex] = useState(0)
-  const [recentCities, setRecentCities] = useState<string[]>(getRecentCities)
+  const [recentCities, setRecentCities] = useState<string[]>(() => {
+    try {
+      return getRecentCities()
+    } catch {
+      return []
+    }
+  })
   const { error, fetchWeather, loading, weather } = useWeather()
 
   // ---- 城市搜索过滤 ----

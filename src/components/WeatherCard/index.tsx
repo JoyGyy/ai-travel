@@ -29,7 +29,7 @@ export function WeatherCard({ weather }: WeatherCardProps) {
       <div
         className="relative flex items-center justify-between gap-5 p-[20px_22px] overflow-hidden max-[560px]:items-start max-[560px]:flex-col"
         style={{
-          background: 'radial-gradient(circle, rgba(28, 25, 23, 0.06) 1px, transparent 1px) 12px 12px, rgba(255, 107, 53, 0.04)',
+          background: 'radial-gradient(circle, rgba(28, 25, 23, 0.06) 1px, transparent 1px) 12px 12px, rgba(20, 184, 166, 0.04)',
         }}
       >
         <div className="relative z-[1]">

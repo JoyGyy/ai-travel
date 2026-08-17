@@ -28,7 +28,7 @@ export function AccommodationCard({ accommodation, nightlife }: AccommodationCar
       {accommodation.length > 0 && (
         <div className="mb-3.5 last:mb-0">
           <div className="flex items-center gap-2.5 px-1 pb-3 font-display text-base font-extrabold text-travel-ocean">
-            <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_0_5px_rgba(255,107,53,0.15)]" />
+            <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_0_5px_rgba(20,184,166,0.15)]" />
             <span>住宿推荐</span>
           </div>
           <div className="overflow-hidden rounded-3xl bg-travel-surface shadow-sm border border-travel-ink/6">
@@ -39,7 +39,7 @@ export function AccommodationCard({ accommodation, nightlife }: AccommodationCar
               >
                 <div
                   aria-hidden="true"
-                  className="shrink-0 mt-px w-[30px] h-[30px] rounded-xl flex items-center justify-center border-none text-white bg-primary shadow-[0_10px_24px_rgba(255,107,53,0.22)] text-xs font-black tabular-nums"
+                  className="shrink-0 mt-px w-[30px] h-[30px] rounded-xl flex items-center justify-center border-none text-white bg-primary shadow-[0_10px_24px_rgba(20,184,166,0.22)] text-xs font-black tabular-nums"
                 >
                   {i + 1}
                 </div>
@@ -69,7 +69,7 @@ export function AccommodationCard({ accommodation, nightlife }: AccommodationCar
       {nightlife.length > 0 && (
         <div className="mb-3.5 last:mb-0">
           <div className="flex items-center gap-2.5 px-1 pb-3 font-display text-base font-extrabold text-travel-ocean">
-            <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_0_5px_rgba(255,107,53,0.15)]" />
+            <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_0_5px_rgba(20,184,166,0.15)]" />
             <span>吃喝玩乐</span>
           </div>
           <div className="overflow-hidden rounded-3xl bg-travel-surface shadow-sm border border-travel-ink/6">

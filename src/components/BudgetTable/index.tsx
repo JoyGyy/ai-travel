@@ -29,7 +29,7 @@ const barColors: Record<keyof BudgetData, string> = {
   accommodation: '#e84057',
   food: '#d97706',
   other: 'rgba(28, 25, 23, 0.5)',
-  tickets: '#ff6b35',
+  tickets: '#14b8a6',
   transportation: '#3b82f6',
 }
 
@@ -48,7 +48,7 @@ export function BudgetTable({ data }: BudgetTableProps) {
       >
         <span
           aria-hidden="true"
-          className="w-2 h-2 rounded-full bg-primary shadow-[0_0_0_5px_rgba(255,107,53,0.15)]"
+          className="w-2 h-2 rounded-full bg-primary shadow-[0_0_0_5px_rgba(20,184,166,0.15)]"
         />
         <span>预算明细</span>
       </h2>

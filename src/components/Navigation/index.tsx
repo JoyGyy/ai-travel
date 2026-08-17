@@ -72,7 +72,7 @@ function TopNav() {
         >
           <span
             aria-hidden="true"
-            className="w-10 h-10 inline-flex items-center justify-center rounded-[14px] text-white bg-primary shadow-[0_10px_24px_rgba(255,107,53,0.28)] text-base"
+            className="w-10 h-10 inline-flex items-center justify-center rounded-[14px] text-white bg-primary shadow-[0_10px_24px_rgba(20,184,166,0.28)] text-base"
           >
             <Compass size={20} />
           </span>

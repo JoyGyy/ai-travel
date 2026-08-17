@@ -24,7 +24,7 @@ const config: Config = {
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
-          strong: '#e85d2a',
+          strong: '#0d9488',
         },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
@@ -48,8 +48,8 @@ const config: Config = {
         ring: 'hsl(var(--ring))',
         // 自定义颜色（与 globals.css CSS 变量保持一致）
         travel: {
-          orange: '#ff6b35',
-          'orange-dark': '#e85d2a',
+          orange: '#14b8a6',
+          'orange-dark': '#0d9488',
           ink: '#1c1917',
           'ink-light': '#44403c',
           muted: 'rgba(28, 25, 23, 0.76)',

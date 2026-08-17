@@ -52,7 +52,7 @@ export function HomeWeather({ loading, weather }: HomeWeatherProps) {
             <div className="flex items-baseline gap-1">
               <span
                 className="text-[clamp(30px,8vw,42px)] font-black font-serif leading-none tracking-[-0.04em] tabular-nums text-travel-ocean"
-                style={{ textShadow: '0 8px 24px rgba(255, 107, 53, 0.18)' }}
+                style={{ textShadow: '0 8px 24px rgba(20, 184, 166, 0.18)' }}
               >
                 {weather.temperature}
               </span>

@@ -382,7 +382,7 @@ export default function Detail() {
                   {errorMessage}
                 </p>
                 <button
-                  className="min-h-11 rounded-[14px] border-none bg-primary px-6 text-sm font-extrabold text-white shadow-[0_14px_30px_rgba(255,107,53,0.28)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(255,107,53,0.34)]"
+                  className="min-h-11 rounded-[14px] border-none bg-primary px-6 text-sm font-extrabold text-white shadow-[0_14px_30px_rgba(20,184,166,0.28)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(20,184,166,0.34)]"
                   onClick={() => router.push('/')}
                   type="button"
                 >
@@ -449,7 +449,7 @@ export default function Detail() {
                         暂无行程数据
                       </p>
                       <button
-                        className="min-h-11 rounded-[14px] border-none bg-primary px-6 text-sm font-extrabold text-white shadow-[0_14px_30px_rgba(255,107,53,0.28)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(255,107,53,0.34)]"
+                        className="min-h-11 rounded-[14px] border-none bg-primary px-6 text-sm font-extrabold text-white shadow-[0_14px_30px_rgba(20,184,166,0.28)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(20,184,166,0.34)]"
                         onClick={() => router.push('/chat')}
                         type="button"
                       >
@@ -726,7 +726,7 @@ export default function Detail() {
             <div className="grid gap-3 pt-6">
               <button
                 aria-label="分享到社区"
-                className="inline-flex min-h-[50px] w-full items-center justify-center gap-2 rounded-4xl border-none bg-primary text-[15px] font-black text-white shadow-[0_4px_16px_rgba(255,107,53,0.25)] transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(255,107,53,0.35)]"
+                className="inline-flex min-h-[50px] w-full items-center justify-center gap-2 rounded-4xl border-none bg-primary text-[15px] font-black text-white shadow-[0_4px_16px_rgba(20,184,166,0.25)] transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(20,184,166,0.35)]"
                 onClick={shareToCommunity}
                 type="button"
               >
@@ -735,7 +735,7 @@ export default function Detail() {
               </button>
               <button
                 aria-label="咨询 AI 优化当前行程"
-                className="inline-flex min-h-[50px] w-full items-center justify-center gap-2 rounded-4xl border-none bg-primary text-[15px] font-black text-white shadow-[0_4px_16px_rgba(255,107,53,0.25)] transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(255,107,53,0.35)]"
+                className="inline-flex min-h-[50px] w-full items-center justify-center gap-2 rounded-4xl border-none bg-primary text-[15px] font-black text-white shadow-[0_4px_16px_rgba(20,184,166,0.25)] transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(20,184,166,0.35)]"
                 onClick={() => router.push('/chat')}
                 type="button"
               >

@@ -41,7 +41,7 @@ export function ChatBubble({ content, role }: ChatBubbleProps) {
       <div
         className={`min-w-0 max-w-[min(78%,640px)] overflow-wrap-anywhere break-words text-sm leading-[1.7] whitespace-pre-wrap max-sm:max-w-[84%] ${
           isUser
-            ? 'rounded-[20px_20px_6px] bg-primary px-4 py-[11px] text-white shadow-[0_14px_28px_rgba(255,107,53,0.32)]'
+            ? 'rounded-[20px_20px_6px] bg-primary px-4 py-[11px] text-white shadow-[0_14px_28px_rgba(20,184,166,0.32)]'
             : 'rounded-[6px_20px_20px] border border-travel-ink/6 bg-travel-surface px-4 py-3 text-travel-ocean shadow-[0_12px_30px_rgba(41,37,36,0.08)]'
         }`}
       >

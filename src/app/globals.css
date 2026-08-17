@@ -8,7 +8,7 @@
   --foreground: 24 10% 10%;
   --card: 0 0% 100%;
   --card-foreground: 24 10% 10%;
-  --primary: 17 100% 60%;
+  --primary: 174 84% 40%;
   --primary-foreground: 0 0% 100%;
   --secondary: 38 92% 50%;
   --secondary-foreground: 24 10% 10%;
@@ -20,12 +20,12 @@
   --destructive-foreground: 0 0% 100%;
   --border: 24 12% 88%;
   --input: 24 12% 88%;
-  --ring: 17 100% 60%;
+  --ring: 174 84% 40%;
   --radius: 0.875rem;
 
-  /* 旅行平台暖色调：活力橙 + 珊瑚红 + 琥珀金 */
-  --color-primary: #ff6b35;
-  --color-primary-strong: #e85d2a;
+  /* 旅行平台配色：青色主调 */
+  --color-primary: #14b8a6;
+  --color-primary-strong: #0d9488;
   --color-secondary: #f59e0b;
   --color-accent: #e84057;
   --color-accent-strong: #d63350;
@@ -66,11 +66,11 @@
   /* 页面级旅行手账视觉 token */
   --travel-hero-gradient: linear-gradient(
     135deg,
-    rgba(255, 107, 53, 0.16),
+    rgba(20, 184, 166, 0.16),
     rgba(245, 158, 11, 0.12) 48%,
     rgba(232, 64, 87, 0.1)
   );
-  --travel-ticket-border: rgba(255, 107, 53, 0.2);
+  --travel-ticket-border: rgba(20, 184, 166, 0.2);
   --travel-tag-free-bg: rgba(5, 150, 105, 0.1);
   --travel-tag-free-text: #047857;
   --travel-tag-paid-bg: rgba(217, 119, 6, 0.12);
@@ -82,7 +82,7 @@
   --travel-tag-success-bg: rgba(5, 150, 105, 0.1);
   --travel-tag-success-text: #047857;
 
-  --travel-primary-rgb: 255, 107, 53;
+  --travel-primary-rgb: 20, 184, 166;
   --travel-secondary-rgb: 245, 158, 11;
   --travel-ocean-rgb: 41, 37, 36;
   --travel-sky-rgb: 59, 130, 246;
@@ -1112,8 +1112,8 @@ a:focus-visible {
 
 /* 脉冲光晕 */
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.4); }
-  50% { box-shadow: 0 0 20px 10px rgba(255, 107, 53, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.4); }
+  50% { box-shadow: 0 0 20px 10px rgba(20, 184, 166, 0); }
 }
 
 .animate-pulse-glow {

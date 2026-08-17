@@ -197,7 +197,10 @@ export default function Profile() {
         <p className="mb-2.5 w-fit rounded-full bg-primary/10 px-2.5 py-1.5 text-[12px] font-black tracking-[0.14em] text-primary-strong">
           PROFILE
         </p>
-        <h1 className="font-display text-[clamp(30px,5vw,48px)] leading-[1.08] text-travel-ocean" id="profile-title">
+        <h1
+          className="font-display text-[clamp(30px,5vw,48px)] leading-[1.08] text-travel-ocean"
+          id="profile-title"
+        >
           个人中心
         </h1>
         <p className="mt-2 text-travel-muted">管理你的账户信息、AI 额度和目的地收藏。</p>
@@ -215,9 +218,7 @@ export default function Profile() {
         {/* 用户信息卡 */}
         <div className="travel-surface-card travel-ticket-edge overflow-hidden bg-[radial-gradient(circle_at_88%_18%,rgba(var(--travel-primary-rgb),0.12),transparent_28%),var(--travel-surface)]">
           <div className="flex items-center gap-[18px]">
-            <div
-              className="flex h-[76px] w-[76px] flex-shrink-0 items-center justify-center rounded-full bg-muted text-3xl"
-            >
+            <div className="flex h-[76px] w-[76px] flex-shrink-0 items-center justify-center rounded-full bg-muted text-3xl">
               {displayName[0]?.toUpperCase()}
             </div>
             <div>
@@ -304,7 +305,11 @@ export default function Profile() {
                   onClick={() => setShowCurrentPassword((v) => !v)}
                   type="button"
                 >
-                  {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showCurrentPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
                 </button>
               </div>
               {passwordErrors.currentPassword && (

@@ -17,14 +17,19 @@ vi.mock('@/lib/utils/http', async (importOriginal) => {
     setAuthCookie: vi.fn(),
     // 绕过限流和 CSRF，但保留错误处理
     withPublicPost:
-      (_name: string, _max: number, _windowMs: number, handler: (req: Request) => Promise<Response>) =>
-        async (req: Request) => {
-          try {
-            return await handler(req)
-          } catch (err) {
-            return actual.errorResponse(err)
-          }
-        },
+      (
+        _name: string,
+        _max: number,
+        _windowMs: number,
+        handler: (req: Request) => Promise<Response>,
+      ) =>
+      async (req: Request) => {
+        try {
+          return await handler(req)
+        } catch (err) {
+          return actual.errorResponse(err)
+        }
+      },
   }
 })
 

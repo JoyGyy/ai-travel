@@ -26,10 +26,15 @@ export function ChatBubble({ content, role }: ChatBubbleProps) {
   const isUser = role === 'user'
 
   return (
-    <div className={`flex items-start gap-2.5 mx-2 mb-3.5 animate-[fadeUp_0.35s_cubic-bezier(0.16,1,0.3,1)_both] motion-reduce:animate-none max-sm:mx-1 ${isUser ? 'justify-end' : ''}`}>
+    <div
+      className={`flex items-start gap-2.5 mx-2 mb-3.5 animate-[fadeUp_0.35s_cubic-bezier(0.16,1,0.3,1)_both] motion-reduce:animate-none max-sm:mx-1 ${isUser ? 'justify-end' : ''}`}
+    >
       {/* AI 消息显示机器人头像 */}
       {!isUser && (
-        <div aria-hidden="true" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[rgba(28,25,23,0.06)] bg-[rgba(var(--travel-primary-rgb),0.08)] text-[15px] text-[var(--travel-ocean)]">
+        <div
+          aria-hidden="true"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[rgba(28,25,23,0.06)] bg-[rgba(var(--travel-primary-rgb),0.08)] text-[15px] text-[var(--travel-ocean)]"
+        >
           <Bot size={20} />
         </div>
       )}

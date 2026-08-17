@@ -2,7 +2,7 @@ import type { SSEEvent, WeatherResponse } from '@/types/api'
 
 import type { Accommodation, AttractionRef, BudgetBreakdown, ItineraryDay } from './itinerary'
 
-import { useItineraryStore } from './itinerary'
+import { getItineraryTemporal, useItineraryStore } from './itinerary'
 
 // --- 测试数据 ---
 
@@ -54,11 +54,14 @@ describe('useItineraryStore', () => {
       attractionRefs: [],
       budgetBreakdown: null,
       currentAgentStep: 0,
+      isEditing: false,
       itinerary: [],
       nightlife: [],
       tips: [],
       weather: null,
     })
+    // 清空 undo/redo 历史
+    getItineraryTemporal().clear()
   })
 
   describe('初始状态', () => {
@@ -206,6 +209,201 @@ describe('useItineraryStore', () => {
       expect(state.attractionRefs).toEqual([])
       expect(state.agentSteps).toEqual([])
       expect(state.currentAgentStep).toBe(0)
+    })
+  })
+
+  // ========== 行程编辑操作 ==========
+
+  describe('行程编辑操作', () => {
+    const editableItinerary: ItineraryDay[] = [
+      {
+        day: 1,
+        spots: [
+          { description: '皇家宫殿', duration: '3小时', name: '故宫' },
+          { description: '皇家园林', duration: '2小时', name: '颐和园' },
+        ],
+        title: '第一天',
+      },
+    ]
+
+    beforeEach(() => {
+      useItineraryStore.getState().setItinerary(editableItinerary)
+    })
+
+    describe('setEditing', () => {
+      it('应该切换编辑模式', () => {
+        useItineraryStore.getState().setEditing(true)
+        expect(useItineraryStore.getState().isEditing).toBe(true)
+
+        useItineraryStore.getState().setEditing(false)
+        expect(useItineraryStore.getState().isEditing).toBe(false)
+      })
+    })
+
+    describe('addSpotToDay', () => {
+      it('应该向指定天添加景点', () => {
+        useItineraryStore
+          .getState()
+          .addSpotToDay(0, { description: '胡同漫步', duration: '1小时', name: '南锣鼓巷' })
+
+        const spots = useItineraryStore.getState().itinerary[0].spots
+        expect(spots).toHaveLength(3)
+        expect(spots[2].name).toBe('南锣鼓巷')
+      })
+    })
+
+    describe('removeSpotFromDay', () => {
+      it('应该删除指定天的指定景点', () => {
+        useItineraryStore.getState().removeSpotFromDay(0, 0)
+
+        const spots = useItineraryStore.getState().itinerary[0].spots
+        expect(spots).toHaveLength(1)
+        expect(spots[0].name).toBe('颐和园')
+      })
+
+      it('删除不存在的索引应该无副作用', () => {
+        useItineraryStore.getState().removeSpotFromDay(0, 99)
+        expect(useItineraryStore.getState().itinerary[0].spots).toHaveLength(2)
+      })
+    })
+
+    describe('updateSpot', () => {
+      it('应该更新指定景点的信息', () => {
+        useItineraryStore.getState().updateSpot(0, 0, { duration: '4小时' })
+
+        const spot = useItineraryStore.getState().itinerary[0].spots[0]
+        expect(spot.duration).toBe('4小时')
+        expect(spot.name).toBe('故宫') // 未更新的字段保持不变
+      })
+    })
+
+    describe('moveSpot', () => {
+      it('应该在同一天内移动景点位置', () => {
+        useItineraryStore.getState().moveSpot(0, 0, 0, 1)
+
+        const spots = useItineraryStore.getState().itinerary[0].spots
+        expect(spots[0].name).toBe('颐和园')
+        expect(spots[1].name).toBe('故宫')
+      })
+
+      it('跨天移动景点', () => {
+        useItineraryStore.getState().setItinerary([
+          {
+            day: 1,
+            spots: [{ description: '皇家宫殿', duration: '3小时', name: '故宫' }],
+            title: '第一天',
+          },
+          {
+            day: 2,
+            spots: [{ description: '水乡古镇', duration: '4小时', name: '乌镇' }],
+            title: '第二天',
+          },
+        ])
+
+        // 把第 1 天的故宫移到第 2 天末尾
+        useItineraryStore.getState().moveSpot(0, 0, 1, 1)
+
+        const state = useItineraryStore.getState()
+        expect(state.itinerary[0].spots).toHaveLength(0)
+        expect(state.itinerary[1].spots).toHaveLength(2)
+        expect(state.itinerary[1].spots[1].name).toBe('故宫')
+      })
+    })
+  })
+
+  // ========== Undo/Redo ==========
+
+  describe('Undo/Redo 历史记录', () => {
+    it('进入编辑模式保存快照后，修改行程可以撤销', () => {
+      // 准备行程数据
+      useItineraryStore.getState().setItinerary([
+        {
+          day: 1,
+          spots: [{ description: '皇家宫殿', duration: '3小时', name: '故宫' }],
+          title: '第一天',
+        },
+      ])
+
+      const temporal = getItineraryTemporal()
+
+      // 进入编辑模式：保存当前状态快照
+      temporal.snapshot()
+      useItineraryStore.getState().setEditing(true)
+
+      // 修改行程：删除景点
+      useItineraryStore.getState().removeSpotFromDay(0, 0)
+      expect(useItineraryStore.getState().itinerary[0].spots).toHaveLength(0)
+
+      // 可以撤销
+      expect(temporal.canUndo()).toBe(true)
+
+      // 撤销：恢复被删除的景点
+      temporal.undo()
+      expect(useItineraryStore.getState().itinerary[0].spots).toHaveLength(1)
+      expect(useItineraryStore.getState().itinerary[0].spots[0].name).toBe('故宫')
+
+      // 撤销后可以重做
+      expect(temporal.canRedo()).toBe(true)
+      temporal.redo()
+      expect(useItineraryStore.getState().itinerary[0].spots).toHaveLength(0)
+    })
+
+    it('撤销后执行新操作会清空重做栈', () => {
+      useItineraryStore.getState().setItinerary([
+        {
+          day: 1,
+          spots: [{ description: '皇家宫殿', duration: '3小时', name: '故宫' }],
+          title: '第一天',
+        },
+      ])
+
+      const temporal = getItineraryTemporal()
+      temporal.snapshot()
+
+      // 第一次修改：删除
+      useItineraryStore.getState().removeSpotFromDay(0, 0)
+      temporal.snapshot()
+
+      // 撤销一次
+      temporal.undo()
+
+      // 执行新操作：添加景点
+      useItineraryStore.getState().addSpotToDay(0, {
+        description: '皇家园林',
+        duration: '2小时',
+        name: '颐和园',
+      })
+
+      // 重做栈被清空
+      expect(temporal.canRedo()).toBe(false)
+      expect(useItineraryStore.getState().itinerary[0].spots[0].name).toBe('颐和园')
+    })
+
+    it('canUndo/canRedo 在空历史时返回 false', () => {
+      const temporal = getItineraryTemporal()
+      temporal.clear()
+
+      expect(temporal.canUndo()).toBe(false)
+      expect(temporal.canRedo()).toBe(false)
+    })
+
+    it('清空历史后无法撤销', () => {
+      useItineraryStore.getState().setItinerary([
+        {
+          day: 1,
+          spots: [{ description: '皇家宫殿', duration: '3小时', name: '故宫' }],
+          title: '第一天',
+        },
+      ])
+
+      const temporal = getItineraryTemporal()
+      temporal.snapshot()
+      useItineraryStore.getState().removeSpotFromDay(0, 0)
+
+      expect(temporal.canUndo()).toBe(true)
+
+      temporal.clear()
+      expect(temporal.canUndo()).toBe(false)
     })
   })
 })

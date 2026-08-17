@@ -187,7 +187,11 @@ export async function createCommunityPost(
   const client = await getClient()
   try {
     await client.query('BEGIN')
-    const id = await insertPost(client, authorId, { ...input, originalPostId: null, postType: 'original' })
+    const id = await insertPost(client, authorId, {
+      ...input,
+      originalPostId: null,
+      postType: 'original',
+    })
     await client.query('COMMIT')
 
     const post = await getCommunityPostById(id, authorId)
@@ -227,10 +231,9 @@ export async function deleteCommunityPost(postId: string, authorId: string): Pro
   if (result.rows.length === 0) throw httpError(404, '帖子不存在或已删除')
   if (result.rows[0].author_id !== authorId) throw httpError(403, '只能删除自己的帖子')
 
-  await query(
-    'UPDATE community_posts SET deleted_at = NOW(), updated_at = NOW() WHERE id = $1',
-    [postId],
-  )
+  await query('UPDATE community_posts SET deleted_at = NOW(), updated_at = NOW() WHERE id = $1', [
+    postId,
+  ])
 }
 
 /** 查询帖子详情 */
@@ -396,10 +399,10 @@ export async function unlikeCommunityPost(
   userId: string,
 ): Promise<LikeCommunityPostResult> {
   await ensurePostExists(postId)
-  await query(
-    'DELETE FROM community_post_likes WHERE post_id = $1 AND user_id = $2',
-    [postId, userId],
-  )
+  await query('DELETE FROM community_post_likes WHERE post_id = $1 AND user_id = $2', [
+    postId,
+    userId,
+  ])
   return { likeCount: await getLikeCount(postId), likedByMe: false }
 }
 
@@ -566,7 +569,7 @@ async function hydratePosts(rows: CommunityPostRow[], viewerId?: string): Promis
 async function insertPost(
   client: PoolClient,
   authorId: string,
-  input: CreateCommunityPostInput & { originalPostId?: null | string; postType: CommunityPostType; },
+  input: CreateCommunityPostInput & { originalPostId?: null | string; postType: CommunityPostType },
 ): Promise<string> {
   const { nanoid } = await import('nanoid')
   const id = nanoid(12)

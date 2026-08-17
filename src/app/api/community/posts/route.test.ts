@@ -25,14 +25,19 @@ vi.mock('@/lib/utils/http', async (importOriginal) => {
   return {
     ...actual,
     withProtected:
-      (handler: (req: Request, ctx: { user: { id: string; username: string } }) => Promise<Response>) =>
-        async (req: Request) => {
-          try {
-            return await handler(req, { user: { id: 'u1', username: 'testuser' } })
-          } catch (err) {
-            return actual.errorResponse(err)
-          }
-        },
+      (
+        handler: (
+          req: Request,
+          ctx: { user: { id: string; username: string } },
+        ) => Promise<Response>,
+      ) =>
+      async (req: Request) => {
+        try {
+          return await handler(req, { user: { id: 'u1', username: 'testuser' } })
+        } catch (err) {
+          return actual.errorResponse(err)
+        }
+      },
   }
 })
 
@@ -153,10 +158,13 @@ describe('社区帖子 API', () => {
       expect(res.status).toBe(200)
       expect(data.success).toBe(true)
       expect(data.message).toBe('已发布到社区')
-      expect(mockCreatePost).toHaveBeenCalledWith('u1', expect.objectContaining({
-        content: '新帖子内容',
-        title: '新帖子',
-      }))
+      expect(mockCreatePost).toHaveBeenCalledWith(
+        'u1',
+        expect.objectContaining({
+          content: '新帖子内容',
+          title: '新帖子',
+        }),
+      )
     })
 
     it('缺少内容和图片时返回 400', async () => {

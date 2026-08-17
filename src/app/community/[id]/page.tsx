@@ -2,7 +2,7 @@
 
 import { ArrowLeft, Heart, Repeat2, Send, Share2, Trash2 } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { startTransition, useEffect, useOptimistic, useState } from 'react'
 
 import type { CommunityComment, CommunityPost } from '@/types/community'
 
@@ -24,6 +24,12 @@ import { useCommunityActions } from '@/hooks/useCommunityActions'
 import { formatRelativeTime } from '@/lib/utils/date'
 
 const COMMENT_PAGE_SIZE = 20
+
+/** 乐观更新的状态类型 */
+interface OptimisticLikeState {
+  likeCount: number
+  likedByMe: boolean
+}
 
 export default function CommunityPostDetail() {
   const params = useParams()
@@ -48,8 +54,15 @@ export default function CommunityPostDetail() {
   const [repostPending, setRepostPending] = useState(false)
   const [isLikeAnimating, setIsLikeAnimating] = useState(false)
 
+  // useOptimistic: 乐观更新点赞状态
+  const [optimisticLike, addOptimisticLike] = useOptimistic(
+    { likeCount: post?.likeCount ?? 0, likedByMe: post?.likedByMe ?? false },
+    likeReducer,
+  )
+
   const { hasHydrated, requireLogin, submitRepost, toggleLike, user } = useCommunityActions({
     onLikeSuccess: (_postId, likedByMe, likeCount) => {
+      // API 成功后同步真实状态，useOptimistic 会自动对齐
       if (post) {
         setPost({ ...post, likeCount, likedByMe })
       }
@@ -105,16 +118,25 @@ export default function CommunityPostDetail() {
   // requireLogin, toggleLike, submitRepost 已从 useCommunityActions hook 获取
 
   async function handleLike() {
-    if (!post) return
+    if (!post || likePending) return
 
-    if (!post.likedByMe) {
+    // 触发动画
+    if (!optimisticLike.likedByMe) {
       setIsLikeAnimating(true)
       setTimeout(() => setIsLikeAnimating(false), 600)
     }
 
+    // 乐观更新：立即更新 UI
+    startTransition(() => {
+      addOptimisticLike('toggle')
+    })
+
+    // 调用 API
     setLikePending(true)
     try {
       await toggleLike(post.id, post.likedByMe)
+    } catch {
+      // API 失败时，useOptimistic 会自动回滚到之前的状态
     } finally {
       setLikePending(false)
     }
@@ -210,10 +232,7 @@ export default function CommunityPostDetail() {
 
   if (loading) {
     return (
-      <main
-        aria-labelledby="community-detail-loading"
-        className="travel-page-shell gap-6"
-      >
+      <main aria-labelledby="community-detail-loading" className="travel-page-shell gap-6">
         <div
           aria-live="polite"
           className="grid min-h-[260px] place-items-center gap-3 rounded-[28px] p-[26px] text-center"
@@ -231,7 +250,10 @@ export default function CommunityPostDetail() {
   if (error || !post) {
     return (
       <main aria-labelledby="community-detail-error" className="travel-page-shell gap-6">
-        <div className="grid min-h-[260px] place-items-center gap-3 rounded-[28px] p-[26px] text-center" role="alert">
+        <div
+          className="grid min-h-[260px] place-items-center gap-3 rounded-[28px] p-[26px] text-center"
+          role="alert"
+        >
           <h1 className="text-xl font-bold text-travel-ink" id="community-detail-error">
             帖子暂时无法打开
           </h1>
@@ -289,24 +311,22 @@ export default function CommunityPostDetail() {
         {post.originalPost ? (
           <CommunityPostCard post={{ ...post.originalPost, originalPost: null }} />
         ) : post.postType === 'repost' ? (
-          <div className="rounded-xl bg-muted/50 p-4 text-center text-travel-muted">
-            原帖已删除
-          </div>
+          <div className="rounded-xl bg-muted/50 p-4 text-center text-travel-muted">原帖已删除</div>
         ) : null}
 
         <div aria-label="帖子操作" className="flex flex-wrap gap-2">
           <Button
-            aria-pressed={post.likedByMe}
-            className={`${post.likedByMe ? 'text-primary' : ''} ${isLikeAnimating ? 'animate-bounce' : ''}`}
+            aria-pressed={optimisticLike.likedByMe}
+            className={`${optimisticLike.likedByMe ? 'text-primary' : ''} ${isLikeAnimating ? 'animate-bounce' : ''}`}
             disabled={likePending}
             onClick={handleLike}
             variant="outline"
           >
             <Heart
               aria-hidden="true"
-              className={`mr-1 h-4 w-4 ${post.likedByMe ? 'fill-current' : ''}`}
+              className={`mr-1 h-4 w-4 ${optimisticLike.likedByMe ? 'fill-current' : ''}`}
             />
-            {likePending ? '...' : post.likeCount}
+            {optimisticLike.likeCount}
           </Button>
           <Button
             disabled={!hasHydrated}
@@ -416,4 +436,12 @@ export default function CommunityPostDetail() {
       />
     </main>
   )
+}
+
+/** 乐观更新的 reducer 函数 */
+function likeReducer(state: OptimisticLikeState, _action: 'toggle'): OptimisticLikeState {
+  return {
+    likeCount: state.likedByMe ? state.likeCount - 1 : state.likeCount + 1,
+    likedByMe: !state.likedByMe,
+  }
 }

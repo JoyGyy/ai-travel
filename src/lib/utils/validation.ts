@@ -35,7 +35,7 @@ export function readOptionalString(value: unknown, fieldName: string, max: numbe
 export function readPositiveInteger(
   value: unknown,
   fieldName: string,
-  options: { max?: number; min?: number; } = {},
+  options: { max?: number; min?: number } = {},
 ): number {
   const { max = 30, min = 1 } = options
   const number = Number(value)
@@ -48,7 +48,7 @@ export function readPositiveInteger(
 export function readRequiredString(
   value: unknown,
   fieldName: string,
-  options: { max?: number; min?: number; } = {},
+  options: { max?: number; min?: number } = {},
 ): string {
   const { max = 2000, min = 1 } = options
   if (typeof value !== 'string') throw httpError(400, `${fieldName}必须是文本`)

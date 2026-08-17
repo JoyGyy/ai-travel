@@ -33,9 +33,10 @@ export function Navigation() {
 
 /** 根据路径判断是否显示导航栏 */
 export function shouldShowNav(pathname: string) {
-  if (pathname === '/' || pathname === '/login') return false
+  if (pathname === '/login') return false
 
   return (
+    pathname === '/' ||
     pathname === '/weather' ||
     pathname === '/chat' ||
     pathname === '/profile' ||

@@ -73,10 +73,7 @@ export default function AttractionDetail() {
   // ---- 加载中状态 ----
   if (loading) {
     return (
-      <main
-        aria-labelledby="attraction-loading-title"
-        className="travel-page-shell"
-      >
+      <main aria-labelledby="attraction-loading-title" className="travel-page-shell">
         <div
           aria-live="polite"
           className="flex flex-col items-center gap-3 rounded-xl p-6"
@@ -96,10 +93,7 @@ export default function AttractionDetail() {
   // ---- 错误/空数据状态 ----
   if (error || !attraction) {
     return (
-      <main
-        aria-labelledby="attraction-error-title"
-        className="travel-page-shell"
-      >
+      <main aria-labelledby="attraction-error-title" className="travel-page-shell">
         <div className="flex flex-col items-center gap-3 rounded-xl p-6" role="alert">
           <h1 className="text-xl font-bold text-travel-ink" id="attraction-error-title">
             景点暂时无法打开

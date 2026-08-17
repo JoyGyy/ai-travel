@@ -1,7 +1,7 @@
 export type TravelChatData =
-  | { message: string; type: 'notice'; }
-  | { source: TravelSourceData; type: 'source'; }
-  | { step: TravelStepData; type: 'step'; }
+  | { message: string; type: 'notice' }
+  | { source: TravelSourceData; type: 'source' }
+  | { step: TravelStepData; type: 'step' }
 
 export interface TravelSourceData {
   city?: string

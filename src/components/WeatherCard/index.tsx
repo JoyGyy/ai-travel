@@ -20,11 +20,16 @@ export function WeatherCard({ weather }: WeatherCardProps) {
   if (!weather) return null
 
   return (
-    <section aria-label={`${weather.city} 实时天气`} className="max-w-[900px] mx-auto overflow-hidden rounded-3xl bg-[var(--travel-surface)] shadow-[var(--shadow-paper)] border border-[rgba(28,25,23,0.06)]">
+    <section
+      aria-label={`${weather.city} 实时天气`}
+      className="max-w-[900px] mx-auto overflow-hidden rounded-3xl bg-[var(--travel-surface)] shadow-[var(--shadow-paper)] border border-[rgba(28,25,23,0.06)]"
+    >
       {/* ---- 当前天气信息 ---- */}
       <div
         className="relative flex items-center justify-between gap-5 p-[20px_22px] overflow-hidden max-[560px]:items-start max-[560px]:flex-col"
-        style={{ background: 'var(--texture-dots) 12px 12px, rgba(var(--travel-primary-rgb), 0.04)' }}
+        style={{
+          background: 'var(--texture-dots) 12px 12px, rgba(var(--travel-primary-rgb), 0.04)',
+        }}
       >
         <div className="relative z-[1]">
           <div className="flex items-center gap-2.5 mb-1.5">
@@ -41,7 +46,9 @@ export function WeatherCard({ weather }: WeatherCardProps) {
           </p>
         </div>
         <div className="relative z-[1] text-right max-[560px]:w-full max-[560px]:text-left">
-          <p className="mb-1.5 text-xs font-extrabold text-[var(--travel-ocean)]">{weather.city} · 实时天气</p>
+          <p className="mb-1.5 text-xs font-extrabold text-[var(--travel-ocean)]">
+            {weather.city} · 实时天气
+          </p>
           <p className="w-fit ml-auto py-1 px-2.5 rounded-full bg-[rgba(var(--travel-white-rgb),0.48)] text-[rgba(var(--travel-ink-rgb),0.68)] text-[11px] font-bold tabular-nums max-[560px]:ml-0">
             湿度
             {weather.humidity}%
@@ -50,18 +57,29 @@ export function WeatherCard({ weather }: WeatherCardProps) {
       </div>
       {/* ---- 未来三天预报 ---- */}
       {weather.forecast && weather.forecast.length > 0 && (
-        <div aria-label="未来三天天气预报" className="flex gap-3 p-3.5 border-t border-[rgba(var(--travel-ocean-rgb),0.08)] bg-[rgba(var(--travel-white-rgb),0.28)] max-[560px]:gap-2 max-[560px]:p-2.5">
+        <div
+          aria-label="未来三天天气预报"
+          className="flex gap-3 p-3.5 border-t border-[rgba(var(--travel-ocean-rgb),0.08)] bg-[rgba(var(--travel-white-rgb),0.28)] max-[560px]:gap-2 max-[560px]:p-2.5"
+        >
           {weather.forecast.map((day, i) => (
-            <div className="flex-1 min-w-0 py-3 px-2 rounded-[18px] text-center bg-[rgba(var(--travel-white-rgb),0.5)] border border-[rgba(var(--travel-white-rgb),0.64)]" key={day.date}>
+            <div
+              className="flex-1 min-w-0 py-3 px-2 rounded-[18px] text-center bg-[rgba(var(--travel-white-rgb),0.5)] border border-[rgba(var(--travel-white-rgb),0.64)]"
+              key={day.date}
+            >
               <p className="mb-1.5 text-[11px] font-extrabold text-[rgba(var(--travel-ocean-rgb),0.64)]">
                 {i === 0 ? '今天' : i === 1 ? '明天' : '后天'}
               </p>
-              <WeatherIcon className="mx-auto mb-1 [--weather-icon-size:24px]" desc={day.weatherDesc} />
+              <WeatherIcon
+                className="mx-auto mb-1 [--weather-icon-size:24px]"
+                desc={day.weatherDesc}
+              />
               <p className="text-xs font-extrabold text-[var(--travel-ocean)] tabular-nums">
                 {day.minTemp}~{day.maxTemp}
                 °C
               </p>
-              <p className="mt-[3px] [overflow-wrap:anywhere] text-[10px] text-[var(--travel-ink)]">{day.weatherDesc}</p>
+              <p className="mt-[3px] [overflow-wrap:anywhere] text-[10px] text-[var(--travel-ink)]">
+                {day.weatherDesc}
+              </p>
             </div>
           ))}
         </div>

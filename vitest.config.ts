@@ -8,7 +8,7 @@ export default defineConfig({
     globals: true,
     passWithNoTests: true,
     setupFiles: ['./src/test/setup.ts'],
-    exclude: ['.claude/**', 'node_modules/**'],
+    exclude: ['.claude/**', '.mimocode/**', 'node_modules/**'],
   },
   resolve: {
     alias: {

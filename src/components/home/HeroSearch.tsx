@@ -151,7 +151,10 @@ export function HeroSearch() {
       </div>
 
       <div className="relative mx-auto max-w-[900px] px-6 text-center">
-        <h1 className="mb-3 text-4xl font-black tracking-tight text-travel-ink" id="home-hero-title">
+        <h1
+          className="mb-3 text-4xl font-black tracking-tight text-travel-ink"
+          id="home-hero-title"
+        >
           AI 旅行规划师
           <span className="ml-2 bg-gradient-to-r from-primary to-amber-500 bg-clip-text text-transparent">
             一键生成专属行程
@@ -168,11 +171,11 @@ export function HeroSearch() {
         >
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
             {/* 目的地 */}
-            <div
-              className="relative flex-1 text-left"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-travel-muted" htmlFor="home-city-input">
+            <div className="relative flex-1 text-left" onClick={(e) => e.stopPropagation()}>
+              <label
+                className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-travel-muted"
+                htmlFor="home-city-input"
+              >
                 <MapPin aria-hidden="true" className="h-3.5 w-3.5" />
                 目的地
                 <span className="text-destructive ml-1">*</span>
@@ -235,7 +238,10 @@ export function HeroSearch() {
 
             {/* 预算 */}
             <div className="w-full text-left sm:w-[140px]">
-              <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-travel-muted" htmlFor="home-budget-input">
+              <label
+                className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-travel-muted"
+                htmlFor="home-budget-input"
+              >
                 <CircleDollarSign aria-hidden="true" className="h-3.5 w-3.5" />
                 预算 (元)
                 <span className="text-destructive ml-1">*</span>
@@ -269,7 +275,10 @@ export function HeroSearch() {
                 <Calendar aria-hidden="true" className="h-3.5 w-3.5" />
                 天数
               </span>
-              <div aria-label="旅行天数" className="flex items-center overflow-hidden rounded-lg border border-travel-border-light bg-travel-surface">
+              <div
+                aria-label="旅行天数"
+                className="flex items-center overflow-hidden rounded-lg border border-travel-border-light bg-travel-surface"
+              >
                 <button
                   aria-label="减少天数"
                   className="flex h-[42px] w-10 items-center justify-center text-lg text-travel-muted transition-colors hover:bg-travel-surface-strong hover:text-travel-ink disabled:opacity-40"
@@ -279,7 +288,10 @@ export function HeroSearch() {
                 >
                   -
                 </button>
-                <span aria-live="polite" className="flex-1 text-center text-sm font-medium text-travel-ink">
+                <span
+                  aria-live="polite"
+                  className="flex-1 text-center text-sm font-medium text-travel-ink"
+                >
                   {days}天
                 </span>
                 <button
@@ -317,10 +329,16 @@ export function HeroSearch() {
 
           {/* 天气提示 */}
           {weather || weatherLoading ? (
-            <div aria-live="polite" className="mt-3 flex items-center gap-2 text-sm text-travel-muted">
+            <div
+              aria-live="polite"
+              className="mt-3 flex items-center gap-2 text-sm text-travel-muted"
+            >
               {weatherLoading ? (
                 <>
-                  <span aria-hidden="true" className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-travel-border border-t-primary" />
+                  <span
+                    aria-hidden="true"
+                    className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-travel-border border-t-primary"
+                  />
                   正在查询天气...
                 </>
               ) : weather ? (

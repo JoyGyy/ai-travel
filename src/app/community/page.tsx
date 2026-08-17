@@ -143,7 +143,10 @@ export default function Community() {
             <p className="mb-2 text-[0.75rem] font-bold uppercase tracking-[0.15em] text-primary">
               TRAVEL COMMUNITY
             </p>
-            <h1 className="text-[clamp(1.8rem,4vw,3rem)] leading-[1.15] text-travel-ink" id="community-title">
+            <h1
+              className="text-[clamp(1.8rem,4vw,3rem)] leading-[1.15] text-travel-ink"
+              id="community-title"
+            >
               旅友正在路上
             </h1>
             <p className="mt-2 max-w-[500px] text-[0.95rem] leading-relaxed text-travel-muted">
@@ -213,7 +216,10 @@ export default function Community() {
       ) : null}
 
       {!loading && error ? (
-        <div className="grid place-items-center gap-3 rounded-xl p-6 text-center text-travel-muted" role="alert">
+        <div
+          className="grid place-items-center gap-3 rounded-xl p-6 text-center text-travel-muted"
+          role="alert"
+        >
           <p>{error}</p>
           <Button onClick={() => load(filters)}>重试</Button>
         </div>
@@ -235,7 +241,10 @@ export default function Community() {
 
       {!loading && !error && items.length > 0 ? (
         <>
-          <section aria-label="社区分享列表" className="columns-1 sm:columns-2 gap-4 break-inside-avoid">
+          <section
+            aria-label="社区分享列表"
+            className="columns-1 sm:columns-2 gap-4 break-inside-avoid"
+          >
             {items.map((post) => (
               <CommunityPostCard
                 currentUserId={user?.id}

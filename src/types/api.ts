@@ -49,11 +49,11 @@ export interface SSECallbacks {
 }
 
 export type SSEEvent =
-  | { content: string; type: 'chunk'; }
-  | { data?: object; name: string; status: 'complete' | 'start'; step: number; type: 'step'; }
-  | { data?: object; type: 'complete'; }
-  | { message: string; type: 'notice'; }
-  | { message?: string; type: 'error'; }
+  | { content: string; type: 'chunk' }
+  | { data?: object; name: string; status: 'complete' | 'start'; step: number; type: 'step' }
+  | { data?: object; type: 'complete' }
+  | { message: string; type: 'notice' }
+  | { message?: string; type: 'error' }
 
 export interface WeatherForecast {
   date: string

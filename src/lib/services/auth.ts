@@ -23,7 +23,7 @@ export interface AiQuotaStatus {
 
 export interface AuthResult {
   token: string
-  user: { createdAt: string; id: string; username: string; }
+  user: { createdAt: string; id: string; username: string }
 }
 
 export interface JwtPayload {
@@ -261,10 +261,10 @@ async function removeFavoriteAttraction(userId: string, attractionId: string): P
   if (!userId) throw new Error('用户信息无效')
   if (!attractionId) throw new Error('景点信息无效')
 
-  await query(
-    'DELETE FROM user_favorite_attractions WHERE user_id = $1 AND attraction_id = $2',
-    [userId, attractionId],
-  )
+  await query('DELETE FROM user_favorite_attractions WHERE user_id = $1 AND attraction_id = $2', [
+    userId,
+    attractionId,
+  ])
 }
 
 /** 签发 JWT（有效期 7 天） */

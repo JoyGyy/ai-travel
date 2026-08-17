@@ -4,25 +4,10 @@
  * 首页（行程推荐）
  * OTA 旅行平台风格的落地页，包含搜索表单、热门目的地、精选推荐、AI 特色介绍等模块。
  */
-import {
-  Bot,
-  Cloud,
-  Compass,
-  Flame,
-  Home,
-  LogIn,
-  MapPin,
-  Menu,
-  Star,
-  User,
-  Users,
-  X,
-  Zap,
-} from 'lucide-react'
+import { Bot, Cloud, Compass, Flame, Home, MapPin, Star, Users, Zap } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 import { HeroSearch } from '@/components/home/HeroSearch'
 import { useAppToast } from '@/hooks/useAppToast'
@@ -39,20 +24,11 @@ const quickEntries = [
   { color: '#E84057', href: '/chat', icon: <Bot />, label: 'AI 咨询' },
 ]
 
-const navItems = [
-  { href: '/', label: '首页' },
-  { href: '/weather', label: '天气' },
-  { href: '/attractions', label: '景点' },
-  { href: '/community', label: '社区' },
-  { href: '/chat', label: 'AI 咨询' },
-]
-
 export default function HomePage() {
   const router = useRouter()
   const toast = useAppToast()
   const user = useAuthStore((state) => state.user)
   const hasHydrated = useAuthStore((state) => state._hasHydrated)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const onStart = () => {
     if (!hasHydrated) {
@@ -65,59 +41,6 @@ export default function HomePage() {
 
   return (
     <main className="min-h-[100dvh] overflow-x-hidden bg-background text-travel-ink">
-      {/* 顶部导航 */}
-      <header className="sticky top-0 z-[100] border-b border-[var(--travel-frosted-border)] bg-white/88 shadow-[0_1px_8px_rgba(0,0,0,0.04)] backdrop-blur-[12px]">
-        <div className="mx-auto flex min-h-[56px] max-w-[1200px] items-center gap-3 px-4 sm:gap-6 sm:px-6">
-          <Link aria-label="返回首页" className="inline-flex flex-shrink-0 items-center gap-2 no-underline" href="/">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-[10px] bg-primary text-lg text-white shadow-[0_4px_12px_rgba(255,107,53,0.3)]">
-              <Compass />
-            </span>
-            <span className="text-[17px] font-black tracking-tight text-travel-ink">TravelAI</span>
-          </Link>
-          <nav aria-label="主导航" className="hidden items-center gap-1 md:flex">
-            {navItems.map((item) => (
-              <NavLink href={item.href} key={item.href}>
-                {item.label}
-              </NavLink>
-            ))}
-          </nav>
-          <div className="ml-auto flex items-center gap-2 sm:gap-3">
-            {user ? (
-              <Link className="inline-flex items-center gap-1.5 rounded-full bg-primary/8 px-3.5 py-1.5 text-[13px] font-bold text-primary no-underline" href="/profile">
-                <User /> {user.username || '用户'}
-              </Link>
-            ) : (
-              <Link className="inline-flex min-h-9 items-center gap-1.5 rounded-lg bg-primary px-4 text-[13px] font-bold text-white no-underline shadow-[0_2px_8px_rgba(255,107,53,0.3)] transition-all hover:-translate-y-0.5 hover:scale-[1.03] hover:shadow-[0_4px_14px_rgba(255,107,53,0.4)]" href="/login">
-                <LogIn /> 登录 / 注册
-              </Link>
-            )}
-            <button
-              aria-expanded={mobileMenuOpen}
-              aria-label={mobileMenuOpen ? '关闭菜单' : '打开菜单'}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-travel-ink transition-colors hover:bg-primary/6 md:hidden"
-              onClick={() => setMobileMenuOpen((v) => !v)}
-              type="button"
-            >
-              {mobileMenuOpen ? <X /> : <Menu />}
-            </button>
-          </div>
-        </div>
-        {mobileMenuOpen ? (
-          <nav aria-label="移动端导航" className="border-t border-[var(--travel-frosted-border)] bg-white px-4 py-2 md:hidden">
-            {navItems.map((item) => (
-              <Link
-                className="flex min-h-[44px] items-center rounded-lg px-3 text-sm font-semibold text-travel-ink no-underline transition-colors hover:bg-primary/6 hover:text-primary"
-                href={item.href}
-                key={item.href}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-        ) : null}
-      </header>
-
       {/* Hero 搜索区 */}
       <HeroSearch />
 
@@ -146,7 +69,10 @@ export default function HomePage() {
       {/* 热门目的地 */}
       <section aria-labelledby="hot-dest-title" className="mx-auto max-w-[1200px] px-6 py-8">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="flex items-center gap-2 text-xl font-bold text-travel-ink" id="hot-dest-title">
+          <h2
+            className="flex items-center gap-2 text-xl font-bold text-travel-ink"
+            id="hot-dest-title"
+          >
             <Flame aria-hidden="true" className="text-primary" /> 热门目的地
           </h2>
           <span className="text-sm text-primary">查看更多 &gt;</span>
@@ -186,7 +112,10 @@ export default function HomePage() {
       {/* 精选推荐 */}
       <section aria-labelledby="featured-title" className="mx-auto max-w-[1200px] px-6 py-8">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="flex items-center gap-2 text-xl font-bold text-travel-ink" id="featured-title">
+          <h2
+            className="flex items-center gap-2 text-xl font-bold text-travel-ink"
+            id="featured-title"
+          >
             <Star aria-hidden="true" className="text-yellow-500" /> 精选推荐
           </h2>
           <span className="text-sm text-primary">更多行程 &gt;</span>
@@ -223,7 +152,9 @@ export default function HomePage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xl font-bold text-primary">¥{trip.price}</span>
-                  <span className="text-sm text-travel-muted line-through">¥{trip.originalPrice}</span>
+                  <span className="text-sm text-travel-muted line-through">
+                    ¥{trip.originalPrice}
+                  </span>
                   <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-bold text-red-600">
                     {Math.round((1 - trip.price / trip.originalPrice) * 100)}% OFF
                   </span>
@@ -240,7 +171,9 @@ export default function HomePage() {
           <div className="rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 p-8 text-white">
             <div className="mb-6 flex items-center gap-3">
               <Zap aria-hidden="true" className="h-8 w-8 text-yellow-400" />
-              <h3 className="text-2xl font-bold" id="ai-feature-title">为什么选择 AI 规划？</h3>
+              <h3 className="text-2xl font-bold" id="ai-feature-title">
+                为什么选择 AI 规划？
+              </h3>
             </div>
             <ul className="mb-8 space-y-4">
               {[
@@ -275,7 +208,10 @@ export default function HomePage() {
             </h3>
             <div className="space-y-6">
               {userReviews.map((review) => (
-                <div className="border-b border-travel-border pb-6 last:border-0 last:pb-0" key={review.name}>
+                <div
+                  className="border-b border-travel-border pb-6 last:border-0 last:pb-0"
+                  key={review.name}
+                >
                   <div className="mb-3 flex items-center gap-3">
                     <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-lg">
                       {review.avatar}
@@ -315,26 +251,3 @@ export default function HomePage() {
   )
 }
 
-function NavLink({ children, href }: { children: React.ReactNode; href: string }) {
-  const isActive = useIsActive(href)
-  return (
-    <Link
-      aria-current={isActive ? 'page' : undefined}
-      className={`inline-flex min-h-[40px] items-center rounded-lg px-3.5 text-sm font-semibold no-underline transition-colors ${
-        isActive
-          ? 'bg-primary/6 font-bold text-primary'
-          : 'text-travel-ink/65 hover:bg-primary/6 hover:text-primary'
-      }`}
-      href={href}
-    >
-      {children}
-    </Link>
-  )
-}
-
-/** NavLink 替代：根据当前路径判断是否激活 */
-function useIsActive(href: string) {
-  const pathname = usePathname()
-  if (href === '/') return pathname === '/'
-  return pathname?.startsWith(href) ?? false
-}

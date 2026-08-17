@@ -15,14 +15,19 @@ vi.mock('@/lib/utils/http', async (importOriginal) => {
   return {
     ...actual,
     withAuth:
-      (handler: (req: Request, ctx: { user: { id: string; username: string } }) => Promise<Response>) =>
-        async (req: Request) => {
-          try {
-            return await handler(req, { user: { id: 'u1', username: 'testuser' } })
-          } catch (err) {
-            return actual.errorResponse(err)
-          }
-        },
+      (
+        handler: (
+          req: Request,
+          ctx: { user: { id: string; username: string } },
+        ) => Promise<Response>,
+      ) =>
+      async (req: Request) => {
+        try {
+          return await handler(req, { user: { id: 'u1', username: 'testuser' } })
+        } catch (err) {
+          return actual.errorResponse(err)
+        }
+      },
   }
 })
 

@@ -16,14 +16,19 @@ vi.mock('@/lib/utils/http', async (importOriginal) => {
     ...actual,
     setAuthCookie: vi.fn(),
     withPublicPost:
-      (_name: string, _max: number, _windowMs: number, handler: (req: Request) => Promise<Response>) =>
-        async (req: Request) => {
-          try {
-            return await handler(req)
-          } catch (err) {
-            return actual.errorResponse(err)
-          }
-        },
+      (
+        _name: string,
+        _max: number,
+        _windowMs: number,
+        handler: (req: Request) => Promise<Response>,
+      ) =>
+      async (req: Request) => {
+        try {
+          return await handler(req)
+        } catch (err) {
+          return actual.errorResponse(err)
+        }
+      },
   }
 })
 
@@ -44,7 +49,11 @@ describe('POST /api/auth/register', () => {
     })
 
     const req = new Request('http://localhost/api/auth/register', {
-      body: JSON.stringify({ email: 'test@example.com', password: 'Test1234', username: 'newuser' }),
+      body: JSON.stringify({
+        email: 'test@example.com',
+        password: 'Test1234',
+        username: 'newuser',
+      }),
       method: 'POST',
     })
 

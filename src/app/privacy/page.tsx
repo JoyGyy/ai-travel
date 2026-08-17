@@ -34,9 +34,7 @@ export default function Privacy() {
           >
             隐私政策
           </h1>
-          <p className="mt-3 m-0 text-travel-muted text-[13px]">
-            更新日期：2026 年 7 月 22 日
-          </p>
+          <p className="mt-3 m-0 text-travel-muted text-[13px]">更新日期：2026 年 7 月 22 日</p>
           <p className="mt-[26px] m-0 p-4 px-[18px] rounded-[18px] text-[rgba(var(--travel-ocean-rgb),0.76)] bg-[rgba(var(--travel-primary-rgb),0.08)] leading-[1.8]">
             Travel AI 尊重你的个人信息和隐私。本政策说明本站在提供 AI
             旅行规划、天气查询、景点推荐和旅行咨询服务时如何收集、使用和保护必要信息。本站为个人备案网站，由

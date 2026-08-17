@@ -90,7 +90,10 @@ export default function Weather() {
         <p className="relative mb-2.5 text-[11px] font-bold tracking-[0.03em] text-travel-muted animate-[fadeIn_var(--motion-choreography)_var(--ease-emphasized)_0.1s_both]">
           WEATHER
         </p>
-        <h1 className="relative font-display text-[clamp(28px,5vw,44px)] font-black leading-tight tracking-tight text-travel-ink animate-[slideUp_var(--motion-choreography)_var(--ease-emphasized)_both]" id="weather-title">
+        <h1
+          className="relative font-display text-[clamp(28px,5vw,44px)] font-black leading-tight tracking-tight text-travel-ink animate-[slideUp_var(--motion-choreography)_var(--ease-emphasized)_both]"
+          id="weather-title"
+        >
           天气查询
         </h1>
         <p className="relative mt-2.5 max-w-[460px] text-[clamp(14px,2vw,16px)] font-semibold leading-relaxed text-travel-muted animate-[slideUp_var(--motion-choreography)_var(--ease-emphasized)_0.1s_both]">
@@ -183,7 +186,10 @@ export default function Weather() {
 
         {/* 错误提示 */}
         {error && (
-          <div className="mt-4 flex items-center justify-between rounded-xl border border-red-200 bg-red-50 p-4" role="alert">
+          <div
+            className="mt-4 flex items-center justify-between rounded-xl border border-red-200 bg-red-50 p-4"
+            role="alert"
+          >
             <span className="text-sm text-red-600">{error}</span>
             {city.trim() && (
               <button

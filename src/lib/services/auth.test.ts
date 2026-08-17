@@ -116,7 +116,9 @@ describe('auth 服务', () => {
       // arrange
       const createdAt = new Date('2024-01-01T00:00:00Z')
       mockQuery.mockResolvedValueOnce({
-        rows: [{ created_at: createdAt, id: 'user-1', password_hash: 'hashed-pw', username: 'testuser' }],
+        rows: [
+          { created_at: createdAt, id: 'user-1', password_hash: 'hashed-pw', username: 'testuser' },
+        ],
       })
       vi.spyOn(bcrypt, 'compare').mockResolvedValue(true as never)
       mockSignJwt.mockResolvedValue('login-token')
@@ -150,7 +152,14 @@ describe('auth 服务', () => {
     it('密码错误时抛出错误', async () => {
       // arrange
       mockQuery.mockResolvedValueOnce({
-        rows: [{ created_at: new Date(), id: 'user-1', password_hash: 'hashed-pw', username: 'testuser' }],
+        rows: [
+          {
+            created_at: new Date(),
+            id: 'user-1',
+            password_hash: 'hashed-pw',
+            username: 'testuser',
+          },
+        ],
       })
       vi.spyOn(bcrypt, 'compare').mockResolvedValue(false as never)
 

@@ -17,10 +17,10 @@ type ToasterToast = ToastProps & {
 let count = 0
 
 type Action =
-  | { toast: Partial<ToasterToast>; type: 'UPDATE_TOAST'; }
-  | { toast: ToasterToast; type: 'ADD_TOAST'; }
-  | { toastId?: ToasterToast['id']; type: 'DISMISS_TOAST'; }
-  | { toastId?: ToasterToast['id']; type: 'REMOVE_TOAST'; }
+  | { toast: Partial<ToasterToast>; type: 'UPDATE_TOAST' }
+  | { toast: ToasterToast; type: 'ADD_TOAST' }
+  | { toastId?: ToasterToast['id']; type: 'DISMISS_TOAST' }
+  | { toastId?: ToasterToast['id']; type: 'REMOVE_TOAST' }
 
 interface State {
   toasts: ToasterToast[]

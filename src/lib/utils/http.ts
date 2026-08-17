@@ -21,7 +21,7 @@ export interface AuthUser {
 
 /** 自定义 HTTP 错误类，携带状态码和可选的配额信息 */
 export class HttpError extends Error {
-  quota?: { limit: number; remaining: number; used: number; }
+  quota?: { limit: number; remaining: number; used: number }
   status: number
 
   constructor(status: number, message: string) {

@@ -88,9 +88,15 @@ export function ChatAgentSteps({ currentStep, isLoading, steps }: ChatAgentSteps
                 : 'text-white bg-gradient-to-br from-[var(--travel-ocean)] to-[var(--color-secondary)]'
             }`}
           >
-            {isLoading ? <span className="w-2 h-2 block rounded-full bg-white" /> : <CheckCircle2 size={16} />}
+            {isLoading ? (
+              <span className="w-2 h-2 block rounded-full bg-white" />
+            ) : (
+              <CheckCircle2 size={16} />
+            )}
           </span>
-          <span className="text-[var(--color-primary)] text-xs font-extrabold tracking-[0.08em]">Agent 思考过程</span>
+          <span className="text-[var(--color-primary)] text-xs font-extrabold tracking-[0.08em]">
+            Agent 思考过程
+          </span>
           <span className="shrink-0 text-[rgba(41,37,36,0.58)] text-xs tabular-nums">
             ({completedCount}/{steps.length})
           </span>
@@ -135,19 +141,25 @@ export function ChatAgentSteps({ currentStep, isLoading, steps }: ChatAgentSteps
                   <div className="flex items-center gap-1.5 min-w-0">
                     <span
                       className={`min-w-0 text-xs font-semibold [overflow-wrap:anywhere] ${
-                        status === 'pending' ? 'text-[var(--travel-muted)]' : 'text-[var(--travel-ink)]'
+                        status === 'pending'
+                          ? 'text-[var(--travel-muted)]'
+                          : 'text-[var(--travel-ink)]'
                       }`}
                     >
                       {step.name}
                     </span>
                     {status === 'running' && (
-                      <span className="shrink-0 text-[var(--color-primary)] text-xs font-semibold">执行中...</span>
+                      <span className="shrink-0 text-[var(--color-primary)] text-xs font-semibold">
+                        执行中...
+                      </span>
                     )}
                   </div>
                   {summary && (
                     <div className="flex items-center gap-1 mt-0.5 text-[rgba(41,37,36,0.56)]">
                       <ChevronRight className="shrink-0 text-current text-[8px]" size={14} />
-                      <span className="min-w-0 text-current text-xs [overflow-wrap:anywhere]">{summary}</span>
+                      <span className="min-w-0 text-current text-xs [overflow-wrap:anywhere]">
+                        {summary}
+                      </span>
                     </div>
                   )}
                 </div>

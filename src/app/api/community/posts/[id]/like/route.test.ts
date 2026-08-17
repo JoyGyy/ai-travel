@@ -17,17 +17,22 @@ vi.mock('@/lib/utils/http', async (importOriginal) => {
   return {
     ...actual,
     withProtected:
-      (handler: (req: Request, ctx: { params: Promise<{ id: string }>; user: { id: string; username: string } }) => Promise<Response>) =>
-        async (req: Request, ctx: unknown) => {
-          try {
-            return await handler(req, {
-              ...(ctx as object),
-              user: { id: 'u1', username: 'testuser' },
-            } as { params: Promise<{ id: string }>; user: { id: string; username: string } })
-          } catch (err) {
-            return actual.errorResponse(err)
-          }
-        },
+      (
+        handler: (
+          req: Request,
+          ctx: { params: Promise<{ id: string }>; user: { id: string; username: string } },
+        ) => Promise<Response>,
+      ) =>
+      async (req: Request, ctx: unknown) => {
+        try {
+          return await handler(req, {
+            ...(ctx as object),
+            user: { id: 'u1', username: 'testuser' },
+          } as { params: Promise<{ id: string }>; user: { id: string; username: string } })
+        } catch (err) {
+          return actual.errorResponse(err)
+        }
+      },
   }
 })
 

@@ -13,8 +13,11 @@ import { immer } from 'zustand/middleware/immer'
  * - 管理预算、住宿、夜生活、天气等辅助信息
  * - 追踪 Agent 执行步骤和加载状态
  * - 支持分享 ID 和重置操作
+ * - 支持行程编辑和 Undo/Redo
  */
 import type { SSEEvent, WeatherResponse } from '@/types/api'
+
+import { type TemporalState, withHistory } from './withHistory'
 
 // --- 类型定义 ---
 
@@ -71,7 +74,7 @@ export interface ItineraryDay {
     ticket?: string
     transportation?: string
   }
-  spots: Array<{ description: string; duration: string; name: string; }>
+  spots: Array<{ description: string; duration: string; name: string }>
   title: string
 }
 
@@ -79,22 +82,36 @@ export interface ItineraryDay {
 interface ItineraryState {
   accommodation: Accommodation[]
   addAgentStep: (step: Extract<SSEEvent, { type: 'step' }>) => void
+  // --- 行程编辑相关 ---
+  /** 添加景点到指定天 */
+  addSpotToDay: (dayIndex: number, spot: ItineraryDay['spots'][0]) => void
   agentSteps: Extract<SSEEvent, { type: 'step' }>[]
   attractionRefs: AttractionRef[]
   budgetBreakdown: BudgetBreakdown | null
+
   currentAgentStep: number
+  /** 编辑模式 */
+  isEditing: boolean
   itinerary: ItineraryDay[]
+  /** 移动景点位置 */
+  moveSpot: (fromDay: number, fromSpot: number, toDay: number, toSpot: number) => void
   nightlife: string[]
+  /** 删除指定天的景点 */
+  removeSpotFromDay: (dayIndex: number, spotIndex: number) => void
+
   reset: () => void
   setAccommodation: (data: Accommodation[]) => void
   setAttractionRefs: (data: AttractionRef[]) => void
   setBudgetBreakdown: (data: BudgetBreakdown | null) => void
   setCurrentAgentStep: (step: number) => void
+  setEditing: (editing: boolean) => void
   setItinerary: (data: ItineraryDay[]) => void
   setNightlife: (data: string[]) => void
   setTips: (tips: string[]) => void
   setWeather: (weather: null | WeatherResponse) => void
   tips: string[]
+  /** 更新景点信息 */
+  updateSpot: (dayIndex: number, spotIndex: number, spot: Partial<ItineraryDay['spots'][0]>) => void
   weather: null | WeatherResponse
 }
 
@@ -106,6 +123,7 @@ const initialState = {
   attractionRefs: [],
   budgetBreakdown: null,
   currentAgentStep: 0,
+  isEditing: false,
   itinerary: [],
   nightlife: [],
   tips: [],
@@ -116,60 +134,111 @@ const initialState = {
 
 export const useItineraryStore = create<ItineraryState>()(
   devtools(
-    immer((set) => ({
-      ...initialState,
+    withHistory(
+      immer((set) => ({
+        ...initialState,
 
-      // --- 简单 Setter 操作 ---
+        // --- 简单 Setter 操作 ---
 
-      addAgentStep: (step) =>
-        set((state) => {
-          const idx = state.agentSteps.findIndex((s) => s.step === step.step)
-          if (idx >= 0) {
-            state.agentSteps[idx] = step
-          } else {
-            state.agentSteps.push(step)
-          }
-        }),
-      reset: () => set(() => initialState),
-      setAccommodation: (data) =>
-        set((state) => {
-          state.accommodation = data
-        }),
-      setAttractionRefs: (data) =>
-        set((state) => {
-          state.attractionRefs = data
-        }),
-      setBudgetBreakdown: (data) =>
-        set((state) => {
-          state.budgetBreakdown = data
-        }),
-      setCurrentAgentStep: (step) =>
-        set((state) => {
-          state.currentAgentStep = step
-        }),
-      setItinerary: (data) =>
-        set((state) => {
-          state.itinerary = data
-        }),
+        addAgentStep: (step) =>
+          set((state) => {
+            const idx = state.agentSteps.findIndex((s) => s.step === step.step)
+            if (idx >= 0) {
+              state.agentSteps[idx] = step
+            } else {
+              state.agentSteps.push(step)
+            }
+          }),
+        addSpotToDay: (dayIndex, spot) =>
+          set((state) => {
+            if (state.itinerary[dayIndex]) {
+              state.itinerary[dayIndex].spots.push(spot)
+            }
+          }),
+        moveSpot: (fromDay, fromSpot, toDay, toSpot) =>
+          set((state) => {
+            const fromDayData = state.itinerary[fromDay]
+            const toDayData = state.itinerary[toDay]
+            if (!fromDayData || !toDayData) return
+            if (fromDayData.spots[fromSpot] === undefined) return
 
-      // --- Agent 步骤操作（支持去重更新） ---
+            // 取出源景点
+            const [movedSpot] = fromDayData.spots.splice(fromSpot, 1)
 
-      setNightlife: (data) =>
-        set((state) => {
-          state.nightlife = data
-        }),
+            // 插入到目标位置
+            const insertIndex = Math.min(toSpot, toDayData.spots.length)
+            toDayData.spots.splice(insertIndex, 0, movedSpot)
+          }),
+        removeSpotFromDay: (dayIndex, spotIndex) =>
+          set((state) => {
+            if (state.itinerary[dayIndex]?.spots[spotIndex] !== undefined) {
+              state.itinerary[dayIndex].spots.splice(spotIndex, 1)
+            }
+          }),
+        reset: () => set(() => initialState),
+        setAccommodation: (data) =>
+          set((state) => {
+            state.accommodation = data
+          }),
+        setAttractionRefs: (data) =>
+          set((state) => {
+            state.attractionRefs = data
+          }),
 
-      // --- 状态控制和重置 ---
+        // --- Agent 步骤操作（支持去重更新） ---
 
-      setTips: (tips) =>
-        set((state) => {
-          state.tips = tips
-        }),
-      setWeather: (weather) =>
-        set((state) => {
-          state.weather = weather
-        }),
-    })),
+        setBudgetBreakdown: (data) =>
+          set((state) => {
+            state.budgetBreakdown = data
+          }),
+
+        // --- 状态控制和重置 ---
+
+        setCurrentAgentStep: (step) =>
+          set((state) => {
+            state.currentAgentStep = step
+          }),
+        setEditing: (editing) =>
+          set((state) => {
+            state.isEditing = editing
+          }),
+
+        // --- 行程编辑操作 ---
+
+        setItinerary: (data) =>
+          set((state) => {
+            state.itinerary = data
+          }),
+
+        setNightlife: (data) =>
+          set((state) => {
+            state.nightlife = data
+          }),
+
+        setTips: (tips) =>
+          set((state) => {
+            state.tips = tips
+          }),
+
+        setWeather: (weather) =>
+          set((state) => {
+            state.weather = weather
+          }),
+
+        updateSpot: (dayIndex, spotIndex, spot) =>
+          set((state) => {
+            if (state.itinerary[dayIndex]?.spots[spotIndex]) {
+              Object.assign(state.itinerary[dayIndex].spots[spotIndex], spot)
+            }
+          }),
+      })),
+      { limit: 50 },
+    ),
     { name: 'ItineraryStore' },
   ),
 )
+
+/** 获取 temporal 操作 */
+export function getItineraryTemporal(): TemporalState {
+  return (useItineraryStore as unknown as { temporal: TemporalState }).temporal
+}

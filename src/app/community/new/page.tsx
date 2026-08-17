@@ -95,8 +95,13 @@ export default function CommunityPostCreate() {
   return (
     <main aria-labelledby="community-create-title" className="travel-page-shell gap-7">
       <section className="travel-page-hero travel-ticket-edge travel-route-line">
-        <p className="mb-2.5 text-accent text-[0.82rem] font-black tracking-[0.2em]">NEW POSTCARD</p>
-        <h1 className="text-[clamp(2.1rem,4.5vw,4rem)] leading-[1.08] text-travel-ink" id="community-create-title">
+        <p className="mb-2.5 text-accent text-[0.82rem] font-black tracking-[0.2em]">
+          NEW POSTCARD
+        </p>
+        <h1
+          className="text-[clamp(2.1rem,4.5vw,4rem)] leading-[1.08] text-travel-ink"
+          id="community-create-title"
+        >
           发布旅行分享
         </h1>
         <p className="mt-3.5 max-w-[720px] text-[1.05rem] leading-relaxed text-travel-muted">
@@ -205,7 +210,9 @@ export default function CommunityPostCreate() {
           ) : null}
 
           {!canSubmit ? (
-            <p className="mt-[18px] font-bold text-danger">正文、图片和行程快照至少需要提供一项。</p>
+            <p className="mt-[18px] font-bold text-danger">
+              正文、图片和行程快照至少需要提供一项。
+            </p>
           ) : null}
 
           <div className="mt-7 flex justify-end gap-3">

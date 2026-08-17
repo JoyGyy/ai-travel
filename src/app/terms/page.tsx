@@ -34,9 +34,7 @@ export default function Terms() {
           >
             用户协议
           </h1>
-          <p className="mt-3 m-0 text-travel-muted text-[13px]">
-            更新日期：2026 年 7 月 22 日
-          </p>
+          <p className="mt-3 m-0 text-travel-muted text-[13px]">更新日期：2026 年 7 月 22 日</p>
           <p className="mt-[26px] m-0 p-4 px-[18px] rounded-[18px] text-[rgba(var(--travel-ocean-rgb),0.76)] bg-[rgba(var(--travel-primary-rgb),0.08)] leading-[1.8]">
             欢迎使用 Travel AI。本协议适用于你访问和使用本站提供的 AI
             旅行规划、天气查询、景点推荐和旅行咨询等服务。本站为个人备案网站，由 ICP

@@ -43,7 +43,7 @@ export const POST = withProtected(
       throw httpError(400, `每次最多上传 ${MAX_IMAGES_PER_POST} 张图片`)
 
     const { folder, month, year } = await currentUploadFolder()
-    const images: Array<{ altText: string; storageKey: string; url: string; }> = []
+    const images: Array<{ altText: string; storageKey: string; url: string }> = []
 
     // 并行写入所有文件，用 map 返回结果保证顺序与用户选择一致
     const results = await Promise.all(

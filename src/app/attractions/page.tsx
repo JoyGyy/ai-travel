@@ -10,6 +10,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
  *
  * 支持关键词搜索、城市/收费类型/标签筛选与分页，
  * 每个景点卡片可收藏，并链接到详情页。
+ * 输入关键词后防抖 300ms 自动搜索，减少 API 请求。
  */
 import type { Attraction, AttractionFilters, AttractionTicketType } from '@/types/attraction'
 
@@ -20,6 +21,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAttractionFavorite } from '@/hooks/useAttractionFavorite'
+import { useDebounce } from '@/hooks/useDebounce'
 
 const ticketOptions = [
   { label: '全部', value: '' },
@@ -79,9 +81,29 @@ export default function Attractions() {
     [filters, load],
   )
 
+  // 防抖搜索：输入关键词后 300ms 自动触发搜索
+  const debouncedSearch = useDebounce((keyword: string) => {
+    updateFilters({ keyword: keyword.trim() })
+  }, 300)
+
+  // 关键词输入处理
+  const handleKeywordChange = useCallback(
+    (value: string) => {
+      setKeywordInput(value)
+      // 防抖搜索：空关键词时立即清除，否则防抖 300ms
+      if (!value.trim()) {
+        updateFilters({ keyword: '' })
+      } else {
+        debouncedSearch(value)
+      }
+    },
+    [debouncedSearch, updateFilters],
+  )
+
   const handleSearchSubmit = useCallback(
     (event: { preventDefault: () => void }) => {
       event.preventDefault()
+      // 手动提交时取消防抖，立即搜索
       updateFilters({ keyword: keywordInput.trim() })
     },
     [updateFilters, keywordInput],
@@ -129,7 +151,10 @@ export default function Attractions() {
         <p className="mb-2.5 w-fit rounded-full bg-primary/10 px-2.5 py-1.5 text-[12px] font-black tracking-[0.14em] text-primary-strong">
           ATTRACTIONS
         </p>
-        <h1 className="mb-2 font-display text-[clamp(30px,5vw,52px)] leading-[1.05] text-travel-ocean" id="attractions-title">
+        <h1
+          className="mb-2 font-display text-[clamp(30px,5vw,52px)] leading-[1.05] text-travel-ocean"
+          id="attractions-title"
+        >
           精选景点
         </h1>
         <p className="max-w-[640px] text-base leading-relaxed text-stone-900/72">
@@ -153,15 +178,18 @@ export default function Attractions() {
           ) : null}
         </div>
         <form className="mt-3.5 grid gap-2" onSubmit={handleSearchSubmit}>
-          <label className="text-[13px] font-extrabold text-stone-900/72" htmlFor="attractions-keyword">
+          <label
+            className="text-[13px] font-extrabold text-stone-900/72"
+            htmlFor="attractions-keyword"
+          >
             搜索关键词
           </label>
           <div className="flex items-center gap-2.5">
             <Input
               className="flex-1"
               id="attractions-keyword"
-              onChange={(event) => setKeywordInput(event.target.value)}
-              placeholder="搜索景点、城市或标签"
+              onChange={(event) => handleKeywordChange(event.target.value)}
+              placeholder="搜索景点、城市或标签（输入自动搜索）"
               value={keywordInput}
             />
             <Button type="submit">搜索</Button>
@@ -169,7 +197,10 @@ export default function Attractions() {
         </form>
         {cities.length > 0 ? (
           <div aria-labelledby="attractions-city-filter" className="mt-3.5 grid gap-2">
-            <p className="text-[13px] font-extrabold text-stone-900/72" id="attractions-city-filter">
+            <p
+              className="text-[13px] font-extrabold text-stone-900/72"
+              id="attractions-city-filter"
+            >
               城市
             </p>
             <div className="flex flex-wrap items-center gap-2">
@@ -187,7 +218,10 @@ export default function Attractions() {
           </div>
         ) : null}
         <div className="mt-3.5 grid gap-2">
-          <label className="text-[13px] font-extrabold text-stone-900/72" htmlFor="attractions-ticket-type">
+          <label
+            className="text-[13px] font-extrabold text-stone-900/72"
+            htmlFor="attractions-ticket-type"
+          >
             收费类型
           </label>
           <select
@@ -230,7 +264,11 @@ export default function Attractions() {
       </section>
 
       {loading ? (
-        <div aria-live="polite" className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" role="status">
+        <div
+          aria-live="polite"
+          className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          role="status"
+        >
           {Array.from({ length: 6 }).map((_, i) => (
             <div className="travel-surface-card travel-ticket-edge overflow-hidden" key={i}>
               <Skeleton className="h-[250px] w-full rounded-none" />
@@ -273,7 +311,10 @@ export default function Attractions() {
       {/* ---- 景点卡片网格 ---- */}
       {!loading && !error && items.length > 0 ? (
         <>
-          <section aria-label="景点列表" className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <section
+            aria-label="景点列表"
+            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          >
             {items.map((item) => {
               const isFavoritePending = favoritePendingIds.has(item.id)
               return (

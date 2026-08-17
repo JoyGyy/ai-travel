@@ -14,7 +14,8 @@
     "db:migrate": "tsx --env-file=.env db/migrate.ts run",
     "db:migrate:status": "tsx --env-file=.env db/migrate.ts status",
     "db:migrate:fresh": "tsx --env-file=.env db/migrate.ts fresh",
-    "prepare": "husky"
+    "prepare": "husky",
+    "images:update": "tsx scripts/update-attraction-images.ts"
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "^3.0.16",

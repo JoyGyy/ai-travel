@@ -46,8 +46,8 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const [formError, setFormError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [fieldErrors, setFieldErrors] = useState<{ password?: string; username?: string; }>({})
-  const [touched, setTouched] = useState<{ password?: boolean; username?: boolean; }>({})
+  const [fieldErrors, setFieldErrors] = useState<{ password?: string; username?: string }>({})
+  const [touched, setTouched] = useState<{ password?: boolean; username?: boolean }>({})
   const usernameRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
   const currentCopy = formCopy[tab]
@@ -76,8 +76,8 @@ export default function Login() {
 
   /* ---------- 表单校验（返回字段级错误） ---------- */
 
-  function validateForm(): { password?: string; username?: string; } {
-    const errors: { password?: string; username?: string; } = {}
+  function validateForm(): { password?: string; username?: string } {
+    const errors: { password?: string; username?: string } = {}
     if (!username.trim()) errors.username = '请输入用户名'
     if (!password) {
       errors.password = '请输入密码'
@@ -139,10 +139,7 @@ export default function Login() {
   /* ========== 渲染 ========== */
 
   return (
-    <main
-      aria-labelledby="login-title"
-      className="flex min-h-screen flex-col bg-white md:flex-row"
-    >
+    <main aria-labelledby="login-title" className="flex min-h-screen flex-col bg-white md:flex-row">
       {/* 左侧品牌区 */}
       <section
         aria-label="品牌介绍"
@@ -181,15 +178,24 @@ export default function Login() {
           </p>
           <div aria-label="核心功能" className="flex gap-6 pt-2">
             <span className="flex items-center gap-2 text-sm text-stone-300">
-              <span aria-hidden="true" className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-travel-orange" />
+              <span
+                aria-hidden="true"
+                className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-travel-orange"
+              />
               实时天气
             </span>
             <span className="flex items-center gap-2 text-sm text-stone-300">
-              <span aria-hidden="true" className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-travel-orange" />
+              <span
+                aria-hidden="true"
+                className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-travel-orange"
+              />
               预算规划
             </span>
             <span className="flex items-center gap-2 text-sm text-stone-300">
-              <span aria-hidden="true" className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-travel-orange" />
+              <span
+                aria-hidden="true"
+                className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-travel-orange"
+              />
               AI 咨询
             </span>
           </div>
@@ -221,7 +227,11 @@ export default function Login() {
             <p className="text-sm leading-relaxed text-travel-muted">{currentCopy.subtitle}</p>
           </div>
 
-          <div aria-label="选择登录或注册" className="mb-7 flex border-b border-travel-border-light" role="group">
+          <div
+            aria-label="选择登录或注册"
+            className="mb-7 flex border-b border-travel-border-light"
+            role="group"
+          >
             {(['login', 'register'] as const).map((t) => (
               <button
                 aria-pressed={tab === t}
@@ -240,16 +250,24 @@ export default function Login() {
           </div>
 
           {formError && (
-            <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm leading-relaxed text-red-700" role="alert">
+            <div
+              className="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm leading-relaxed text-red-700"
+              role="alert"
+            >
               {formError}
             </div>
           )}
 
           <form aria-busy={loading} noValidate onSubmit={handleSubmit}>
             <div className="mb-5">
-              <label className="mb-1.5 block text-sm font-medium text-stone-700" htmlFor="login-username">
+              <label
+                className="mb-1.5 block text-sm font-medium text-stone-700"
+                htmlFor="login-username"
+              >
                 用户名
-                <span aria-hidden="true" className="ml-1 text-destructive">*</span>
+                <span aria-hidden="true" className="ml-1 text-destructive">
+                  *
+                </span>
               </label>
               <input
                 aria-invalid={Boolean(fieldErrors.username)}
@@ -263,7 +281,8 @@ export default function Login() {
                 }}
                 onChange={(e) => {
                   setUsername(e.target.value)
-                  if (fieldErrors.username) setFieldErrors((prev) => ({ ...prev, username: undefined }))
+                  if (fieldErrors.username)
+                    setFieldErrors((prev) => ({ ...prev, username: undefined }))
                   if (formError) setFormError('')
                 }}
                 placeholder="请输入用户名"
@@ -280,9 +299,14 @@ export default function Login() {
             </div>
 
             <div className="mb-5">
-              <label className="mb-1.5 block text-sm font-medium text-stone-700" htmlFor="login-password">
+              <label
+                className="mb-1.5 block text-sm font-medium text-stone-700"
+                htmlFor="login-password"
+              >
                 密码
-                <span aria-hidden="true" className="ml-1 text-destructive">*</span>
+                <span aria-hidden="true" className="ml-1 text-destructive">
+                  *
+                </span>
               </label>
               <div className="relative">
                 <input
@@ -297,7 +321,8 @@ export default function Login() {
                   }}
                   onChange={(e) => {
                     setPassword(e.target.value)
-                    if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: undefined }))
+                    if (fieldErrors.password)
+                      setFieldErrors((prev) => ({ ...prev, password: undefined }))
                     if (formError) setFormError('')
                   }}
                   placeholder={currentCopy.passwordPlaceholder}
@@ -312,7 +337,11 @@ export default function Login() {
                   tabIndex={-1}
                   type="button"
                 >
-                  {showPassword ? <EyeOff aria-hidden="true" size={18} /> : <Eye aria-hidden="true" size={18} />}
+                  {showPassword ? (
+                    <EyeOff aria-hidden="true" size={18} />
+                  ) : (
+                    <Eye aria-hidden="true" size={18} />
+                  )}
                 </button>
               </div>
               {touched.password && fieldErrors.password && (

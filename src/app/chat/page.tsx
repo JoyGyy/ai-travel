@@ -68,9 +68,7 @@ export default function ChatPage() {
               <p className="relative z-[1] mb-1.5 text-[13px] leading-relaxed text-slate-600/82">
                 告诉我你想去哪里，我会为你制定详细的行程计划
               </p>
-              <p className="relative z-[1] text-xs text-stone-900/50">
-                试试下方的快捷问题
-              </p>
+              <p className="relative z-[1] text-xs text-stone-900/50">试试下方的快捷问题</p>
             </div>
 
             {/* 快捷问题 */}
@@ -105,7 +103,11 @@ export default function ChatPage() {
 
         {messages.map((message) => (
           <div
-            className={message.role === 'user' ? 'mx-2 mb-3 text-right' : 'mx-2 mb-3 flex items-start gap-2.5'}
+            className={
+              message.role === 'user'
+                ? 'mx-2 mb-3 text-right'
+                : 'mx-2 mb-3 flex items-start gap-2.5'
+            }
             key={message.id}
           >
             {message.role === 'assistant' && (
@@ -123,7 +125,10 @@ export default function ChatPage() {
               {message.parts.map((part, index) => {
                 if (part.type === 'text') {
                   return (
-                    <p className={message.role === 'user' ? 'm-0 text-sm leading-relaxed' : ''} key={index}>
+                    <p
+                      className={message.role === 'user' ? 'm-0 text-sm leading-relaxed' : ''}
+                      key={index}
+                    >
                       {part.text}
                     </p>
                   )
@@ -155,7 +160,10 @@ export default function ChatPage() {
         )}
 
         {error && (
-          <div className="mx-2 mb-3 flex items-center justify-between gap-3 rounded-2xl border border-red-500/20 bg-red-100/80 p-3 px-3.5 text-[13px] font-extrabold text-destructive" role="alert">
+          <div
+            className="mx-2 mb-3 flex items-center justify-between gap-3 rounded-2xl border border-red-500/20 bg-red-100/80 p-3 px-3.5 text-[13px] font-extrabold text-destructive"
+            role="alert"
+          >
             <span>{error.message}</span>
             <button
               className="min-h-9 rounded-full border border-red-500/22 bg-white/72 px-3.5 font-black text-destructive"

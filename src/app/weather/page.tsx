@@ -119,13 +119,13 @@ export default function Weather() {
       onClick={() => showDropdown && setShowDropdown(false)}
     >
       {/* Hero 区域 */}
-      <div className="relative isolate min-h-[280px] overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-[clamp(40px,8vw,80px)_clamp(20px,5vw,72px)_80px]">
+      <div className="relative isolate min-h-[280px] overflow-hidden bg-gradient-to-br from-orange-50 via-amber-50 to-rose-50 p-[clamp(40px,8vw,80px)_clamp(20px,5vw,72px)_80px]">
         {/* 装饰元素 */}
-        <div className="absolute -right-20 -top-20 h-[300px] w-[300px] animate-[morphBg_8s_ease-in-out_infinite] rounded-full bg-gradient-to-br from-blue-200/30 to-indigo-200/30 blur-3xl" />
-        <div className="absolute -bottom-20 -left-20 h-[250px] w-[250px] rounded-full bg-gradient-to-br from-purple-200/20 to-pink-200/20 blur-3xl" />
-        <div className="absolute right-[12%] top-1/2 h-20 w-20 -translate-y-1/2 rounded-full border-2 border-blue-200/40 bg-transparent" />
+        <div className="absolute -right-20 -top-20 h-[300px] w-[300px] animate-[morphBg_8s_ease-in-out_infinite] rounded-full bg-gradient-to-br from-orange-200/30 to-red-200/30 blur-3xl" />
+        <div className="absolute -bottom-20 -left-20 h-[250px] w-[250px] rounded-full bg-gradient-to-br from-amber-200/20 to-yellow-200/20 blur-3xl" />
+        <div className="absolute right-[12%] top-1/2 h-20 w-20 -translate-y-1/2 rounded-full border-2 border-orange-200/40 bg-transparent" />
 
-        <p className="relative mb-3 text-[11px] font-bold tracking-[0.16em] text-blue-500 animate-[fadeIn_var(--motion-choreography)_var(--ease-emphasized)_0.1s_both] uppercase">
+        <p className="relative mb-3 text-[11px] font-bold tracking-[0.16em] text-orange-500 animate-[fadeIn_var(--motion-choreography)_var(--ease-emphasized)_0.1s_both] uppercase">
           WEATHER
         </p>
         <h1
@@ -220,7 +220,7 @@ export default function Weather() {
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <CardContent className="flex items-start gap-3 p-4">
-                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-600">
                     {tip.icon}
                   </span>
                   <div>
@@ -317,7 +317,7 @@ export default function Weather() {
           <div className="mt-12 animate-fade-in-up">
             <Separator className="mb-8 bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
             <div className="mb-6 flex items-center gap-3">
-              <Cloud className="h-5 w-5 text-blue-500" />
+              <Cloud className="h-5 w-5 text-orange-500" />
               <h2 className="text-lg font-bold text-gray-900">多城速览</h2>
               <span className="text-xs text-gray-400">点击查看详情</span>
             </div>

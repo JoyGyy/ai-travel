@@ -62,7 +62,7 @@ function TopNav() {
   return (
     <nav
       aria-label="主导航"
-      className="sticky top-0 z-50 bg-[var(--travel-surface)] border-b border-[rgba(28,25,23,0.06)] shadow-[0_12px_34px_rgba(var(--travel-ocean-rgb),0.08)]"
+      className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200/60 shadow-sm"
     >
       <div className="max-w-[1200px] h-16 mx-auto px-4 sm:px-6 flex items-center gap-2.5 sm:gap-3.5">
         <Link

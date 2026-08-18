@@ -8,7 +8,7 @@
  */
 import type { ChangeEvent, KeyboardEvent } from 'react'
 
-import { CalendarDays, Clock, Cloud, Droplets, Lightbulb, MapPin, Search, Shirt, Star, Sun, Thermometer, Wind } from 'lucide-react'
+import { CalendarDays, Clock, Cloud, Droplets, Lightbulb, MapPin, Search, Star, Sun, Wind } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
 import { HomeWeather } from '@/components/HomeWeather'
@@ -19,11 +19,16 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { allCities, hotCities } from '@/constants/cities'
+import { QUICK_CITIES, SEASONAL_RECOMMENDS, WEATHER_KNOWLEDGE } from '@/constants/weather'
 import { useWeather } from '@/hooks/useWeather'
+import { getRecentCities, getWeatherTips, saveRecentCity } from '@/lib/utils/weather'
 
-// 最近搜索本地存储键
-const RECENT_KEY = 'weather-recent-cities'
-const MAX_RECENT = 6
+const TIP_ICONS: Record<string, React.ReactNode> = {
+  出行提醒: <Droplets size={18} />,
+  湿度提醒: <Wind size={18} />,
+  穿衣建议: <Sun size={18} />,
+  防晒提醒: <Sun size={18} />,
+}
 
 export default function Weather() {
   const [city, setCity] = useState('')
@@ -120,7 +125,6 @@ export default function Weather() {
     >
       {/* Hero 区域 */}
       <div className="relative isolate min-h-[280px] overflow-hidden bg-teal-50/60 p-[clamp(40px,8vw,80px)_clamp(20px,5vw,72px)_80px]">
-        {/* 装饰元素 */}
         <div className="absolute -right-20 -top-20 h-[300px] w-[300px] animate-[morphBg_8s_ease-in-out_infinite] rounded-full bg-teal-200/15 blur-3xl" />
         <div className="absolute -bottom-20 -left-20 h-[250px] w-[250px] rounded-full bg-cyan-200/10 blur-3xl" />
         <div className="absolute right-[12%] top-1/2 h-20 w-20 -translate-y-1/2 rounded-full border-2 border-teal-200/40 bg-transparent" />
@@ -221,7 +225,7 @@ export default function Weather() {
               >
                 <CardContent className="flex items-start gap-3 p-4">
                   <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-600">
-                    {tip.icon}
+                    {TIP_ICONS[tip.title] || tip.icon}
                   </span>
                   <div>
                     <p className="text-sm font-semibold text-gray-900">{tip.title}</p>
@@ -322,16 +326,7 @@ export default function Weather() {
               <span className="text-xs text-gray-400">点击查看详情</span>
             </div>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-              {[
-                { emoji: '🏖️', gradient: 'from-sky-400 to-blue-500', name: '三亚', temp: '28°C', weather: '晴' },
-                { emoji: '🏔️', gradient: 'from-emerald-400 to-teal-500', name: '丽江', temp: '18°C', weather: '多云' },
-                { emoji: '🏯', gradient: 'from-cyan-400 to-teal-500', name: '西安', temp: '22°C', weather: '晴' },
-                { emoji: '🐼', gradient: 'from-lime-400 to-green-500', name: '成都', temp: '24°C', weather: '阴' },
-                { emoji: '🌊', gradient: 'from-cyan-400 to-blue-500', name: '大理', temp: '20°C', weather: '晴' },
-                { emoji: '🎵', gradient: 'from-teal-400 to-emerald-500', name: '厦门', temp: '26°C', weather: '多云' },
-                { emoji: '🌸', gradient: 'from-fuchsia-400 to-purple-500', name: '杭州', temp: '25°C', weather: '小雨' },
-                { emoji: '🏙️', gradient: 'from-slate-400 to-gray-500', name: '上海', temp: '27°C', weather: '阴' },
-              ].map(item => (
+              {QUICK_CITIES.map(item => (
                 <Card
                   className="group cursor-pointer border-white/60 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
                   key={item.name}
@@ -362,24 +357,7 @@ export default function Weather() {
               <h2 className="text-lg font-bold text-gray-900">当季推荐</h2>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              {[
-                {
-                  color: 'from-sky-500 to-blue-600',
-                  cities: ['三亚', '厦门', '青岛'],
-                  desc: '阳光、沙滩、海浪，夏日避暑首选',
-                  icon: <Sun size={20} />,
-                  season: '夏季出游',
-                  tag: '避暑',
-                },
-                {
-                  color: 'from-teal-500 to-cyan-600',
-                  cities: ['西安', '北京', '南京'],
-                  desc: '秋高气爽，适合历史文化深度游',
-                  icon: <MapPin size={20} />,
-                  season: '秋季赏景',
-                  tag: '赏秋',
-                },
-              ].map(item => (
+              {SEASONAL_RECOMMENDS.map(item => (
                 <Card
                   className="group overflow-hidden border-white/60 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg"
                   key={item.season}
@@ -387,7 +365,7 @@ export default function Weather() {
                   <CardContent className="p-0">
                     <div className={`bg-gradient-to-r ${item.color} p-5 text-white`}>
                       <div className="flex items-center gap-3">
-                        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
+                        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm text-lg">
                           {item.icon}
                         </span>
                         <div>
@@ -432,17 +410,13 @@ export default function Weather() {
               <h2 className="text-lg font-bold text-gray-900">天气小知识</h2>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {[
-                { color: 'from-blue-500 to-cyan-500', desc: '相对湿度高于 80% 时体感闷热，低于 30% 时皮肤易干燥', icon: <Droplets size={20} />, title: '湿度与舒适度' },
-                { color: 'bg-teal-500', desc: '紫外线指数 6 以上建议涂抹 SPF30+ 防晒霜', icon: <Sun size={20} />, title: '紫外线防护' },
-                { color: 'from-emerald-500 to-teal-500', desc: '气温每升高 10°C，体感温度可能高出 2-3°C', icon: <Thermometer size={20} />, title: '体感温度' },
-              ].map(item => (
+              {WEATHER_KNOWLEDGE.map(item => (
                 <Card
                   className="border-white/60 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-md"
                   key={item.title}
                 >
                   <CardContent className="p-5">
-                    <span className={`mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${item.color} text-white`}>
+                    <span className={`mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${item.color} text-white text-lg`}>
                       {item.icon}
                     </span>
                     <h3 className="mt-2 text-sm font-bold text-gray-900">{item.title}</h3>
@@ -456,66 +430,4 @@ export default function Weather() {
       </div>
     </main>
   )
-}
-
-function getRecentCities(): string[] {
-  if (typeof window === 'undefined')
-    return []
-  try {
-    return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]')
-  }
-  catch {
-    return []
-  }
-}
-
-// 根据天气生成小贴士
-function getWeatherTips(temp: number, desc: string, humidity: number, uv?: number) {
-  const tips: { icon: React.ReactNode, text: string, title: string }[] = []
-
-  // 穿衣建议
-  if (temp >= 30) {
-    tips.push({ icon: <Shirt size={18} />, text: '建议穿短袖、短裤，注意防暑防晒', title: '穿衣建议' })
-  }
-  else if (temp >= 20) {
-    tips.push({ icon: <Shirt size={18} />, text: '薄外套或长袖，早晚温差注意添衣', title: '穿衣建议' })
-  }
-  else if (temp >= 10) {
-    tips.push({ icon: <Shirt size={18} />, text: '建议穿夹克、毛衣，注意保暖', title: '穿衣建议' })
-  }
-  else {
-    tips.push({ icon: <Shirt size={18} />, text: '厚外套、羽绒服必备，注意防寒', title: '穿衣建议' })
-  }
-
-  // 出行建议
-  if (desc.includes('雨')) {
-    tips.push({ icon: <Droplets size={18} />, text: '记得带伞，路面湿滑注意安全', title: '出行提醒' })
-  }
-  else if (desc.includes('雪')) {
-    tips.push({ icon: <Droplets size={18} />, text: '注意防滑，驾车请减速慢行', title: '出行提醒' })
-  }
-  else if (desc.includes('晴')) {
-    tips.push({ icon: <Sun size={18} />, text: '天气晴好，适合户外活动', title: '出行提醒' })
-  }
-
-  // 湿度建议
-  if (humidity >= 80) {
-    tips.push({ icon: <Wind size={18} />, text: '湿度较高，注意防潮除湿', title: '湿度提醒' })
-  }
-  else if (humidity <= 30) {
-    tips.push({ icon: <Wind size={18} />, text: '空气干燥，多补充水分', title: '湿度提醒' })
-  }
-
-  // 紫外线
-  if (uv && uv >= 6) {
-    tips.push({ icon: <Sun size={18} />, text: '紫外线较强，外出请涂防晒霜', title: '防晒提醒' })
-  }
-
-  return tips
-}
-
-function saveRecentCity(city: string) {
-  const recent = getRecentCities().filter(c => c !== city)
-  recent.unshift(city)
-  localStorage.setItem(RECENT_KEY, JSON.stringify(recent.slice(0, MAX_RECENT)))
 }

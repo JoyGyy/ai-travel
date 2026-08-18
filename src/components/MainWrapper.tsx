@@ -15,7 +15,7 @@ export function MainWrapper({ children }: { children: ReactNode }) {
   const showNav = shouldShowNav(pathname || '')
 
   return (
-    <main className={showNav ? 'pt-[64px]' : ''} id="main-content">
+    <main className={showNav ? 'pt-16' : ''} id="main-content">
       {children}
     </main>
   )

@@ -3,13 +3,10 @@
  * 全局认证守卫：受保护路由未登录或 token 无效时重定向到 /login
  */
 import type { NextRequest } from 'next/server'
-
 import { jwtVerify } from 'jose'
 import { NextResponse } from 'next/server'
-
 // 受保护的路由前缀
 const PROTECTED_PATHS = ['/detail', '/chat', '/attractions', '/profile', '/community/new']
-
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 

@@ -19,9 +19,10 @@ import { Pagination } from '@/components/Pagination'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Skeleton } from '@/components/ui/skeleton'
 import { useAttractionFavorite } from '@/hooks/useAttractionFavorite'
 import { useDebounce } from '@/hooks/useDebounce'
+
+import { AttractionCardSkeleton } from './AttractionCardSkeleton'
 
 const ticketOptions = [
   { label: '全部', value: '' },
@@ -272,38 +273,7 @@ export default function Attractions() {
         </p>
       </section>
 
-      {loading
-        ? (
-            <div
-              aria-live="polite"
-              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-              role="status"
-            >
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div className="travel-surface-card travel-ticket-edge overflow-hidden" key={i}>
-                  <Skeleton className="h-[250px] w-full rounded-none" />
-                  <div className="p-5">
-                    <div className="mb-2 flex items-center justify-between">
-                      <Skeleton className="h-5 w-2/5" />
-                      <Skeleton className="h-8 w-8 rounded-full" />
-                    </div>
-                    <Skeleton className="mb-3 h-4 w-full" />
-                    <div className="mb-3 flex items-center gap-2">
-                      <Skeleton className="h-5 w-12" />
-                      <Skeleton className="h-4 w-16" />
-                      <Skeleton className="h-4 w-14" />
-                    </div>
-                    <div className="mb-4 flex gap-1.5">
-                      <Skeleton className="h-5 w-14" />
-                      <Skeleton className="h-5 w-14" />
-                    </div>
-                    <Skeleton className="h-4 w-16" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )
-        : null}
+      {loading && <AttractionCardSkeleton />}
       {!loading && error
         ? (
             <div className="flex items-center justify-between rounded-xl p-6" role="alert">

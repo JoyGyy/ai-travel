@@ -4,20 +4,20 @@
  * 首页（行程推荐）
  * OTA 旅行平台风格的落地页，包含搜索表单、热门目的地、精选推荐、AI 特色介绍等模块。
  */
-import { Bot, Cloud, Compass, Flame, MapPin, Star, Users, Zap } from 'lucide-react'
+import { Bot, Cloud, Compass, MapPin, Star, Users, Zap } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
+import { userReviews } from '@/app/home-data'
+import { FeaturedTripsSection } from '@/components/home/FeaturedTripsSection'
 import { HeroSearch } from '@/components/home/HeroSearch'
+import { HotDestinationsSection } from '@/components/home/HotDestinationsSection'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useAppToast } from '@/hooks/useAppToast'
 import { useScrollReveal } from '@/hooks/useScrollReveal'
 import { useAuthStore } from '@/stores/auth'
-
-import { featuredTrips, hotDestinations, userReviews } from './home-data'
 
 const quickEntries = [
   {
@@ -172,150 +172,10 @@ export default function HomePage() {
       </section>
 
       {/* 热门目的地 */}
-      <section aria-labelledby="hot-dest-title" className="relative mx-auto max-w-[1200px] px-6 py-12">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute top-0 left-1/2 h-px w-3/4 -translate-x-1/2 bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
-        </div>
-
-        <div className="mb-8 flex items-center justify-between scroll-reveal">
-          <h2
-            className="flex items-center gap-3 text-2xl font-bold"
-            id="hot-dest-title"
-          >
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-500 text-white shadow-lg">
-              <Flame aria-hidden="true" size={20} />
-            </span>
-            <span className="bg-gradient-to-r from-travel-ink to-travel-ink/70 bg-clip-text text-transparent">
-              热门目的地
-            </span>
-          </h2>
-          <Link
-            className="group flex items-center gap-1 text-sm font-semibold text-primary transition-colors hover:text-primary-strong"
-            href="/attractions"
-          >
-            查看更多
-            <span className="transition-transform group-hover:translate-x-1">&rarr;</span>
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-2 gap-5 sm:grid-cols-3">
-          {hotDestinations.map((dest, index) => (
-            <Link
-              className="group block overflow-hidden rounded-2xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] hover:-translate-y-2 hover:ring-2 hover:ring-teal-200 scroll-reveal"
-              data-delay={index}
-              href={`/detail?city=${encodeURIComponent(dest.name)}`}
-              key={dest.name}
-            >
-              <div className="relative h-[220px] w-full overflow-hidden">
-                <Image
-                  alt={dest.name}
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  fill
-                  loading="lazy"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  src={dest.img}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                <Badge className="absolute left-3 top-3 bg-white/90 text-xs font-bold text-primary shadow-sm backdrop-blur-sm">
-                  {dest.tag}
-                </Badge>
-                <Badge className="absolute bottom-3 right-3 border-0 bg-black/60 text-xs font-medium text-white backdrop-blur-sm" variant="outline">
-                  {dest.temp}
-                </Badge>
-              </div>
-              <div className="flex items-center justify-between p-4">
-                <span className="text-lg font-bold text-travel-ink">{dest.name}</span>
-                <span className="text-lg font-bold text-primary">{dest.price}</span>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+      <HotDestinationsSection />
 
       {/* 精选推荐 */}
-      <section aria-labelledby="featured-title" className="relative mx-auto max-w-[1200px] px-6 py-12">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute top-0 left-1/2 h-px w-3/4 -translate-x-1/2 bg-gradient-to-r from-transparent via-secondary/20 to-transparent" />
-        </div>
-
-        <div className="mb-8 flex items-center justify-between scroll-reveal">
-          <h2
-            className="flex items-center gap-3 text-2xl font-bold"
-            id="featured-title"
-          >
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500 text-white shadow-lg">
-              <Star aria-hidden="true" size={20} />
-            </span>
-            <span className="bg-gradient-to-r from-travel-ink to-travel-ink/70 bg-clip-text text-transparent">
-              精选推荐
-            </span>
-          </h2>
-          <Link
-            className="group flex items-center gap-1 text-sm font-semibold text-primary transition-colors hover:text-primary-strong"
-            href="/detail"
-          >
-            更多行程
-            <span className="transition-transform group-hover:translate-x-1">&rarr;</span>
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {featuredTrips.map((trip, index) => (
-            <Link
-              className="group block overflow-hidden rounded-2xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] hover:-translate-y-2 hover:ring-2 hover:ring-cyan-200 scroll-reveal"
-              data-delay={index}
-              href={`/detail?city=${encodeURIComponent(trip.city)}`}
-              key={trip.title}
-            >
-              <div className="relative h-[200px] w-full overflow-hidden">
-                <Image
-                  alt={trip.title}
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  fill
-                  loading="lazy"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  src={trip.image}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                <Badge className="absolute left-3 top-3 bg-white/90 text-xs font-bold text-primary shadow-sm backdrop-blur-sm">
-                  {trip.tag}
-                </Badge>
-              </div>
-              <div className="p-5">
-                <h3 className="mb-2 text-lg font-bold text-travel-ink transition-colors group-hover:text-primary">
-                  {trip.title}
-                </h3>
-                <p className="mb-4 text-sm leading-relaxed text-travel-muted">{trip.desc}</p>
-                <div className="mb-4 flex items-center gap-2">
-                  <Badge className="gap-1 border-0 bg-cyan-50 text-sm font-semibold text-cyan-600">
-                    <Star aria-hidden="true" className="h-3.5 w-3.5 fill-current" />
-                    {trip.rating}
-                  </Badge>
-                  <span className="text-sm text-travel-muted">
-                    {trip.reviews}
-                    {' '}
-                    条评价
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl font-bold text-primary">
-                    ¥
-                    {trip.price}
-                  </span>
-                  <span className="text-sm text-travel-muted line-through">
-                    ¥
-                    {trip.originalPrice}
-                  </span>
-                  <Badge className="ml-auto border-0 bg-gradient-to-r from-red-500 to-pink-500 text-xs font-bold text-white shadow-sm">
-                    {Math.round((1 - trip.price / trip.originalPrice) * 100)}
-                    % OFF
-                  </Badge>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+      <FeaturedTripsSection />
 
       {/* AI 特色 + 用户评价 */}
       <section aria-labelledby="ai-feature-title" className="relative mx-auto max-w-[1200px] px-6 py-12">

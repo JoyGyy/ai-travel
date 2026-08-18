@@ -6,19 +6,7 @@
  * 优先从本地缓存读取，缓存未命中时通过 SSE 流式调用推荐接口生成行程。
  * 支持行程编辑模式和 Undo/Redo。
  */
-import {
-  ArrowDown,
-  ArrowLeft,
-  ArrowUp,
-  Compass,
-  Edit3,
-  MapPin,
-  Redo,
-  Share2,
-  Trash2,
-  Undo,
-  X,
-} from 'lucide-react'
+import { Share2 } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -26,6 +14,11 @@ import { useEffect, useState } from 'react'
 import { useTravelRecommend } from '@/hooks/useTravelRecommend'
 import { getItineraryTemporal, useItineraryStore } from '@/stores/itinerary'
 import { loadItineraryCache } from '@/utils/storage'
+
+import { DaySection } from './DaySection'
+import { DetailHero } from './DetailHero'
+import { EmptyState, ErrorState, LoadingState } from './DetailStates'
+import { SectionTitle } from './SectionTitle'
 
 // 动态导入重型组件，减少初始包大小
 const AccommodationCard = dynamic(
@@ -35,22 +28,10 @@ const AccommodationCard = dynamic(
     loading: () => <div className="h-32 animate-pulse rounded-xl bg-muted" />,
   },
 )
-const AgentSteps = dynamic(
-  () => import('@/components/AgentSteps').then(mod => ({ default: mod.AgentSteps })),
-  {
-    loading: () => <div className="h-48 animate-pulse rounded-xl bg-muted" />,
-  },
-)
 const BudgetTable = dynamic(
   () => import('@/components/BudgetTable').then(mod => ({ default: mod.BudgetTable })),
   {
     loading: () => <div className="h-64 animate-pulse rounded-xl bg-muted" />,
-  },
-)
-const SpotItem = dynamic(
-  () => import('@/components/SpotItem').then(mod => ({ default: mod.SpotItem })),
-  {
-    loading: () => <div className="h-24 animate-pulse rounded-xl bg-muted" />,
   },
 )
 const WeatherCard = dynamic(
@@ -116,53 +97,37 @@ export default function Detail() {
       setCanRedo(temporal.canRedo())
     }
 
-    // 初始状态
     updateHistoryState()
-
-    // 每 100ms 检查一次状态变化（简单实现）
     const timer = setInterval(updateHistoryState, 100)
     return () => clearInterval(timer)
   }, [isEditing])
-
-  function findAttractionRef(spot?: string) {
-    return attractionRefs.find(ref => ref.name === spot)
-  }
-
-  function shareToCommunity() {
-    router.push('/community/new')
-  }
 
   /* ---------- 编辑模式操作 ---------- */
 
   function toggleEditMode() {
     const temporal = getItineraryTemporal()
     if (isEditing) {
-      // 退出编辑模式，清空历史
       temporal.clear()
       setEditing(false)
     }
     else {
-      // 进入编辑模式，保存初始快照
       temporal.snapshot()
       setEditing(true)
     }
   }
 
   function handleUndo() {
-    const temporal = getItineraryTemporal()
-    temporal.undo()
+    getItineraryTemporal().undo()
   }
 
   function handleRedo() {
-    const temporal = getItineraryTemporal()
-    temporal.redo()
+    getItineraryTemporal().redo()
   }
 
   function handleRemoveSpot(dayIndex: number, spotIndex: number) {
     removeSpotFromDay(dayIndex, spotIndex)
   }
 
-  /** 移动景点在同一天内的位置（direction: -1 上移，1 下移） */
   function handleMoveSpot(dayIndex: number, spotIndex: number, direction: -1 | 1) {
     const targetIndex = spotIndex + direction
     const daySpots = itinerary[dayIndex]?.spots
@@ -246,221 +211,81 @@ export default function Detail() {
       aria-labelledby="detail-title"
       className="flex-1 overflow-x-hidden bg-background pb-[max(28px,env(safe-area-inset-bottom))]"
     >
-      {/* Hero 区域 */}
-      <div className="travel-route-line relative isolate min-h-[238px] overflow-hidden rounded-b-[clamp(26px,6vw,44px)] bg-gradient-to-br from-slate-800 via-slate-700 to-slate-600 p-[clamp(20px,5vw,44px)] pb-[70px] pt-[22px]">
-        {/* 背景点阵 */}
-        <div className="pointer-events-none absolute inset-0 -z-[1] bg-[radial-gradient(circle,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[length:24px_24px]" />
-        {/* 装饰渐变 */}
-        <div className="absolute right-[82%] top-[18%] h-[28%] w-[28%] rounded-full bg-travel-orange/26 blur-[100px]" />
-        <div className="absolute bottom-[82%] left-[16%] h-[26%] w-[26%] rounded-full bg-cyan-500/18 blur-[100px]" />
-
-        <div className="relative z-[2] flex items-center justify-between">
-          <button
-            aria-label="返回上一页"
-            className="flex h-11 w-11 items-center justify-center rounded-[14px] border border-white/15 bg-white/10 text-slate-100 transition-all hover:-translate-y-0.5 hover:bg-white/20"
-            onClick={() => router.back()}
-            type="button"
-          >
-            <ArrowLeft aria-hidden="true" />
-          </button>
-
-          {/* 编辑模式按钮 */}
-          <div className="flex items-center gap-2">
-            {isEditing && (
-              <>
-                <button
-                  aria-label="撤销"
-                  className="flex h-11 w-11 items-center justify-center rounded-[14px] border border-white/15 bg-white/10 text-slate-100 transition-all hover:-translate-y-0.5 hover:bg-white/20 disabled:opacity-40 disabled:cursor-not-allowed"
-                  disabled={!canUndo}
-                  onClick={handleUndo}
-                  type="button"
-                >
-                  <Undo aria-hidden="true" className="h-4 w-4" />
-                </button>
-                <button
-                  aria-label="重做"
-                  className="flex h-11 w-11 items-center justify-center rounded-[14px] border border-white/15 bg-white/10 text-slate-100 transition-all hover:-translate-y-0.5 hover:bg-white/20 disabled:opacity-40 disabled:cursor-not-allowed"
-                  disabled={!canRedo}
-                  onClick={handleRedo}
-                  type="button"
-                >
-                  <Redo aria-hidden="true" className="h-4 w-4" />
-                </button>
-              </>
-            )}
-            <button
-              aria-label={isEditing ? '退出编辑模式' : '编辑行程'}
-              className={`flex h-11 items-center justify-center gap-2 rounded-[14px] border px-4 text-sm font-bold transition-all ${
-                isEditing
-                  ? 'border-accent bg-accent/20 text-accent'
-                  : 'border-white/15 bg-white/10 text-slate-100 hover:-translate-y-0.5 hover:bg-white/20'
-              }`}
-              onClick={toggleEditMode}
-              type="button"
-            >
-              <Edit3 aria-hidden="true" className="h-4 w-4" />
-              {isEditing ? '完成编辑' : '编辑'}
-            </button>
-          </div>
-        </div>
-
-        <p className="mt-7 w-fit rounded-full border border-white/15 bg-white/8 px-3 py-1.5 font-sans text-[10px] font-extrabold uppercase tracking-[4px] text-slate-400">
-          ITINERARY
-        </p>
-
-        <h1
-          className="mb-2 mt-2.5 max-w-[min(620px,86vw)] font-display text-[clamp(34px,8vw,58px)] font-black leading-[1.08] text-slate-50"
-          id="detail-title"
-        >
-          {city || '旅行规划'}
-        </h1>
-
-        {hasValidParams
-          ? (
-              <p className="w-fit rounded-full border border-white/12 bg-transparent px-3.5 py-2 text-[13px] font-bold text-white/60">
-                {days}
-                {' '}
-                天行程 · 预算 ¥
-                {budget}
-              </p>
-            )
-          : null}
-      </div>
+      <DetailHero
+        budget={budget}
+        canRedo={canRedo}
+        canUndo={canUndo}
+        city={city}
+        days={days}
+        hasValidParams={hasValidParams}
+        isEditing={isEditing}
+        onRedo={handleRedo}
+        onToggleEdit={toggleEditMode}
+        onUndo={handleUndo}
+      />
 
       {/* 内容区域 */}
       <div className="mx-auto w-full max-w-[960px] px-[clamp(14px,4vw,28px)]">
-        {showLoading
-          ? (
-              <div
-                aria-label="AI 正在规划行程"
-                aria-live="polite"
-                className="flex justify-center py-7"
-                role="status"
-              >
-                <div className="w-full max-w-[min(100%,520px)] overflow-hidden rounded-3xl border border-travel-ink/8 bg-travel-surface shadow-sm">
+        {showLoading && (
+          <LoadingState
+            agentSteps={agentSteps}
+            currentAgentStep={currentAgentStep}
+            onClose={() => router.back()}
+          />
+        )}
+
+        {!showLoading && errorMessage && (
+          <ErrorState message={errorMessage} onGoHome={() => router.push('/')} />
+        )}
+
+        {!showLoading && !errorMessage && itinerary.length === 0 && (
+          messages.length > 0
+            ? (
+                <div className="mx-auto -mt-9 w-full max-w-[560px] overflow-hidden rounded-[26px] border border-travel-ink/8 bg-travel-surface shadow-sm">
                   <div className="flex items-center justify-between px-5 pb-2 pt-[18px]">
                     <span className="text-[11px] font-extrabold tracking-[2px] text-travel-ink">
-                      AI 规划中
+                      AI 生成的行程规划
                     </span>
-                    <button
-                      aria-label="关闭行程规划并返回"
-                      className="flex h-11 w-11 items-center justify-center rounded-full border border-stone-900/8 bg-white/72 text-sm text-stone-900/72 transition-all hover:rotate-[8deg] hover:scale-105 hover:bg-accent/20 hover:text-[#d63350]"
-                      onClick={() => router.back()}
-                      type="button"
-                    >
-                      <X aria-hidden="true" />
-                    </button>
+                    {status !== 'ready' && (
+                      <div
+                        aria-hidden="true"
+                        className="h-5 w-5 animate-spin rounded-full border-2 border-dotted border-stone-900/22 border-t-accent"
+                      />
+                    )}
                   </div>
-                  <div className="px-1 pb-3">
-                    <AgentSteps currentStep={currentAgentStep} steps={agentSteps} />
+                  <div className="px-5 pb-5">
+                    {messages.map(message => (
+                      <div className="mb-4 last:mb-0" key={message.id}>
+                        {message.parts.map((part, index) => {
+                          if (part.type === 'text') {
+                            return (
+                              <div
+                                className="whitespace-pre-wrap break-words text-sm leading-[1.8] text-stone-900/85"
+                                key={index}
+                              >
+                                {part.text}
+                              </div>
+                            )
+                          }
+                          return null
+                        })}
+                      </div>
+                    ))}
                   </div>
-                  <div className="relative mx-auto flex h-[46px] w-[46px] items-center justify-center">
-                    <div
-                      aria-hidden="true"
-                      className="absolute inset-0 animate-spin rounded-full border-2 border-dotted border-stone-900/22 border-t-accent"
-                    />
-                    <Compass aria-hidden="true" className="text-lg text-travel-ink" />
-                  </div>
-                  <p className="py-3 pb-[22px] text-center font-serif text-[13px] text-stone-900/70">
-                    正在为你规划行程...
-                  </p>
-                </div>
-              </div>
-            )
-          : null}
-
-        {!showLoading && errorMessage
-          ? (
-              <div
-                className="mx-auto -mt-9 flex w-full max-w-[560px] flex-col items-center gap-4 rounded-[26px] border border-travel-ink/8 bg-travel-surface p-[52px_22px] shadow-sm"
-                role="alert"
-              >
-                <div className="flex h-[82px] w-[82px] items-center justify-center rounded-3xl bg-[#d4a76a]/15 text-[40px] text-travel-ink shadow-[0_16px_34px_rgba(41,37,36,0.1)]">
-                  <MapPin aria-hidden="true" />
-                </div>
-                <p className="text-center font-serif text-sm leading-relaxed text-stone-900/74">
-                  {errorMessage}
-                </p>
-                <button
-                  className="min-h-11 rounded-[14px] border-none bg-primary px-6 text-sm font-extrabold text-white shadow-[0_14px_30px_rgba(20,184,166,0.28)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(20,184,166,0.34)]"
-                  onClick={() => router.push('/')}
-                  type="button"
-                >
-                  返回首页重新规划
-                </button>
-              </div>
-            )
-          : null}
-
-        {!showLoading && !errorMessage && itinerary.length === 0
-          ? (
-              messages.length > 0
-                ? (
-                    <div className="mx-auto -mt-9 w-full max-w-[560px] overflow-hidden rounded-[26px] border border-travel-ink/8 bg-travel-surface shadow-sm">
-                      <div className="flex items-center justify-between px-5 pb-2 pt-[18px]">
-                        <span className="text-[11px] font-extrabold tracking-[2px] text-travel-ink">
-                          AI 生成的行程规划
-                        </span>
-                        {status !== 'ready' && (
-                          <div
-                            aria-hidden="true"
-                            className="h-5 w-5 animate-spin rounded-full border-2 border-dotted border-stone-900/22 border-t-accent"
-                          />
-                        )}
-                      </div>
-                      <div className="px-5 pb-5">
-                        {messages.map(message => (
-                          <div className="mb-4 last:mb-0" key={message.id}>
-                            {message.parts.map((part, index) => {
-                              if (part.type === 'text') {
-                                return (
-                                  <div
-                                    className="whitespace-pre-wrap break-words text-sm leading-[1.8] text-stone-900/85"
-                                    key={index}
-                                  >
-                                    {part.text}
-                                  </div>
-                                )
-                              }
-                              return null
-                            })}
-                          </div>
-                        ))}
-                      </div>
-                      {chatError && (
-                        <div className="border-t border-red-500/10 bg-red-500/5 p-4 px-5" role="alert">
-                          <p className="text-center text-[13px] text-red-500">
-                            生成失败：
-                            {chatError.message}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  )
-                : (
-                    <div
-                      className="mx-auto -mt-9 flex w-full max-w-[560px] flex-col items-center gap-4 rounded-[26px] border border-travel-ink/8 bg-travel-surface p-[52px_22px] shadow-sm"
-                      role="status"
-                    >
-                      <div className="flex h-[82px] w-[82px] items-center justify-center rounded-3xl bg-[#d4a76a]/15 text-[40px] text-travel-ink shadow-[0_16px_34px_rgba(41,37,36,0.1)]">
-                        <MapPin aria-hidden="true" />
-                      </div>
-                      <p className="text-center font-serif text-sm leading-relaxed text-stone-900/74">
-                        暂无行程数据
+                  {chatError && (
+                    <div className="border-t border-red-500/10 bg-red-500/5 p-4 px-5" role="alert">
+                      <p className="text-center text-[13px] text-red-500">
+                        生成失败：
+                        {chatError.message}
                       </p>
-                      <button
-                        className="min-h-11 rounded-[14px] border-none bg-primary px-6 text-sm font-extrabold text-white shadow-[0_14px_30px_rgba(20,184,166,0.28)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(20,184,166,0.34)]"
-                        onClick={() => router.push('/chat')}
-                        type="button"
-                      >
-                        咨询 AI 生成行程
-                      </button>
                     </div>
-                  )
-            )
-          : null}
+                  )}
+                </div>
+              )
+            : <EmptyState onGoChat={() => router.push('/chat')} />
+        )}
 
-        {!showLoading && !errorMessage && itinerary.length > 0 ? (
+        {!showLoading && !errorMessage && itinerary.length > 0 && (
           <>
             {/* 摘要卡片 */}
             <div
@@ -498,236 +323,82 @@ export default function Detail() {
             </div>
 
             {/* 天气 */}
-            {weather
-              ? (
-                  <section aria-labelledby="detail-weather-title" className="pt-[22px]">
-                    <h2 className="flex items-center gap-2.5 pb-3 pl-1 font-serif text-base font-extrabold text-travel-ink">
-                      <span
-                        aria-hidden="true"
-                        className="h-2 w-2 rounded-full bg-accent shadow-[0_0_0_5px_rgba(232,64,87,0.15)]"
-                      />
-                      实时天气
-                    </h2>
-                    <WeatherCard weather={weather} />
-                  </section>
-                )
-              : null}
+            {weather && (
+              <section aria-labelledby="detail-weather-title" className="pt-[22px]">
+                <SectionTitle id="detail-weather-title">实时天气</SectionTitle>
+                <WeatherCard weather={weather} />
+              </section>
+            )}
 
             {/* 住宿推荐 */}
-            {accommodation.length > 0 || nightlife.length > 0
-              ? (
-                  <section aria-label="住宿和夜生活推荐" className="pt-[22px]">
-                    <AccommodationCard accommodation={accommodation} nightlife={nightlife} />
-                  </section>
-                )
-              : null}
+            {(accommodation.length > 0 || nightlife.length > 0) && (
+              <section aria-label="住宿和夜生活推荐" className="pt-[22px]">
+                <AccommodationCard accommodation={accommodation} nightlife={nightlife} />
+              </section>
+            )}
 
             {/* 每日行程 */}
             <section aria-labelledby="detail-itinerary-title" className="pt-[22px]">
-              <h2
-                className="flex items-center gap-2.5 pb-3 pl-1 font-serif text-base font-extrabold text-travel-ink"
-                id="detail-itinerary-title"
-              >
-                <span
-                  aria-hidden="true"
-                  className="h-2 w-2 rounded-full bg-accent shadow-[0_0_0_5px_rgba(232,64,87,0.15)]"
-                />
+              <SectionTitle id="detail-itinerary-title">
                 每日行程
                 {isEditing && (
                   <span className="ml-2 text-xs font-normal text-accent">
                     （编辑模式：可移动/删除景点，支持撤销）
                   </span>
                 )}
-              </h2>
+              </SectionTitle>
               <div className="overflow-hidden rounded-3xl border border-travel-ink/8 bg-travel-surface shadow-sm">
-                {itinerary.map((item, dayIndex) => {
-                  const dayKey = String(item.day)
-                  const panelId = `detail-day-panel-${dayKey}`
-                  const isOpen = activeKeys.includes(dayKey)
-                  return (
-                    <div className="border-b border-stone-900/8 last:border-b-0" key={item.day}>
-                      <button
-                        aria-controls={panelId}
-                        aria-expanded={isOpen}
-                        className="flex min-h-[56px] w-full items-center justify-between gap-4 bg-transparent p-[16px_20px] text-left text-[15px] font-extrabold text-travel-ink transition-colors hover:bg-stone-900/[0.03]"
-                        onClick={() =>
-                          setActiveKeys(prev =>
-                            isOpen ? prev.filter(k => k !== dayKey) : [...prev, dayKey],
-                          )}
-                        type="button"
-                      >
-                        <span>{item.date}</span>
-                        <span
-                          aria-hidden="true"
-                          className={`inline-flex h-[26px] w-[26px] flex-shrink-0 items-center justify-center rounded-full bg-stone-900/8 text-[10px] text-travel-ink transition-all ${
-                            isOpen ? 'rotate-180 bg-accent/22' : ''
-                          }`}
-                        >
-                          ▼
-                        </span>
-                      </button>
-                      {isOpen ? (
-                        <div className="bg-stone-900/[0.015] p-[6px_14px_16px]" id={panelId}>
-                          {/* 景点列表：优先使用 spots 数组（编辑模式操作的目标），否则回退到 morning/afternoon/evening */}
-                          {item.spots && item.spots.length > 0 ? (
-                            item.spots.map((spot, spotIndex) => {
-                              // 将 spots 数组索引映射到时段标签（循环使用上午/下午/晚上）
-                              const periodLabels = ['上午', '下午', '晚上'] as const
-                              const periodLabel = periodLabels[spotIndex % periodLabels.length]
-                              return (
-                                <div className="group relative" key={`${spot.name}-${spotIndex}`}>
-                                  <SpotItem
-                                    attractionRef={findAttractionRef(spot.name)}
-                                    data={{
-                                      description: spot.description,
-                                      duration: spot.duration,
-                                      spot: spot.name,
-                                    }}
-                                    period={periodLabel}
-                                  />
-                                  {isEditing && (
-                                    <div className="absolute right-2 top-2 flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                                      <button
-                                        aria-label={`上移${spot.name}`}
-                                        className="flex h-8 w-8 items-center justify-center rounded-full bg-stone-900/10 text-travel-ink transition-colors hover:bg-stone-900/20 disabled:cursor-not-allowed disabled:opacity-30"
-                                        disabled={spotIndex === 0}
-                                        onClick={() => handleMoveSpot(dayIndex, spotIndex, -1)}
-                                        type="button"
-                                      >
-                                        <ArrowUp aria-hidden="true" className="h-4 w-4" />
-                                      </button>
-                                      <button
-                                        aria-label={`下移${spot.name}`}
-                                        className="flex h-8 w-8 items-center justify-center rounded-full bg-stone-900/10 text-travel-ink transition-colors hover:bg-stone-900/20 disabled:cursor-not-allowed disabled:opacity-30"
-                                        disabled={spotIndex === item.spots.length - 1}
-                                        onClick={() => handleMoveSpot(dayIndex, spotIndex, 1)}
-                                        type="button"
-                                      >
-                                        <ArrowDown aria-hidden="true" className="h-4 w-4" />
-                                      </button>
-                                      <button
-                                        aria-label={`删除${spot.name}`}
-                                        className="flex h-8 w-8 items-center justify-center rounded-full bg-red-500 text-white transition-colors hover:bg-red-600"
-                                        onClick={() => handleRemoveSpot(dayIndex, spotIndex)}
-                                        type="button"
-                                      >
-                                        <Trash2 aria-hidden="true" className="h-4 w-4" />
-                                      </button>
-                                    </div>
-                                  )}
-                                </div>
-                              )
-                            })
-                          ) : (
-                            <>
-                              {item.morning && (
-                                <div className="relative group">
-                                  <SpotItem
-                                    attractionRef={findAttractionRef(item.morning.spot)}
-                                    data={item.morning}
-                                    period="上午"
-                                  />
-                                  {isEditing && (
-                                    <button
-                                      aria-label="删除上午景点"
-                                      className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-red-500 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-600"
-                                      onClick={() => handleRemoveSpot(dayIndex, 0)}
-                                      type="button"
-                                    >
-                                      <Trash2 aria-hidden="true" className="h-4 w-4" />
-                                    </button>
-                                  )}
-                                </div>
-                              )}
-                              {item.afternoon && (
-                                <div className="relative group">
-                                  <SpotItem
-                                    attractionRef={findAttractionRef(item.afternoon.spot)}
-                                    data={item.afternoon}
-                                    period="下午"
-                                  />
-                                  {isEditing && (
-                                    <button
-                                      aria-label="删除下午景点"
-                                      className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-red-500 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-600"
-                                      onClick={() => handleRemoveSpot(dayIndex, 1)}
-                                      type="button"
-                                    >
-                                      <Trash2 aria-hidden="true" className="h-4 w-4" />
-                                    </button>
-                                  )}
-                                </div>
-                              )}
-                              {item.evening && (
-                                <div className="relative group">
-                                  <SpotItem
-                                    attractionRef={findAttractionRef(item.evening.spot)}
-                                    data={item.evening}
-                                    period="晚上"
-                                  />
-                                  {isEditing && (
-                                    <button
-                                      aria-label="删除晚上景点"
-                                      className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-red-500 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-600"
-                                      onClick={() => handleRemoveSpot(dayIndex, 2)}
-                                      type="button"
-                                    >
-                                      <Trash2 aria-hidden="true" className="h-4 w-4" />
-                                    </button>
-                                  )}
-                                </div>
-                              )}
-                            </>
-                          )}
-                        </div>
-                      ) : null}
-                    </div>
-                  )
-                })}
+                {itinerary.map((item, dayIndex) => (
+                  <DaySection
+                    attractionRefs={attractionRefs}
+                    dayIndex={dayIndex}
+                    isEditing={isEditing}
+                    isOpen={activeKeys.includes(String(item.day))}
+                    item={item}
+                    key={item.day}
+                    onMoveSpot={handleMoveSpot}
+                    onRemoveSpot={handleRemoveSpot}
+                    onToggle={() =>
+                      setActiveKeys(prev =>
+                        activeKeys.includes(String(item.day))
+                          ? prev.filter(k => k !== String(item.day))
+                          : [...prev, String(item.day)],
+                      )}
+                  />
+                ))}
               </div>
             </section>
 
             {/* 预算明细 */}
-            {budgetBreakdown ? <BudgetTable data={budgetBreakdown} /> : null}
+            {budgetBreakdown && <BudgetTable data={budgetBreakdown} />}
 
             {/* 温馨提示 */}
-            {tips.length > 0
-              ? (
-                  <section aria-labelledby="detail-tips-title" className="pt-[22px]">
-                    <h2
-                      className="flex items-center gap-2.5 pb-3 pl-1 font-serif text-base font-extrabold text-travel-ink"
-                      id="detail-tips-title"
+            {tips.length > 0 && (
+              <section aria-labelledby="detail-tips-title" className="pt-[22px]">
+                <SectionTitle id="detail-tips-title">温馨提示</SectionTitle>
+                <div className="rounded-3xl border border-travel-ink/8 bg-travel-surface p-4 shadow-sm">
+                  {tips.map(tip => (
+                    <div
+                      className="flex items-start gap-3 py-2 text-[13px] leading-relaxed text-stone-900/72"
+                      key={tip}
                     >
                       <span
                         aria-hidden="true"
-                        className="h-2 w-2 rounded-full bg-accent shadow-[0_0_0_5px_rgba(232,64,87,0.15)]"
+                        className="mt-2 h-[7px] w-[7px] flex-shrink-0 rounded-full bg-travel-sand shadow-[0_0_0_5px_rgba(212,167,106,0.16)]"
                       />
-                      温馨提示
-                    </h2>
-                    <div className="rounded-3xl border border-travel-ink/8 bg-travel-surface p-4 shadow-sm">
-                      {tips.map(tip => (
-                        <div
-                          className="flex items-start gap-3 py-2 text-[13px] leading-relaxed text-stone-900/72"
-                          key={tip}
-                        >
-                          <span
-                            aria-hidden="true"
-                            className="mt-2 h-[7px] w-[7px] flex-shrink-0 rounded-full bg-travel-sand shadow-[0_0_0_5px_rgba(212,167,106,0.16)]"
-                          />
-                          {tip}
-                        </div>
-                      ))}
+                      {tip}
                     </div>
-                  </section>
-                )
-              : null}
+                  ))}
+                </div>
+              </section>
+            )}
 
             {/* 分享与咨询操作 */}
             <div className="grid gap-3 pt-6">
               <button
                 aria-label="分享到社区"
                 className="inline-flex min-h-[50px] w-full items-center justify-center gap-2 rounded-4xl border-none bg-primary text-[15px] font-black text-white shadow-[0_4px_16px_rgba(20,184,166,0.25)] transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(20,184,166,0.35)]"
-                onClick={shareToCommunity}
+                onClick={() => router.push('/community/new')}
                 type="button"
               >
                 <Share2 aria-hidden="true" />
@@ -743,7 +414,7 @@ export default function Detail() {
               </button>
             </div>
           </>
-        ) : null}
+        )}
       </div>
     </main>
   )

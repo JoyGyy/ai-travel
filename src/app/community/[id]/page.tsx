@@ -1,7 +1,7 @@
 'use client'
 
 import type { CommunityComment, CommunityPost } from '@/types/community'
-import { ArrowLeft, Heart, Repeat2, Send, Share2, Trash2 } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
 
 import { startTransition, useEffect, useOptimistic, useState } from 'react'
@@ -16,14 +16,14 @@ import {
 import { CommunityImageGrid } from '@/components/CommunityImageGrid'
 import { CommunityItineraryPreview } from '@/components/CommunityItineraryPreview'
 import { CommunityPostCard } from '@/components/CommunityPostCard'
-import { Pagination } from '@/components/Pagination'
 import { RepostModal } from '@/components/RepostModal'
 import { Button } from '@/components/ui/button'
 import { useAppToast } from '@/hooks/useAppToast'
 import { useCommunityActions } from '@/hooks/useCommunityActions'
 import { formatRelativeTime } from '@/lib/utils/date'
 
-const COMMENT_PAGE_SIZE = 20
+import { CommentSection } from './CommentSection'
+import { PostActions } from './PostActions'
 
 /** 乐观更新的状态类型 */
 interface OptimisticLikeState {
@@ -54,7 +54,6 @@ export default function CommunityPostDetail() {
   const [repostPending, setRepostPending] = useState(false)
   const [isLikeAnimating, setIsLikeAnimating] = useState(false)
 
-  // useOptimistic: 乐观更新点赞状态
   const [optimisticLike, addOptimisticLike] = useOptimistic(
     { likeCount: post?.likeCount ?? 0, likedByMe: post?.likedByMe ?? false },
     likeReducer,
@@ -62,7 +61,6 @@ export default function CommunityPostDetail() {
 
   const { hasHydrated, requireLogin, submitRepost, toggleLike, user } = useCommunityActions({
     onLikeSuccess: (_postId, likedByMe, likeCount) => {
-      // API 成功后同步真实状态，useOptimistic 会自动对齐
       if (post) {
         setPost({ ...post, likeCount, likedByMe })
       }
@@ -103,7 +101,7 @@ export default function CommunityPostDetail() {
       try {
         const data = await fetchCommunityComments(id, {
           page: commentPage,
-          pageSize: COMMENT_PAGE_SIZE,
+          pageSize: 20,
         })
         if (!cancelled) {
           setComments(data.items)
@@ -125,30 +123,25 @@ export default function CommunityPostDetail() {
     }
   }, [commentPage, id, toast])
 
-  // requireLogin, toggleLike, submitRepost 已从 useCommunityActions hook 获取
-
   async function handleLike() {
     if (!post || likePending)
       return
 
-    // 触发动画
     if (!optimisticLike.likedByMe) {
       setIsLikeAnimating(true)
       setTimeout(() => setIsLikeAnimating(false), 600)
     }
 
-    // 乐观更新：立即更新 UI
     startTransition(() => {
       addOptimisticLike('toggle')
     })
 
-    // 调用 API
     setLikePending(true)
     try {
       await toggleLike(post.id, post.likedByMe)
     }
     catch {
-      // API 失败时，useOptimistic 会自动回滚到之前的状态
+      // API 失败时，useOptimistic 会自动回滚
     }
     finally {
       setLikePending(false)
@@ -323,19 +316,15 @@ export default function CommunityPostDetail() {
           {post.title || `${post.city || '旅行'}分享`}
         </h1>
 
-        {post.content
-          ? (
-              <p className="whitespace-pre-wrap leading-relaxed text-travel-ink">{post.content}</p>
-            )
-          : null}
+        {post.content && (
+          <p className="whitespace-pre-wrap leading-relaxed text-travel-ink">{post.content}</p>
+        )}
 
         <CommunityImageGrid images={post.images} />
 
-        {post.itinerarySnapshot
-          ? (
-              <CommunityItineraryPreview mode="detail" snapshot={post.itinerarySnapshot} />
-            )
-          : null}
+        {post.itinerarySnapshot && (
+          <CommunityItineraryPreview mode="detail" snapshot={post.itinerarySnapshot} />
+        )}
 
         {post.originalPost
           ? (
@@ -347,131 +336,37 @@ export default function CommunityPostDetail() {
               )
             : null}
 
-        <div aria-label="帖子操作" className="flex flex-wrap gap-2">
-          <Button
-            aria-pressed={optimisticLike.likedByMe}
-            className={`${optimisticLike.likedByMe ? 'text-primary' : ''} ${isLikeAnimating ? 'animate-bounce' : ''}`}
-            disabled={likePending}
-            onClick={handleLike}
-            variant="outline"
-          >
-            <Heart
-              aria-hidden="true"
-              className={`mr-1 h-4 w-4 ${optimisticLike.likedByMe ? 'fill-current' : ''}`}
-            />
-            {optimisticLike.likeCount}
-          </Button>
-          <Button
-            disabled={!hasHydrated}
-            onClick={() => (requireLogin('转发') ? setRepostOpen(true) : undefined)}
-            variant="outline"
-          >
-            <Repeat2 aria-hidden="true" className="mr-1 h-4 w-4" />
-            {!hasHydrated ? '加载中...' : `转发 · ${post.repostCount}`}
-          </Button>
-          <Button onClick={shareLink} variant="outline">
-            <Share2 aria-hidden="true" className="mr-1 h-4 w-4" />
-            分享链接
-          </Button>
-          {isAuthor
-            ? (
-                <Button disabled={postDeletePending} onClick={removePost} variant="destructive">
-                  <Trash2 aria-hidden="true" className="mr-1 h-4 w-4" />
-                  {postDeletePending ? '删除中...' : '删除帖子'}
-                </Button>
-              )
-            : null}
-        </div>
-      </section>
-
-      <section
-        aria-labelledby="community-comments-title"
-        className="animate-detail-fade-in [animation-delay:0.2s] travel-surface-card grid gap-[18px] rounded-[28px] p-[26px]"
-      >
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-travel-ink" id="community-comments-title">
-            评论
-          </h2>
-          <span className="text-sm text-travel-muted">
-            {commentTotal}
-            {' '}
-            条
-          </span>
-        </div>
-
-        <div className="grid gap-3">
-          <textarea
-            className="flex min-h-[80px] w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
-            maxLength={500}
-            onChange={event => setCommentInput(event.target.value)}
-            placeholder="写下你的建议、问题或补充体验"
-            rows={4}
-            value={commentInput}
-          />
-          <Button disabled={!hasHydrated || commentSubmitting} onClick={submitComment}>
-            <Send aria-hidden="true" className="mr-1 h-4 w-4" />
-            {!hasHydrated ? '加载中...' : commentSubmitting ? '发布中...' : '发布评论'}
-          </Button>
-        </div>
-
-        {commentsLoading
-          ? (
-              <div className="flex items-center justify-center gap-3 py-8">
-                <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
-                <span className="text-travel-muted">加载评论中...</span>
-              </div>
-            )
-          : null}
-
-        {!commentsLoading && comments.length === 0
-          ? (
-              <div className="py-8 text-center text-muted-foreground">
-                <p>还没有评论，来写第一条吧</p>
-              </div>
-            )
-          : null}
-
-        {!commentsLoading && comments.length > 0
-          ? (
-              <div className="space-y-4">
-                {comments.map(comment => (
-                  <article className="grid gap-2 rounded-xl border p-4" key={comment.id}>
-                    <div className="flex items-center gap-2">
-                      <strong className="text-sm font-semibold text-travel-ink">
-                        {comment.author.username}
-                      </strong>
-                      <span className="text-xs text-travel-muted">
-                        {formatRelativeTime(comment.createdAt)}
-                      </span>
-                    </div>
-                    <p className="text-sm text-travel-ink">{comment.content}</p>
-                    {comment.author.id === user?.id
-                      ? (
-                          <Button
-                            className="justify-self-start text-destructive"
-                            disabled={deletePendingId === comment.id}
-                            onClick={() => removeComment(comment)}
-                            size="sm"
-                            variant="link"
-                          >
-                            {deletePendingId === comment.id ? '删除中...' : '删除'}
-                          </Button>
-                        )
-                      : null}
-                  </article>
-                ))}
-              </div>
-            )
-          : null}
-
-        <Pagination
-          className="flex justify-center"
-          onPageChange={setCommentPage}
-          page={commentPage}
-          pageSize={COMMENT_PAGE_SIZE}
-          total={commentTotal}
+        <PostActions
+          hasHydrated={hasHydrated}
+          isAuthor={isAuthor}
+          isLikeAnimating={isLikeAnimating}
+          likeCount={optimisticLike.likeCount}
+          likePending={likePending}
+          likedByMe={optimisticLike.likedByMe}
+          onDelete={removePost}
+          onLike={handleLike}
+          onRepost={() => requireLogin('转发') && setRepostOpen(true)}
+          onShare={shareLink}
+          postDeletePending={postDeletePending}
+          repostCount={post.repostCount}
         />
       </section>
+
+      <CommentSection
+        commentPage={commentPage}
+        commentSubmitting={commentSubmitting}
+        commentTotal={commentTotal}
+        comments={comments}
+        commentsLoading={commentsLoading}
+        deletePendingId={deletePendingId}
+        hasHydrated={hasHydrated}
+        input={commentInput}
+        onChangeInput={setCommentInput}
+        onChangePage={setCommentPage}
+        onDelete={removeComment}
+        onSubmit={submitComment}
+        userId={user?.id}
+      />
 
       <RepostModal
         icon="link"

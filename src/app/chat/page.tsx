@@ -95,6 +95,7 @@ export default function ChatPage() {
               ].map((question, index) => (
                 <button
                   className="inline-flex min-w-[min(260px,100%)] flex-1 basis-[calc(50%-12px)] items-center gap-3 rounded-2xl border border-white/60 bg-white/80 p-4 text-left shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-teal-200 hover:bg-teal-50/50 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-200 animate-fade-in-up"
+                  // eslint-disable-next-line react/no-array-index-key
                   key={index}
                   onClick={() => sendMessage({ text: question })}
                   style={{ animationDelay: `${index * 80}ms` }}
@@ -140,6 +141,7 @@ export default function ChatPage() {
                   return (
                     <p
                       className={message.role === 'user' ? 'm-0 text-sm leading-relaxed' : ''}
+                      // eslint-disable-next-line react/no-array-index-key
                       key={index}
                     >
                       {part.text}
@@ -148,7 +150,11 @@ export default function ChatPage() {
                 }
                 if (part.type.startsWith('tool-') || part.type === 'dynamic-tool') {
                   return (
-                    <pre className="overflow-auto rounded-2xl bg-muted p-3 text-xs" key={index}>
+                    <pre
+                      className="overflow-auto rounded-2xl bg-muted p-3 text-xs"
+                      // eslint-disable-next-line react/no-array-index-key
+                      key={index}
+                    >
                       {JSON.stringify(part, null, 2)}
                     </pre>
                   )

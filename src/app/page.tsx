@@ -255,6 +255,7 @@ export default function HomePage() {
                     </div>
                     <span aria-label={`${review.rating} 星`} className="ml-auto flex items-center gap-0.5 text-cyan-500">
                       {Array.from({ length: review.rating }).map((_, i) => (
+                        // eslint-disable-next-line react/no-array-index-key
                         <Star className="h-4 w-4 fill-current" key={i} />
                       ))}
                     </span>

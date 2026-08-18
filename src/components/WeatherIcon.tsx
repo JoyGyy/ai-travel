@@ -9,6 +9,7 @@ interface WeatherIconProps {
 }
 
 /** 根据天气描述文本匹配对应的图标类型 */
+// eslint-disable-next-line react-refresh/only-export-components
 export function getWeatherIconType(desc = ''): string {
   if (desc.includes('雷') || desc.includes('暴雨'))
     return 'storm'

@@ -177,12 +177,3 @@ export const withHistory: WithHistory = (f, options = {}) => {
     return f(wrappedSet, get, store)
   }
 }
-
-/**
- * Hook：获取 temporal 操作
- * @param store Zustand store
- * @returns temporal 操作对象
- */
-export function useTemporal(store: { temporal: TemporalState }): TemporalState {
-  return store.temporal
-}

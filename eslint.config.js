@@ -10,8 +10,8 @@ export default antfu({
     semi: false,
   },
   rules: {
-    // 允许 console.warn 和 console.error
-    'no-console': ['warn', { allow: ['warn', 'error'] }],
+    // 允许 console.warn、console.error 和 console.info
+    'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
     // Next.js 项目不需要这些
     'antfu/no-top-level-await': 'off',
     'node/prefer-global/process': 'off',
@@ -31,5 +31,7 @@ export default antfu({
     '*.config.js',
     '*.config.mjs',
     '*.config.ts',
+    'db/**',
+    'scripts/**',
   ],
 })

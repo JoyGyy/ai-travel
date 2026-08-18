@@ -31,6 +31,10 @@ if (typeof setInterval !== 'undefined') {
 
 /**
  * 检查限流，返回 NextResponse 表示被限流，null 表示放行
+ * @param req 请求对象
+ * @param name 限流名称
+ * @param maxRequests 最大请求数
+ * @param windowMs 时间窗口（毫秒）
  * @param userId 可选，已解析的用户 ID，避免重复 JWT 验证
  */
 export async function checkRateLimit(

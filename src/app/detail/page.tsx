@@ -93,7 +93,9 @@ export default function Detail() {
 
     const temporal = getItineraryTemporal()
     const updateHistoryState = () => {
+      // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
       setCanUndo(temporal.canUndo())
+      // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
       setCanRedo(temporal.canRedo())
     }
 
@@ -261,6 +263,7 @@ export default function Detail() {
                             return (
                               <div
                                 className="whitespace-pre-wrap break-words text-sm leading-[1.8] text-stone-900/85"
+                                // eslint-disable-next-line react/no-array-index-key
                                 key={index}
                               >
                                 {part.text}

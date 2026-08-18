@@ -12,6 +12,11 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/stores/auth'
 
+import { shouldShowNav } from './utils'
+
+// eslint-disable-next-line react-refresh/only-export-components
+export { shouldShowNav } from './utils'
+
 /* ========== 导航标签配置 ========== */
 
 const tabs = [
@@ -30,26 +35,6 @@ export function Navigation() {
     return null
 
   return <TopNav />
-}
-
-/* ========== 顶部导航栏 ========== */
-
-/** 根据路径判断是否显示导航栏 */
-export function shouldShowNav(pathname: string) {
-  if (pathname === '/login')
-    return false
-
-  return (
-    pathname === '/'
-    || pathname === '/weather'
-    || pathname === '/chat'
-    || pathname === '/profile'
-    || pathname === '/detail'
-    || pathname === '/attractions'
-    || pathname.startsWith('/attractions/')
-    || pathname === '/community'
-    || pathname.startsWith('/community/')
-  )
 }
 
 /* ========== 导出 ========== */

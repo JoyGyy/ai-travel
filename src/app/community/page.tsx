@@ -268,6 +268,7 @@ export default function Community() {
                 <p className="text-xs text-gray-500">美食之都 · 大熊猫故乡</p>
                 <div className="mt-1.5 flex items-center gap-1">
                   {Array.from({ length: 5 }).map((_, i) => (
+                    // eslint-disable-next-line react/no-array-index-key
                     <Star key={i} className={`h-3 w-3 ${i < 4 ? 'fill-cyan-400 text-cyan-400' : 'text-gray-300'}`} />
                   ))}
                   <span className="ml-1 text-[10px] text-gray-400">旅友推荐</span>
@@ -335,6 +336,7 @@ export default function Community() {
         ? (
             <section aria-live="polite" className="columns-1 sm:columns-2 gap-4" role="status">
               {Array.from({ length: 3 }).map((_, i) => (
+                // eslint-disable-next-line react/no-array-index-key
                 <CommunityPostCardSkeleton key={i} />
               ))}
             </section>

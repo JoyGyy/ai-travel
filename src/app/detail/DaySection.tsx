@@ -71,6 +71,7 @@ export function DaySection({
             item.spots.map((spot, spotIndex) => {
               const periodLabel = PERIOD_LABELS[spotIndex % PERIOD_LABELS.length]
               return (
+                // eslint-disable-next-line react/no-array-index-key
                 <div className="group relative" key={`${spot.name}-${spotIndex}`}>
                   <SpotItem
                     attractionRef={findAttractionRef(spot.name)}

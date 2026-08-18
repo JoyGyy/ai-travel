@@ -4,6 +4,7 @@ import { Navigation } from './index'
 
 // Mock next/navigation
 vi.mock('next/navigation', () => ({
+  // eslint-disable-next-line react-hooks-extra/no-unnecessary-use-prefix
   usePathname: () => '/weather',
 }))
 

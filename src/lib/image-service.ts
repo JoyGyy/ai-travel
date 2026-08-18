@@ -8,6 +8,9 @@
  *
  * 带有内存缓存机制，避免重复API调用
  */
+import { createLogger } from './utils/logger'
+
+const log = createLogger('image-service')
 
 // 缓存项
 interface CacheItem {
@@ -248,7 +251,7 @@ export async function getAttractionImage(attractionName: string, city?: string):
       if (url) {
         // 存入缓存
         setCache(query, url)
-        console.log(`Image found from ${source.name}: ${query}`)
+        log.info(`Image found from ${source.name}: ${query}`)
         return url
       }
     }

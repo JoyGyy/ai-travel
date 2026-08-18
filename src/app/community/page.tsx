@@ -16,19 +16,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { CITY_FOCUS_TAGS, TRAVEL_QUOTES, TRENDING_TAGS } from '@/constants/community'
 import { useCommunityActions } from '@/hooks/useCommunityActions'
-
-// 热门旅行标签
-const TRENDING_TAGS = [
-  { color: 'bg-blue-50 text-blue-600 border-blue-200', label: '周末游' },
-  { color: 'bg-emerald-50 text-emerald-600 border-emerald-200', label: '亲子游' },
-  { color: 'bg-purple-50 text-purple-600 border-purple-200', label: '自驾游' },
-  { color: 'bg-teal-50 text-teal-600 border-teal-200', label: '美食探店' },
-  { color: 'bg-sky-50 text-sky-600 border-sky-200', label: '网红打卡' },
-  { color: 'bg-cyan-50 text-cyan-600 border-cyan-200', label: '海边度假' },
-  { color: 'bg-cyan-50 text-cyan-600 border-cyan-200', label: '古镇漫游' },
-  { color: 'bg-indigo-50 text-indigo-600 border-indigo-200', label: '徒步登山' },
-]
 
 // 社区统计数据（基于 total 动态计算）
 function getStats(total: number) {
@@ -256,12 +245,7 @@ export default function Community() {
               <span className="text-xs font-semibold text-teal-500 uppercase tracking-wider">旅行语录</span>
             </div>
             <blockquote className="text-sm leading-relaxed text-gray-700 italic">
-              {[
-                '世界是一本书，不旅行的人只读了其中一页。',
-                '旅行不是为了到达目的地，而是为了享受沿途的风景。',
-                '生活不止眼前的苟且，还有诗和远方。',
-                '最好的时光在路上，最美的风景在心中。',
-              ][new Date().getDay() % 4]}
+              {TRAVEL_QUOTES[new Date().getDay() % 4]}
             </blockquote>
             <p className="mt-3 text-xs text-gray-400">— 每日一句，送给在路上的你</p>
           </CardContent>
@@ -291,7 +275,7 @@ export default function Community() {
               </div>
             </div>
             <div className="mt-3 flex flex-wrap gap-1.5">
-              {['火锅', '大熊猫', '宽窄巷子', '都江堰'].map(tag => (
+              {CITY_FOCUS_TAGS.map(tag => (
                 <Badge className="border-teal-200 bg-teal-50 text-[10px] text-teal-600" key={tag} variant="outline">
                   {tag}
                 </Badge>

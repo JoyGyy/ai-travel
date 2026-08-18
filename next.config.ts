@@ -13,6 +13,9 @@ const nextConfig: NextConfig = {
       { hostname: '*.aliyuncs.com' },
       { hostname: '*.githubusercontent.com' },
       { hostname: 'upload.wikimedia.org' },
+      { hostname: 'images.pexels.com' },
+      { hostname: 'store.is.autonavi.com' },
+      { hostname: '*.amap.com' },
     ],
   },
 
@@ -31,7 +34,7 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https://*.aliyuncs.com https://*.githubusercontent.com https://upload.wikimedia.org",
+              "img-src 'self' data: blob: https://*.aliyuncs.com https://*.githubusercontent.com https://upload.wikimedia.org https://images.pexels.com http://store.is.autonavi.com https://*.amap.com",
               "font-src 'self' data:",
               "connect-src 'self' https://api.siliconflow.cn https://api.deepseek.com",
               "frame-ancestors 'none'",

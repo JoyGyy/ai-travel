@@ -1,61 +1,56 @@
 /**
  * 首页静态数据
  */
-import { imageUrl } from '@/lib/images'
 
-/** 真实目的地图片（维基百科 1280px 高清） */
+/** 真实目的地图片（高德地图） */
 const IMAGES = {
-  chengdu:
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Chengdu_Research_Base_Eingang.jpg/1280px-Chengdu_Research_Base_Eingang.jpg',
-  dali: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Erhai_lake%2C_Yunnan%2C_China.jpg/1280px-Erhai_lake%2C_Yunnan%2C_China.jpg',
-  lijiang:
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Black_Dragon_%E9%BB%91%E9%BE%99%E6%BD%AD_%285496141333%29.jpg/1280px-Black_Dragon_%E9%BB%91%E9%BE%99%E6%BD%AD_%285496141333%29.jpg',
-  sanya:
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Yalong_Bay_01.jpg/1280px-Yalong_Bay_01.jpg',
-  xiamen:
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/2018%E5%B9%B4%E7%9A%84%E9%BC%93%E6%B5%AA%E5%B1%BF.jpg/1280px-2018%E5%B9%B4%E7%9A%84%E9%BC%93%E6%B5%AA%E5%B1%BF.jpg',
-  xian: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/City_wall_of_Xi%27an_51550-Xian_%2827959363326%29.jpg/1280px-City_wall_of_Xi%27an_51550-Xian_%2827959363326%29.jpg',
+  chengdu: 'http://store.is.autonavi.com/showpic/a053c92a40b8a3591e3c24fd3d9bc40a',
+  dali: 'http://store.is.autonavi.com/showpic/259f92e8e83511f6ef58afd321d2a08e',
+  lijiang: 'http://store.is.autonavi.com/showpic/c229c50a07284982a5f93aecdd309b81',
+  sanya: 'http://store.is.autonavi.com/showpic/b9c402b7d34ea98654cc915e567761dd',
+  xiamen: 'http://store.is.autonavi.com/showpic/4aa0a6a1b6ee72c9833441f363cbb43a',
+  xian: 'http://store.is.autonavi.com/showpic/00f713e61c99c4956ab27df73afdde71',
 }
 
 /** 热门目的地 */
 export const hotDestinations = [
   {
-    img: imageUrl(IMAGES.sanya),
+    img: IMAGES.sanya,
     name: '三亚',
     price: '¥2,899起',
     tag: '海岛度假',
     temp: '28°C',
   },
   {
-    img: imageUrl(IMAGES.lijiang),
+    img: IMAGES.lijiang,
     name: '丽江',
     price: '¥1,599起',
     tag: '古城慢游',
     temp: '18°C',
   },
   {
-    img: imageUrl(IMAGES.xian),
+    img: IMAGES.xian,
     name: '西安',
     price: '¥1,299起',
     tag: '历史探秘',
     temp: '22°C',
   },
   {
-    img: imageUrl(IMAGES.chengdu),
+    img: IMAGES.chengdu,
     name: '成都',
     price: '¥1,499起',
     tag: '美食之都',
     temp: '24°C',
   },
   {
-    img: imageUrl(IMAGES.dali),
+    img: IMAGES.dali,
     name: '大理',
     price: '¥1,899起',
     tag: '风花雪月',
     temp: '20°C',
   },
   {
-    img: imageUrl(IMAGES.xiamen),
+    img: IMAGES.xiamen,
     name: '厦门',
     price: '¥1,699起',
     tag: '文艺小城',
@@ -68,7 +63,7 @@ export const featuredTrips = [
   {
     city: '三亚',
     desc: '蜈支洲岛 + 亚龙湾 + 南山寺，含五星酒店',
-    image: imageUrl(IMAGES.sanya),
+    image: IMAGES.sanya,
     originalPrice: 4599,
     price: 3299,
     rating: 4.9,
@@ -79,7 +74,7 @@ export const featuredTrips = [
   {
     city: '丽江',
     desc: '纳西古韵 + 雪山索道 + 蓝月谷',
-    image: imageUrl(IMAGES.lijiang),
+    image: IMAGES.lijiang,
     originalPrice: 3199,
     price: 2199,
     rating: 4.8,
@@ -90,7 +85,7 @@ export const featuredTrips = [
   {
     city: '西安',
     desc: '世界遗产 + 回民街美食 + 大唐不夜城',
-    image: imageUrl(IMAGES.xian),
+    image: IMAGES.xian,
     originalPrice: 2499,
     price: 1699,
     rating: 4.7,

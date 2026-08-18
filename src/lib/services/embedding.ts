@@ -3,6 +3,7 @@
  * 调用 SiliconFlow API 生成文本向量，用于 pgvector 语义搜索
  */
 import { env } from '../env'
+import { getErrorMessage } from '../utils'
 import { createLogger } from '../utils/logger'
 
 const log = createLogger('embedding')
@@ -51,7 +52,7 @@ export async function generateEmbedding(text: string): Promise<null | number[]> 
     return data.data?.[0]?.embedding || null
   }
   catch (err) {
-    log.error('Embedding 生成失败:', (err as Error).message)
+    log.error('Embedding 生成失败:', getErrorMessage(err))
     return null
   }
 }
@@ -88,7 +89,7 @@ export async function generateEmbeddings(texts: string[]): Promise<(null | numbe
     return texts.map((_, i) => data.data?.[i]?.embedding || null)
   }
   catch (err) {
-    log.error('Embedding 批量生成失败:', (err as Error).message)
+    log.error('Embedding 批量生成失败:', getErrorMessage(err))
     return texts.map(() => null)
   }
 }

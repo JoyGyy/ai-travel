@@ -2,6 +2,7 @@
  * 环境变量配置
  * Next.js 自动加载 .env 文件，此处提供统一的读取和校验
  */
+import { getErrorMessage } from './utils'
 
 // ========== 类型定义 ==========
 
@@ -107,7 +108,7 @@ if (typeof window === 'undefined' && process.env.NODE_ENV !== undefined) {
       throw err
     }
     // 开发/构建时仅打印警告
-    console.warn('[env] 环境变量校验:', (err as Error).message)
+    console.warn('[env] 环境变量校验:', getErrorMessage(err))
   }
 }
 

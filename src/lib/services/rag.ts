@@ -4,6 +4,7 @@
  * 当 embedding 不可用时降级为 TF-IDF
  */
 import { query } from '../db'
+import { getErrorMessage } from '../utils'
 import { createLogger } from '../utils/logger'
 import { formatEmbeddingForPg, generateEmbedding } from './embedding'
 import { TFIDFIndex } from './tfidf'
@@ -239,7 +240,7 @@ async function vectorSearch(queryText: string, city: string): Promise<Map<string
     }
   }
   catch (err) {
-    log.warn('向量搜索失败，降级到 TF-IDF:', (err as Error).message)
+    log.warn('向量搜索失败，降级到 TF-IDF:', getErrorMessage(err))
   }
 
   return scoreMap

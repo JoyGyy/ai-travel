@@ -6,14 +6,11 @@
  */
 import type { WeatherResponse } from '@/types/api'
 
+import { WeatherIcon } from '@/components/WeatherIcon'
+
 interface HomeWeatherProps {
   loading: boolean
   weather: null | WeatherResponse
-}
-
-interface WeatherIconProps {
-  className?: string
-  desc: string
 }
 
 export function HomeWeather({ loading, weather }: HomeWeatherProps) {
@@ -104,32 +101,5 @@ export function HomeWeather({ loading, weather }: HomeWeatherProps) {
         </div>
       )}
     </section>
-  )
-}
-
-/** 根据天气描述文本匹配对应的图标类型 */
-function getWeatherIconType(desc = ''): string {
-  if (desc.includes('雷') || desc.includes('暴雨'))
-    return 'storm'
-  if (desc.includes('雨'))
-    return 'rain'
-  if (desc.includes('雪'))
-    return 'snow'
-  if (desc.includes('雾'))
-    return 'fog'
-  if (desc.includes('云') || desc.includes('阴'))
-    return 'cloudy'
-  if (desc.includes('晴'))
-    return 'sunny'
-  return 'default'
-}
-
-function WeatherIcon({ className = '', desc }: WeatherIconProps) {
-  const type = getWeatherIconType(desc)
-  return (
-    <span
-      aria-hidden="true"
-      className={`travel-weather-icon travel-weather-icon--${type} ${className}`}
-    />
   )
 }

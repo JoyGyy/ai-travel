@@ -11,7 +11,7 @@ export default function Loading() {
     >
       <div
         aria-hidden="true"
-        className="w-[34px] h-[34px] border-[3px] border-primary/16 border-t-primary rounded-full animate-spin motion-reduce:animate-none"
+        className="w-8.5 h-8.5 border-[3px] border-primary/16 border-t-primary rounded-full animate-spin motion-reduce:animate-none"
       />
       <span className="text-[13px] font-bold text-travel-muted">加载中...</span>
     </div>

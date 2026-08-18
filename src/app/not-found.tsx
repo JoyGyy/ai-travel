@@ -5,8 +5,8 @@ import Link from 'next/link'
 export default function NotFound() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-travel-surface p-6">
-      <div className="max-w-[400px] rounded-2xl bg-white p-10 text-center shadow-[0_4px_24px_rgba(0,0,0,0.08)]">
-        <div className="mb-4 text-[48px]">🔍</div>
+      <div className="max-w-100 rounded-2xl bg-white p-10 text-center shadow-[0_4px_24px_rgba(0,0,0,0.08)]">
+        <div className="mb-4 text-12">🔍</div>
         <h2 className="mb-3 text-xl font-semibold text-stone-900">页面不存在</h2>
         <p className="mb-6 text-sm leading-relaxed text-gray-600">
           你访问的页面不存在或已被移除

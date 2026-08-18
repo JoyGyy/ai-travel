@@ -1123,7 +1123,7 @@ a:focus-visible {
 /* ========== 行程详情页共享样式 ========== */
 
 .hero-btn {
-  @apply flex h-11 w-11 items-center justify-center rounded-[14px] border border-white/15 bg-white/10 text-slate-100 transition-all hover:-translate-y-0.5 hover:bg-white/20;
+  @apply flex h-11 w-11 items-center justify-center rounded-3.5 border border-white/15 bg-white/10 text-slate-100 transition-all hover:-translate-y-0.5 hover:bg-white/20;
 }
 
 .spot-edit-btn {
@@ -1131,13 +1131,13 @@ a:focus-visible {
 }
 
 .error-empty-container {
-  @apply mx-auto -mt-9 flex w-full max-w-[560px] flex-col items-center gap-4 rounded-[26px] border border-travel-ink/8 bg-travel-surface p-[52px_22px] shadow-sm;
+  @apply mx-auto -mt-9 flex w-full max-w-140 flex-col items-center gap-4 rounded-6.5 border border-travel-ink/8 bg-travel-surface py-13 px-5.5 shadow-sm;
 }
 
 .error-empty-icon {
-  @apply flex h-[82px] w-[82px] items-center justify-center rounded-3xl bg-[#d4a76a]/15 text-[40px] text-travel-ink shadow-[0_16px_34px_rgba(41,37,36,0.1)];
+  @apply flex h-20.5 w-20.5 items-center justify-center rounded-3xl bg-[#d4a76a]/15 text-10 text-travel-ink shadow-[0_16px_34px_rgba(41,37,36,0.1)];
 }
 
 .error-empty-btn {
-  @apply min-h-11 rounded-[14px] border-none bg-primary px-6 text-sm font-extrabold text-white shadow-[0_14px_30px_rgba(20,184,166,0.28)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(20,184,166,0.34)];
+  @apply min-h-11 rounded-3.5 border-none bg-primary px-6 text-sm font-extrabold text-white shadow-[0_14px_30px_rgba(20,184,166,0.28)] transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(20,184,166,0.34)];
 }

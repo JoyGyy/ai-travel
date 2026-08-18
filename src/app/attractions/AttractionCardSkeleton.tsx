@@ -15,7 +15,7 @@ export function AttractionCardSkeleton() {
       {Array.from({ length: 6 }).map((_, i) => (
         // eslint-disable-next-line react/no-array-index-key
         <div className="travel-surface-card travel-ticket-edge overflow-hidden" key={i}>
-          <Skeleton className="h-[250px] w-full rounded-none" />
+          <Skeleton className="h-62.5 w-full rounded-none" />
           <div className="p-5">
             <div className="mb-2 flex items-center justify-between">
               <Skeleton className="h-5 w-2/5" />

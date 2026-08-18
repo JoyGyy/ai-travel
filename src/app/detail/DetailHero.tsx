@@ -32,7 +32,7 @@ export function DetailHero({
   onUndo,
 }: DetailHeroProps) {
   return (
-    <div className="travel-route-line relative isolate min-h-[238px] overflow-hidden rounded-b-[clamp(26px,6vw,44px)] bg-gradient-to-br from-slate-800 via-slate-700 to-slate-600 p-[clamp(20px,5vw,44px)] pb-[70px] pt-[22px]">
+    <div className="travel-route-line relative isolate min-h-59.5 overflow-hidden rounded-b-[clamp(26px,6vw,44px)] bg-gradient-to-br from-slate-800 via-slate-700 to-slate-600 p-[clamp(20px,5vw,44px)] pb-[70px] pt-5.5">
       {/* 背景点阵 */}
       <div className="pointer-events-none absolute inset-0 -z-[1] bg-[radial-gradient(circle,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[length:24px_24px]" />
       {/* 装饰渐变 */}
@@ -75,7 +75,7 @@ export function DetailHero({
           )}
           <button
             aria-label={isEditing ? '退出编辑模式' : '编辑行程'}
-            className={`flex h-11 items-center justify-center gap-2 rounded-[14px] border px-4 text-sm font-bold transition-all ${
+            className={`flex h-11 items-center justify-center gap-2 rounded-3.5 border px-4 text-sm font-bold transition-all ${
               isEditing
                 ? 'border-accent bg-accent/20 text-accent'
                 : 'border-white/15 bg-white/10 text-slate-100 hover:-translate-y-0.5 hover:bg-white/20'

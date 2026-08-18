@@ -16,14 +16,14 @@ export default function Privacy() {
           'radial-gradient(circle, rgba(28, 25, 23, 0.06) 1px, transparent 1px) 18px 18px, linear-gradient(180deg, #fffaf4 0%, #fafaf8 46%, #f8fafc 100%)',
       }}
     >
-      <div className="max-w-[880px] mx-auto">
+      <div className="max-w-220 mx-auto">
         <Link
-          className="inline-flex items-center mb-[18px] text-travel-ocean/68 text-[13px] font-extrabold no-underline transition-colors motion-reduce:transition-none hover:text-travel-ocean focus-visible:outline-2 focus-visible:outline-primary/46 focus-visible:outline-offset-4 focus-visible:rounded-md"
+          className="inline-flex items-center mb-4.5 text-travel-ocean/68 text-3.25 font-extrabold no-underline transition-colors motion-reduce:transition-none hover:text-travel-ocean focus-visible:outline-2 focus-visible:outline-primary/46 focus-visible:outline-offset-4 focus-visible:rounded-md"
           href="/"
         >
           返回首页
         </Link>
-        <article className="p-[clamp(24px,5vw,44px)] border border-travel-ink/6 sm:rounded-[28px] rounded-[22px] bg-white/90 shadow-sm">
+        <article className="p-[clamp(24px,5vw,44px)] border border-travel-ink/6 sm:rounded-7 rounded-5.5 bg-white/90 shadow-sm">
           <p className="m-0 mb-2.5 text-primary text-xs font-black tracking-[0.12em] uppercase">
             Privacy Policy
           </p>
@@ -34,14 +34,14 @@ export default function Privacy() {
           >
             隐私政策
           </h1>
-          <p className="mt-3 m-0 text-travel-muted text-[13px]">更新日期：2026 年 7 月 22 日</p>
-          <p className="mt-[26px] m-0 p-4 px-[18px] rounded-[18px] text-travel-ocean/76 bg-primary/8 leading-[1.8]">
+          <p className="mt-3 m-0 text-travel-muted text-3.25">更新日期：2026 年 7 月 22 日</p>
+          <p className="mt-6.5 m-0 p-4 px-4.5 rounded-4.5 text-travel-ocean/76 bg-primary/8 leading-[1.8]">
             Travel AI 尊重你的个人信息和隐私。本政策说明本站在提供 AI
             旅行规划、天气查询、景点推荐和旅行咨询服务时如何收集、使用和保护必要信息。本站为个人备案网站，由
             ICP 备案主体作为本站运营者负责运营。
           </p>
 
-          <div className="mt-[30px]">
+          <div className="mt-7.5">
             <section className="mt-7 pt-6 border-t border-travel-ink/6 [&:first-child]:mt-0 [&:first-child]:pt-0 [&:first-child]:border-t-0">
               <h2 className="m-0 mb-3 text-travel-ocean text-lg font-black">
                 一、我们可能收集的信息

@@ -146,7 +146,7 @@ export default function AttractionDetail() {
       <section className="travel-surface-card travel-ticket-edge travel-route-line overflow-hidden">
         <Image
           alt={`${attraction.name}，${attraction.city}景点封面`}
-          className="h-[500px] w-full object-cover"
+          className="h-125 w-full object-cover"
           height={500}
           loading="eager"
           sizes="100vw"

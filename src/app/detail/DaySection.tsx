@@ -51,7 +51,7 @@ export function DaySection({
       <button
         aria-controls={panelId}
         aria-expanded={isOpen}
-        className="flex min-h-[56px] w-full items-center justify-between gap-4 bg-transparent p-[16px_20px] text-left text-[15px] font-extrabold text-travel-ink transition-colors hover:bg-stone-900/[0.03]"
+        className="flex min-h-14 w-full items-center justify-between gap-4 bg-transparent py-4 px-5 text-left text-3.75 font-extrabold text-travel-ink transition-colors hover:bg-stone-900/[0.03]"
         onClick={onToggle}
         type="button"
       >

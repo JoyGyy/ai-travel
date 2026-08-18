@@ -153,7 +153,7 @@ export default function Attractions() {
   return (
     <main aria-labelledby="attractions-title" className="travel-page-shell">
       <section className="travel-page-hero travel-ticket-edge travel-route-line">
-        <p className="mb-2.5 w-fit rounded-full bg-primary/10 px-2.5 py-1.5 text-[12px] font-black tracking-[0.14em] text-primary-strong">
+        <p className="mb-2.5 w-fit rounded-full bg-primary/10 px-2.5 py-1.5 text-3 font-black tracking-[0.14em] text-primary-strong">
           ATTRACTIONS
         </p>
         <h1
@@ -186,7 +186,7 @@ export default function Attractions() {
         </div>
         <form className="mt-3.5 grid gap-2" onSubmit={handleSearchSubmit}>
           <label
-            className="text-[13px] font-extrabold text-stone-900/72"
+            className="text-3.25 font-extrabold text-stone-900/72"
             htmlFor="attractions-keyword"
           >
             搜索关键词
@@ -206,7 +206,7 @@ export default function Attractions() {
           ? (
               <div aria-labelledby="attractions-city-filter" className="mt-3.5 grid gap-2">
                 <p
-                  className="text-[13px] font-extrabold text-stone-900/72"
+                  className="text-3.25 font-extrabold text-stone-900/72"
                   id="attractions-city-filter"
                 >
                   城市
@@ -228,7 +228,7 @@ export default function Attractions() {
           : null}
         <div className="mt-3.5 grid gap-2">
           <label
-            className="text-[13px] font-extrabold text-stone-900/72"
+            className="text-3.25 font-extrabold text-stone-900/72"
             htmlFor="attractions-ticket-type"
           >
             收费类型
@@ -250,7 +250,7 @@ export default function Attractions() {
         {tags.length > 0
           ? (
               <div aria-labelledby="attractions-tag-filter" className="mt-3.5 grid gap-2">
-                <p className="text-[13px] font-extrabold text-stone-900/72" id="attractions-tag-filter">
+                <p className="text-3.25 font-extrabold text-stone-900/72" id="attractions-tag-filter">
                   标签
                 </p>
                 <div className="flex flex-wrap items-center gap-2">
@@ -268,7 +268,7 @@ export default function Attractions() {
               </div>
             )
           : null}
-        <p aria-live="polite" className="mt-2 text-[13px] text-travel-muted">
+        <p aria-live="polite" className="mt-2 text-3.25 text-travel-muted">
           {loading ? '正在应用筛选...' : `共找到 ${total} 个景点`}
         </p>
       </section>
@@ -312,7 +312,7 @@ export default function Attractions() {
                   <article className="travel-surface-card travel-ticket-edge overflow-hidden">
                     <Image
                       alt={`${item.name}，${item.city}景点封面`}
-                      className="h-[250px] w-full object-cover"
+                      className="h-62.5 w-full object-cover"
                       height={250}
                       loading="lazy"
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

@@ -29,7 +29,7 @@ export function createLogger(module: string): Logger {
       console.error(`[${formatTime()}] [${LEVEL_LABELS.error}] [${module}] ${message}`, ...args)
     },
     info(message: string, ...args: unknown[]) {
-      console.warn(`[${formatTime()}] [${LEVEL_LABELS.info}] [${module}] ${message}`, ...args)
+      console.info(`[${formatTime()}] [${LEVEL_LABELS.info}] [${module}] ${message}`, ...args)
     },
     warn(message: string, ...args: unknown[]) {
       console.warn(`[${formatTime()}] [${LEVEL_LABELS.warn}] [${module}] ${message}`, ...args)

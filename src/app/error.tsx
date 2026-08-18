@@ -14,9 +14,10 @@ export default function Error({
   reset: () => void
 }) {
   useEffect(() => {
-    // 可接入 Sentry 等监控服务
     console.error('页面错误:', error)
   }, [error])
+
+  const isDev = process.env.NODE_ENV === 'development'
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-travel-surface p-6">
@@ -24,8 +25,15 @@ export default function Error({
         <div className="mb-4 text-[48px]">⚠️</div>
         <h2 className="mb-3 text-xl font-semibold text-stone-900">页面出了点问题</h2>
         <p className="mb-6 text-sm leading-relaxed text-gray-600" role="alert">
-          {error.message || '发生了未知错误'}
+          {isDev ? (error.message || '发生了未知错误') : '页面加载出错，请稍后重试'}
         </p>
+        {isDev && error.digest && (
+          <p className="mb-4 text-xs text-gray-400">
+            Digest:
+            {' '}
+            {error.digest}
+          </p>
+        )}
         <div className="flex justify-center gap-3">
           <button
             className="rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary/90"

@@ -58,6 +58,12 @@ interface WithHistoryOptions {
   limit?: number
 }
 
+/**
+ * Zustand setState 函数类型
+ * 用于绕过 Zustand 复杂的重载签名，在 undo/redo 时恢复完整状态
+ */
+type ZustandSetFn = (...args: unknown[]) => void
+
 /** 深拷贝：使用 JSON 序列化（兼容 immer proxy 状态） */
 function deepClone<T>(value: T): T {
   try {
@@ -117,7 +123,7 @@ export const withHistory: WithHistory = (f, options = {}) => {
       const previousState = history.past.pop()!
 
       history.future.push(deepClone(currentState))
-      ;(set as unknown as (partial: unknown) => void)(deepClone(previousState))
+      ;(set as ZustandSetFn)(deepClone(previousState))
     }
 
     // 重做
@@ -129,7 +135,7 @@ export const withHistory: WithHistory = (f, options = {}) => {
       const nextState = history.future.pop()!
 
       history.past.push(deepClone(currentState))
-      ;(set as unknown as (partial: unknown) => void)(deepClone(nextState))
+      ;(set as ZustandSetFn)(deepClone(nextState))
     }
 
     // 是否可以撤销
@@ -151,15 +157,13 @@ export const withHistory: WithHistory = (f, options = {}) => {
     })
 
     // 包装 set 函数，自动保存快照
-    const wrappedSet = (...args: unknown[]) => {
+    const wrappedSet = ((...args: unknown[]) => {
       snapshot()
-      ;(set as unknown as (...a: unknown[]) => void)(...args)
-    }
+      ;(set as ZustandSetFn)(...args)
+    }) as typeof set
 
     // 扩展 store，挂载 temporal 操作
-    const storeWithTemporal = store as unknown as {
-      temporal: TemporalState
-    }
+    const storeWithTemporal = store as typeof store & { temporal: TemporalState }
     storeWithTemporal.temporal = {
       canRedo,
       canUndo,
@@ -170,7 +174,7 @@ export const withHistory: WithHistory = (f, options = {}) => {
       undo,
     }
 
-    return f(wrappedSet as never, get, store)
+    return f(wrappedSet, get, store)
   }
 }
 

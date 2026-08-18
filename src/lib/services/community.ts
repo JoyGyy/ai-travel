@@ -250,8 +250,8 @@ export async function getCommunityPostById(
 ): Promise<CommunityPost | null> {
   const viewerIdValue = viewerId || ''
   const result = await query(
-    `${basePostSelect(viewerIdValue)} WHERE p.deleted_at IS NULL AND p.id = $1`,
-    [id],
+    `${basePostSelect(2)} WHERE p.deleted_at IS NULL AND p.id = $1`,
+    [id, viewerIdValue],
   )
 
   if (result.rows.length === 0)
@@ -350,13 +350,17 @@ export async function listCommunityPosts(
     params.push(filters.authorId)
   }
 
+  // viewerId 作为参数传入 basePostSelect，用于 liked_by_me 子查询
+  const viewerIdParamIndex = paramIndex++
+  params.push(viewerIdValue)
+
   const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
 
   const countSql = `SELECT COUNT(*)::int AS cnt FROM community_posts p ${whereClause}`
-  const dataSql = `${basePostSelect(viewerIdValue)} ${whereClause} ORDER BY p.created_at DESC LIMIT $${paramIndex++} OFFSET $${paramIndex++}`
+  const dataSql = `${basePostSelect(viewerIdParamIndex)} ${whereClause} ORDER BY p.created_at DESC LIMIT $${paramIndex++} OFFSET $${paramIndex++}`
 
   const [countResult, dataResult] = await Promise.all([
-    query(countSql, params),
+    query(countSql, params.slice(0, -1)),
     query(dataSql, [...params, pageSize, offset]),
   ])
 
@@ -418,8 +422,7 @@ export async function unlikeCommunityPost(
 }
 
 /** 构建帖子列表的基础 SQL（含 LATERAL JOIN 聚合计数和当前用户点赞状态） */
-function basePostSelect(viewerId: string) {
-  // 使用 $1 作为 viewerId 参数占位，调用方需将 viewerId 作为第一个参数传入
+function basePostSelect(viewerIdParamIndex: number) {
   return `
     SELECT
       p.id,
@@ -438,7 +441,7 @@ function basePostSelect(viewerId: string) {
       COALESCE(repost_stats.repost_count, 0) AS repost_count,
       EXISTS (
         SELECT 1 FROM community_post_likes viewer_like
-        WHERE viewer_like.post_id = p.id AND viewer_like.user_id = '${viewerId}'
+        WHERE viewer_like.post_id = p.id AND viewer_like.user_id = $${viewerIdParamIndex}
       ) AS liked_by_me
     FROM community_posts p
     JOIN users u ON u.id = p.author_id
@@ -532,8 +535,8 @@ async function getOriginalSummaryMap(
 
   const viewerIdValue = viewerId || ''
   const result = await query(
-    `${basePostSelect(viewerIdValue)} WHERE p.deleted_at IS NULL AND p.id = ANY($1::text[])`,
-    [originalIds],
+    `${basePostSelect(2)} WHERE p.deleted_at IS NULL AND p.id = ANY($1::text[])`,
+    [originalIds, viewerIdValue],
   )
 
   const postRows = typedQuery<CommunityPostRow>(result.rows)

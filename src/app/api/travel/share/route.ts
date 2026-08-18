@@ -40,7 +40,10 @@ function validateSharePayload(payload: unknown): SharePayload {
 
 export const POST = withProtected(
   async (req) => {
-    const payload = validateSharePayload(await req.json())
+    const body = await req.json().catch(() => {
+      throw httpError(400, '请求格式无效')
+    })
+    const payload = validateSharePayload(body)
     const shareId = createShare(payload)
 
     return NextResponse.json({ shareId, shareUrl: `/share/${shareId}`, success: true })

@@ -7,7 +7,7 @@ import { NextResponse } from 'next/server'
 
 import { checkRateLimit } from '@/lib/rate-limit'
 import { createCommunityComment, listCommunityComments } from '@/lib/services/community'
-import { withErrorHandler, withProtected } from '@/lib/utils/http'
+import { httpError, withErrorHandler, withProtected } from '@/lib/utils/http'
 import { readPositiveInteger, readRequiredString } from '@/lib/utils/validation'
 
 const MAX_COMMENT_LENGTH = 500
@@ -39,7 +39,9 @@ export const POST = withProtected<Context>(
     const { id } = await params
     readRequiredString(id, '帖子ID', { max: 100, min: 1 })
 
-    const body = (await req.json()) as { content?: unknown }
+    const body = (await req.json().catch(() => {
+      throw httpError(400, '请求格式无效')
+    })) as { content?: unknown }
     const content = readRequiredString(body.content, '评论内容', {
       max: MAX_COMMENT_LENGTH,
       min: 1,

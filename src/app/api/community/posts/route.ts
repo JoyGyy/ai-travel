@@ -122,7 +122,10 @@ export const GET = withErrorHandler(async (req: Request) => {
 
 export const POST = withProtected(
   async (req, { user }) => {
-    const post = await createCommunityPost(user.id, validatePostPayload(await req.json()))
+    const body = await req.json().catch(() => {
+      throw httpError(400, '请求格式无效')
+    })
+    const post = await createCommunityPost(user.id, validatePostPayload(body))
     return NextResponse.json({ data: post, message: '已发布到社区', success: true })
   },
   { rateLimit: { max: 5, name: 'community:post', windowMs: 60_000 } },

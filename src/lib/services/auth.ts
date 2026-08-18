@@ -311,7 +311,10 @@ function validatePassword(password: string): void {
 /** 验证 JWT token，无效时抛出异常 */
 async function verifyToken(token: string): Promise<JwtPayload> {
   const { payload } = await jwtVerify(token, getJwtKey())
-  return payload as unknown as JwtPayload
+  if (typeof payload.id !== 'string' || typeof payload.username !== 'string') {
+    throw new TypeError('无效的 token 结构')
+  }
+  return { id: payload.id, username: payload.username }
 }
 
 export {

@@ -14,7 +14,6 @@ import { useAuthStore } from '@/stores/auth'
 
 import { shouldShowNav } from './utils'
 
-// eslint-disable-next-line react-refresh/only-export-components
 export { shouldShowNav } from './utils'
 
 /* ========== 导航标签配置 ========== */

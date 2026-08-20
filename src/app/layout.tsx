@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 
-import { AppProviders } from '@/components/AppProviders'
 import { MainWrapper } from '@/components/MainWrapper'
 import { Navigation } from '@/components/Navigation'
+import { Toaster } from '@/components/ui/toaster'
 
 import './globals.css'
 
@@ -24,10 +24,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         >
           跳转到主要内容
         </a>
-        <AppProviders>
-          <Navigation />
-          <MainWrapper>{children}</MainWrapper>
-        </AppProviders>
+        <Navigation />
+        <MainWrapper>{children}</MainWrapper>
+        <Toaster />
       </body>
     </html>
   )

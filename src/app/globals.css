@@ -1135,7 +1135,7 @@ a:focus-visible {
 }
 
 .error-empty-icon {
-  @apply flex h-20.5 w-20.5 items-center justify-center rounded-3xl bg-[#d4a76a]/15 text-10 text-travel-ink shadow-[0_16px_34px_rgba(41,37,36,0.1)];
+  @apply flex h-[5.125rem] w-[5.125rem] items-center justify-center rounded-3xl bg-[#d4a76a]/15 text-[10px] text-travel-ink shadow-[0_16px_34px_rgba(41,37,36,0.1)];
 }
 
 .error-empty-btn {

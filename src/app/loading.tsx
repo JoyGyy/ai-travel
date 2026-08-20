@@ -13,7 +13,7 @@ export default function Loading() {
         aria-hidden="true"
         className="w-8.5 h-8.5 border-[3px] border-primary/16 border-t-primary rounded-full animate-spin motion-reduce:animate-none"
       />
-      <span className="text-[13px] font-bold text-travel-muted">加载中...</span>
+      <span className="text-3.25 font-bold text-travel-muted">加载中...</span>
     </div>
   )
 }

@@ -458,11 +458,11 @@ export default function Profile() {
                                 </Link>
                                 <div className="mt-1 flex gap-1.5">
                                   {item.city && (
-                                    <Badge className="text-[10px]" variant="secondary">{item.city}</Badge>
+                                    <Badge className="text-2.5" variant="secondary">{item.city}</Badge>
                                   )}
                                   {item.ticketType === 'free'
                                     ? (
-                                        <Badge className="bg-green-50 text-green-600 border-green-200 text-[10px]" variant="outline">
+                                        <Badge className="bg-green-50 text-green-600 border-green-200 text-2.5" variant="outline">
                                           免费
                                         </Badge>
                                       )

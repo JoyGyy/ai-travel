@@ -52,7 +52,7 @@ function TopNav() {
       <div className="max-w-[1200px] h-16 mx-auto px-4 sm:px-6 flex items-center gap-2.5 sm:gap-3.5">
         <Link
           aria-label="返回首页"
-          className="min-h-[44px] inline-flex items-center gap-2.5 mr-auto sm:mr-[18px] rounded-2xl no-underline text-travel-ink"
+          className="min-h-11 inline-flex items-center gap-2.5 mr-auto sm:mr-[18px] rounded-2xl no-underline text-travel-ink"
           href="/"
         >
           <span
@@ -71,7 +71,7 @@ function TopNav() {
               = pathname === tab.key || (tab.key !== '/' && pathname?.startsWith(tab.key))
             return (
               <Link
-                className={`min-h-[44px] flex items-center gap-[7px] px-4 border border-transparent rounded-2xl text-travel-ink/72 text-sm font-extrabold relative transition-all hover:-translate-y-px hover:bg-primary/8 hover:text-travel-ink motion-reduce:transition-none ${
+                className={`min-h-11 flex items-center gap-[7px] px-4 border border-transparent rounded-2xl text-travel-ink/72 text-sm font-extrabold relative transition-all hover:-translate-y-px hover:bg-primary/8 hover:text-travel-ink motion-reduce:transition-none ${
                   isActive
                     ? 'bg-primary/12 text-travel-ink border-primary/24'
                     : ''
@@ -96,7 +96,7 @@ function TopNav() {
             ? (
                 <Link
                   aria-label={`当前用户：${user.username}，进入个人中心`}
-                  className={`min-h-[44px] inline-flex items-center justify-center gap-1.5 px-4 rounded-full bg-travel-surface text-travel-ink border border-travel-ink/6 text-sm font-extrabold transition-all hover:-translate-y-px hover:border-primary/28 hover:bg-primary/10 motion-reduce:transition-none no-underline ${
+                  className={`min-h-11 inline-flex items-center justify-center gap-1.5 px-4 rounded-full bg-travel-surface text-travel-ink border border-travel-ink/6 text-sm font-extrabold transition-all hover:-translate-y-px hover:border-primary/28 hover:bg-primary/10 motion-reduce:transition-none no-underline ${
                     pathname === '/profile'
                       ? '-translate-y-px border-primary/28 bg-primary/10'
                       : ''
@@ -109,7 +109,7 @@ function TopNav() {
               )
             : (
                 <Link
-                  className="min-h-[44px] inline-flex items-center justify-center gap-1.5 px-4 rounded-full bg-travel-surface text-travel-ink border border-primary/24 text-sm font-extrabold transition-all hover:-translate-y-px hover:border-primary/38 hover:bg-primary/10 motion-reduce:transition-none no-underline"
+                  className="min-h-11 inline-flex items-center justify-center gap-1.5 px-4 rounded-full bg-travel-surface text-travel-ink border border-primary/24 text-sm font-extrabold transition-all hover:-translate-y-px hover:border-primary/38 hover:bg-primary/10 motion-reduce:transition-none no-underline"
                   href="/login"
                 >
                   <LogIn aria-hidden="true" size={16} />
@@ -136,7 +136,7 @@ function TopNav() {
                   = pathname === tab.key || (tab.key !== '/' && pathname?.startsWith(tab.key))
                 return (
                   <Link
-                    className={`flex min-h-[44px] items-center gap-3 rounded-lg px-3 text-sm font-semibold no-underline transition-colors hover:bg-primary/8 ${
+                    className={`flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-semibold no-underline transition-colors hover:bg-primary/8 ${
                       isActive
                         ? 'bg-primary/12 text-travel-ink'
                         : 'text-travel-ink/72'

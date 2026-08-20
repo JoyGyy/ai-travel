@@ -89,7 +89,7 @@ export function DetailHero({
         </div>
       </div>
 
-      <p className="mt-7 w-fit rounded-full border border-white/15 bg-white/8 px-3 py-1.5 font-sans text-[10px] font-extrabold uppercase tracking-[4px] text-slate-400">
+      <p className="mt-7 w-fit rounded-full border border-white/15 bg-white/8 px-3 py-1.5 font-sans text-2.5 font-extrabold uppercase tracking-[4px] text-slate-400">
         ITINERARY
       </p>
 
@@ -101,7 +101,7 @@ export function DetailHero({
       </h1>
 
       {hasValidParams && (
-        <p className="w-fit rounded-full border border-white/12 bg-transparent px-3.5 py-2 text-[13px] font-bold text-white/60">
+        <p className="w-fit rounded-full border border-white/12 bg-transparent px-3.5 py-2 text-3.25 font-bold text-white/60">
           {days}
           {' '}
           天行程 · 预算 ¥

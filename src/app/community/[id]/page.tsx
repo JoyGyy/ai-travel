@@ -253,7 +253,7 @@ export default function CommunityPostDetail() {
       <main aria-labelledby="community-detail-loading" className="travel-page-shell gap-6">
         <div
           aria-live="polite"
-          className="grid min-h-[260px] place-items-center gap-3 rounded-[28px] p-[26px] text-center"
+          className="grid min-h-65 place-items-center gap-3 rounded-[28px] p-[26px] text-center"
           role="status"
         >
           <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
@@ -269,7 +269,7 @@ export default function CommunityPostDetail() {
     return (
       <main aria-labelledby="community-detail-error" className="travel-page-shell gap-6">
         <div
-          className="grid min-h-[260px] place-items-center gap-3 rounded-[28px] p-[26px] text-center"
+          className="grid min-h-65 place-items-center gap-3 rounded-[28px] p-[26px] text-center"
           role="alert"
         >
           <h1 className="text-xl font-bold text-travel-ink" id="community-detail-error">

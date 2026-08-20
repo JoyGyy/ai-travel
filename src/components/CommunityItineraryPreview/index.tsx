@@ -53,7 +53,7 @@ export function CommunityItineraryPreview({
         {removable
           ? (
               <button
-                className="min-h-[38px] border-0 rounded-full text-destructive bg-destructive/8 cursor-pointer px-3.5 font-bold"
+                className="min-h-9.5 border-0 rounded-full text-destructive bg-destructive/8 cursor-pointer px-3.5 font-bold"
                 onClick={onRemove}
                 type="button"
               >

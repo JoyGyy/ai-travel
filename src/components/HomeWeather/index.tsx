@@ -19,7 +19,7 @@ export function HomeWeather({ loading, weather }: HomeWeatherProps) {
     return (
       <div
         aria-live="polite"
-        className="w-full min-w-0 overflow-hidden border border-travel-ink/6 rounded-3xl bg-travel-surface shadow-sm min-h-[92px] py-[18px] px-5 flex items-center gap-3"
+        className="w-full min-w-0 overflow-hidden border border-travel-ink/6 rounded-3xl bg-travel-surface shadow-sm min-h-23 py-[18px] px-5 flex items-center gap-3"
         role="status"
       >
         <div
@@ -83,7 +83,7 @@ export function HomeWeather({ loading, weather }: HomeWeatherProps) {
         >
           {weather.forecast.map((day, i) => (
             <div
-              className="min-w-0 min-h-[88px] py-2.5 px-2 flex flex-col items-center justify-center gap-[5px] border border-travel-ink/5 rounded-2xl bg-travel-ink/2 shadow-[0_10px_24px_rgba(41,37,36,0.08)] max-sm:min-h-[78px] max-sm:py-[9px] max-sm:px-1.5 max-[380px]:min-h-[64px] max-[380px]:flex-row max-[380px]:justify-between max-[380px]:py-2.5 max-[380px]:px-3"
+              className="min-w-0 min-h-22 py-2.5 px-2 flex flex-col items-center justify-center gap-[5px] border border-travel-ink/5 rounded-2xl bg-travel-ink/2 shadow-[0_10px_24px_rgba(41,37,36,0.08)] max-sm:min-h-19.5 max-sm:py-[9px] max-sm:px-1.5 max-[380px]:min-h-16 max-[380px]:flex-row max-[380px]:justify-between max-[380px]:py-2.5 max-[380px]:px-3"
               key={day.date}
             >
               <span className="text-[rgba(41,37,36,0.62)] text-[11px] font-black tracking-[0.08em]">

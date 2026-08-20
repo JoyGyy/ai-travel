@@ -58,7 +58,7 @@ export function DaySection({
         <span>{item.date}</span>
         <span
           aria-hidden="true"
-          className={`inline-flex h-[26px] w-[26px] flex-shrink-0 items-center justify-center rounded-full bg-stone-900/8 text-[10px] text-travel-ink transition-all ${
+          className={`inline-flex h-[26px] w-[26px] flex-shrink-0 items-center justify-center rounded-full bg-stone-900/8 text-2.5 text-travel-ink transition-all ${
             isOpen ? 'rotate-180 bg-accent/22' : ''
           }`}
         >

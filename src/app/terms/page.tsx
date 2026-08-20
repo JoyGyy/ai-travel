@@ -18,7 +18,7 @@ export default function Terms() {
     >
       <div className="max-w-[880px] mx-auto">
         <Link
-          className="inline-flex items-center mb-[18px] text-travel-ocean/68 text-[13px] font-extrabold no-underline transition-colors motion-reduce:transition-none hover:text-travel-ocean focus-visible:outline-2 focus-visible:outline-primary/46 focus-visible:outline-offset-4 focus-visible:rounded-md"
+          className="inline-flex items-center mb-[18px] text-travel-ocean/68 text-3.25 font-extrabold no-underline transition-colors motion-reduce:transition-none hover:text-travel-ocean focus-visible:outline-2 focus-visible:outline-primary/46 focus-visible:outline-offset-4 focus-visible:rounded-md"
           href="/"
         >
           返回首页
@@ -34,7 +34,7 @@ export default function Terms() {
           >
             用户协议
           </h1>
-          <p className="mt-3 m-0 text-travel-muted text-[13px]">更新日期：2026 年 7 月 22 日</p>
+          <p className="mt-3 m-0 text-travel-muted text-3.25">更新日期：2026 年 7 月 22 日</p>
           <p className="mt-[26px] m-0 p-4 px-[18px] rounded-[18px] text-travel-ocean/76 bg-primary/8 leading-[1.8]">
             欢迎使用 Travel AI。本协议适用于你访问和使用本站提供的 AI
             旅行规划、天气查询、景点推荐和旅行咨询等服务。本站为个人备案网站，由 ICP

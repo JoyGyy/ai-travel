@@ -127,7 +127,7 @@ export function AgentSteps({ currentStep, steps }: AgentStepsProps) {
                 )}
               </div>
               <div className="flex-1 min-w-0 pb-[10px]">
-                <div className="flex items-center gap-2 min-h-[34px]">
+                <div className="flex items-center gap-2 min-h-8.5">
                   <span
                     className={`text-sm font-extrabold ${
                       status === 'pending'

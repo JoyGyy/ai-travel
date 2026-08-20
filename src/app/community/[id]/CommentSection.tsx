@@ -62,7 +62,7 @@ export function CommentSection({
 
       <div className="grid gap-3">
         <textarea
-          className="flex min-h-[80px] w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
+          className="flex min-h-20 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
           maxLength={500}
           onChange={event => onChangeInput(event.target.value)}
           placeholder="写下你的建议、问题或补充体验"

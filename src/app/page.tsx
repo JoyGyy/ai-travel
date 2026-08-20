@@ -86,7 +86,7 @@ export default function HomePage() {
   }
 
   return (
-    <main className="min-h-[100dvh] overflow-x-hidden bg-background text-travel-ink">
+    <main className="min-h-dvh overflow-x-hidden bg-background text-travel-ink">
       {/* Hero 搜索区 */}
       <HeroSearch />
 

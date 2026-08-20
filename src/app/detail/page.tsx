@@ -245,7 +245,7 @@ export default function Detail() {
             ? (
                 <div className="mx-auto -mt-9 w-full max-w-[560px] overflow-hidden rounded-[26px] border border-travel-ink/8 bg-travel-surface shadow-sm">
                   <div className="flex items-center justify-between px-5 pb-2 pt-[18px]">
-                    <span className="text-[11px] font-extrabold tracking-[2px] text-travel-ink">
+                    <span className="text-2.75 font-extrabold tracking-[2px] text-travel-ink">
                       AI 生成的行程规划
                     </span>
                     {status !== 'ready' && (
@@ -277,7 +277,7 @@ export default function Detail() {
                   </div>
                   {chatError && (
                     <div className="border-t border-red-500/10 bg-red-500/5 p-4 px-5" role="alert">
-                      <p className="text-center text-[13px] text-red-500">
+                      <p className="text-center text-3.25 text-red-500">
                         生成失败：
                         {chatError.message}
                       </p>
@@ -296,7 +296,7 @@ export default function Detail() {
               className="travel-ticket-edge relative z-10 -mt-10 flex items-center overflow-hidden rounded-[22px] border border-travel-ink/8 bg-travel-surface-strong p-[18px_20px] shadow-sm"
             >
               <div className="flex min-w-0 flex-1 flex-col items-center gap-1.5">
-                <span className="text-[10px] font-extrabold uppercase tracking-[2px] text-stone-900/62">
+                <span className="text-2.5 font-extrabold uppercase tracking-[2px] text-stone-900/62">
                   目的地
                 </span>
                 <span className="max-w-full overflow-wrap-anywhere text-center font-serif text-base font-extrabold text-travel-ink">
@@ -305,7 +305,7 @@ export default function Detail() {
               </div>
               <div className="h-9 w-px bg-stone-900/12" />
               <div className="flex min-w-0 flex-1 flex-col items-center gap-1.5">
-                <span className="text-[10px] font-extrabold uppercase tracking-[2px] text-stone-900/62">
+                <span className="text-2.5 font-extrabold uppercase tracking-[2px] text-stone-900/62">
                   天数
                 </span>
                 <span className="max-w-full overflow-wrap-anywhere text-center font-serif text-base font-extrabold text-travel-ink">
@@ -315,7 +315,7 @@ export default function Detail() {
               </div>
               <div className="h-9 w-px bg-stone-900/12" />
               <div className="flex min-w-0 flex-1 flex-col items-center gap-1.5">
-                <span className="text-[10px] font-extrabold uppercase tracking-[2px] text-stone-900/62">
+                <span className="text-2.5 font-extrabold uppercase tracking-[2px] text-stone-900/62">
                   预算
                 </span>
                 <span className="max-w-full overflow-wrap-anywhere text-center font-serif text-base font-extrabold tabular-nums text-[#d63350]">
@@ -382,7 +382,7 @@ export default function Detail() {
                 <div className="rounded-3xl border border-travel-ink/8 bg-travel-surface p-4 shadow-sm">
                   {tips.map(tip => (
                     <div
-                      className="flex items-start gap-3 py-2 text-[13px] leading-relaxed text-stone-900/72"
+                      className="flex items-start gap-3 py-2 text-3.25 leading-relaxed text-stone-900/72"
                       key={tip}
                     >
                       <span
@@ -400,7 +400,7 @@ export default function Detail() {
             <div className="grid gap-3 pt-6">
               <button
                 aria-label="分享到社区"
-                className="inline-flex min-h-[50px] w-full items-center justify-center gap-2 rounded-4xl border-none bg-primary text-[15px] font-black text-white shadow-[0_4px_16px_rgba(20,184,166,0.25)] transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(20,184,166,0.35)]"
+                className="inline-flex min-h-12.5 w-full items-center justify-center gap-2 rounded-4xl border-none bg-primary text-3.75 font-black text-white shadow-[0_4px_16px_rgba(20,184,166,0.25)] transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(20,184,166,0.35)]"
                 onClick={() => router.push('/community/new')}
                 type="button"
               >
@@ -409,7 +409,7 @@ export default function Detail() {
               </button>
               <button
                 aria-label="咨询 AI 优化当前行程"
-                className="inline-flex min-h-[50px] w-full items-center justify-center gap-2 rounded-4xl border-none bg-primary text-[15px] font-black text-white shadow-[0_4px_16px_rgba(20,184,166,0.25)] transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(20,184,166,0.35)]"
+                className="inline-flex min-h-12.5 w-full items-center justify-center gap-2 rounded-4xl border-none bg-primary text-3.75 font-black text-white shadow-[0_4px_16px_rgba(20,184,166,0.25)] transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(20,184,166,0.35)]"
                 onClick={() => router.push('/chat')}
                 type="button"
               >

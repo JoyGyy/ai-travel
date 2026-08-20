@@ -124,7 +124,7 @@ export default function Weather() {
       onClick={() => showDropdown && setShowDropdown(false)}
     >
       {/* Hero 区域 */}
-      <div className="relative isolate min-h-[280px] overflow-hidden bg-teal-50/60 p-[clamp(40px,8vw,80px)_clamp(20px,5vw,72px)_80px]">
+      <div className="relative isolate min-h-70 overflow-hidden bg-teal-50/60 p-[clamp(40px,8vw,80px)_clamp(20px,5vw,72px)_80px]">
         <div className="absolute -right-20 -top-20 h-[300px] w-[300px] animate-[morphBg_8s_ease-in-out_infinite] rounded-full bg-teal-200/15 blur-3xl" />
         <div className="absolute -bottom-20 -left-20 h-[250px] w-[250px] rounded-full bg-cyan-200/10 blur-3xl" />
         <div className="absolute right-[12%] top-1/2 h-20 w-20 -translate-y-1/2 rounded-full border-2 border-teal-200/40 bg-transparent" />
@@ -302,12 +302,12 @@ export default function Weather() {
               >
                 <div className="flex flex-col items-center gap-1">
                   <span className="text-base font-bold">{name}</span>
-                  <span className="text-[10px] opacity-60">
+                  <span className="text-2.5 opacity-60">
                     {index < 2 ? '热门' : index < 4 ? '推荐' : '精选'}
                   </span>
                 </div>
                 {city === name && (
-                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[10px] text-blue-600 shadow-sm">
+                  <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-white text-2.5 text-blue-600 shadow-sm">
                     ✓
                   </span>
                 )}
@@ -335,7 +335,7 @@ export default function Weather() {
                   <CardContent className="p-4">
                     <div className="mb-3 flex items-center justify-between">
                       <span className="text-2xl">{item.emoji}</span>
-                      <span className={`inline-flex items-center gap-1 rounded-full bg-gradient-to-r ${item.gradient} px-2 py-0.5 text-[10px] font-bold text-white`}>
+                      <span className={`inline-flex items-center gap-1 rounded-full bg-gradient-to-r ${item.gradient} px-2 py-0.5 text-2.5 font-bold text-white`}>
                         {item.weather}
                       </span>
                     </div>

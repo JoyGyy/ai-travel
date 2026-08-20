@@ -165,7 +165,7 @@ export default function Community() {
 
         <div className="relative flex items-center justify-between gap-5">
           <div className="animate-fade-in-up">
-            <p className="mb-2 text-[0.75rem] font-bold uppercase tracking-[0.15em] text-teal-500">
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.15em] text-teal-500">
               TRAVEL COMMUNITY
             </p>
             <h1
@@ -201,7 +201,7 @@ export default function Community() {
                 </span>
                 <div>
                   <p className="text-lg font-bold text-gray-900">{loading ? '-' : stat.value.toLocaleString()}</p>
-                  <p className="text-[11px] text-gray-500">{stat.label}</p>
+                  <p className="text-2.75 text-gray-500">{stat.label}</p>
                 </div>
               </CardContent>
             </Card>
@@ -271,13 +271,13 @@ export default function Community() {
                     // eslint-disable-next-line react/no-array-index-key
                     <Star key={i} className={`h-3 w-3 ${i < 4 ? 'fill-cyan-400 text-cyan-400' : 'text-gray-300'}`} />
                   ))}
-                  <span className="ml-1 text-[10px] text-gray-400">旅友推荐</span>
+                  <span className="ml-1 text-2.5 text-gray-400">旅友推荐</span>
                 </div>
               </div>
             </div>
             <div className="mt-3 flex flex-wrap gap-1.5">
               {CITY_FOCUS_TAGS.map(tag => (
-                <Badge className="border-teal-200 bg-teal-50 text-[10px] text-teal-600" key={tag} variant="outline">
+                <Badge className="border-teal-200 bg-teal-50 text-2.5 text-teal-600" key={tag} variant="outline">
                   {tag}
                 </Badge>
               ))}
@@ -304,7 +304,7 @@ export default function Community() {
             : null}
         </div>
         <form className="grid gap-1.5" onSubmit={handleSearch}>
-          <Label className="text-[13px] font-medium" htmlFor="community-city">
+          <Label className="text-3.25 font-medium" htmlFor="community-city">
             城市
           </Label>
           <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
@@ -319,7 +319,7 @@ export default function Community() {
           </div>
         </form>
         <div className="flex items-center justify-between gap-3">
-          <span className="text-[13px] font-medium text-travel-ink">只看含行程分享</span>
+          <span className="text-3.25 font-medium text-travel-ink">只看含行程分享</span>
           <input
             aria-label="只看含行程分享"
             checked={Boolean(filters.withItinerary)}
@@ -327,7 +327,7 @@ export default function Community() {
             type="checkbox"
           />
         </div>
-        <p aria-live="polite" className="text-[13px] text-travel-muted">
+        <p aria-live="polite" className="text-3.25 text-travel-muted">
           {loading ? '正在刷新社区...' : `共 ${total} 条旅行分享`}
         </p>
       </section>

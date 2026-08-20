@@ -36,7 +36,7 @@ export function LoadingState({
     >
       <div className="w-full max-w-[min(100%,520px)] overflow-hidden rounded-3xl border border-travel-ink/8 bg-travel-surface shadow-sm">
         <div className="flex items-center justify-between px-5 pb-2 pt-[18px]">
-          <span className="text-[11px] font-extrabold tracking-[2px] text-travel-ink">
+          <span className="text-2.75 font-extrabold tracking-[2px] text-travel-ink">
             AI 规划中
           </span>
           <button
@@ -58,7 +58,7 @@ export function LoadingState({
           />
           <Compass aria-hidden="true" className="text-lg text-travel-ink" />
         </div>
-        <p className="py-3 pb-[22px] text-center font-serif text-[13px] text-stone-900/70">
+        <p className="py-3 pb-[22px] text-center font-serif text-3.25 text-stone-900/70">
           正在为你规划行程...
         </p>
       </div>

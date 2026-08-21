@@ -221,8 +221,8 @@ export function HeroSearch() {
           sizes="100vw"
           src={imageUrl('/images/home/hero-boat.jpg')}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30" />
+        <div className="absolute inset-0 bg-linear-to-b from-black/50 via-black/30 to-black/60" />
+        <div className="absolute inset-0 bg-linear-to-r from-black/30 via-transparent to-black/30" />
       </div>
 
       {/* 装饰光晕 */}
@@ -231,7 +231,7 @@ export function HeroSearch() {
         <div className="absolute bottom-20 right-[10%] h-72 w-72 rounded-full bg-blue-500/10 blur-[100px]" />
       </div>
 
-      <div className="relative mx-auto w-full max-w-[1200px] px-6 py-20">
+      <div className="relative mx-auto w-full max-w-300 px-6 py-20">
         {/* 标题区域 */}
         <div className="mb-12 text-center">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-md">

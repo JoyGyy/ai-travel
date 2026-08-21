@@ -9,7 +9,7 @@
 import { Share2 } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { useTravelRecommend } from '@/hooks/useTravelRecommend'
 import { getItineraryTemporal, useItineraryStore } from '@/stores/itinerary'
@@ -106,7 +106,7 @@ export default function Detail() {
   const setAccommodation = useItineraryStore(s => s.setAccommodation)
   const setNightlife = useItineraryStore(s => s.setNightlife)
   const setAttractionRefs = useItineraryStore(s => s.setAttractionRefs)
-  const setCurrentAgentStep = useItineraryStore(s => s.setCurrentAgentStep)
+  const _setCurrentAgentStep = useItineraryStore(s => s.setCurrentAgentStep)
   const setEditing = useItineraryStore(s => s.setEditing)
   const removeSpotFromDay = useItineraryStore(s => s.removeSpotFromDay)
   const moveSpot = useItineraryStore(s => s.moveSpot)
@@ -123,16 +123,17 @@ export default function Detail() {
   })
   const hasValidParams = Boolean(city && budget > 0 && days > 0)
 
-  /* ---------- 从消息中提取工具调用 ---------- */
+  /* ---------- 从消息中提取工具调用（去重） ---------- */
 
   const toolCalls = useMemo(() => {
-    const calls: Array<{
+    const callMap = new Map<string, {
       args?: Record<string, unknown>
       id: string
       result?: unknown
       state: 'call' | 'result'
       toolName: string
-    }> = []
+    }>()
+
     for (const message of messages) {
       for (const part of message.parts) {
         // AI SDK v7: 工具调用的 type 为 `tool-${toolName}`
@@ -146,17 +147,25 @@ export default function Detail() {
             type: string
           }
           const toolName = toolPart.toolName || part.type.replace('tool-', '')
-          calls.push({
-            args: toolPart.input as Record<string, unknown>,
-            id: toolPart.toolCallId,
-            result: toolPart.output,
-            state: toolPart.state === 'output-available' ? 'result' : 'call',
-            toolName,
-          })
+          const toolCallId = toolPart.toolCallId
+
+          // 按 toolCallId 去重，保留最新的状态
+          const existing = callMap.get(toolCallId)
+          if (!existing || toolPart.state === 'output-available') {
+            callMap.set(toolCallId, {
+              args: toolPart.input as Record<string, unknown>,
+              id: toolCallId,
+              result: toolPart.output,
+              state: toolPart.state === 'output-available' ? 'result' : 'call',
+              toolName,
+            })
+          }
         }
       }
     }
-    return calls
+
+    // 按插入顺序返回（保持调用顺序）
+    return Array.from(callMap.values())
   }, [messages])
 
   /** AI 回复中的纯文本内容 */
@@ -230,22 +239,18 @@ export default function Detail() {
 
   /* ---------- 数据加载：优先缓存 → SSE 流式生成 ---------- */
 
-  useEffect(() => {
-    let resetTimer: ReturnType<typeof setTimeout>
-    let cacheTimer: ReturnType<typeof setTimeout>
+  /** 防止重复发送消息的 ref */
+  const hasSentMessage = useRef(false)
 
+  useEffect(() => {
     if (!hasValidParams) {
-      resetTimer = setTimeout(() => {
-        setShowLoading(false)
-        setErrorMessage('缺少目的地或预算信息，请返回首页重新规划。')
-      }, 0)
-      return () => clearTimeout(resetTimer)
+      setShowLoading(false)
+      setErrorMessage('缺少目的地或预算信息，请返回首页重新规划。')
+      return
     }
 
-    resetTimer = setTimeout(() => {
-      setShowLoading(true)
-      setErrorMessage('')
-    }, 0)
+    setShowLoading(true)
+    setErrorMessage('')
 
     const cached = loadItineraryCache(city, budget, days)
     if (cached) {
@@ -258,43 +263,35 @@ export default function Detail() {
       setAccommodation(cached.accommodation || [])
       setNightlife(cached.nightlife || [])
       setAttractionRefs(cached.attractionRefs || [])
-      cacheTimer = setTimeout(() => {
-        setActiveKeys(cachedItinerary[0]?.day ? [String(cachedItinerary[0].day)] : [])
-        setShowLoading(false)
-      }, 0)
-      return () => {
-        clearTimeout(resetTimer)
-        clearTimeout(cacheTimer)
-      }
+      setActiveKeys(cachedItinerary[0]?.day ? [String(cachedItinerary[0].day)] : [])
+      setShowLoading(false)
+      hasSentMessage.current = true
+      return
     }
+
+    // 防止重复发送消息
+    if (hasSentMessage.current) {
+      return
+    }
+    hasSentMessage.current = true
 
     useItineraryStore.setState({ agentSteps: [], currentAgentStep: 0 })
-
-    cacheTimer = setTimeout(() => {
-      setShowLoading(false)
-    }, 0)
-
     sendMessage({ text: `请为我规划 ${city} ${days} 天旅行，预算 ${budget} 元` })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [city, budget, days, hasValidParams])
 
-    return () => {
-      clearTimeout(resetTimer)
-      clearTimeout(cacheTimer)
+  /* ---------- 监听消息状态，更新 loading ---------- */
+
+  useEffect(() => {
+    // 当有消息且状态为 ready（完成）时，隐藏 loading
+    if (messages.length > 0 && status === 'ready') {
+      setShowLoading(false)
     }
-  }, [
-    budget,
-    city,
-    days,
-    hasValidParams,
-    sendMessage,
-    setAccommodation,
-    setAttractionRefs,
-    setBudgetBreakdown,
-    setCurrentAgentStep,
-    setItinerary,
-    setNightlife,
-    setTips,
-    setWeather,
-  ])
+    // 当有消息且正在流式传输时，也隐藏 loading（显示消息卡片）
+    if (messages.length > 0 && (status === 'streaming' || status === 'submitted')) {
+      setShowLoading(false)
+    }
+  }, [messages, status])
 
   /* ========== 渲染 ========== */
 

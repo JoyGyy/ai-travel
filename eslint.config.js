@@ -22,6 +22,8 @@ export default antfu({
     'react/display-name': 'off',
     // 允许 confirm/alert
     'no-alert': 'off',
+    // 关闭 Tailwind CSS v4 新语法建议
+    'tailwindcss/suggest-canonical-classes': 'off',
   },
   ignores: [
     '.next/**',

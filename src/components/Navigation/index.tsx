@@ -50,6 +50,7 @@ function TopNav() {
       className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200/60 shadow-sm"
     >
       <div className="max-w-300 h-16 mx-auto px-4 sm:px-6 flex items-center gap-2.5 sm:gap-3.5">
+
         <Link
           aria-label="返回首页"
           className="min-h-11 inline-flex items-center gap-2.5 mr-auto sm:mr-4.5 rounded-2xl no-underline text-travel-ink"
@@ -65,7 +66,9 @@ function TopNav() {
             Travel AI
           </span>
         </Link>
+
         <div className="hidden sm:flex items-center gap-2">
+
           {tabs.map((tab) => {
             const isActive
               = pathname === tab.key || (tab.key !== '/' && pathname?.startsWith(tab.key))

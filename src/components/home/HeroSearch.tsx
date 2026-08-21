@@ -21,6 +21,21 @@ import { useWeather } from '@/hooks/useWeather'
 import { imageUrl } from '@/lib/images'
 import { useAuthStore } from '@/stores/auth'
 
+// 打字机动画文案列表
+const TYPEWRITER_PHRASES = [
+  '输入目的地，AI 实时结合天气、预算和偏好，为你生成专属旅行方案',
+  '三亚的阳光沙滩、西安的千年古迹、成都的巴适生活… 你选哪个？',
+  '预算 3000 也能玩得精彩，AI 帮你精打细算每一笔',
+  '三天两夜深度游，还是七天长线慢旅行？随心定制',
+  '想去的地方太多？让 AI 帮你排出最佳路线',
+]
+
+// 打字速度、停留时间、删除速度
+const TYPING_SPEED = 80
+const DELETING_SPEED = 40
+const PAUSE_AFTER_TYPED = 2500
+const PAUSE_AFTER_DELETED = 500
+
 interface CityResult {
   adcode?: string
   level?: string
@@ -46,6 +61,15 @@ export function HeroSearch() {
   const { fetchWeather, loading: weatherLoading, weather } = useWeather()
   const searchTimerRef = useRef<null | ReturnType<typeof setTimeout>>(null)
   const searchAbortRef = useRef<AbortController | null>(null)
+
+  // 打字机动画状态
+  const [typedText, setTypedText] = useState('')
+  const typewriterRef = useRef({
+    phraseIndex: 0,
+    charIndex: 0,
+    isDeleting: false,
+    timer: null as null | ReturnType<typeof setTimeout>,
+  })
 
   // 当前显示的城市列表：API结果或本地过滤
   const displayCities = useMemo(() => {
@@ -171,6 +195,52 @@ export function HeroSearch() {
     }
   }, [])
 
+  // 打字机动画效果
+  useEffect(() => {
+    const ctx = typewriterRef.current
+
+    const tick = () => {
+      const currentPhrase = TYPEWRITER_PHRASES[ctx.phraseIndex]
+
+      if (!ctx.isDeleting) {
+        // 逐字打出
+        ctx.charIndex++
+        setTypedText(currentPhrase.slice(0, ctx.charIndex))
+
+        if (ctx.charIndex >= currentPhrase.length) {
+          // 打完 → 停留 → 开始删除
+          ctx.timer = setTimeout(() => {
+            ctx.isDeleting = true
+            tick()
+          }, PAUSE_AFTER_TYPED)
+          return
+        }
+        ctx.timer = setTimeout(tick, TYPING_SPEED)
+      }
+      else {
+        // 逐字删除
+        ctx.charIndex--
+        setTypedText(currentPhrase.slice(0, ctx.charIndex))
+
+        if (ctx.charIndex <= 0) {
+          // 删完 → 切换下一条
+          ctx.isDeleting = false
+          ctx.phraseIndex = (ctx.phraseIndex + 1) % TYPEWRITER_PHRASES.length
+          ctx.timer = setTimeout(tick, PAUSE_AFTER_DELETED)
+          return
+        }
+        ctx.timer = setTimeout(tick, DELETING_SPEED)
+      }
+    }
+
+    ctx.timer = setTimeout(tick, 600)
+
+    return () => {
+      if (ctx.timer)
+        clearTimeout(ctx.timer)
+    }
+  }, [])
+
   const validatePlanner = useCallback(() => {
     const errors: Record<string, string> = {}
     if (!city.trim())
@@ -249,7 +319,8 @@ export function HeroSearch() {
             </span>
           </h1>
           <p className="mx-auto max-w-[600px] text-lg text-white/80 md:text-xl">
-            输入目的地，AI 实时结合天气、预算和偏好，为你生成专属旅行方案
+            <span>{typedText}</span>
+            <span className="inline-block h-[1.1em] w-[2px] translate-y-[2px] animate-blink bg-teal-400" />
           </p>
         </div>
 

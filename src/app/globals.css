@@ -864,6 +864,10 @@ a:focus-visible {
   animation: heartbeat 0.6s ease-in-out;
 }
 
+.animate-blink {
+  animation: blink 1s step-end infinite;
+}
+
 .stagger-1 {
   animation-delay: 0ms;
 }

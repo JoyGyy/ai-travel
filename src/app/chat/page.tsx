@@ -83,7 +83,7 @@ export default function ChatPage() {
               </PopoverTrigger>
               <PopoverContent
                 align="end"
-                className="w-[200px] overflow-hidden rounded-xl border-white/60 bg-white/95 p-0 shadow-xl backdrop-blur-sm"
+                className="w-[200px] overflow-hidden rounded-xl border-gray-200 bg-white p-0 shadow-xl"
                 sideOffset={4}
               >
                 {models.map(option => (
@@ -93,7 +93,7 @@ export default function ChatPage() {
                         ? 'cursor-not-allowed opacity-40'
                         : model === option.value
                           ? 'bg-teal-50 text-teal-700'
-                          : 'text-gray-600 hover:bg-gray-50 cursor-pointer'
+                          : 'text-gray-700 hover:bg-teal-50/50 cursor-pointer'
                     }`}
                     key={option.value}
                   >

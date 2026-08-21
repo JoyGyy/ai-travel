@@ -5,7 +5,10 @@
 'use client'
 
 import type { ChangeEvent, KeyboardEvent } from 'react'
+import type { DateRange } from 'react-day-picker'
 
+import { differenceInDays, format, startOfDay } from 'date-fns'
+import { zhCN } from 'date-fns/locale'
 import { Bot, Calendar, CircleDollarSign, Cloud, Flame, Loader2, MapPin, Search } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
@@ -13,11 +16,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Calendar as CalendarComponent } from '@/components/ui/calendar'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useAppToast } from '@/hooks/useAppToast'
 import { useWeather } from '@/hooks/useWeather'
 import { imageUrl } from '@/lib/images'
+import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth'
 
 // 打字机动画文案列表
@@ -52,7 +58,7 @@ export function HeroSearch() {
   const [cityResults, setCityResults] = useState<CityResult[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const [budget, setBudget] = useState('')
-  const [days, setDays] = useState(3)
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
   const [showDropdown, setShowDropdown] = useState(false)
   const [activeCityIndex, setActiveCityIndex] = useState(0)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
@@ -79,6 +85,13 @@ export function HeroSearch() {
       return cityResults.map(c => c.name)
     return []
   }, [city, cityResults])
+
+  // 计算旅行天数
+  const days = useMemo(() => {
+    if (!dateRange?.from || !dateRange?.to)
+      return 0
+    return differenceInDays(dateRange.to, dateRange.from) + 1
+  }, [dateRange])
 
   // 搜索城市（调用API）
   const searchCities = useCallback(async (keyword: string) => {
@@ -244,9 +257,11 @@ export function HeroSearch() {
     const budgetNum = Number(budget)
     if (budget && (Number.isNaN(budgetNum) || budgetNum <= 0))
       errors.budget = '预算需大于 0'
+    if (!dateRange?.from || !dateRange?.to)
+      errors.date = '请选择出行日期'
     setFieldErrors(errors)
     return { budgetNum, isValid: Object.keys(errors).length === 0 }
-  }, [city, budget])
+  }, [city, budget, dateRange])
 
   const onStart = useCallback(() => {
     if (!hasHydrated) {
@@ -259,8 +274,10 @@ export function HeroSearch() {
     if (!isValid)
       return
     setIsSubmitting(true)
-    router.push(`/detail?city=${encodeURIComponent(city.trim())}&budget=${budgetNum}&days=${days}`)
-  }, [hasHydrated, user, router, validatePlanner, city, days, toast])
+    const startDate = dateRange?.from ? format(dateRange.from, 'yyyy-MM-dd') : ''
+    const endDate = dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd') : ''
+    router.push(`/detail?city=${encodeURIComponent(city.trim())}&budget=${budgetNum}&days=${days}&startDate=${startDate}&endDate=${endDate}`)
+  }, [hasHydrated, user, router, validatePlanner, city, days, dateRange, toast])
 
   const submitPlanner = useCallback(
     (event: { preventDefault: () => void }) => {
@@ -419,20 +436,60 @@ export function HeroSearch() {
                 : null}
             </div>
 
-            {/* 天数 */}
-            <div className="w-full text-left lg:w-[130px]">
+            {/* 日期范围 */}
+            <div className="w-full text-left lg:w-[240px]">
               <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-gray-500">
                 <Calendar className="h-3.5 w-3.5" />
-                天数
+                出行日期
+                <span className="text-red-500">*</span>
               </span>
-              <div className="flex h-12 items-center overflow-hidden rounded-xl border border-gray-200 bg-gray-50">
-                <Button className="h-full w-12 text-lg text-gray-400 hover:bg-gray-100" disabled={days <= 1} onClick={() => setDays(prev => Math.max(1, prev - 1))} size="icon" type="button" variant="ghost">-</Button>
-                <span className="flex-1 text-center text-sm font-bold text-gray-900">
-                  {days}
-                  天
-                </span>
-                <Button className="h-full w-12 text-lg text-gray-400 hover:bg-gray-100" disabled={days >= 30} onClick={() => setDays(prev => Math.min(30, prev + 1))} size="icon" type="button" variant="ghost">+</Button>
-              </div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    className={cn(
+                      'h-12 w-full justify-start rounded-xl border border-gray-200 bg-gray-50 px-4 text-sm font-normal hover:bg-gray-100',
+                      !dateRange && 'text-gray-400',
+                    )}
+                    variant="ghost"
+                  >
+                    <Calendar className="mr-2 h-4 w-4" />
+                    {dateRange?.from
+                      ? dateRange.to
+                        ? (
+                            <>
+                              {format(dateRange.from, 'MM月dd日', { locale: zhCN })}
+                              {' - '}
+                              {format(dateRange.to, 'MM月dd日', { locale: zhCN })}
+                              <span className="ml-2 text-xs text-gray-400">
+                                {days}
+                                天
+                              </span>
+                            </>
+                          )
+                        : format(dateRange.from, 'MM月dd日', { locale: zhCN })
+                      : '选择出行日期'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent align="start" className="w-auto p-0">
+                  <CalendarComponent
+                    defaultMonth={dateRange?.from}
+                    disabled={date => date < startOfDay(new Date())}
+                    locale={zhCN}
+                    mode="range"
+                    numberOfMonths={2}
+                    onSelect={(range) => {
+                      setDateRange(range)
+                      if (range?.from && range?.to) {
+                        clearFieldError('date')
+                      }
+                    }}
+                    selected={dateRange}
+                  />
+                </PopoverContent>
+              </Popover>
+              {fieldErrors.date
+                ? <span className="mt-1.5 text-xs text-red-500" id="home-date-error">{fieldErrors.date}</span>
+                : null}
             </div>
 
             {/* 搜索按钮 */}

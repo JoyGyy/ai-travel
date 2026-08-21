@@ -84,7 +84,8 @@ export default function ChatPage() {
               </Button>
               {showModelDropdown && (
                 <div
-                  className="absolute right-0 top-full z-50 mt-1 min-w-[200px] overflow-hidden rounded-xl border border-white/60 bg-white/95 shadow-xl backdrop-blur-sm"
+                  className="fixed z-[200] mt-1 min-w-[200px] overflow-hidden rounded-xl border border-white/60 bg-white/95 shadow-xl backdrop-blur-sm"
+                  style={{ right: '1rem', top: '4.5rem' }}
                 >
                   {models.map(option => (
                     <div

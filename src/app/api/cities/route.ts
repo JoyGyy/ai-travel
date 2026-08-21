@@ -7,7 +7,6 @@
  */
 import { NextResponse } from 'next/server'
 
-import { allCities } from '@/constants/cities'
 import { searchCities } from '@/lib/services/cityService'
 
 export async function GET(request: Request) {
@@ -32,19 +31,10 @@ export async function GET(request: Request) {
     })
   }
 
-  // 降级：使用本地城市列表过滤
-  const localResults = allCities
-    .filter(city => city.includes(keyword))
-    .slice(0, 20)
-    .map(name => ({
-      adcode: '',
-      level: 'city',
-      name,
-    }))
-
+  // 无结果时直接返回空数组
   return NextResponse.json({
-    data: localResults,
-    source: 'local',
+    data: [],
+    source: 'amap',
     success: true,
   })
 }

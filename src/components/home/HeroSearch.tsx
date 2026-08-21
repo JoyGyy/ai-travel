@@ -15,7 +15,6 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { allCities } from '@/constants/cities'
 import { useAppToast } from '@/hooks/useAppToast'
 import { useWeather } from '@/hooks/useWeather'
 import { imageUrl } from '@/lib/images'
@@ -71,14 +70,14 @@ export function HeroSearch() {
     timer: null as null | ReturnType<typeof setTimeout>,
   })
 
-  // 当前显示的城市列表：API结果或本地过滤
+  // 当前显示的城市列表：仅 API 结果
   const displayCities = useMemo(() => {
     const trimmed = city.trim()
     if (trimmed.length === 0)
       return []
     if (cityResults.length > 0)
       return cityResults.map(c => c.name)
-    return allCities.filter(c => c.includes(trimmed))
+    return []
   }, [city, cityResults])
 
   const activeCityId
@@ -278,11 +277,11 @@ export function HeroSearch() {
 
   return (
     <section
-      aria-labelledby="home-hero-title"
+     
       className="relative isolate min-h-[85vh] flex items-center overflow-hidden"
     >
       {/* 背景图片 */}
-      <div aria-hidden="true" className="absolute inset-0 -z-10">
+      <div className="absolute inset-0 -z-10">
         <Image
           alt=""
           className="object-cover"
@@ -296,7 +295,7 @@ export function HeroSearch() {
       </div>
 
       {/* 装饰光晕 */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+      <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute top-20 left-[10%] h-72 w-72 rounded-full bg-teal-500/10 blur-[100px]" />
         <div className="absolute bottom-20 right-[10%] h-72 w-72 rounded-full bg-blue-500/10 blur-[100px]" />
       </div>
@@ -334,19 +333,19 @@ export function HeroSearch() {
             {/* 目的地 */}
             <div className="relative z-20 flex-1 text-left" onClick={e => e.stopPropagation()}>
               <Label className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-gray-500" htmlFor="home-city-input">
-                <MapPin aria-hidden="true" className="h-3.5 w-3.5" />
+                <MapPin className="h-3.5 w-3.5" />
                 目的地
                 <span className="text-red-500">*</span>
               </Label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                 <Input
-                  aria-activedescendant={activeCityId}
-                  aria-autocomplete="list"
-                  aria-controls="home-city-dropdown"
-                  aria-describedby={fieldErrors.city ? 'home-city-error' : undefined}
-                  aria-expanded={showDropdown}
-                  aria-invalid={Boolean(fieldErrors.city)}
+                 
+                 
+                 
+                 
+                 
+                 
                   autoComplete="off"
                   className="h-12 rounded-xl border-gray-200 bg-gray-50 pl-10 text-sm focus:bg-white"
                   id="home-city-input"
@@ -354,20 +353,20 @@ export function HeroSearch() {
                   onFocus={() => setShowDropdown(true)}
                   onKeyDown={handleCityKeyDown}
                   placeholder="搜索城市，如 三亚、成都、西安..."
-                  role="combobox"
+                 
                   type="text"
                   value={city}
                 />
               </div>
               {fieldErrors.city
-                ? <span className="mt-1.5 text-xs text-red-500" id="home-city-error" role="alert">{fieldErrors.city}</span>
+                ? <span className="mt-1.5 text-xs text-red-500" id="home-city-error">{fieldErrors.city}</span>
                 : null}
               {showDropdown && city.trim().length > 0
                 ? (
                     <div
                       className="absolute left-0 top-full z-50 mt-2 max-h-[280px] w-full overflow-y-auto rounded-xl border border-gray-100 bg-white py-1 shadow-xl"
                       id="home-city-dropdown"
-                      role="listbox"
+                     
                     >
                       {isSearching
                         ? (
@@ -379,7 +378,7 @@ export function HeroSearch() {
                         : displayCities.length > 0
                           ? displayCities.slice(0, 10).map((name, index) => (
                               <Button
-                                aria-selected={city === name}
+                               
                                 className={`w-full justify-start gap-2 px-4 py-2.5 text-left text-sm hover:bg-teal-50 hover:text-teal-700 ${
                                   city === name || activeCityIndex === index
                                     ? 'bg-teal-50 text-teal-600'
@@ -388,10 +387,10 @@ export function HeroSearch() {
                                 id={`home-city-option-${index}`}
                                 key={name}
                                 onClick={() => selectCity(name)}
-                                role="option"
+                               
                                 variant="ghost"
                               >
-                                <MapPin aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 opacity-40" />
+                                <MapPin className="h-3.5 w-3.5 flex-shrink-0 opacity-40" />
                                 {name}
                               </Button>
                             ))
@@ -406,13 +405,13 @@ export function HeroSearch() {
             {/* 预算 */}
             <div className="w-full text-left lg:w-[150px]">
               <Label className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-gray-500" htmlFor="home-budget-input">
-                <CircleDollarSign aria-hidden="true" className="h-3.5 w-3.5" />
+                <CircleDollarSign className="h-3.5 w-3.5" />
                 预算 (元)
                 <span className="text-red-500">*</span>
               </Label>
               <Input
-                aria-describedby={fieldErrors.budget ? 'home-budget-error' : undefined}
-                aria-invalid={Boolean(fieldErrors.budget)}
+               
+               
                 className="h-12 rounded-xl border-gray-200 bg-gray-50 text-sm focus:bg-white"
                 id="home-budget-input"
                 inputMode="numeric"
@@ -427,29 +426,29 @@ export function HeroSearch() {
                 value={budget}
               />
               {fieldErrors.budget
-                ? <span className="mt-1.5 text-xs text-red-500" id="home-budget-error" role="alert">{fieldErrors.budget}</span>
+                ? <span className="mt-1.5 text-xs text-red-500" id="home-budget-error">{fieldErrors.budget}</span>
                 : null}
             </div>
 
             {/* 天数 */}
             <div className="w-full text-left lg:w-[130px]">
               <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-gray-500">
-                <Calendar aria-hidden="true" className="h-3.5 w-3.5" />
+                <Calendar className="h-3.5 w-3.5" />
                 天数
               </span>
-              <div aria-label="旅行天数" className="flex h-12 items-center overflow-hidden rounded-xl border border-gray-200 bg-gray-50">
-                <Button aria-label="减少天数" className="h-full w-12 text-lg text-gray-400 hover:bg-gray-100" disabled={days <= 1} onClick={() => setDays(prev => Math.max(1, prev - 1))} size="icon" type="button" variant="ghost">-</Button>
-                <span aria-live="polite" className="flex-1 text-center text-sm font-bold text-gray-900">
+              <div className="flex h-12 items-center overflow-hidden rounded-xl border border-gray-200 bg-gray-50">
+                <Button className="h-full w-12 text-lg text-gray-400 hover:bg-gray-100" disabled={days <= 1} onClick={() => setDays(prev => Math.max(1, prev - 1))} size="icon" type="button" variant="ghost">-</Button>
+                <span className="flex-1 text-center text-sm font-bold text-gray-900">
                   {days}
                   天
                 </span>
-                <Button aria-label="增加天数" className="h-full w-12 text-lg text-gray-400 hover:bg-gray-100" disabled={days >= 30} onClick={() => setDays(prev => Math.min(30, prev + 1))} size="icon" type="button" variant="ghost">+</Button>
+                <Button className="h-full w-12 text-lg text-gray-400 hover:bg-gray-100" disabled={days >= 30} onClick={() => setDays(prev => Math.min(30, prev + 1))} size="icon" type="button" variant="ghost">+</Button>
               </div>
             </div>
 
             {/* 搜索按钮 */}
             <Button
-              aria-label={isSubmitting ? '正在生成行程' : 'AI 规划行程'}
+             
               className="h-12 gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-slate-600 px-8 text-sm font-bold text-white shadow-lg shadow-teal-500/25 hover:shadow-xl hover:shadow-teal-500/30 disabled:hover:shadow-lg lg:w-auto"
               disabled={isSubmitting}
               type="submit"
@@ -457,13 +456,13 @@ export function HeroSearch() {
               {isSubmitting
                 ? (
                     <>
-                      <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
+                      <Loader2 className="h-4 w-4 animate-spin" />
                       <span>生成中...</span>
                     </>
                   )
                 : (
                     <>
-                      <Bot aria-hidden="true" className="h-4 w-4" />
+                      <Bot className="h-4 w-4" />
                       <span>AI 规划</span>
                     </>
                   )}
@@ -473,18 +472,18 @@ export function HeroSearch() {
           {/* 天气提示 */}
           {weather || weatherLoading
             ? (
-                <div aria-live="polite" className="mt-4 flex items-center gap-2 text-sm text-gray-500">
+                <div className="mt-4 flex items-center gap-2 text-sm text-gray-500">
                   {weatherLoading
                     ? (
                         <>
-                          <span aria-hidden="true" className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-gray-300 border-t-teal-500" />
+                          <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-gray-300 border-t-teal-500" />
                           正在查询天气...
                         </>
                       )
                     : weather
                       ? (
                           <>
-                            <Cloud aria-hidden="true" className="h-4 w-4 text-blue-500" />
+                            <Cloud className="h-4 w-4 text-blue-500" />
                             {weather.city}
                             {' '}
                             {weather.temperature}
@@ -502,7 +501,7 @@ export function HeroSearch() {
         {/* 热门搜索标签 */}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
           <span className="flex items-center gap-1 text-sm text-white/60">
-            <Flame aria-hidden="true" className="h-3.5 w-3.5 text-teal-400" />
+            <Flame className="h-3.5 w-3.5 text-teal-400" />
             热门：
           </span>
           {['三亚', '丽江', '西安', '成都', '大理', '厦门'].map(tag => (
@@ -519,7 +518,7 @@ export function HeroSearch() {
       </div>
 
       {/* 底部渐变过渡 */}
-      <div aria-hidden="true" className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
     </section>
   )
 }

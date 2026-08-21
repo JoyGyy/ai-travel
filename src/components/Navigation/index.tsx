@@ -14,6 +14,7 @@ import { useAuthStore } from '@/stores/auth'
 
 import { shouldShowNav } from './utils'
 
+// eslint-disable-next-line react-refresh/only-export-components
 export { shouldShowNav } from './utils'
 
 /* ========== 导航标签配置 ========== */
@@ -24,7 +25,7 @@ const tabs = [
   { icon: <MapPin aria-hidden="true" size={18} />, key: '/attractions', title: '景点' },
   { icon: <Users aria-hidden="true" size={18} />, key: '/community', title: '社区' },
   { icon: <Bot aria-hidden="true" size={18} />, key: '/chat', title: 'AI咨询' },
-] as const
+]
 
 export function Navigation() {
   const pathname = usePathname()
@@ -48,10 +49,10 @@ function TopNav() {
       aria-label="主导航"
       className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200/60 shadow-sm"
     >
-      <div className="max-w-[1200px] h-16 mx-auto px-4 sm:px-6 flex items-center gap-2.5 sm:gap-3.5">
+      <div className="max-w-300 h-16 mx-auto px-4 sm:px-6 flex items-center gap-2.5 sm:gap-3.5">
         <Link
           aria-label="返回首页"
-          className="min-h-11 inline-flex items-center gap-2.5 mr-auto sm:mr-[18px] rounded-2xl no-underline text-travel-ink"
+          className="min-h-11 inline-flex items-center gap-2.5 mr-auto sm:mr-4.5 rounded-2xl no-underline text-travel-ink"
           href="/"
         >
           <span
@@ -70,7 +71,7 @@ function TopNav() {
               = pathname === tab.key || (tab.key !== '/' && pathname?.startsWith(tab.key))
             return (
               <Link
-                className={`min-h-11 flex items-center gap-[7px] px-4 border border-transparent rounded-2xl text-travel-ink/72 text-sm font-extrabold relative transition-all hover:-translate-y-px hover:bg-primary/8 hover:text-travel-ink motion-reduce:transition-none ${
+                className={`min-h-11 flex items-center gap-1.75 px-4 border border-transparent rounded-2xl text-travel-ink/72 text-sm font-extrabold relative transition-all hover:-translate-y-px hover:bg-primary/8 hover:text-travel-ink motion-reduce:transition-none ${
                   isActive
                     ? 'bg-primary/12 text-travel-ink border-primary/24'
                     : ''
@@ -82,7 +83,7 @@ function TopNav() {
                 <span>{tab.title}</span>
                 <span
                   aria-hidden="true"
-                  className={`absolute -bottom-[7px] left-1/2 w-[22px] h-[3px] rounded-full bg-primary opacity-0 -translate-x-1/2 scale-x-[0.6] transition-all motion-reduce:transition-none ${
+                  className={`absolute -bottom-1.75 left-1/2 w-5.5 h-0.75 rounded-full bg-primary opacity-0 -translate-x-1/2 scale-x-[0.6] transition-all motion-reduce:transition-none ${
                     isActive ? 'opacity-100 scale-x-100' : ''
                   }`}
                 />

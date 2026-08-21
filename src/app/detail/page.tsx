@@ -78,7 +78,11 @@ export default function Detail() {
   const [activeKeys, setActiveKeys] = useState<string[]>([])
   const [showLoading, setShowLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
-  const { error: chatError, messages, sendMessage, status } = useTravelRecommend()
+  const { error: chatError, messages, sendMessage, status } = useTravelRecommend({
+    city,
+    budget,
+    days,
+  })
   const hasValidParams = Boolean(city && budget > 0 && days > 0)
 
   /* ---------- Undo/Redo 状态 ---------- */

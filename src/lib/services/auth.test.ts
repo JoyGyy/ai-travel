@@ -289,7 +289,8 @@ describe('auth 服务', () => {
   describe('consumeAiQuota()', () => {
     it('正常消耗一次配额', async () => {
       // arrange
-      mockQuery.mockResolvedValueOnce({ rows: [{ used_count: 3 }] })
+      mockQuery.mockResolvedValueOnce({ rows: [{ role: 'user' }] }) // isAdmin
+      mockQuery.mockResolvedValueOnce({ rows: [{ used_count: 3 }] }) // INSERT
 
       // act
       const result = await consumeAiQuota('user-1', '2024-01-15')
@@ -302,9 +303,10 @@ describe('auth 服务', () => {
 
     it('达到上限时抛出 429 错误', async () => {
       // arrange
-      mockQuery.mockResolvedValueOnce({ rows: [] }) // RETURNING 为空 = 已达上限
-      // getAiQuotaStatus 的 mock
-      mockQuery.mockResolvedValueOnce({ rows: [{ used_count: 10 }] })
+      mockQuery.mockResolvedValueOnce({ rows: [{ role: 'user' }] }) // isAdmin（consumeAiQuota）
+      mockQuery.mockResolvedValueOnce({ rows: [] }) // INSERT RETURNING 为空 = 已达上限
+      mockQuery.mockResolvedValueOnce({ rows: [{ role: 'user' }] }) // isAdmin（getAiQuotaStatus）
+      mockQuery.mockResolvedValueOnce({ rows: [{ used_count: 10 }] }) // SELECT used_count
 
       // act & assert
       const err = (await consumeAiQuota('user-1', '2024-01-15').catch(e => e)) as Error & {

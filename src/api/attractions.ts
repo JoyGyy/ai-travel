@@ -11,7 +11,7 @@ import type {
   FavoriteResult,
 } from '@/types/attraction'
 
-import { request } from './client'
+import { del, get, post } from './client'
 
 interface DataResponse<T> {
   data: T
@@ -19,16 +19,15 @@ interface DataResponse<T> {
 
 /** 收藏景点 */
 export async function favoriteAttraction(id: string): Promise<FavoriteResult> {
-  const res = await request<DataResponse<FavoriteResult>>(`/api/attractions/${id}/favorite`, {
+  const res = await post<DataResponse<FavoriteResult>>(`/api/attractions/${id}/favorite`, undefined, {
     auth: true,
-    method: 'POST',
   })
   return res.data
 }
 
 /** 获取景点详情 */
 export async function fetchAttractionDetail(id: string): Promise<AttractionDetailData> {
-  const res = await request<DataResponse<AttractionDetailData>>(`/api/attractions/${id}`, {
+  const res = await get<DataResponse<AttractionDetailData>>(`/api/attractions/${id}`, {
     auth: true,
   })
   return res.data
@@ -38,7 +37,7 @@ export async function fetchAttractionDetail(id: string): Promise<AttractionDetai
 export async function fetchAttractions(
   filters: AttractionFilters = {},
 ): Promise<AttractionListData> {
-  const res = await request<DataResponse<AttractionListData>>(
+  const res = await get<DataResponse<AttractionListData>>(
     `/api/attractions${buildQuery(filters)}`,
     { auth: true },
   )
@@ -47,7 +46,7 @@ export async function fetchAttractions(
 
 /** 获取当前用户的收藏景点列表 */
 export async function fetchFavoriteAttractions(): Promise<AttractionListData> {
-  const res = await request<DataResponse<AttractionListData>>('/api/attractions/favorites', {
+  const res = await get<DataResponse<AttractionListData>>('/api/attractions/favorites', {
     auth: true,
   })
   return res.data
@@ -55,9 +54,8 @@ export async function fetchFavoriteAttractions(): Promise<AttractionListData> {
 
 /** 取消收藏景点 */
 export async function unfavoriteAttraction(id: string): Promise<FavoriteResult> {
-  const res = await request<DataResponse<FavoriteResult>>(`/api/attractions/${id}/favorite`, {
+  const res = await del<DataResponse<FavoriteResult>>(`/api/attractions/${id}/favorite`, {
     auth: true,
-    method: 'DELETE',
   })
   return res.data
 }

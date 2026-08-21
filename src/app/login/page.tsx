@@ -8,7 +8,7 @@
 import { ArrowLeft, Compass, Eye, EyeOff } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 
 import { ComplianceFooter } from '@/components/ComplianceFooter'
 import { Badge } from '@/components/ui/badge'
@@ -55,17 +55,6 @@ export default function Login() {
   const usernameRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
   const currentCopy = formCopy[tab]
-
-  /* ---------- focus 到第一个错误字段 ---------- */
-
-  useEffect(() => {
-    if (fieldErrors.username) {
-      usernameRef.current?.focus()
-    }
-    else if (fieldErrors.password) {
-      passwordRef.current?.focus()
-    }
-  }, [fieldErrors])
 
   /* ---------- 登录/注册模式切换 ---------- */
 
@@ -124,6 +113,12 @@ export default function Login() {
       setFieldErrors(errors)
       setTouched({ password: true, username: true })
       setFormError('')
+      if (errors.username) {
+        usernameRef.current?.focus()
+      }
+      else if (errors.password) {
+        passwordRef.current?.focus()
+      }
       return
     }
 

@@ -5,14 +5,14 @@
  */
 import type { WeatherResponse } from '@/types/api'
 
-import { request } from './client'
+import { get } from './client'
 
 /** 查询指定城市的实时天气，支持 AbortSignal 取消 */
 export function getWeatherApi(
   city: string,
   options: { signal?: AbortSignal } = {},
 ): Promise<null | WeatherResponse> {
-  return request<null | WeatherResponse>(`/api/weather?city=${encodeURIComponent(city)}`, {
+  return get<null | WeatherResponse>(`/api/weather?city=${encodeURIComponent(city)}`, {
     signal: options.signal,
   })
 }

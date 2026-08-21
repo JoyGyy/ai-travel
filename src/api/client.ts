@@ -14,6 +14,8 @@ interface RequestOptions {
   signal?: AbortSignal
 }
 
+type RequestMethodOptions = Omit<RequestOptions, 'body' | 'method'>
+
 /** 自定义 API 错误，携带 HTTP 状态码和响应数据 */
 export class ApiError extends Error {
   data?: unknown
@@ -109,6 +111,36 @@ export async function request<T = ApiSuccess>(
 
   return data as T
 }
+
+/** GET 请求便捷方法 */
+export function get<T = ApiSuccess>(path: string, options: RequestMethodOptions = {}): Promise<T> {
+  return request<T>(path, { ...options, method: 'GET' })
+}
+
+/** POST 请求便捷方法 */
+export function post<T = ApiSuccess>(
+  path: string,
+  body?: FormData | unknown,
+  options: RequestMethodOptions = {},
+): Promise<T> {
+  return request<T>(path, { ...options, body, method: 'POST' })
+}
+
+/** PUT 请求便捷方法 */
+export function put<T = ApiSuccess>(
+  path: string,
+  body?: FormData | unknown,
+  options: RequestMethodOptions = {},
+): Promise<T> {
+  return request<T>(path, { ...options, body, method: 'PUT' })
+}
+
+/** DELETE 请求便捷方法 */
+export function del<T = ApiSuccess>(path: string, options: RequestMethodOptions = {}): Promise<T> {
+  return request<T>(path, { ...options, method: 'DELETE' })
+}
+
+export { del as delete, del as deleteRequest }
 
 /** 写请求前确保浏览器已有有效的 CSRF cookie */
 async function ensureCsrfToken(): Promise<void> {

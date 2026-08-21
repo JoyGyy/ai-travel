@@ -9,7 +9,7 @@
 import { Share2 } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { useTravelRecommend } from '@/hooks/useTravelRecommend'
 import { getItineraryTemporal, useItineraryStore } from '@/stores/itinerary'
@@ -19,6 +19,23 @@ import { DaySection } from './DaySection'
 import { DetailHero } from './DetailHero'
 import { EmptyState, ErrorState, LoadingState } from './DetailStates'
 import { SectionTitle } from './SectionTitle'
+
+// 行程卡片和工具步骤组件
+const TravelItineraryCard = dynamic(
+  () =>
+    import('@/components/TravelItineraryCard').then(mod => ({
+      default: mod.TravelItineraryCard,
+    })),
+  {
+    loading: () => <div className="h-64 animate-pulse rounded-xl bg-muted" />,
+  },
+)
+const ToolSteps = dynamic(
+  () => import('@/components/ToolSteps').then(mod => ({ default: mod.ToolSteps })),
+  {
+    loading: () => <div className="h-32 animate-pulse rounded-xl bg-muted" />,
+  },
+)
 
 // 动态导入重型组件，减少初始包大小
 const AccommodationCard = dynamic(
@@ -40,6 +57,27 @@ const WeatherCard = dynamic(
     loading: () => <div className="h-40 animate-pulse rounded-xl bg-muted" />,
   },
 )
+
+/** 检查文本是否包含可解析的行程结构 */
+function hasItineraryStructure(text: string): boolean {
+  // 检查是否包含 Day 标记或时间段标记
+  return /Day\s*\d|🌅|🌄|🌇|上午|中午|下午|傍晚|晚上/i.test(text)
+}
+
+/** 行程内容渲染：优先卡片展示，解析失败时降级为纯文本 */
+function ItineraryContent({ text }: { text: string }) {
+  const canParse = hasItineraryStructure(text)
+
+  if (canParse) {
+    return <TravelItineraryCard content={text} />
+  }
+
+  return (
+    <div className="whitespace-pre-wrap break-words text-sm leading-[1.8] text-stone-900/85">
+      {text}
+    </div>
+  )
+}
 
 export default function Detail() {
   /* ---------- 路由参数解析 ---------- */
@@ -84,6 +122,54 @@ export default function Detail() {
     days,
   })
   const hasValidParams = Boolean(city && budget > 0 && days > 0)
+
+  /* ---------- 从消息中提取工具调用 ---------- */
+
+  const toolCalls = useMemo(() => {
+    const calls: Array<{
+      args?: Record<string, unknown>
+      id: string
+      result?: unknown
+      state: 'call' | 'result'
+      toolName: string
+    }> = []
+    for (const message of messages) {
+      for (const part of message.parts) {
+        // AI SDK v7: 工具调用的 type 为 `tool-${toolName}`
+        if (part.type.startsWith('tool-')) {
+          const toolPart = part as {
+            input?: Record<string, unknown>
+            output?: unknown
+            state: string
+            toolCallId: string
+            toolName?: string
+            type: string
+          }
+          const toolName = toolPart.toolName || part.type.replace('tool-', '')
+          calls.push({
+            args: toolPart.input as Record<string, unknown>,
+            id: toolPart.toolCallId,
+            result: toolPart.output,
+            state: toolPart.state === 'output-available' ? 'result' : 'call',
+            toolName,
+          })
+        }
+      }
+    }
+    return calls
+  }, [messages])
+
+  /** AI 回复中的纯文本内容 */
+  const assistantText = useMemo(() => {
+    return messages
+      .filter(m => m.role === 'assistant')
+      .flatMap(m =>
+        m.parts
+          .filter((p): p is { text: string, type: 'text' } => p.type === 'text')
+          .map(p => p.text),
+      )
+      .join('')
+  }, [messages])
 
   /* ---------- Undo/Redo 状态 ---------- */
 
@@ -237,6 +323,7 @@ export default function Detail() {
             agentSteps={agentSteps}
             currentAgentStep={currentAgentStep}
             onClose={() => router.back()}
+            toolCalls={toolCalls}
           />
         )}
 
@@ -247,46 +334,61 @@ export default function Detail() {
         {!showLoading && !errorMessage && itinerary.length === 0 && (
           messages.length > 0
             ? (
-                <div className="mx-auto -mt-9 w-full max-w-[560px] overflow-hidden rounded-[26px] border border-travel-ink/8 bg-travel-surface shadow-sm">
-                  <div className="flex items-center justify-between px-5 pb-2 pt-[18px]">
-                    <span className="text-2.75 font-extrabold tracking-[2px] text-travel-ink">
-                      AI 生成的行程规划
-                    </span>
-                    {status !== 'ready' && (
-                      <div
-                        aria-hidden="true"
-                        className="h-5 w-5 animate-spin rounded-full border-2 border-dotted border-stone-900/22 border-t-accent"
-                      />
+                <div className="mx-auto -mt-9 w-full max-w-[640px] space-y-4">
+                  {/* 工具调用步骤展示 */}
+                  {toolCalls.length > 0 && (
+                    <ToolSteps
+                      isLoading={status !== 'ready'}
+                      toolCalls={toolCalls}
+                    />
+                  )}
+
+                  {/* AI 行程规划结果 */}
+                  <div className="overflow-hidden rounded-[22px] border border-travel-ink/8 bg-travel-surface shadow-sm">
+                    <div className="flex items-center justify-between px-5 pb-2 pt-[18px]">
+                      <span className="text-2.75 font-extrabold tracking-[2px] text-travel-ink">
+                        AI 生成的行程规划
+                      </span>
+                      {status !== 'ready' && (
+                        <div
+                          aria-hidden="true"
+                          className="h-5 w-5 animate-spin rounded-full border-2 border-dotted border-stone-900/22 border-t-accent"
+                        />
+                      )}
+                    </div>
+                    <div className="px-5 pb-5">
+                      {assistantText
+                        ? (
+                            <ItineraryContent text={assistantText} />
+                          )
+                        : messages.map(message => (
+                            <div className="mb-4 last:mb-0" key={message.id}>
+                              {message.parts.map((part, index) => {
+                                if (part.type === 'text') {
+                                  return (
+                                    <div
+                                      className="whitespace-pre-wrap break-words text-sm leading-[1.8] text-stone-900/85"
+                                      // eslint-disable-next-line react/no-array-index-key
+                                      key={index}
+                                    >
+                                      {part.text}
+                                    </div>
+                                  )
+                                }
+                                return null
+                              })}
+                            </div>
+                          ))}
+                    </div>
+                    {chatError && (
+                      <div className="border-t border-red-500/10 bg-red-500/5 p-4 px-5" role="alert">
+                        <p className="text-center text-3.25 text-red-500">
+                          生成失败：
+                          {chatError.message}
+                        </p>
+                      </div>
                     )}
                   </div>
-                  <div className="px-5 pb-5">
-                    {messages.map(message => (
-                      <div className="mb-4 last:mb-0" key={message.id}>
-                        {message.parts.map((part, index) => {
-                          if (part.type === 'text') {
-                            return (
-                              <div
-                                className="whitespace-pre-wrap break-words text-sm leading-[1.8] text-stone-900/85"
-                                // eslint-disable-next-line react/no-array-index-key
-                                key={index}
-                              >
-                                {part.text}
-                              </div>
-                            )
-                          }
-                          return null
-                        })}
-                      </div>
-                    ))}
-                  </div>
-                  {chatError && (
-                    <div className="border-t border-red-500/10 bg-red-500/5 p-4 px-5" role="alert">
-                      <p className="text-center text-3.25 text-red-500">
-                        生成失败：
-                        {chatError.message}
-                      </p>
-                    </div>
-                  )}
                 </div>
               )
             : <EmptyState onGoChat={() => router.push('/chat')} />

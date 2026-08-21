@@ -80,11 +80,6 @@ export function HeroSearch() {
     return []
   }, [city, cityResults])
 
-  const activeCityId
-    = showDropdown && displayCities[activeCityIndex]
-      ? `home-city-option-${activeCityIndex}`
-      : undefined
-
   // 搜索城市（调用API）
   const searchCities = useCallback(async (keyword: string) => {
     if (keyword.length < 1) {
@@ -277,7 +272,7 @@ export function HeroSearch() {
 
   return (
     <section
-     
+
       className="relative isolate min-h-[85vh] flex items-center overflow-hidden"
     >
       {/* 背景图片 */}
@@ -340,12 +335,7 @@ export function HeroSearch() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                 <Input
-                 
-                 
-                 
-                 
-                 
-                 
+
                   autoComplete="off"
                   className="h-12 rounded-xl border-gray-200 bg-gray-50 pl-10 text-sm focus:bg-white"
                   id="home-city-input"
@@ -353,7 +343,7 @@ export function HeroSearch() {
                   onFocus={() => setShowDropdown(true)}
                   onKeyDown={handleCityKeyDown}
                   placeholder="搜索城市，如 三亚、成都、西安..."
-                 
+
                   type="text"
                   value={city}
                 />
@@ -366,7 +356,7 @@ export function HeroSearch() {
                     <div
                       className="absolute left-0 top-full z-50 mt-2 max-h-[280px] w-full overflow-y-auto rounded-xl border border-gray-100 bg-white py-1 shadow-xl"
                       id="home-city-dropdown"
-                     
+
                     >
                       {isSearching
                         ? (
@@ -378,7 +368,7 @@ export function HeroSearch() {
                         : displayCities.length > 0
                           ? displayCities.slice(0, 10).map((name, index) => (
                               <Button
-                               
+
                                 className={`w-full justify-start gap-2 px-4 py-2.5 text-left text-sm hover:bg-teal-50 hover:text-teal-700 ${
                                   city === name || activeCityIndex === index
                                     ? 'bg-teal-50 text-teal-600'
@@ -387,7 +377,7 @@ export function HeroSearch() {
                                 id={`home-city-option-${index}`}
                                 key={name}
                                 onClick={() => selectCity(name)}
-                               
+
                                 variant="ghost"
                               >
                                 <MapPin className="h-3.5 w-3.5 flex-shrink-0 opacity-40" />
@@ -410,8 +400,7 @@ export function HeroSearch() {
                 <span className="text-red-500">*</span>
               </Label>
               <Input
-               
-               
+
                 className="h-12 rounded-xl border-gray-200 bg-gray-50 text-sm focus:bg-white"
                 id="home-budget-input"
                 inputMode="numeric"
@@ -448,7 +437,7 @@ export function HeroSearch() {
 
             {/* 搜索按钮 */}
             <Button
-             
+
               className="h-12 gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-slate-600 px-8 text-sm font-bold text-white shadow-lg shadow-teal-500/25 hover:shadow-xl hover:shadow-teal-500/30 disabled:hover:shadow-lg lg:w-auto"
               disabled={isSubmitting}
               type="submit"

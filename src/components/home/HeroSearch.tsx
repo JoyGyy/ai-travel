@@ -4,7 +4,7 @@
  */
 'use client'
 
-import type { ChangeEvent, FormEvent, KeyboardEvent } from 'react'
+import type { ChangeEvent, KeyboardEvent } from 'react'
 
 import { Bot, Calendar, CircleDollarSign, Cloud, Flame, Loader2, MapPin, Search } from 'lucide-react'
 import Image from 'next/image'
@@ -199,7 +199,7 @@ export function HeroSearch() {
   }, [hasHydrated, user, router, validatePlanner, city, days, toast])
 
   const submitPlanner = useCallback(
-    (event: FormEvent<HTMLFormElement>) => {
+    (event: { preventDefault: () => void }) => {
       event.preventDefault()
       onStart()
     },

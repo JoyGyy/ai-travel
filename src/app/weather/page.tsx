@@ -18,7 +18,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import { allCities, hotCityCards } from '@/constants/cities'
+import { allCities } from '@/constants/cities'
 import { QUICK_CITIES, SEASONAL_RECOMMENDS, WEATHER_KNOWLEDGE } from '@/constants/weather'
 import { useWeather } from '@/hooks/useWeather'
 import { getRecentCities, getWeatherTips, saveRecentCity } from '@/lib/utils/weather'
@@ -277,55 +277,6 @@ export default function Weather() {
             </div>
           </div>
         )}
-
-        {/* 热门城市卡片墙 */}
-        <div className="mt-12 animate-fade-in-up">
-          <Separator className="mb-8 bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
-          <div className="mb-6 flex items-center gap-3">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-500 text-white text-sm">
-              🔥
-            </span>
-            <h2 className="text-lg font-bold text-gray-900">热门城市</h2>
-            <span className="text-xs text-gray-400">点击查询天气</span>
-          </div>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-            {hotCityCards.map((item, index) => (
-              <div
-                className={`group relative cursor-pointer overflow-hidden rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl animate-fade-in-up ${
-                  city === item.name ? 'ring-2 ring-white ring-offset-2 shadow-xl scale-[1.02]' : 'shadow-md'
-                }`}
-                key={item.name}
-                onClick={() => selectCity(item.name)}
-                style={{ animationDelay: `${index * 60}ms` }}
-              >
-                {/* 渐变背景 */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-90`} />
-
-                {/* 装饰性圆形 */}
-                <div className="absolute -right-4 -top-4 h-20 w-20 rounded-full bg-white/10" />
-                <div className="absolute -bottom-2 -left-2 h-12 w-12 rounded-full bg-white/5" />
-
-                {/* 内容 */}
-                <div className="relative p-4">
-                  <div className="mb-2 flex items-center justify-between">
-                    <span className="text-3xl drop-shadow-lg">{item.emoji}</span>
-                    <span className="rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur-sm">
-                      {item.tag}
-                    </span>
-                  </div>
-                  <p className="text-lg font-black text-white drop-shadow-md">{item.name}</p>
-                </div>
-
-                {/* 选中状态指示器 */}
-                {city === item.name && (
-                  <div className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow-lg">
-                    <span className="text-xs font-bold text-gray-800">✓</span>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
 
         {/* 多城天气速览 */}
         {!weather && !loading && (

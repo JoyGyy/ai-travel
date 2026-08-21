@@ -83,7 +83,7 @@ export function AgentSteps({ currentStep, steps }: AgentStepsProps) {
   return (
     <div
       aria-live="polite"
-      className="mx-4 mb-4 overflow-hidden rounded-[20px] bg-travel-surface border border-travel-ink/6 shadow-sm"
+      className="mx-4 mb-4 rounded-[20px] bg-travel-surface border border-travel-ink/6 shadow-sm"
     >
       {/* 标题栏 */}
       <div className="px-5 pt-4 pb-2">

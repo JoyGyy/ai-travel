@@ -96,6 +96,9 @@ export function HomeWeather({ loading, weather }: HomeWeatherProps) {
                 {day.maxTemp}
                 °
               </span>
+              <span className="max-w-full overflow-hidden text-[rgba(62,73,88,0.58)] text-[10px] font-bold text-ellipsis whitespace-nowrap">
+                {day.weatherDesc}
+              </span>
             </div>
           ))}
         </div>

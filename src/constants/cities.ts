@@ -438,3 +438,27 @@ export const hotCities = [
   '桂林',
   '拉萨',
 ]
+
+/** 热门城市卡片展示数据 */
+export const hotCityCards = [
+  { name: '北京', emoji: '🏯', gradient: 'from-red-500 to-orange-500', tag: '历史古都' },
+  { name: '上海', emoji: '🌃', gradient: 'from-blue-500 to-purple-500', tag: '国际都市' },
+  { name: '广州', emoji: '🥘', gradient: 'from-orange-500 to-yellow-500', tag: '美食之都' },
+  { name: '深圳', emoji: '🏙️', gradient: 'from-cyan-500 to-blue-500', tag: '创新之城' },
+  { name: '成都', emoji: '🐼', gradient: 'from-green-500 to-teal-500', tag: '天府之国' },
+  { name: '杭州', emoji: '🌊', gradient: 'from-teal-500 to-cyan-500', tag: '人间天堂' },
+  { name: '西安', emoji: '🏛️', gradient: 'from-amber-600 to-orange-500', tag: '千年古都' },
+  { name: '重庆', emoji: '🌶️', gradient: 'from-red-600 to-pink-500', tag: '山城雾都' },
+  { name: '南京', emoji: '🏰', gradient: 'from-violet-500 to-purple-600', tag: '六朝古都' },
+  { name: '武汉', emoji: '🌸', gradient: 'from-pink-500 to-rose-500', tag: '江城樱花' },
+  { name: '长沙', emoji: '🎭', gradient: 'from-rose-500 to-red-500', tag: '星城烟火' },
+  { name: '苏州', emoji: '🏡', gradient: 'from-emerald-500 to-green-500', tag: '园林之城' },
+  { name: '三亚', emoji: '🏖️', gradient: 'from-sky-400 to-blue-500', tag: '热带海滨' },
+  { name: '丽江', emoji: '🏔️', gradient: 'from-indigo-500 to-blue-600', tag: '古城雪山' },
+  { name: '大理', emoji: '🌾', gradient: 'from-lime-500 to-green-500', tag: '风花雪月' },
+  { name: '厦门', emoji: '🌅', gradient: 'from-orange-400 to-rose-500', tag: '海上花园' },
+  { name: '青岛', emoji: '🍺', gradient: 'from-yellow-500 to-amber-500', tag: '啤酒之城' },
+  { name: '洛阳', emoji: '🌺', gradient: 'from-fuchsia-500 to-pink-500', tag: '牡丹花城' },
+  { name: '桂林', emoji: '⛰️', gradient: 'from-teal-400 to-emerald-500', tag: '山水甲天下' },
+  { name: '拉萨', emoji: '🏔️', gradient: 'from-blue-600 to-indigo-700', tag: '雪域圣地' },
+]

@@ -209,6 +209,7 @@ html {
   min-width: 320px;
   overflow-x: hidden;
   scroll-behavior: smooth;
+  scroll-padding-top: 4rem;
 }
 
 body {

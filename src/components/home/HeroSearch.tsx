@@ -470,7 +470,7 @@ export function HeroSearch() {
                       : '选择出行日期'}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent align="start" className="w-auto p-0">
+                <PopoverContent align="start" className="w-auto rounded-2xl border-gray-100 p-0 shadow-xl">
                   <CalendarComponent
                     defaultMonth={dateRange?.from}
                     disabled={date => date < startOfDay(new Date())}

@@ -49,11 +49,11 @@ function TopNav() {
       aria-label="主导航"
       className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200/60 shadow-sm"
     >
-      <div className="max-w-300 h-16 mx-auto px-4 sm:px-6 flex items-center gap-2.5 sm:gap-3.5">
+      <div className="max-w-300 h-16 mx-auto px-4 sm:px-6 flex items-center justify-between gap-2.5 sm:gap-3.5">
 
         <Link
           aria-label="返回首页"
-          className="min-h-11 inline-flex items-center gap-2.5 mr-auto sm:mr-4.5 rounded-2xl no-underline text-travel-ink"
+          className="min-h-11 inline-flex items-center gap-2.5 shrink-0 rounded-2xl no-underline text-travel-ink"
           href="/"
         >
           <span
@@ -67,7 +67,7 @@ function TopNav() {
           </span>
         </Link>
 
-        <div className="hidden sm:flex items-center gap-2">
+        <div className="hidden sm:flex flex-1 items-center justify-center gap-2">
 
           {tabs.map((tab) => {
             const isActive
@@ -94,7 +94,7 @@ function TopNav() {
             )
           })}
         </div>
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0 mr-1">
           {user
             ? (
                 <Link

@@ -11,9 +11,9 @@ export type CalendarProps = DayPickerProps
 
 function Chevron({ orientation }: { orientation?: string }) {
   if (orientation === 'left') {
-    return <ChevronLeft className="h-4 w-4" />
+    return <ChevronLeft className="size-4" />
   }
-  return <ChevronRight className="h-4 w-4" />
+  return <ChevronRight className="size-4" />
 }
 
 function Calendar({
@@ -24,51 +24,62 @@ function Calendar({
 }: CalendarProps) {
   return (
     <DayPicker
-      className={cn('p-5', className)}
+      className={cn(
+        'bg-background group/calendar p-3 [--cell-size:2.25rem]',
+        className,
+      )}
       classNames={{
-        months: 'flex flex-col sm:flex-row gap-6',
+        months: 'relative flex flex-col gap-4 sm:flex-row',
         month: 'space-y-4',
-        month_caption: 'flex items-center justify-center py-2',
+        month_caption: 'flex items-center justify-center gap-2 pt-1 pb-2',
         caption_label: 'text-sm font-semibold text-gray-800',
-        nav: 'flex items-center gap-1',
+        nav: 'absolute inset-x-0 top-0 flex items-center justify-between',
         button_previous: cn(
-          'absolute left-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full',
-          'text-gray-500 hover:bg-gray-100 hover:text-gray-700',
-          'transition-colors duration-150 cursor-pointer',
+          'inline-flex size-[--cell-size] items-center justify-center rounded-md',
+          'text-gray-500 hover:bg-gray-100 hover:text-gray-900',
+          'transition-colors cursor-pointer',
+          'disabled:pointer-events-none disabled:opacity-40',
         ),
         button_next: cn(
-          'absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full',
-          'text-gray-500 hover:bg-gray-100 hover:text-gray-700',
-          'transition-colors duration-150 cursor-pointer',
+          'inline-flex size-[--cell-size] items-center justify-center rounded-md',
+          'text-gray-500 hover:bg-gray-100 hover:text-gray-900',
+          'transition-colors cursor-pointer',
+          'disabled:pointer-events-none disabled:opacity-40',
         ),
-        month_grid: 'w-full border-collapse',
-        weekdays: 'flex mb-1',
+        month_grid: 'w-full border-collapse space-y-1',
+        weekdays: 'flex',
         weekday: cn(
-          'flex-1 text-center text-xs font-medium text-gray-400 pb-2',
+          'flex-1 text-center text-[0.8rem] font-medium text-gray-400 pb-1',
         ),
-        week: 'flex mt-0.5',
+        week: 'flex mt-1',
         day: cn(
-          'flex-1 text-center p-0.5 relative',
-          'first:[&:has([aria-selected])]:rounded-l-lg last:[&:has([aria-selected])]:rounded-r-lg',
+          'group/day relative aspect-square flex-1',
+          'first:[&:has([data-range-start])]:rounded-l-md last:[&:has([data-range-end])]:rounded-r-md',
         ),
         day_button: cn(
-          'inline-flex h-10 w-full items-center justify-center rounded-lg text-sm',
-          'transition-all duration-150 cursor-pointer',
-          'hover:bg-teal-50 hover:text-teal-700',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-1',
-          'aria-selected:font-medium',
+          'inline-flex size-full items-center justify-center rounded-md text-sm',
+          'transition-all cursor-pointer',
+          'hover:bg-gray-100 hover:text-gray-900',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+          'group-aria-selected/day:bg-primary group-aria-selected/day:text-primary-foreground',
+          'group-aria-selected/day:font-medium',
+        ),
+        range_start: 'rounded-l-md bg-primary/10',
+        range_end: 'rounded-r-md bg-primary/10',
+        range_middle: cn(
+          'bg-accent',
+          '[&>button]:rounded-none [&>button]:bg-transparent',
+          '[&>button]:hover:bg-accent/80',
         ),
         selected: cn(
-          '[&>button]:bg-teal-600 [&>button]:text-white [&>button]:hover:bg-teal-700',
-          '[&>button]:shadow-sm',
+          '[&>button]:bg-primary [&>button]:text-primary-foreground',
+          '[&>button]:hover:bg-primary [&>button]:hover:text-primary-foreground',
+          '[&>button]:font-medium [&>button]:shadow-sm',
         ),
-        range_start: '[&>button]:rounded-r-none [&>button]:bg-teal-600 [&>button]:text-white',
-        range_end: '[&>button]:rounded-l-none [&>button]:bg-teal-600 [&>button]:text-white',
-        range_middle: cn(
-          '[&>button]:rounded-none [&>button]:bg-teal-50 [&>button]:text-teal-700',
-          '[&>button]:hover:bg-teal-100',
+        today: cn(
+          '[&>button]:bg-accent [&>button]:text-accent-foreground',
+          '[&>button]:font-bold',
         ),
-        today: '[&>button]:font-bold [&>button]:text-teal-600',
         outside: '[&>button]:text-gray-300 [&>button]:hover:text-gray-400',
         disabled: '[&>button]:text-gray-200 [&>button]:cursor-not-allowed [&>button]:hover:bg-transparent',
         hidden: 'invisible',

@@ -1,25 +1,27 @@
 'use client'
 
 import type { FormEvent } from 'react'
-import type { ModelProvider } from '@/hooks/useTravelChat'
 
-import { ChevronDown, Send, Trash2 } from 'lucide-react'
+import { ChevronDown, Plus, Send, Trash2, X } from 'lucide-react'
 import { useState } from 'react'
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useModels } from '@/hooks/useModels'
 import { useTravelChat } from '@/hooks/useTravelChat'
-
-const MODEL_OPTIONS: { label: string, value: ModelProvider }[] = [
-  { label: '硅基流动', value: 'siliconflow' },
-  { label: 'DeepSeek', value: 'deepseek' },
-]
 
 export default function ChatPage() {
   const [input, setInput] = useState('')
   const { error, messages, model, sendMessage, setMessages, setModel, status } = useTravelChat()
+  const { addCustomModel, loading: modelsLoading, models, removeCustomModel } = useModels()
   const [showModelDropdown, setShowModelDropdown] = useState(false)
+  const [showAddDialog, setShowAddDialog] = useState(false)
+  const [newModel, setNewModel] = useState({ apiKey: '', baseUrl: '', label: '', model: '' })
+
+  // 获取当前模型的显示名称
+  const currentModelLabel = models.find(m => m.value === model)?.label || model
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -28,6 +30,16 @@ export default function ChatPage() {
       return
     sendMessage({ text })
     setInput('')
+  }
+
+  function handleAddModel() {
+    if (!newModel.label || !newModel.model || !newModel.apiKey || !newModel.baseUrl)
+      return
+
+    const value = addCustomModel(newModel)
+    setModel(value)
+    setShowAddDialog(false)
+    setNewModel({ apiKey: '', baseUrl: '', label: '', model: '' })
   }
 
   return (
@@ -63,38 +75,82 @@ export default function ChatPage() {
                 aria-expanded={showModelDropdown}
                 aria-haspopup="listbox"
                 className="flex-shrink-0 gap-1.5 border-white/60 bg-white/80 text-gray-600 shadow-sm backdrop-blur-sm hover:-translate-y-0.5 hover:bg-white hover:shadow-md"
+                disabled={modelsLoading}
                 onClick={() => setShowModelDropdown(!showModelDropdown)}
                 variant="outline"
               >
                 <span className="text-xs font-medium">
-                  {MODEL_OPTIONS.find(o => o.value === model)?.label}
+                  {modelsLoading ? '加载中...' : currentModelLabel}
                 </span>
                 <ChevronDown className="h-3.5 w-3.5 opacity-60" />
               </Button>
               {showModelDropdown && (
                 <div
-                  className="absolute right-0 top-full z-50 mt-1 min-w-[120px] overflow-hidden rounded-xl border border-white/60 bg-white/95 shadow-xl backdrop-blur-sm"
+                  className="absolute right-0 top-full z-50 mt-1 min-w-[200px] overflow-hidden rounded-xl border border-white/60 bg-white/95 shadow-xl backdrop-blur-sm"
                   role="listbox"
                 >
-                  {MODEL_OPTIONS.map(option => (
-                    <button
-                      className={`w-full px-3 py-2 text-left text-xs font-medium transition-colors ${
-                        model === option.value
-                          ? 'bg-teal-50 text-teal-700'
-                          : 'text-gray-600 hover:bg-gray-50'
+                  {models.map(option => (
+                    <div
+                      className={`flex items-center justify-between px-3 py-2 text-xs font-medium transition-colors ${
+                        !option.available
+                          ? 'cursor-not-allowed opacity-40'
+                          : model === option.value
+                            ? 'bg-teal-50 text-teal-700'
+                            : 'text-gray-600 hover:bg-gray-50 cursor-pointer'
                       }`}
                       key={option.value}
+                    >
+                      <button
+                        className="flex-1 text-left"
+                        disabled={!option.available}
+                        onClick={() => {
+                          if (option.available) {
+                            setModel(option.value)
+                            setShowModelDropdown(false)
+                          }
+                        }}
+                        role="option"
+                        aria-selected={model === option.value}
+                        type="button"
+                      >
+                        <span>{option.label}</span>
+                        {!option.available && (
+                          <span className="ml-1.5 text-[10px] text-red-400">（未配置）</span>
+                        )}
+                      </button>
+                      {option.custom && (
+                        <button
+                          className="ml-2 p-0.5 text-gray-400 hover:text-red-500"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            if (window.confirm(`删除模型「${option.label}」？`)) {
+                              removeCustomModel(option.value)
+                              if (model === option.value) {
+                                setModel('siliconflow')
+                              }
+                            }
+                          }}
+                          title="删除模型"
+                          type="button"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <div className="border-t border-gray-100">
+                    <button
+                      className="flex w-full items-center gap-1.5 px-3 py-2 text-xs font-medium text-teal-600 hover:bg-teal-50"
                       onClick={() => {
-                        setModel(option.value)
                         setShowModelDropdown(false)
+                        setShowAddDialog(true)
                       }}
-                      role="option"
-                      aria-selected={model === option.value}
                       type="button"
                     >
-                      {option.label}
+                      <Plus className="h-3 w-3" />
+                      添加模型
                     </button>
-                  ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -115,6 +171,96 @@ export default function ChatPage() {
           </div>
         </div>
       </div>
+
+      {/* 添加模型对话框 */}
+      {showAddDialog && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          onClick={() => setShowAddDialog(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl border border-white/60 bg-white p-6 shadow-2xl"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-gray-900">添加自定义模型</h3>
+              <button
+                className="text-gray-400 hover:text-gray-600"
+                onClick={() => setShowAddDialog(false)}
+                type="button"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <p className="mb-4 text-xs text-gray-500">
+              支持 OpenAI 兼容接口的模型（如 Ollama、vLLM、其他 API 代理等）
+            </p>
+            <div className="space-y-3">
+              <div>
+                <Label className="mb-1 block text-xs font-medium text-gray-700">
+                  显示名称
+                </Label>
+                <Input
+                  className="text-sm"
+                  onChange={e => setNewModel(prev => ({ ...prev, label: e.target.value }))}
+                  placeholder="如：我的 Ollama"
+                  value={newModel.label}
+                />
+              </div>
+              <div>
+                <Label className="mb-1 block text-xs font-medium text-gray-700">
+                  API 地址
+                </Label>
+                <Input
+                  className="text-sm"
+                  onChange={e => setNewModel(prev => ({ ...prev, baseUrl: e.target.value }))}
+                  placeholder="如：http://localhost:11434/v1"
+                  value={newModel.baseUrl}
+                />
+              </div>
+              <div>
+                <Label className="mb-1 block text-xs font-medium text-gray-700">
+                  模型名称
+                </Label>
+                <Input
+                  className="text-sm"
+                  onChange={e => setNewModel(prev => ({ ...prev, model: e.target.value }))}
+                  placeholder="如：llama3、qwen2"
+                  value={newModel.model}
+                />
+              </div>
+              <div>
+                <Label className="mb-1 block text-xs font-medium text-gray-700">
+                  API Key
+                </Label>
+                <Input
+                  className="text-sm"
+                  onChange={e => setNewModel(prev => ({ ...prev, apiKey: e.target.value }))}
+                  placeholder="如不需要可留空"
+                  type="password"
+                  value={newModel.apiKey}
+                />
+              </div>
+            </div>
+            <div className="mt-5 flex justify-end gap-2">
+              <Button
+                className="text-xs"
+                onClick={() => setShowAddDialog(false)}
+                variant="outline"
+              >
+                取消
+              </Button>
+              <Button
+                className="text-xs"
+                disabled={!newModel.label || !newModel.model || !newModel.baseUrl}
+                onClick={handleAddModel}
+              >
+                添加
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 消息列表 */}
       <div className="relative z-2 mx-auto -mt-6 flex w-full max-w-[900px] flex-1 flex-col gap-4 overflow-x-hidden overflow-y-auto overscroll-contain rounded-t-7 border border-white/60 bg-white/90 p-4 pb-5.5 shadow-[0_18px_54px_rgba(0,0,0,0.08)] backdrop-blur-sm scrollbar-thin scrollbar-thumb-gray-200">

@@ -14,8 +14,21 @@ const deepseek = createOpenAICompatible({
   name: 'deepseek',
 })
 
-export function getTravelModel(modelName?: string) {
-  // 如果指定了模型名称，按名称选择
+export function getTravelModel(
+  modelName?: string,
+  customModel?: { apiKey?: string, baseUrl?: string, model?: string },
+) {
+  // 自定义模型：动态创建 provider
+  if (modelName?.startsWith('custom-') && customModel?.baseUrl && customModel?.model) {
+    const provider = createOpenAICompatible({
+      apiKey: customModel.apiKey || 'no-key',
+      baseURL: customModel.baseUrl,
+      name: 'custom',
+    })
+    return provider(customModel.model)
+  }
+
+  // 内置模型：按名称选择
   if (modelName === 'deepseek' && env.DEEPSEEK_API_KEY) {
     return deepseek(env.DEEPSEEK_MODEL)
   }

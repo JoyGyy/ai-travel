@@ -451,7 +451,7 @@ export function HeroSearch() {
                   <PopoverTrigger asChild>
                     <Button
                       className={cn(
-                        'h-12 w-full justify-start rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm font-normal hover:bg-gray-100',
+                        'h-12 w-full justify-start rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm font-normal text-gray-900 hover:bg-gray-100 hover:text-gray-900',
                         !dateRange?.from && 'text-gray-400',
                       )}
                       variant="ghost"
@@ -494,7 +494,7 @@ export function HeroSearch() {
                   <PopoverTrigger asChild>
                     <Button
                       className={cn(
-                        'h-12 w-full justify-start rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm font-normal hover:bg-gray-100',
+                        'h-12 w-full justify-start rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm font-normal text-gray-900 hover:bg-gray-100 hover:text-gray-900',
                         !dateRange?.to && 'text-gray-400',
                       )}
                       disabled={!dateRange?.from}

@@ -82,7 +82,7 @@ export default function HomePage() {
     }
     if (!user)
       return router.push('/login')
-    router.push('/detail')
+    router.push('/chat')
   }
 
   return (

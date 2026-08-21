@@ -71,7 +71,7 @@ export default function ChatPage() {
             <Popover open={showModelDropdown} onOpenChange={setShowModelDropdown}>
               <PopoverTrigger asChild>
                 <Button
-                  className="flex-shrink-0 gap-1.5 border-white/60 bg-white/80 text-gray-600 shadow-sm backdrop-blur-sm hover:-translate-y-0.5 hover:bg-white hover:shadow-md"
+                  className="flex-shrink-0 gap-1.5 border-gray-200 bg-white/80 text-gray-600 shadow-sm backdrop-blur-sm hover:-translate-y-0.5 hover:bg-white hover:shadow-md"
                   disabled={modelsLoading}
                   variant="outline"
                 >
@@ -341,15 +341,17 @@ export default function ChatPage() {
                     </p>
                   )
                 }
+                // 隐藏工具调用的原始数据，只显示一个简洁的状态
                 if (part.type.startsWith('tool-') || part.type === 'dynamic-tool') {
                   return (
-                    <pre
-                      className="overflow-auto rounded-2xl bg-muted p-3 text-xs"
+                    <div
+                      className="my-1 flex items-center gap-1.5 text-xs text-gray-400"
                       // eslint-disable-next-line react/no-array-index-key
                       key={index}
                     >
-                      {JSON.stringify(part, null, 2)}
-                    </pre>
+                      <span className="h-1.5 w-1.5 rounded-full bg-teal-400" />
+                      <span>正在查询...</span>
+                    </div>
                   )
                 }
                 return null

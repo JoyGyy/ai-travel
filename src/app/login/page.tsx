@@ -272,7 +272,7 @@ export default function Login() {
               </Label>
               <Input
                 autoComplete="username"
-                className="h-12 mt-2 border-gray-200 hover:border-gray-300 focus:border-teal-300 focus:ring-2 focus:ring-teal-100 aria-[invalid=true]:border-red-400 aria-[invalid=true]:ring-2 aria-[invalid=true]:ring-red-100"
+                className="h-12 mt-2 border-gray-200 hover:border-gray-300 focus:border-teal-300 focus:ring-2 focus:ring-teal-100"
                 id="login-username"
                 name="username"
                 onBlur={() => {
@@ -307,7 +307,7 @@ export default function Login() {
               <div className="relative mt-2">
                 <Input
                   autoComplete={tab === 'register' ? 'new-password' : 'current-password'}
-                  className="h-12 pr-12 border-gray-200 hover:border-gray-300 focus:border-teal-300 focus:ring-2 focus:ring-teal-100 aria-[invalid=true]:border-red-400 aria-[invalid=true]:ring-2 aria-[invalid=true]:ring-red-100"
+                  className="h-12 pr-12 border-gray-200 hover:border-gray-300 focus:border-teal-300 focus:ring-2 focus:ring-teal-100"
                   id="login-password"
                   name="password"
                   onBlur={() => {

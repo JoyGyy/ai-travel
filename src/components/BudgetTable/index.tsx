@@ -54,7 +54,6 @@ export function BudgetTable({ data }: BudgetTableProps) {
       <div className="p-[18px] border border-travel-ink/6 rounded-3xl bg-travel-surface shadow-sm">
         {/* ---- 数值表格 ---- */}
         <table className="w-full border-collapse">
-          <caption className="sr-only">旅行预算分类明细</caption>
           <tbody>
             {budgetKeys.map(key => (
               <tr

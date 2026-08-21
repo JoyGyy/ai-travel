@@ -2,7 +2,7 @@
  * 认证状态管理 Store
  *
  * 使用 Zustand + persist 中间件管理用户认证状态，
- * 自动将登录态持久化到 localStorage（key: travel_auth）。
+ * 仅将非敏感用户信息持久化到 localStorage（key: travel_auth）。
  *
  * 功能：
  * - 用户登录/注册（调用后端 API）
@@ -24,7 +24,6 @@ interface AuthState {
   logout: () => void
   register: (username: string, password: string) => Promise<void>
   setHasHydrated: (v: boolean) => void
-  token: null | string
   user: AuthUser | null
 }
 
@@ -40,24 +39,22 @@ export const useAuthStore = create<AuthState>()(
         async login(username, password) {
           const data = await loginApi(username, password)
           if (data) {
-            set({ token: data.token, user: data.user })
+            set({ user: data.user })
           }
         },
         logout() {
-          set({ token: null, user: null })
+          set({ user: null })
         },
         async register(username, password) {
           const data = await registerApi(username, password)
           if (data) {
-            set({ token: data.token, user: data.user })
+            set({ user: data.user })
           }
         },
 
         // --- 异步操作：登录/注册 ---
 
         setHasHydrated: v => set({ _hasHydrated: v }),
-
-        token: null,
 
         // --- 同步操作：登出 ---
 
@@ -66,10 +63,15 @@ export const useAuthStore = create<AuthState>()(
       // --- 持久化配置 ---
 
       {
+        merge: (persistedState, currentState) => {
+          const state = persistedState as Partial<AuthState> | undefined
+          return { ...currentState, user: state?.user ?? null }
+        },
         name: 'travel_auth',
         onRehydrateStorage: () => (state) => {
           state?.setHasHydrated(true)
         },
+        partialize: state => ({ user: state.user }),
       },
     ),
     { name: 'AuthStore' },

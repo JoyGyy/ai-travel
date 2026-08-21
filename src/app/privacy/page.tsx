@@ -89,8 +89,8 @@ export default function Privacy() {
                 三、本地存储
               </h2>
               <p className="m-0 text-travel-ocean/72 text-sm leading-[1.9] [&+p]:mt-2.5">
-                本站前端会使用浏览器本地存储保存登录状态，例如
-                `travel_auth`。你可以通过退出登录、清理浏览器缓存或删除站点数据来移除本地保存的信息。
+                本站前端会使用浏览器本地存储保存非敏感展示信息，例如
+                `travel_auth` 中的用户基础资料；登录凭证仅保存在 httpOnly Cookie 中。你可以通过退出登录、清理浏览器缓存或删除站点数据来移除本地保存的信息。
               </p>
             </section>
 

@@ -1,12 +1,10 @@
 /**
  * API 请求基础封装
  *
- * 提供统一的 JSON 请求方法，内置 JWT 认证头注入、
+ * 提供统一的 JSON 请求方法，内置 Cookie 认证、
  * CSRF token 附加、响应解析和错误处理。
  */
 import type { ApiSuccess } from '@/types/api'
-
-const AUTH_STORAGE_KEY = 'travel_auth'
 
 interface RequestOptions {
   auth?: boolean
@@ -30,12 +28,11 @@ export class ApiError extends Error {
 }
 
 export function getAuthHeader(): Record<string, string> {
-  const token = readPersistedToken()
-  return token ? { Authorization: `Bearer ${token}` } : {}
+  return {}
 }
 
 export function hasAuthToken(): boolean {
-  return Boolean(readPersistedToken())
+  return false
 }
 
 /** 安全解析 JSON 响应，非 JSON 类型返回 null */
@@ -49,21 +46,6 @@ async function parseResponse<T>(res: Response): Promise<null | T> {
   }
   catch {
     return null
-  }
-}
-
-/** 从 localStorage 读取 Zustand 持久化的 JWT token */
-function readPersistedToken(): string {
-  try {
-    const raw = localStorage.getItem(AUTH_STORAGE_KEY)
-    if (!raw)
-      return ''
-
-    const parsed = JSON.parse(raw)
-    return parsed?.state?.token || ''
-  }
-  catch {
-    return ''
   }
 }
 

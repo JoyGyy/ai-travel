@@ -257,8 +257,10 @@ export function HeroSearch() {
     const budgetNum = Number(budget)
     if (budget && (Number.isNaN(budgetNum) || budgetNum <= 0))
       errors.budget = '预算需大于 0'
-    if (!dateRange?.from || !dateRange?.to)
-      errors.date = '请选择出行日期'
+    if (!dateRange?.from)
+      errors.date = '请选择出发日期'
+    else if (!dateRange?.to)
+      errors.date = '请选择返回日期'
     setFieldErrors(errors)
     return { budgetNum, isValid: Object.keys(errors).length === 0 }
   }, [city, budget, dateRange])
@@ -436,61 +438,112 @@ export function HeroSearch() {
                 : null}
             </div>
 
-            {/* 日期范围 */}
-            <div className="w-full text-left lg:w-[240px]">
-              <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-gray-500">
-                <Calendar className="h-3.5 w-3.5" />
-                出行日期
-                <span className="text-red-500">*</span>
-              </span>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    className={cn(
-                      'h-12 w-full justify-start rounded-xl border border-gray-200 bg-gray-50 px-4 text-sm font-normal hover:bg-gray-100',
-                      !dateRange && 'text-gray-400',
-                    )}
-                    variant="ghost"
-                  >
-                    <Calendar className="mr-2 h-4 w-4" />
-                    {dateRange?.from
-                      ? dateRange.to
+            {/* 出发日期 + 返回日期 */}
+            <div className="flex w-full gap-2 lg:w-[320px]">
+              {/* 出发日期 */}
+              <div className="flex-1 text-left">
+                <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-gray-500">
+                  <Calendar className="h-3.5 w-3.5" />
+                  出发日期
+                  <span className="text-red-500">*</span>
+                </span>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      className={cn(
+                        'h-12 w-full justify-start rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm font-normal hover:bg-gray-100',
+                        !dateRange?.from && 'text-gray-400',
+                      )}
+                      variant="ghost"
+                    >
+                      <Calendar className="mr-1.5 h-4 w-4 flex-shrink-0" />
+                      {dateRange?.from
+                        ? format(dateRange.from, 'MM/dd', { locale: zhCN })
+                        : '出发'}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent align="start" className="w-auto rounded-2xl border-gray-100 p-0 shadow-xl">
+                    <CalendarComponent
+                      defaultMonth={dateRange?.from}
+                      disabled={date => date < startOfDay(new Date())}
+                      locale={zhCN}
+                      mode="single"
+                      onSelect={(day) => {
+                        if (day) {
+                          setDateRange(prev => ({
+                            from: day,
+                            to: prev?.to && prev.to > day ? prev.to : undefined,
+                          }))
+                          clearFieldError('date')
+                        }
+                      }}
+                      selected={dateRange?.from}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* 返回日期 */}
+              <div className="flex-1 text-left">
+                <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-gray-500">
+                  <Calendar className="h-3.5 w-3.5" />
+                  返回日期
+                  <span className="text-red-500">*</span>
+                </span>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      className={cn(
+                        'h-12 w-full justify-start rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm font-normal hover:bg-gray-100',
+                        !dateRange?.to && 'text-gray-400',
+                      )}
+                      disabled={!dateRange?.from}
+                      variant="ghost"
+                    >
+                      <Calendar className="mr-1.5 h-4 w-4 flex-shrink-0" />
+                      {dateRange?.to
                         ? (
                             <>
-                              {format(dateRange.from, 'MM月dd日', { locale: zhCN })}
-                              {' - '}
-                              {format(dateRange.to, 'MM月dd日', { locale: zhCN })}
-                              <span className="ml-2 text-xs text-gray-400">
+                              {format(dateRange.to, 'MM/dd', { locale: zhCN })}
+                              <span className="ml-1 text-xs text-gray-400">
                                 {days}
                                 天
                               </span>
                             </>
                           )
-                        : format(dateRange.from, 'MM月dd日', { locale: zhCN })
-                      : '选择出行日期'}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent align="start" className="w-auto rounded-2xl border-gray-100 p-0 shadow-xl">
-                  <CalendarComponent
-                    defaultMonth={dateRange?.from}
-                    disabled={date => date < startOfDay(new Date())}
-                    locale={zhCN}
-                    mode="range"
-                    numberOfMonths={2}
-                    onSelect={(range) => {
-                      setDateRange(range)
-                      if (range?.from && range?.to) {
-                        clearFieldError('date')
-                      }
-                    }}
-                    selected={dateRange}
-                  />
-                </PopoverContent>
-              </Popover>
-              {fieldErrors.date
-                ? <span className="mt-1.5 text-xs text-red-500" id="home-date-error">{fieldErrors.date}</span>
-                : null}
+                        : '返回'}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent align="start" className="w-auto rounded-2xl border-gray-100 p-0 shadow-xl">
+                    <CalendarComponent
+                      defaultMonth={dateRange?.from}
+                      disabled={date => date <= (dateRange?.from ?? startOfDay(new Date()))}
+                      locale={zhCN}
+                      mode="single"
+                      onSelect={(day) => {
+                        if (day) {
+                          setDateRange(prev => ({
+                            from: prev?.from,
+                            to: day,
+                          }))
+                          clearFieldError('date')
+                        }
+                      }}
+                      selected={dateRange?.to}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
             </div>
+
+            {/* 日期错误提示 */}
+            {fieldErrors.date
+              ? (
+                  <div className="w-full text-left lg:w-[320px]">
+                    <span className="text-xs text-red-500" id="home-date-error">{fieldErrors.date}</span>
+                  </div>
+                )
+              : null}
 
             {/* 搜索按钮 */}
             <Button

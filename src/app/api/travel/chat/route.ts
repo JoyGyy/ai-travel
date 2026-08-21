@@ -13,6 +13,9 @@ export const POST = withAuthRaw(async (req, { user }) => {
     throw httpError(400, '消息不能为空')
   }
 
+  // 支持 model 参数：'siliconflow' | 'deepseek'
+  const model = typeof body.model === 'string' ? body.model : undefined
+
   await consumeAiQuota(user.id)
-  return createTravelChatStream(messages)
+  return createTravelChatStream(messages, model)
 })

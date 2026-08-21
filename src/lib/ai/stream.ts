@@ -20,11 +20,11 @@ export const TRAVEL_SYSTEM_PROMPT = `你是一个专业的旅行规划师，不�
 - 复杂规划类问题先给结论，再给推荐理由、行程建议、预算与交通、注意事项。
 - 当答案依赖城市、景点、产品景点或注意事项数据时，优先调用工具。`
 
-export async function createTravelChatStream(messages: UIMessage[]) {
+export async function createTravelChatStream(messages: UIMessage[], modelName?: string) {
   const result = streamText({
     maxOutputTokens: 4096,
     messages: await convertToModelMessages(messages),
-    model: getTravelModel(),
+    model: getTravelModel(modelName),
     stopWhen: isStepCount(5),
     system: TRAVEL_SYSTEM_PROMPT,
     tools: travelTools,

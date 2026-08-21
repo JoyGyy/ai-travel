@@ -14,7 +14,16 @@ const deepseek = createOpenAICompatible({
   name: 'deepseek',
 })
 
-export function getTravelModel() {
+export function getTravelModel(modelName?: string) {
+  // 如果指定了模型名称，按名称选择
+  if (modelName === 'deepseek' && env.DEEPSEEK_API_KEY) {
+    return deepseek(env.DEEPSEEK_MODEL)
+  }
+  if (modelName === 'siliconflow' && env.SILICONFLOW_API_KEY) {
+    return siliconflow(env.SILICONFLOW_MODEL)
+  }
+
+  // 默认优先使用 DeepSeek，其次 SiliconFlow
   if (env.DEEPSEEK_API_KEY)
     return deepseek(env.DEEPSEEK_MODEL)
   if (env.SILICONFLOW_API_KEY)

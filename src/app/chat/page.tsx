@@ -1,7 +1,9 @@
 'use client'
 
 import type { FormEvent } from 'react'
-import { Send, Trash2 } from 'lucide-react'
+import type { ModelProvider } from '@/hooks/useTravelChat'
+
+import { ChevronDown, Send, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -9,9 +11,15 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useTravelChat } from '@/hooks/useTravelChat'
 
+const MODEL_OPTIONS: { label: string, value: ModelProvider }[] = [
+  { label: '硅基流动', value: 'siliconflow' },
+  { label: 'DeepSeek', value: 'deepseek' },
+]
+
 export default function ChatPage() {
   const [input, setInput] = useState('')
-  const { error, messages, sendMessage, setMessages, status } = useTravelChat()
+  const { error, messages, model, sendMessage, setMessages, setModel, status } = useTravelChat()
+  const [showModelDropdown, setShowModelDropdown] = useState(false)
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -23,7 +31,10 @@ export default function ChatPage() {
   }
 
   return (
-    <section className="flex h-full min-h-0 flex-col overflow-hidden bg-gradient-to-br from-gray-50 to-white text-travel-ink">
+    <section
+      className="flex h-full min-h-0 flex-col overflow-hidden bg-gradient-to-br from-gray-50 to-white text-travel-ink"
+      onClick={() => showModelDropdown && setShowModelDropdown(false)}
+    >
       {/* Hero 区域 */}
       <div className="relative flex-shrink-0 overflow-hidden bg-teal-50/60 pb-10 pl-5 pr-5 pt-6">
         {/* 装饰元素 */}
@@ -45,20 +56,63 @@ export default function ChatPage() {
               告诉我目的地、天数、预算和偏好，我会帮你规划路线。
             </p>
           </div>
-          <Button
-            aria-label="清空对话"
-            className="flex-shrink-0 border-white/60 bg-white/80 text-gray-500 shadow-sm backdrop-blur-sm hover:-translate-y-0.5 hover:bg-white hover:text-red-500 hover:shadow-md"
-            onClick={() => {
-              if (window.confirm('确定要清空对话记录吗？')) {
-                setMessages([])
-              }
-            }}
-            size="icon"
-            title="清空对话"
-            variant="outline"
-          >
-            <Trash2 className="h-5 w-5" />
-          </Button>
+          <div className="flex items-center gap-2">
+            {/* 模型选择下拉框 */}
+            <div className="relative" onClick={e => e.stopPropagation()}>
+              <Button
+                aria-expanded={showModelDropdown}
+                aria-haspopup="listbox"
+                className="flex-shrink-0 gap-1.5 border-white/60 bg-white/80 text-gray-600 shadow-sm backdrop-blur-sm hover:-translate-y-0.5 hover:bg-white hover:shadow-md"
+                onClick={() => setShowModelDropdown(!showModelDropdown)}
+                variant="outline"
+              >
+                <span className="text-xs font-medium">
+                  {MODEL_OPTIONS.find(o => o.value === model)?.label}
+                </span>
+                <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+              </Button>
+              {showModelDropdown && (
+                <div
+                  className="absolute right-0 top-full z-50 mt-1 min-w-[120px] overflow-hidden rounded-xl border border-white/60 bg-white/95 shadow-xl backdrop-blur-sm"
+                  role="listbox"
+                >
+                  {MODEL_OPTIONS.map(option => (
+                    <button
+                      className={`w-full px-3 py-2 text-left text-xs font-medium transition-colors ${
+                        model === option.value
+                          ? 'bg-teal-50 text-teal-700'
+                          : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                      key={option.value}
+                      onClick={() => {
+                        setModel(option.value)
+                        setShowModelDropdown(false)
+                      }}
+                      role="option"
+                      aria-selected={model === option.value}
+                      type="button"
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <Button
+              aria-label="清空对话"
+              className="flex-shrink-0 border-white/60 bg-white/80 text-gray-500 shadow-sm backdrop-blur-sm hover:-translate-y-0.5 hover:bg-white hover:text-red-500 hover:shadow-md"
+              onClick={() => {
+                if (window.confirm('确定要清空对话记录吗？')) {
+                  setMessages([])
+                }
+              }}
+              size="icon"
+              title="清空对话"
+              variant="outline"
+            >
+              <Trash2 className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
       </div>
 

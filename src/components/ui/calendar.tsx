@@ -24,7 +24,7 @@ function Calendar({
 }: CalendarProps) {
   return (
     <DayPicker
-      className={cn('p-3', className)}
+      className={cn('p-3 bg-card rounded-md', className)}
       classNames={classNames}
       components={{
         Chevron,

@@ -76,6 +76,7 @@ nginx.conf
 *.temp
 tmp/
 temp/
+.worktrees/
 
 # 操作系统文件
 Thumbs.db

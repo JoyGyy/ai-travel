@@ -17,8 +17,6 @@ export interface LLMProviderConfig {
 
 const DEFAULT_SILICONFLOW_BASE_URL = 'https://api.siliconflow.cn/v1'
 const DEFAULT_SILICONFLOW_MODEL = 'Qwen/Qwen2.5-7B-Instruct'
-const DEFAULT_DEEPSEEK_BASE_URL = 'https://api.deepseek.com/v1'
-const DEFAULT_DEEPSEEK_MODEL = 'deepseek-chat'
 const MIN_JWT_SECRET_LENGTH = 32
 
 // ========== 环境变量读取工具函数 ==========
@@ -26,9 +24,6 @@ const MIN_JWT_SECRET_LENGTH = 32
 export interface EnvConfig {
   ADMIN_USERS: string
   DATABASE_URL: string
-  DEEPSEEK_API_KEY: string
-  DEEPSEEK_BASE_URL: string
-  DEEPSEEK_MODEL: string
   IMAGE_BASE_URL: string
   IS_PRODUCTION: boolean
   JWT_SECRET: string
@@ -61,9 +56,6 @@ function readString(name: string, fallback = ''): string {
 const env: EnvConfig = {
   ADMIN_USERS: readString('ADMIN_USERS'),
   DATABASE_URL: readString('DATABASE_URL'),
-  DEEPSEEK_API_KEY: readString('DEEPSEEK_API_KEY'),
-  DEEPSEEK_BASE_URL: readString('DEEPSEEK_BASE_URL', DEFAULT_DEEPSEEK_BASE_URL),
-  DEEPSEEK_MODEL: readString('DEEPSEEK_MODEL', DEFAULT_DEEPSEEK_MODEL),
   IMAGE_BASE_URL: readString('IMAGE_BASE_URL'),
   IS_PRODUCTION: false,
   JWT_SECRET: readString('JWT_SECRET'),
@@ -123,14 +115,6 @@ export function getLLMProviders(): LLMProviderConfig[] {
       baseUrl: env.SILICONFLOW_BASE_URL,
       model: env.SILICONFLOW_MODEL,
       name: 'SiliconFlow',
-    })
-  }
-  if (env.DEEPSEEK_API_KEY) {
-    providers.push({
-      apiKey: env.DEEPSEEK_API_KEY,
-      baseUrl: env.DEEPSEEK_BASE_URL,
-      model: env.DEEPSEEK_MODEL,
-      name: 'DeepSeek',
     })
   }
   return providers

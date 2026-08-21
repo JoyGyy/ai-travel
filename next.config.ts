@@ -36,7 +36,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https://*.aliyuncs.com https://*.githubusercontent.com https://upload.wikimedia.org https://images.pexels.com http://store.is.autonavi.com https://*.amap.com",
               "font-src 'self' data:",
-              "connect-src 'self' https://api.siliconflow.cn https://api.deepseek.com",
+              "connect-src 'self' https://api.siliconflow.cn",
               "frame-ancestors 'none'",
             ].join('; '),
           },

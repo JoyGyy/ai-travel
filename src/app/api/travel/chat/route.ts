@@ -13,7 +13,7 @@ export const POST = withAuthRaw(async (req, { user }) => {
     throw httpError(400, '消息不能为空')
   }
 
-  // 支持 model 参数：'siliconflow' | 'deepseek' | 'custom-xxx'
+  // 支持 model 参数：'siliconflow' | 'custom-xxx'
   const model = typeof body.model === 'string' ? body.model : undefined
 
   // 支持自定义模型配置

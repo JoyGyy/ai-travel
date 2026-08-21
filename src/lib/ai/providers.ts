@@ -8,12 +8,6 @@ const siliconflow = createOpenAICompatible({
   name: 'siliconflow',
 })
 
-const deepseek = createOpenAICompatible({
-  apiKey: env.DEEPSEEK_API_KEY,
-  baseURL: env.DEEPSEEK_BASE_URL,
-  name: 'deepseek',
-})
-
 export function getTravelModel(
   modelName?: string,
   customModel?: { apiKey?: string, baseUrl?: string, model?: string },
@@ -28,20 +22,14 @@ export function getTravelModel(
     return provider(customModel.model)
   }
 
-  // 内置模型：按名称选择
-  if (modelName === 'deepseek' && env.DEEPSEEK_API_KEY) {
-    return deepseek(env.DEEPSEEK_MODEL)
-  }
+  // 内置模型仅保留硅基流动
   if (modelName === 'siliconflow' && env.SILICONFLOW_API_KEY) {
     return siliconflow(env.SILICONFLOW_MODEL)
   }
 
-  // 默认优先使用 DeepSeek，其次 SiliconFlow
-  if (env.DEEPSEEK_API_KEY)
-    return deepseek(env.DEEPSEEK_MODEL)
   if (env.SILICONFLOW_API_KEY)
     return siliconflow(env.SILICONFLOW_MODEL)
-  throw new Error('未配置可用的 AI 模型，请设置 DEEPSEEK_API_KEY 或 SILICONFLOW_API_KEY')
+  throw new Error('未配置可用的 AI 模型，请设置 SILICONFLOW_API_KEY')
 }
 
-export { deepseek, siliconflow }
+export { siliconflow }

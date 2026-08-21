@@ -43,7 +43,7 @@ export function useModels() {
 
       const builtIn: ModelOption[] = data.models.map((m: { available: boolean, model: string, name: string }) => ({
         available: m.available,
-        label: m.name === 'siliconflow' ? '硅基流动' : 'DeepSeek',
+        label: '硅基流动',
         value: m.name,
       }))
 

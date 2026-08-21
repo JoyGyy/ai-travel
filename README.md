@@ -6,7 +6,7 @@ AI 驱动的智能旅行规划助手，基于 Next.js App Router 全栈架构。
 
 - **前端**: React 19 + TypeScript + Tailwind CSS v4 + shadcn/ui + Zustand 5
 - **后端**: Next.js Route Handlers + PostgreSQL + Drizzle ORM
-- **AI**: SiliconFlow/DeepSeek LLM + ReAct Agent + RAG
+- **AI**: SiliconFlow LLM + ReAct Agent + RAG
 - **认证**: jose (JWT) + bcryptjs
 - **测试**: Vitest
 - **代码规范**: ESLint + Prettier + Husky + lint-staged
@@ -27,7 +27,7 @@ cp .env.example .env
 # 编辑 .env，填入以下必填项：
 # - JWT_SECRET（至少 32 字符）
 # - DATABASE_URL（PostgreSQL 连接串）
-# - SILICONFLOW_API_KEY 或 DEEPSEEK_API_KEY（至少一个）
+# - SILICONFLOW_API_KEY
 ```
 
 ### 3. 初始化数据库
@@ -131,6 +131,5 @@ DEPLOY_HOST=myhost ./deploy.sh  # 指定 SSH 主机别名
 | `JWT_SECRET`          | ✅   | JWT 签名密钥（至少 32 字符） |
 | `DATABASE_URL`        | ✅   | PostgreSQL 连接串            |
 | `SILICONFLOW_API_KEY` | ⚠️   | SiliconFlow API Key          |
-| `DEEPSEEK_API_KEY`    | ⚠️   | DeepSeek API Key             |
 
-> ⚠️ 至少配置一个 LLM API Key，否则 AI 功能不可用。
+> ⚠️ 必须配置 SILICONFLOW_API_KEY，否则 AI 功能不可用。

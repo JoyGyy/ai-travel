@@ -11,12 +11,6 @@ export async function GET() {
       model: env.SILICONFLOW_MODEL,
       name: 'siliconflow',
     },
-    {
-      available: Boolean(env.DEEPSEEK_API_KEY),
-      baseUrl: env.DEEPSEEK_BASE_URL,
-      model: env.DEEPSEEK_MODEL,
-      name: 'deepseek',
-    },
   ]
 
   return NextResponse.json({ models })

@@ -44,20 +44,8 @@ export interface UserProfile {
   username: string
 }
 
-/** 从 Authorization header 或 cookie 提取并验证用户 */
+/** 从 httpOnly Cookie 提取并验证用户 */
 export async function getAuthFromHeaders(headers: Headers): Promise<JwtPayload | null> {
-  // 优先从 Authorization header
-  const authHeader = headers.get('authorization')
-  if (authHeader?.startsWith('Bearer ')) {
-    try {
-      return await verifyToken(authHeader.slice(7))
-    }
-    catch {
-      return null
-    }
-  }
-
-  // 其次从 cookie
   const cookie = headers.get('cookie')
   if (cookie) {
     // 使用 \b 确保精确匹配 'token' cookie，不会误匹配 'csrf_token' 等

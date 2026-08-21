@@ -16,13 +16,10 @@ export async function proxy(request: NextRequest) {
   if (!isProtected)
     return NextResponse.next()
 
-  // 从 cookie 或 Authorization header 获取 token
+  // 只从 httpOnly Cookie 获取 token
   const token = request.cookies.get('token')?.value
-  const authHeader = request.headers.get('authorization')
-  const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
-  const jwt = token || bearerToken
 
-  if (!jwt) {
+  if (!token) {
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('from', pathname)
     return NextResponse.redirect(loginUrl)
@@ -30,7 +27,7 @@ export async function proxy(request: NextRequest) {
 
   // 验证 JWT 有效性
   try {
-    await jwtVerify(jwt, getJwtSecret())
+    await jwtVerify(token, getJwtSecret())
     return NextResponse.next()
   }
   catch {

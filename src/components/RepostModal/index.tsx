@@ -74,13 +74,9 @@ export function RepostModal({
 
   return (
     <div
-      aria-label="转发"
-      aria-modal="true"
       className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center"
       onClick={onClose}
       ref={dialogRef}
-      role="dialog"
-      tabIndex={-1}
     >
       <div
         className="bg-background rounded-2xl p-6 max-w-lg w-full mx-4"
@@ -97,7 +93,7 @@ export function RepostModal({
           value={content}
         />
         <div className="flex items-center gap-2 text-muted-foreground mb-4">
-          <Icon aria-hidden="true" />
+          <Icon />
           <span>{targetTitle}</span>
         </div>
         <div className="flex justify-end gap-2">

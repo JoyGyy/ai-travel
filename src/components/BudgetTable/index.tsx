@@ -41,13 +41,12 @@ export function BudgetTable({ data }: BudgetTableProps) {
   const budgetKeys = Object.keys(labels) as Array<keyof BudgetData>
 
   return (
-    <section aria-labelledby="budget-table-title" className="pt-[22px] pb-2">
+    <section className="pt-[22px] pb-2">
       <h2
         className="flex items-center gap-2.5 px-1 pb-3 font-display text-base font-black text-travel-ocean"
         id="budget-table-title"
       >
         <span
-          aria-hidden="true"
           className="w-2 h-2 rounded-full bg-primary shadow-[0_0_0_5px_rgba(20,184,166,0.15)]"
         />
         <span>预算明细</span>
@@ -75,7 +74,6 @@ export function BudgetTable({ data }: BudgetTableProps) {
         </table>
         {/* ---- 柱状图可视化 ---- */}
         <div
-          aria-label="预算占比可视化"
           className="mt-3.5 pt-3.5 border-t border-travel-ocean/10"
         >
           {budgetKeys.map(key => (
@@ -84,9 +82,7 @@ export function BudgetTable({ data }: BudgetTableProps) {
                 {labels[key]}
               </span>
               <div
-                aria-label={`${labels[key]}预算 ¥${data[key] || 0}`}
                 className="flex-1 h-[9px] overflow-hidden rounded-[100px] bg-travel-ink/6 shadow-[inset_0_0_0_1px_rgba(41,37,36,0.06)]"
-                role="img"
               >
                 <div
                   className="h-full rounded-[100px] shadow-[0_0_18px_currentColor] transition-[width] duration-500 [transition-timing-function:var(--ease-standard)] motion-reduce:transition-none"

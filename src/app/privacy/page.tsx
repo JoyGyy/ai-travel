@@ -9,7 +9,6 @@ const contactEmail = 'joygyzhi@outlook.com'
 export default function Privacy() {
   return (
     <main
-      aria-labelledby="privacy-title"
       className="min-h-full py-[clamp(32px,6vw,72px)] sm:py-6 px-6 sm:px-4 text-travel-ink"
       style={{
         background:

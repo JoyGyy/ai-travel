@@ -46,7 +46,6 @@ export function CommentSection({
 }: CommentSectionProps) {
   return (
     <section
-      aria-labelledby="community-comments-title"
       className="animate-detail-fade-in [animation-delay:0.2s] travel-surface-card grid gap-[18px] rounded-[28px] p-[26px]"
     >
       <div className="flex items-center justify-between">
@@ -70,7 +69,7 @@ export function CommentSection({
           value={input}
         />
         <Button disabled={!hasHydrated || commentSubmitting} onClick={onSubmit}>
-          <Send aria-hidden="true" className="mr-1 h-4 w-4" />
+          <Send className="mr-1 h-4 w-4" />
           {!hasHydrated ? '加载中...' : commentSubmitting ? '发布中...' : '发布评论'}
         </Button>
       </div>

@@ -38,7 +38,6 @@ export function CommunityItineraryPreview({
 
   return (
     <section
-      aria-label={`${snapshot.city} 行程快照`}
       className={`${mode === 'compact' ? 'p-4 sm:p-5' : 'p-5'} sm:rounded-3xl rounded-[20px] border border-accent/18 bg-[linear-gradient(135deg,rgba(255,255,255,0.92),rgba(212,167,106,0.16)),radial-gradient(circle_at_100%_0%,rgba(41,37,36,0.12),transparent_38%)] travel-ticket-edge`}
     >
       <div className="sm:flex-row flex-col flex items-start justify-between gap-4 mb-3">
@@ -63,19 +62,19 @@ export function CommunityItineraryPreview({
           : null}
       </div>
 
-      <div aria-label="行程概要" className="flex flex-wrap gap-2 mb-4">
+      <div className="flex flex-wrap gap-2 mb-4">
         <Badge className="travel-tag travel-tag--info" variant="secondary">
-          <Calendar aria-hidden="true" className="mr-1" size={12} />
+          <Calendar className="mr-1" size={12} />
           {snapshot.days}
           天
         </Badge>
         <Badge className="travel-tag travel-tag--success" variant="secondary">
-          <Wallet aria-hidden="true" className="mr-1" size={12} />
+          <Wallet className="mr-1" size={12} />
           ¥
           {snapshot.budget}
         </Badge>
         <Badge className="travel-tag travel-tag--warning" variant="secondary">
-          <MapPin aria-hidden="true" className="mr-1" size={12} />
+          <MapPin className="mr-1" size={12} />
           {snapshot.itinerary.length}
           段路线
         </Badge>

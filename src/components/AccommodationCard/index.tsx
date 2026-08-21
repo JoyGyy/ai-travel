@@ -38,7 +38,6 @@ export function AccommodationCard({ accommodation, nightlife }: AccommodationCar
                 key={item.name}
               >
                 <div
-                  aria-hidden="true"
                   className="shrink-0 mt-px w-[30px] h-[30px] rounded-xl flex items-center justify-center border-none text-white bg-primary shadow-[0_10px_24px_rgba(20,184,166,0.22)] text-xs font-black tabular-nums"
                 >
                   {i + 1}
@@ -79,7 +78,6 @@ export function AccommodationCard({ accommodation, nightlife }: AccommodationCar
                 key={item}
               >
                 <div
-                  aria-hidden="true"
                   className="shrink-0 mt-px w-[30px] h-[30px] rounded-xl flex items-center justify-center text-travel-ocean bg-travel-ink/6 shadow-[0_10px_24px_rgba(41,37,36,0.08)] text-xs font-black tabular-nums"
                 >
                   {i + 1}

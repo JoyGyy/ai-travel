@@ -30,7 +30,6 @@ export function WeatherIcon({ className = '', desc }: WeatherIconProps) {
   const type = getWeatherIconType(desc)
   return (
     <span
-      aria-hidden="true"
       className={`travel-weather-icon travel-weather-icon--${type} ${className}`}
     />
   )

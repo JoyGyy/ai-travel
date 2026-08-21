@@ -283,12 +283,7 @@ export default function Profile() {
                         {!isUnlimited && (
                           <>
                             <div
-                              aria-label={`AI 额度已使用 ${quota.used} 次，共 ${quota.limit} 次`}
-                              aria-valuemax={100}
-                              aria-valuemin={0}
-                              aria-valuenow={quotaPercent}
                               className="h-2.5 w-full rounded-full bg-gray-100"
-                              role="progressbar"
                             >
                               <div
                                 className={`h-full rounded-full transition-all ${quotaDanger ? 'bg-red-500' : 'bg-gradient-to-r from-blue-500 to-indigo-500'}`}
@@ -365,11 +360,9 @@ export default function Profile() {
                         type={showCurrentPassword ? 'text' : 'password'}
                       />
                       <Button
-                        aria-label={showCurrentPassword ? '隐藏当前密码' : '显示当前密码'}
                         className="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                         onClick={() => setShowCurrentPassword(v => !v)}
                         size="icon"
-                        tabIndex={-1}
                         type="button"
                         variant="ghost"
                       >
@@ -377,7 +370,7 @@ export default function Profile() {
                       </Button>
                     </div>
                     {passwordErrors.currentPassword && (
-                      <p className="text-xs text-red-500" role="alert">{passwordErrors.currentPassword}</p>
+                      <p className="text-xs text-red-500">{passwordErrors.currentPassword}</p>
                     )}
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
@@ -395,11 +388,9 @@ export default function Profile() {
                           type={showNewPassword ? 'text' : 'password'}
                         />
                         <Button
-                          aria-label={showNewPassword ? '隐藏新密码' : '显示新密码'}
                           className="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                           onClick={() => setShowNewPassword(v => !v)}
                           size="icon"
-                          tabIndex={-1}
                           type="button"
                           variant="ghost"
                         >
@@ -418,7 +409,7 @@ export default function Profile() {
                         type="password"
                       />
                       {passwordErrors.confirmPassword && (
-                        <p className="text-xs text-red-500" role="alert">{passwordErrors.confirmPassword}</p>
+                        <p className="text-xs text-red-500">{passwordErrors.confirmPassword}</p>
                       )}
                     </div>
                   </div>

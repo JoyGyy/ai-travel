@@ -91,7 +91,7 @@ export default function HomePage() {
       <HeroSearch />
 
       {/* Bento Grid 功能区 */}
-      <section aria-label="快捷服务" className="relative mx-auto max-w-[1200px] px-6 py-16">
+      <section className="relative mx-auto max-w-[1200px] px-6 py-16">
         <div className="mb-10 text-center scroll-reveal">
           <h2 className="text-2xl font-bold text-gray-900 md:text-3xl">探索旅行的无限可能</h2>
           <p className="mt-2 text-gray-500">AI 帮你规划行程，发现精彩目的地</p>
@@ -178,7 +178,7 @@ export default function HomePage() {
       <FeaturedTripsSection />
 
       {/* AI 特色 + 用户评价 */}
-      <section aria-labelledby="ai-feature-title" className="relative mx-auto max-w-[1200px] px-6 py-12">
+      <section className="relative mx-auto max-w-[1200px] px-6 py-12">
         <div className="absolute inset-0 -z-10">
           <div className="absolute top-0 left-1/2 h-px w-3/4 -translate-x-1/2 bg-gradient-to-r from-transparent via-accent/20 to-transparent" />
         </div>
@@ -191,7 +191,7 @@ export default function HomePage() {
 
             <div className="relative mb-8 flex items-center gap-4">
               <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500 shadow-lg">
-                <Zap aria-hidden="true" size={24} />
+                <Zap size={24} />
               </span>
               <h3 className="text-2xl font-bold" id="ai-feature-title">
                 为什么选择 AI 规划？
@@ -229,7 +229,7 @@ export default function HomePage() {
           <div className="rounded-3xl bg-white p-8 shadow-lg scroll-reveal-right">
             <h3 className="mb-8 flex items-center gap-3 text-xl font-bold text-travel-ink">
               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10">
-                <Users aria-hidden="true" className="text-primary" size={20} />
+                <Users className="text-primary" size={20} />
               </span>
               用户怎么说
             </h3>
@@ -253,7 +253,7 @@ export default function HomePage() {
                         {review.dest}
                       </span>
                     </div>
-                    <span aria-label={`${review.rating} 星`} className="ml-auto flex items-center gap-0.5 text-cyan-500">
+                    <span className="ml-auto flex items-center gap-0.5 text-cyan-500">
                       {Array.from({ length: review.rating }).map((_, i) => (
                         // eslint-disable-next-line react/no-array-index-key
                         <Star className="h-4 w-4 fill-current" key={i} />
@@ -269,7 +269,7 @@ export default function HomePage() {
       </section>
 
       {/* 底部 CTA */}
-      <section aria-label="立即开始" className="relative overflow-hidden bg-teal-500 py-20">
+      <section className="relative overflow-hidden bg-teal-500 py-20">
         {/* 装饰元素 */}
         <div className="absolute inset-0">
           <div className="absolute top-0 left-1/4 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
@@ -289,7 +289,7 @@ export default function HomePage() {
             onClick={onStart}
             size="lg"
           >
-            <Compass aria-hidden="true" className="transition-transform duration-300 group-hover:rotate-45" />
+            <Compass className="transition-transform duration-300 group-hover:rotate-45" />
             {user ? '立即规划行程' : '登录开始规划'}
           </Button>
         </div>

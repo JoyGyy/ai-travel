@@ -72,8 +72,6 @@ export default function ChatPage() {
             {/* 模型选择下拉框 */}
             <div className="relative" onClick={e => e.stopPropagation()}>
               <Button
-                aria-expanded={showModelDropdown}
-                aria-haspopup="listbox"
                 className="flex-shrink-0 gap-1.5 border-white/60 bg-white/80 text-gray-600 shadow-sm backdrop-blur-sm hover:-translate-y-0.5 hover:bg-white hover:shadow-md"
                 disabled={modelsLoading}
                 onClick={() => setShowModelDropdown(!showModelDropdown)}
@@ -87,7 +85,6 @@ export default function ChatPage() {
               {showModelDropdown && (
                 <div
                   className="absolute right-0 top-full z-50 mt-1 min-w-[200px] overflow-hidden rounded-xl border border-white/60 bg-white/95 shadow-xl backdrop-blur-sm"
-                  role="listbox"
                 >
                   {models.map(option => (
                     <div
@@ -109,8 +106,6 @@ export default function ChatPage() {
                             setShowModelDropdown(false)
                           }
                         }}
-                        role="option"
-                        aria-selected={model === option.value}
                         type="button"
                       >
                         <span>{option.label}</span>
@@ -155,7 +150,6 @@ export default function ChatPage() {
               )}
             </div>
             <Button
-              aria-label="清空对话"
               className="flex-shrink-0 border-white/60 bg-white/80 text-gray-500 shadow-sm backdrop-blur-sm hover:-translate-y-0.5 hover:bg-white hover:text-red-500 hover:shadow-md"
               onClick={() => {
                 if (window.confirm('确定要清空对话记录吗？')) {
@@ -383,7 +377,6 @@ export default function ChatPage() {
         {error && (
           <div
             className="mx-2 mb-3 flex items-center justify-between gap-3 rounded-2xl border border-red-500/20 bg-red-100/80 p-3 px-3.5 text-3.25 font-extrabold text-destructive"
-            role="alert"
           >
             <span>{error.message}</span>
             <Button
@@ -405,7 +398,6 @@ export default function ChatPage() {
           onSubmit={handleSubmit}
         >
           <Input
-            aria-label="输入消息"
             className="h-11 flex-1 rounded-3.5 border-stone-900/8 bg-white/72 shadow-[inset_0_1px_4px_rgba(41,37,36,0.06)] placeholder:text-stone-900/44 focus:border-primary/44 focus:shadow-[0_0_0_3px_rgba(20,184,166,0.14),inset_0_1px_4px_rgba(41,37,36,0.06)] disabled:text-stone-900/46 disabled:bg-white/42"
             disabled={status !== 'ready'}
             onChange={event => setInput(event.target.value)}
@@ -413,7 +405,6 @@ export default function ChatPage() {
             value={input}
           />
           <Button
-            aria-label="发送"
             className="h-11 w-11 flex-shrink-0 rounded-3.5 shadow-[0_12px_24px_rgba(20,184,166,0.34)] hover:-translate-y-px hover:shadow-[0_16px_30px_rgba(20,184,166,0.42)] disabled:text-stone-900/42 disabled:bg-stone-900/10 disabled:shadow-none"
             disabled={!input.trim() || status !== 'ready'}
             size="icon"

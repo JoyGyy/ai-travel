@@ -250,11 +250,9 @@ export default function CommunityPostDetail() {
 
   if (loading) {
     return (
-      <main aria-labelledby="community-detail-loading" className="travel-page-shell gap-6">
+      <main className="travel-page-shell gap-6">
         <div
-          aria-live="polite"
           className="grid min-h-65 place-items-center gap-3 rounded-[28px] p-[26px] text-center"
-          role="status"
         >
           <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
           <h1 className="text-xl font-bold text-travel-ink" id="community-detail-loading">
@@ -267,10 +265,9 @@ export default function CommunityPostDetail() {
 
   if (error || !post) {
     return (
-      <main aria-labelledby="community-detail-error" className="travel-page-shell gap-6">
+      <main className="travel-page-shell gap-6">
         <div
           className="grid min-h-65 place-items-center gap-3 rounded-[28px] p-[26px] text-center"
-          role="alert"
         >
           <h1 className="text-xl font-bold text-travel-ink" id="community-detail-error">
             帖子暂时无法打开
@@ -288,20 +285,19 @@ export default function CommunityPostDetail() {
   const isAuthor = user?.id === post.author.id
 
   return (
-    <main aria-labelledby="community-detail-title" className="travel-page-shell gap-6">
+    <main className="travel-page-shell gap-6">
       <button
         className="animate-detail-fade-in inline-flex w-fit items-center gap-2 rounded-full bg-white/78 px-4 py-2.5 text-sm font-extrabold text-travel-ink shadow-sm transition-all hover:-translate-x-1 hover:text-accent hover:shadow-md"
         onClick={() => router.back()}
         type="button"
       >
-        <ArrowLeft aria-hidden="true" />
+        <ArrowLeft />
         返回
       </button>
 
       <section className="animate-detail-fade-in [animation-delay:0.1s] travel-surface-card travel-ticket-edge grid gap-[18px] rounded-[28px] p-[26px]">
         <header className="flex items-center gap-3">
           <div
-            aria-hidden="true"
             className="grid h-12 w-12 place-items-center rounded-full bg-primary text-lg font-bold text-white"
           >
             {post.author.username.slice(0, 1).toUpperCase()}

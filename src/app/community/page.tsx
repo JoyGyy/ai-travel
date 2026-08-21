@@ -156,7 +156,7 @@ export default function Community() {
   )
 
   return (
-    <main aria-labelledby="community-title" className="travel-page-shell gap-6">
+    <main className="travel-page-shell gap-6">
       {/* Hero 区域 */}
       <section className="relative overflow-hidden rounded-3xl bg-teal-50/60 p-8">
         {/* 装饰元素 */}
@@ -186,7 +186,7 @@ export default function Community() {
             onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}
             size="lg"
           >
-            <Plus aria-hidden="true" className="h-4 w-4" />
+            <Plus className="h-4 w-4" />
             {!hasHydrated ? '加载中...' : '发布旅行分享'}
           </Button>
         </div>
@@ -288,7 +288,6 @@ export default function Community() {
 
       {/* 筛选区 */}
       <section
-        aria-labelledby="community-filter-title"
         className="grid gap-3.5 rounded-2xl border border-white/60 bg-white/80 p-5 shadow-sm backdrop-blur-sm"
       >
         <div className="flex items-center justify-between gap-3">
@@ -321,20 +320,19 @@ export default function Community() {
         <div className="flex items-center justify-between gap-3">
           <span className="text-3.25 font-medium text-travel-ink">只看含行程分享</span>
           <input
-            aria-label="只看含行程分享"
             checked={Boolean(filters.withItinerary)}
             onChange={event => updateFilters({ withItinerary: event.target.checked })}
             type="checkbox"
           />
         </div>
-        <p aria-live="polite" className="text-3.25 text-travel-muted">
+        <p className="text-3.25 text-travel-muted">
           {loading ? '正在刷新社区...' : `共 ${total} 条旅行分享`}
         </p>
       </section>
 
       {loading
         ? (
-            <section aria-live="polite" className="columns-1 sm:columns-2 gap-4" role="status">
+            <section className="columns-1 sm:columns-2 gap-4">
               {Array.from({ length: 3 }).map((_, i) => (
                 // eslint-disable-next-line react/no-array-index-key
                 <CommunityPostCardSkeleton key={i} />
@@ -347,7 +345,6 @@ export default function Community() {
         ? (
             <div
               className="grid place-items-center gap-3 rounded-xl p-6 text-center text-travel-muted"
-              role="alert"
             >
               <p>{error}</p>
               <Button onClick={() => load(filters)}>重试</Button>
@@ -375,7 +372,6 @@ export default function Community() {
         ? (
             <>
               <section
-                aria-label="社区分享列表"
                 className="columns-1 sm:columns-2 gap-4 break-inside-avoid"
               >
                 {items.map(post => (

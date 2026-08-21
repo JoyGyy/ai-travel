@@ -80,8 +80,6 @@ export function ChatAgentSteps({ currentStep, isLoading, steps }: ChatAgentSteps
     <div className="overflow-hidden mx-1 sm:mx-2 mb-3 border border-travel-ink/6 rounded-[18px] bg-travel-surface shadow-sm">
       {/* 可点击的折叠头：显示状态图标、标题和步骤计数 */}
       <button
-        aria-controls="chat-agent-steps-list"
-        aria-expanded={isExpanded}
         className="w-full flex items-center justify-between gap-3 py-[11px] px-4 border-0 text-inherit bg-transparent cursor-pointer text-left select-none transition-colors duration-200 hover:bg-[rgba(249,224,189,0.3)] focus-visible:outline-[3px] focus-visible:outline-[rgba(41,37,36,0.22)] focus-visible:outline-offset-[-3px] motion-reduce:transition-none"
         onClick={() => setIsExpanded(!isExpanded)}
         type="button"
@@ -89,7 +87,6 @@ export function ChatAgentSteps({ currentStep, isLoading, steps }: ChatAgentSteps
         <span className="flex items-center gap-2 min-w-0">
           {/* 加载中显示动态圆点，完成后显示勾号 */}
           <span
-            aria-hidden="true"
             className={`w-[22px] h-[22px] flex shrink-0 items-center justify-center rounded-full text-xs ${
               isLoading
                 ? 'bg-gradient-to-br from-primary to-secondary animate-[pulseGlow_1.5s_ease-in-out_infinite] motion-reduce:animate-none'
@@ -116,7 +113,6 @@ export function ChatAgentSteps({ currentStep, isLoading, steps }: ChatAgentSteps
           </span>
         </span>
         <span
-          aria-hidden="true"
           className={`shrink-0 text-[rgba(41,37,36,0.52)] text-xs transition-transform duration-200 motion-reduce:transition-none ${isExpanded ? 'rotate-90' : ''}`}
         >
           ▶
@@ -125,7 +121,7 @@ export function ChatAgentSteps({ currentStep, isLoading, steps }: ChatAgentSteps
 
       {/* 展开后的步骤列表 */}
       {isExpanded && (
-        <div aria-live="polite" className="pt-0.5 px-4 pb-3.5" id="chat-agent-steps-list">
+        <div className="pt-0.5 px-4 pb-3.5" id="chat-agent-steps-list">
           {steps.map((step, index) => {
             const status = getStepStatus(step.step)
             const summary = getSummary(step)

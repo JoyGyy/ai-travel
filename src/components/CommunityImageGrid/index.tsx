@@ -88,16 +88,11 @@ export function CommunityImageGrid({ compact = false, images }: CommunityImageGr
       {/* 图片预览模态框 */}
       {previewIndex !== null && (
         <div
-          aria-label="图片预览"
-          aria-modal="true"
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
           onClick={handleClose}
           ref={dialogRef}
-          role="dialog"
-          tabIndex={-1}
         >
           <button
-            aria-label="关闭预览"
             className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-3xl text-white backdrop-blur-sm transition-colors hover:bg-white/30 motion-reduce:transition-none"
             onClick={handleClose}
             type="button"
@@ -106,7 +101,6 @@ export function CommunityImageGrid({ compact = false, images }: CommunityImageGr
           </button>
           {previewIndex > 0 && (
             <button
-              aria-label="上一张"
               className="absolute left-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-3xl text-white backdrop-blur-sm transition-colors hover:bg-white/30 motion-reduce:transition-none"
               onClick={(e) => {
                 e.stopPropagation()
@@ -127,7 +121,6 @@ export function CommunityImageGrid({ compact = false, images }: CommunityImageGr
           />
           {previewIndex < visibleImages.length - 1 && (
             <button
-              aria-label="下一张"
               className="absolute right-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-3xl text-white backdrop-blur-sm transition-colors hover:bg-white/30 motion-reduce:transition-none"
               onClick={(e) => {
                 e.stopPropagation()

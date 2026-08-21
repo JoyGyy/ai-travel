@@ -32,7 +32,6 @@ export function ChatBubble({ content, role }: ChatBubbleProps) {
       {/* AI 消息显示机器人头像 */}
       {!isUser && (
         <div
-          aria-hidden="true"
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-travel-ink/6 bg-primary/8 text-[15px] text-travel-ocean"
         >
           <Bot size={20} />

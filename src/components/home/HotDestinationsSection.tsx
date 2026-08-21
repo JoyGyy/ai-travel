@@ -12,14 +12,14 @@ import { Badge } from '@/components/ui/badge'
 
 export function HotDestinationsSection() {
   return (
-    <section aria-labelledby="hot-dest-title" className="relative mx-auto max-w-[1200px] px-6 py-12">
+    <section className="relative mx-auto max-w-[1200px] px-6 py-12">
       <div className="mb-8 flex items-center justify-between scroll-reveal">
         <h2
           className="flex items-center gap-3 text-2xl font-bold"
           id="hot-dest-title"
         >
           <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-500 text-white shadow-lg">
-            <Flame aria-hidden="true" size={20} />
+            <Flame size={20} />
           </span>
           <span className="bg-gradient-to-r from-travel-ink to-travel-ink/70 bg-clip-text text-transparent">
             热门目的地

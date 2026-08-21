@@ -80,11 +80,9 @@ export default function AttractionDetail() {
   // ---- 加载中状态 ----
   if (loading) {
     return (
-      <main aria-labelledby="attraction-loading-title" className="travel-page-shell">
+      <main className="travel-page-shell">
         <div
-          aria-live="polite"
           className="flex flex-col items-center gap-3 rounded-xl p-6"
-          role="status"
         >
           <div className="flex items-center justify-center py-12">
             <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
@@ -100,8 +98,8 @@ export default function AttractionDetail() {
   // ---- 错误/空数据状态 ----
   if (error || !attraction) {
     return (
-      <main aria-labelledby="attraction-error-title" className="travel-page-shell">
-        <div className="flex flex-col items-center gap-3 rounded-xl p-6" role="alert">
+      <main className="travel-page-shell">
+        <div className="flex flex-col items-center gap-3 rounded-xl p-6">
           <h1 className="text-xl font-bold text-travel-ink" id="attraction-error-title">
             景点暂时无法打开
           </h1>
@@ -132,13 +130,13 @@ export default function AttractionDetail() {
   const ticketTypeClass = attraction.ticketType === 'free' ? 'travel-tag--free' : 'travel-tag--paid'
 
   return (
-    <main aria-labelledby="attraction-detail-title" className="travel-page-shell">
+    <main className="travel-page-shell">
       <button
         className="inline-flex w-fit items-center gap-2 rounded-full bg-white/78 px-4 py-2.5 text-sm font-extrabold text-travel-ink shadow-sm transition-all hover:-translate-x-1 hover:text-accent hover:shadow-md"
         onClick={() => router.back()}
         type="button"
       >
-        <ArrowLeft aria-hidden="true" />
+        <ArrowLeft />
         <span>返回</span>
       </button>
 
@@ -172,13 +170,10 @@ export default function AttractionDetail() {
           </div>
           <div className="flex gap-3">
             <Button
-              aria-label={`${attraction.isFavorite ? '取消收藏' : '收藏'}${attraction.name}`}
-              aria-pressed={Boolean(attraction.isFavorite)}
               disabled={favoritePending}
               onClick={handleToggleFavorite}
             >
               <Heart
-                aria-hidden="true"
                 className={`mr-2 h-4 w-4 ${attraction.isFavorite ? 'fill-current' : ''}`}
               />
               {favoritePending ? '处理中...' : attraction.isFavorite ? '已收藏' : '收藏'}
@@ -251,7 +246,6 @@ export default function AttractionDetail() {
         <div className="flex flex-wrap gap-3">
           {buildBookingLinks(attraction).map(link => (
             <a
-              aria-label={`去${link.label}查看${attraction.name}门票，打开新窗口`}
               className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-travel-ink shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
               href={link.href}
               key={link.key}

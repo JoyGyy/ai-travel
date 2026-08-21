@@ -41,12 +41,11 @@ export function DetailHero({
 
       <div className="relative z-[2] flex items-center justify-between">
         <button
-          aria-label="返回上一页"
           className="hero-btn"
           onClick={() => window.history.back()}
           type="button"
         >
-          <ArrowLeft aria-hidden="true" />
+          <ArrowLeft />
         </button>
 
         {/* 编辑模式按钮 */}
@@ -54,27 +53,24 @@ export function DetailHero({
           {isEditing && (
             <>
               <button
-                aria-label="撤销"
                 className="hero-btn disabled:opacity-40 disabled:cursor-not-allowed"
                 disabled={!canUndo}
                 onClick={onUndo}
                 type="button"
               >
-                <Undo aria-hidden="true" className="h-4 w-4" />
+                <Undo className="h-4 w-4" />
               </button>
               <button
-                aria-label="重做"
                 className="hero-btn disabled:opacity-40 disabled:cursor-not-allowed"
                 disabled={!canRedo}
                 onClick={onRedo}
                 type="button"
               >
-                <Redo aria-hidden="true" className="h-4 w-4" />
+                <Redo className="h-4 w-4" />
               </button>
             </>
           )}
           <button
-            aria-label={isEditing ? '退出编辑模式' : '编辑行程'}
             className={`flex h-11 items-center justify-center gap-2 rounded-3.5 border px-4 text-sm font-bold transition-all ${
               isEditing
                 ? 'border-accent bg-accent/20 text-accent'
@@ -83,7 +79,7 @@ export function DetailHero({
             onClick={onToggleEdit}
             type="button"
           >
-            <Edit3 aria-hidden="true" className="h-4 w-4" />
+            <Edit3 className="h-4 w-4" />
             {isEditing ? '完成编辑' : '编辑'}
           </button>
         </div>

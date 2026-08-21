@@ -18,12 +18,9 @@ export function HomeWeather({ loading, weather }: HomeWeatherProps) {
   if (loading || !weather) {
     return (
       <div
-        aria-live="polite"
         className="w-full min-w-0 overflow-hidden border border-travel-ink/6 rounded-3xl bg-travel-surface shadow-sm min-h-23 py-[18px] px-5 flex items-center gap-3"
-        role="status"
       >
         <div
-          aria-hidden="true"
           className="w-8 h-8 flex-[0_0_auto] border-2 border-[rgba(46,198,213,0.24)] border-t-primary rounded-full animate-[spin_1s_linear_infinite] motion-reduce:animate-[spin_1.8s_linear_infinite]"
         />
         <span className="min-w-0 text-[rgba(62,73,88,0.7)] text-[13px] font-bold">
@@ -35,7 +32,6 @@ export function HomeWeather({ loading, weather }: HomeWeatherProps) {
 
   return (
     <section
-      aria-label={`${weather.city} 天气概览`}
       className="w-full min-w-0 overflow-hidden border border-travel-ink/6 rounded-3xl max-sm:rounded-[20px] bg-travel-surface shadow-sm"
     >
       {/* ---- 当前天气 ---- */}
@@ -78,7 +74,6 @@ export function HomeWeather({ loading, weather }: HomeWeatherProps) {
       {/* ---- 未来三天预报 ---- */}
       {weather.forecast && weather.forecast.length > 0 && (
         <div
-          aria-label="未来三天天气预报"
           className="min-w-0 px-3.5 pb-3.5 grid grid-cols-3 gap-2.5 max-sm:px-2.5 max-sm:pb-2.5 max-sm:gap-2 max-[380px]:grid-cols-1"
         >
           {weather.forecast.map((day, i) => (

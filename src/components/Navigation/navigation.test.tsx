@@ -26,7 +26,7 @@ vi.mock('@/stores/auth', () => ({
 describe('navigation', () => {
   it('渲染导航栏', () => {
     render(<Navigation />)
-    expect(screen.getByRole('navigation', { name: '主导航' })).toBeInTheDocument()
+    expect(screen.getByRole('navigation')).toBeInTheDocument()
   })
 
   it('显示品牌标识', () => {
@@ -50,8 +50,8 @@ describe('navigation', () => {
 
   it('使用 lucide-react 图标', () => {
     render(<Navigation />)
-    // 验证图标存在（通过 aria-hidden 属性）
-    const icons = document.querySelectorAll('[aria-hidden="true"]')
-    expect(icons.length).toBeGreaterThan(0)
+    // 验证图标存在（通过 SVG 元素）
+    const svgs = document.querySelectorAll('svg')
+    expect(svgs.length).toBeGreaterThan(0)
   })
 })

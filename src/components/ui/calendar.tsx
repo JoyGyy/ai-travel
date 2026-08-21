@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 
 export type CalendarProps = DayPickerProps
 
-function Chevron({ orientation }: { orientation?: 'left' | 'right' }) {
+function Chevron({ orientation }: { orientation?: string }) {
   if (orientation === 'left') {
     return <ChevronLeft className="h-4 w-4" />
   }

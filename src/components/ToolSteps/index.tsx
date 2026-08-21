@@ -159,7 +159,6 @@ export function ToolSteps({ isLoading, toolCalls }: ToolStepsProps) {
     <div className="overflow-hidden rounded-2xl border border-travel-ink/8 bg-travel-surface shadow-sm">
       {/* 折叠头 */}
       <button
-        aria-expanded={isExpanded}
         className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-travel-sand/20"
         onClick={() => setIsExpanded(!isExpanded)}
         type="button"

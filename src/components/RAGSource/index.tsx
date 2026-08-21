@@ -20,7 +20,6 @@ export function RAGSource({ sources }: RAGSourceProps) {
       {/* ---- 标题栏 ---- */}
       <div className="mb-[9px] flex items-center gap-[7px] font-extrabold tracking-[0.12em] text-travel-ocean text-[11px]">
         <MapPin
-          aria-hidden="true"
           className="shrink-0 text-primary text-[13px]"
           size={16}
         />

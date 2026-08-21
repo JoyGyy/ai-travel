@@ -19,7 +19,6 @@ export function WeatherCard({ weather }: WeatherCardProps) {
 
   return (
     <section
-      aria-label={`${weather.city} 实时天气`}
       className="max-w-[900px] mx-auto overflow-hidden rounded-3xl bg-travel-surface shadow-sm border border-travel-ink/6"
     >
       {/* ---- 当前天气信息 ---- */}
@@ -61,7 +60,6 @@ export function WeatherCard({ weather }: WeatherCardProps) {
       {/* ---- 未来三天预报 ---- */}
       {weather.forecast && weather.forecast.length > 0 && (
         <div
-          aria-label="未来三天天气预报"
           className="flex gap-3 p-3.5 border-t border-travel-ocean/8 bg-white/28 max-[560px]:gap-2 max-[560px]:p-2.5"
         >
           {weather.forecast.map((day, i) => (

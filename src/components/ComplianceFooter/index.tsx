@@ -50,7 +50,6 @@ export function ComplianceFooter({
 
   return (
     <footer
-      aria-label="网站备案与协议信息"
       className={`${footerBase} ${footerVariant} ${className}`.trim()}
     >
       {showCopyright && <span className={copyrightColor}>© 2026 Travel AI</span>}

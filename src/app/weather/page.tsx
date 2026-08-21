@@ -52,11 +52,6 @@ export default function Weather() {
     return allCities.filter(c => c.includes(keyword))
   }, [city])
 
-  const activeCityId
-    = showDropdown && filteredCities[activeCityIndex]
-      ? `weather-city-option-${activeCityIndex}`
-      : undefined
-
   // ---- 城市选择 ----
   function selectCity(name: string) {
     setCity(name)
@@ -119,7 +114,6 @@ export default function Weather() {
 
   return (
     <main
-      aria-labelledby="weather-title"
       className="flex-1 overflow-x-hidden overflow-y-auto bg-background"
       onClick={() => showDropdown && setShowDropdown(false)}
     >
@@ -155,11 +149,6 @@ export default function Weather() {
               城市名称
             </Label>
             <Input
-              aria-activedescendant={activeCityId}
-              aria-autocomplete="list"
-              aria-controls="weather-city-listbox"
-              aria-expanded={showDropdown}
-              aria-haspopup="listbox"
               autoComplete="off"
               className="flex-1 border-0 bg-transparent p-0 text-sm text-gray-900 shadow-none focus-visible:ring-0"
               id="weather-city-input"
@@ -168,7 +157,6 @@ export default function Weather() {
               onFocus={() => setShowDropdown(true)}
               onKeyDown={handleInputKeyDown}
               placeholder="输入城市名称查询天气…"
-              role="combobox"
               type="text"
               value={city}
             />
@@ -179,11 +167,9 @@ export default function Weather() {
             <div
               className="absolute left-0 right-0 z-10 mt-2 max-h-[300px] overflow-y-auto rounded-2xl border border-white/60 bg-white/95 shadow-xl backdrop-blur-sm"
               id="weather-city-listbox"
-              role="listbox"
             >
               {filteredCities.map((name, index) => (
                 <Button
-                  aria-selected={city === name}
                   className={`w-full justify-start rounded-none px-4 py-3 text-left text-sm first:rounded-t-2xl last:rounded-b-2xl ${
                     city === name || activeCityIndex === index
                       ? 'bg-blue-50 text-blue-600 font-medium'
@@ -192,7 +178,6 @@ export default function Weather() {
                   id={`weather-city-option-${index}`}
                   key={name}
                   onClick={() => selectCity(name)}
-                  role="option"
                   variant="ghost"
                 >
                   {name}
@@ -241,7 +226,6 @@ export default function Weather() {
         {error && (
           <div
             className="mt-6 flex items-center justify-between rounded-2xl border border-red-200/60 bg-red-50/80 p-5 backdrop-blur-sm animate-fade-in-up"
-            role="alert"
           >
             <span className="text-sm font-medium text-red-600">{error}</span>
             {city.trim() && (

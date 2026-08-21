@@ -82,7 +82,6 @@ export function AgentSteps({ currentStep, steps }: AgentStepsProps) {
 
   return (
     <div
-      aria-live="polite"
       className="mx-4 mb-4 rounded-[20px] bg-travel-surface border border-travel-ink/6 shadow-sm"
     >
       {/* 标题栏 */}
@@ -92,19 +91,17 @@ export function AgentSteps({ currentStep, steps }: AgentStepsProps) {
         </span>
       </div>
       {/* 步骤列表：圆点 + 连接线 + 步骤信息 */}
-      <div className="px-5 pb-4" role="list">
+      <div className="px-5 pb-4">
         {STEP_CONFIG.map((config, index) => {
           const status = getStepStatus(config.step)
           const summary = getResultSummary(config.step)
           return (
             <div
-              aria-label={`${config.name}：${status === 'done' ? '已完成' : status === 'running' ? '执行中' : '等待中'}`}
               className="flex items-start gap-3"
               key={config.step}
-              role="listitem"
             >
               {/* 左侧时间线：圆点 + 连接线 */}
-              <div aria-hidden="true" className="flex flex-col items-center">
+              <div className="flex flex-col items-center">
                 <div
                   className={`w-[34px] h-[34px] rounded-full flex items-center justify-center shrink-0 text-sm border border-white/78 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.28),_0_10px_22px_rgba(41,37,36,0.08)] ${
                     status === 'done'
@@ -146,7 +143,6 @@ export function AgentSteps({ currentStep, steps }: AgentStepsProps) {
                 {summary && (
                   <div className="flex items-center gap-[5px] mt-px">
                     <ChevronRight
-                      aria-hidden="true"
                       className="shrink-0 text-[10px] text-travel-ocean/48"
                       size={14}
                     />

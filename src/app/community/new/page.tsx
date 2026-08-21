@@ -101,7 +101,7 @@ export default function CommunityPostCreate() {
   }
 
   return (
-    <main aria-labelledby="community-create-title" className="travel-page-shell gap-7">
+    <main className="travel-page-shell gap-7">
       <section className="travel-page-hero travel-ticket-edge travel-route-line">
         <p className="mb-2.5 text-accent text-[0.82rem] font-black tracking-[0.2em]">
           NEW POSTCARD
@@ -157,7 +157,7 @@ export default function CommunityPostCreate() {
 
           <div className="mt-[22px]">
             <div className="mb-3 flex items-center gap-2 font-black text-travel-ink">
-              <ImageIcon aria-hidden="true" />
+              <ImageIcon />
               <span>图片</span>
             </div>
             <input
@@ -190,7 +190,7 @@ export default function CommunityPostCreate() {
                           onClick={() => removeImage(image)}
                           type="button"
                         >
-                          <X aria-hidden="true" />
+                          <X />
                           移除图片
                         </button>
                       ))}
@@ -225,7 +225,7 @@ export default function CommunityPostCreate() {
               取消
             </Button>
             <Button disabled={!canSubmit || uploading || submitting} type="submit">
-              <Send aria-hidden="true" className="mr-2 h-4 w-4" />
+              <Send className="mr-2 h-4 w-4" />
               {submitting ? '发布中...' : '发布到社区'}
             </Button>
           </div>

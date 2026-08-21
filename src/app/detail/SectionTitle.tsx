@@ -18,7 +18,6 @@ export function SectionTitle({ children, id }: SectionTitleProps) {
       id={id}
     >
       <span
-        aria-hidden="true"
         className="h-2 w-2 rounded-full bg-accent shadow-[0_0_0_5px_rgba(232,64,87,0.15)]"
       />
       {children}

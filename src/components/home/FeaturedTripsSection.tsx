@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge'
 
 export function FeaturedTripsSection() {
   return (
-    <section aria-labelledby="featured-title" className="relative mx-auto max-w-[1200px] px-6 py-12">
+    <section className="relative mx-auto max-w-[1200px] px-6 py-12">
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-0 left-1/2 h-px w-3/4 -translate-x-1/2 bg-gradient-to-r from-transparent via-secondary/20 to-transparent" />
       </div>
@@ -23,7 +23,7 @@ export function FeaturedTripsSection() {
           id="featured-title"
         >
           <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500 text-white shadow-lg">
-            <Star aria-hidden="true" size={20} />
+            <Star size={20} />
           </span>
           <span className="bg-gradient-to-r from-travel-ink to-travel-ink/70 bg-clip-text text-transparent">
             精选推荐

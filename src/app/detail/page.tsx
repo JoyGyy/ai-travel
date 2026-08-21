@@ -297,7 +297,6 @@ export default function Detail() {
 
   return (
     <main
-      aria-labelledby="detail-title"
       className="flex-1 overflow-x-hidden bg-background pb-[max(28px,env(safe-area-inset-bottom))]"
     >
       <DetailHero
@@ -348,7 +347,6 @@ export default function Detail() {
                       </span>
                       {status !== 'ready' && (
                         <div
-                          aria-hidden="true"
                           className="h-5 w-5 animate-spin rounded-full border-2 border-dotted border-stone-900/22 border-t-accent"
                         />
                       )}
@@ -378,7 +376,7 @@ export default function Detail() {
                           ))}
                     </div>
                     {chatError && (
-                      <div className="border-t border-red-500/10 bg-red-500/5 p-4 px-5" role="alert">
+                      <div className="border-t border-red-500/10 bg-red-500/5 p-4 px-5">
                         <p className="text-center text-3.25 text-red-500">
                           生成失败：
                           {chatError.message}
@@ -395,7 +393,6 @@ export default function Detail() {
           <>
             {/* 摘要卡片 */}
             <div
-              aria-label="行程摘要"
               className="travel-ticket-edge relative z-10 -mt-10 flex items-center overflow-hidden rounded-[22px] border border-travel-ink/8 bg-travel-surface-strong p-[18px_20px] shadow-sm"
             >
               <div className="flex min-w-0 flex-1 flex-col items-center gap-1.5">
@@ -430,7 +427,7 @@ export default function Detail() {
 
             {/* 天气 */}
             {weather && (
-              <section aria-labelledby="detail-weather-title" className="pt-[22px]">
+              <section className="pt-[22px]">
                 <SectionTitle id="detail-weather-title">实时天气</SectionTitle>
                 <WeatherCard weather={weather} />
               </section>
@@ -438,13 +435,13 @@ export default function Detail() {
 
             {/* 住宿推荐 */}
             {(accommodation.length > 0 || nightlife.length > 0) && (
-              <section aria-label="住宿和夜生活推荐" className="pt-[22px]">
+              <section className="pt-[22px]">
                 <AccommodationCard accommodation={accommodation} nightlife={nightlife} />
               </section>
             )}
 
             {/* 每日行程 */}
-            <section aria-labelledby="detail-itinerary-title" className="pt-[22px]">
+            <section className="pt-[22px]">
               <SectionTitle id="detail-itinerary-title">
                 每日行程
                 {isEditing && (
@@ -480,7 +477,7 @@ export default function Detail() {
 
             {/* 温馨提示 */}
             {tips.length > 0 && (
-              <section aria-labelledby="detail-tips-title" className="pt-[22px]">
+              <section className="pt-[22px]">
                 <SectionTitle id="detail-tips-title">温馨提示</SectionTitle>
                 <div className="rounded-3xl border border-travel-ink/8 bg-travel-surface p-4 shadow-sm">
                   {tips.map(tip => (
@@ -489,7 +486,6 @@ export default function Detail() {
                       key={tip}
                     >
                       <span
-                        aria-hidden="true"
                         className="mt-2 h-[7px] w-[7px] flex-shrink-0 rounded-full bg-travel-sand shadow-[0_0_0_5px_rgba(212,167,106,0.16)]"
                       />
                       {tip}
@@ -502,16 +498,14 @@ export default function Detail() {
             {/* 分享与咨询操作 */}
             <div className="grid gap-3 pt-6">
               <button
-                aria-label="分享到社区"
                 className="inline-flex min-h-12.5 w-full items-center justify-center gap-2 rounded-4xl border-none bg-primary text-3.75 font-black text-white shadow-[0_4px_16px_rgba(20,184,166,0.25)] transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(20,184,166,0.35)]"
                 onClick={() => router.push('/community/new')}
                 type="button"
               >
-                <Share2 aria-hidden="true" />
+                <Share2 />
                 分享到社区
               </button>
               <button
-                aria-label="咨询 AI 优化当前行程"
                 className="inline-flex min-h-12.5 w-full items-center justify-center gap-2 rounded-4xl border-none bg-primary text-3.75 font-black text-white shadow-[0_4px_16px_rgba(20,184,166,0.25)] transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(20,184,166,0.35)]"
                 onClick={() => router.push('/chat')}
                 type="button"

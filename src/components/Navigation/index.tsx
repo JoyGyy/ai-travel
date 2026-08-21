@@ -20,11 +20,11 @@ export { shouldShowNav } from './utils'
 /* ========== 导航标签配置 ========== */
 
 const tabs = [
-  { icon: <Home aria-hidden="true" size={18} />, key: '/', title: '首页' },
-  { icon: <Cloud aria-hidden="true" size={18} />, key: '/weather', title: '天气' },
-  { icon: <MapPin aria-hidden="true" size={18} />, key: '/attractions', title: '景点' },
-  { icon: <Users aria-hidden="true" size={18} />, key: '/community', title: '社区' },
-  { icon: <Bot aria-hidden="true" size={18} />, key: '/chat', title: 'AI咨询' },
+  { icon: <Home size={18} />, key: '/', title: '首页' },
+  { icon: <Cloud size={18} />, key: '/weather', title: '天气' },
+  { icon: <MapPin size={18} />, key: '/attractions', title: '景点' },
+  { icon: <Users size={18} />, key: '/community', title: '社区' },
+  { icon: <Bot size={18} />, key: '/chat', title: 'AI咨询' },
 ]
 
 export function Navigation() {
@@ -46,18 +46,15 @@ function TopNav() {
 
   return (
     <nav
-      aria-label="主导航"
       className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200/60 shadow-sm"
     >
       <div className="max-w-300 h-16 mx-auto px-4 sm:px-6 flex items-center justify-between gap-2.5 sm:gap-3.5">
 
         <Link
-          aria-label="返回首页"
           className="min-h-11 inline-flex items-center gap-2.5 shrink-0 rounded-2xl no-underline text-travel-ink"
           href="/"
         >
           <span
-            aria-hidden="true"
             className="w-10 h-10 inline-flex items-center justify-center rounded-[14px] text-white bg-primary shadow-[0_10px_24px_rgba(20,184,166,0.28)] text-base"
           >
             <Compass size={20} />
@@ -85,7 +82,6 @@ function TopNav() {
                 <span className="text-base text-primary">{tab.icon}</span>
                 <span>{tab.title}</span>
                 <span
-                  aria-hidden="true"
                   className={`absolute -bottom-1.75 left-1/2 w-5.5 h-0.75 rounded-full bg-primary opacity-0 -translate-x-1/2 scale-x-[0.6] transition-all motion-reduce:transition-none ${
                     isActive ? 'opacity-100 scale-x-100' : ''
                   }`}
@@ -98,7 +94,6 @@ function TopNav() {
           {user
             ? (
                 <Link
-                  aria-label={`当前用户：${user.username}，进入个人中心`}
                   className={`min-h-11 inline-flex items-center justify-center gap-1.5 px-4 rounded-full bg-travel-surface text-travel-ink border border-travel-ink/6 text-sm font-extrabold transition-all hover:-translate-y-px hover:border-primary/28 hover:bg-primary/10 motion-reduce:transition-none no-underline ${
                     pathname === '/profile'
                       ? '-translate-y-px border-primary/28 bg-primary/10'
@@ -106,7 +101,7 @@ function TopNav() {
                   }`}
                   href="/profile"
                 >
-                  <User aria-hidden="true" size={16} />
+                  <User size={16} />
                   <span className="hidden sm:inline">{user.username}</span>
                 </Link>
               )
@@ -115,13 +110,11 @@ function TopNav() {
                   className="min-h-11 inline-flex items-center justify-center gap-1.5 px-4 rounded-full bg-travel-surface text-travel-ink border border-primary/24 text-sm font-extrabold transition-all hover:-translate-y-px hover:border-primary/38 hover:bg-primary/10 motion-reduce:transition-none no-underline"
                   href="/login"
                 >
-                  <LogIn aria-hidden="true" size={16} />
+                  <LogIn size={16} />
                   <span className="hidden sm:inline">登录</span>
                 </Link>
               )}
           <Button
-            aria-expanded={mobileMenuOpen}
-            aria-label={mobileMenuOpen ? '关闭菜单' : '打开菜单'}
             className="sm:hidden text-travel-ink hover:bg-primary/8"
             onClick={() => setMobileMenuOpen(v => !v)}
             size="icon"

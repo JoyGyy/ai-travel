@@ -151,7 +151,7 @@ export default function Attractions() {
   )
 
   return (
-    <main aria-labelledby="attractions-title" className="travel-page-shell">
+    <main className="travel-page-shell">
       <section className="travel-page-hero travel-ticket-edge travel-route-line">
         <p className="mb-2.5 w-fit rounded-full bg-primary/10 px-2.5 py-1.5 text-3 font-black tracking-[0.14em] text-primary-strong">
           ATTRACTIONS
@@ -169,7 +169,6 @@ export default function Attractions() {
 
       {/* ---- 筛选面板 ---- */}
       <section
-        aria-labelledby="attractions-filter-title"
         className="mx-auto max-w-[1180px] rounded-xl p-[clamp(16px,3vw,22px)]"
       >
         <div className="mb-4 flex items-center justify-between gap-3">
@@ -204,7 +203,7 @@ export default function Attractions() {
         </form>
         {cities.length > 0
           ? (
-              <div aria-labelledby="attractions-city-filter" className="mt-3.5 grid gap-2">
+              <div className="mt-3.5 grid gap-2">
                 <p
                   className="text-3.25 font-extrabold text-stone-900/72"
                   id="attractions-city-filter"
@@ -214,7 +213,6 @@ export default function Attractions() {
                 <div className="flex flex-wrap items-center gap-2">
                   {cities.map(city => (
                     <Button
-                      aria-pressed={filters.city === city}
                       key={city}
                       onClick={() => updateFilters({ city: filters.city === city ? '' : city })}
                       variant={filters.city === city ? 'default' : 'outline'}
@@ -249,14 +247,13 @@ export default function Attractions() {
         </div>
         {tags.length > 0
           ? (
-              <div aria-labelledby="attractions-tag-filter" className="mt-3.5 grid gap-2">
+              <div className="mt-3.5 grid gap-2">
                 <p className="text-3.25 font-extrabold text-stone-900/72" id="attractions-tag-filter">
                   标签
                 </p>
                 <div className="flex flex-wrap items-center gap-2">
                   {tags.map(tag => (
                     <Button
-                      aria-pressed={filters.tag === tag}
                       key={tag}
                       onClick={() => updateFilters({ tag: filters.tag === tag ? '' : tag })}
                       variant={filters.tag === tag ? 'default' : 'outline'}
@@ -268,7 +265,7 @@ export default function Attractions() {
               </div>
             )
           : null}
-        <p aria-live="polite" className="mt-2 text-3.25 text-travel-muted">
+        <p className="mt-2 text-3.25 text-travel-muted">
           {loading ? '正在应用筛选...' : `共找到 ${total} 个景点`}
         </p>
       </section>
@@ -276,7 +273,7 @@ export default function Attractions() {
       {loading && <AttractionCardSkeleton />}
       {!loading && error
         ? (
-            <div className="flex items-center justify-between rounded-xl p-6" role="alert">
+            <div className="flex items-center justify-between rounded-xl p-6">
               <span>{error}</span>
               <Button onClick={() => load(filters)}>重试</Button>
             </div>
@@ -297,14 +294,12 @@ export default function Attractions() {
       {!loading && !error && items.length > 0 ? (
         <>
           <section
-            aria-label="景点列表"
             className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
           >
             {items.map((item) => {
               const isFavoritePending = favoritePendingIds.has(item.id)
               return (
                 <Link
-                  aria-label={`查看${item.name}详情`}
                   className="group block"
                   href={`/attractions/${item.id}`}
                   key={item.id}
@@ -323,8 +318,6 @@ export default function Attractions() {
                       <div className="mb-2 flex items-center justify-between">
                         <h2 className="text-lg font-bold text-travel-ink">{item.name}</h2>
                         <button
-                          aria-label={`${item.isFavorite ? '取消收藏' : '收藏'}${item.name}`}
-                          aria-pressed={!!item.isFavorite}
                           className="rounded-full p-2 text-travel-muted transition-colors hover:text-primary"
                           disabled={isFavoritePending}
                           onClick={(e) => {
@@ -335,7 +328,6 @@ export default function Attractions() {
                           type="button"
                         >
                           <Heart
-                            aria-hidden="true"
                             className={item.isFavorite ? 'fill-primary text-primary' : ''}
                           />
                         </button>
@@ -358,7 +350,6 @@ export default function Attractions() {
                         ))}
                       </div>
                       <span
-                        aria-hidden="true"
                         className="text-sm font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100"
                       >
                         查看详情

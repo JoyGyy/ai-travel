@@ -37,16 +37,14 @@ export function PostActions({
   repostCount,
 }: PostActionsProps) {
   return (
-    <div aria-label="帖子操作" className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-2">
       <Button
-        aria-pressed={likedByMe}
         className={`${likedByMe ? 'text-primary' : ''} ${isLikeAnimating ? 'animate-bounce' : ''}`}
         disabled={likePending}
         onClick={onLike}
         variant="outline"
       >
         <Heart
-          aria-hidden="true"
           className={`mr-1 h-4 w-4 ${likedByMe ? 'fill-current' : ''}`}
         />
         {likeCount}
@@ -56,16 +54,16 @@ export function PostActions({
         onClick={onRepost}
         variant="outline"
       >
-        <Repeat2 aria-hidden="true" className="mr-1 h-4 w-4" />
+        <Repeat2 className="mr-1 h-4 w-4" />
         {!hasHydrated ? '加载中...' : `转发 · ${repostCount}`}
       </Button>
       <Button onClick={onShare} variant="outline">
-        <Share2 aria-hidden="true" className="mr-1 h-4 w-4" />
+        <Share2 className="mr-1 h-4 w-4" />
         分享链接
       </Button>
       {isAuthor && (
         <Button disabled={postDeletePending} onClick={onDelete} variant="destructive">
-          <Trash2 aria-hidden="true" className="mr-1 h-4 w-4" />
+          <Trash2 className="mr-1 h-4 w-4" />
           {postDeletePending ? '删除中...' : '删除帖子'}
         </Button>
       )}

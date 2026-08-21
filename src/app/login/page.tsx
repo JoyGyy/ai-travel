@@ -153,10 +153,9 @@ export default function Login() {
   /* ========== 渲染 ========== */
 
   return (
-    <main aria-labelledby="login-title" className="flex min-h-screen flex-col bg-white md:flex-row">
+    <main className="flex min-h-screen flex-col bg-white md:flex-row">
       {/* 左侧品牌区 */}
       <section
-        aria-label="品牌介绍"
         className="relative flex flex-col justify-between overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-8 text-white md:w-[48%] md:p-12"
       >
         {/* 背景图片 */}
@@ -198,7 +197,7 @@ export default function Login() {
           <p className="text-base leading-relaxed text-gray-400 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
             把目的地、天气灵感和预算计划沉淀下来，随时继续规划下一次出发。
           </p>
-          <div aria-label="核心功能" className="flex flex-wrap gap-3 pt-2 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
+          <div className="flex flex-wrap gap-3 pt-2 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
             {['实时天气', '预算规划', 'AI 咨询'].map(feature => (
               <Badge
                 className="gap-2 border-white/10 bg-white/5 px-4 py-1.5 text-sm text-gray-300 backdrop-blur-sm"
@@ -206,7 +205,6 @@ export default function Login() {
                 variant="outline"
               >
                 <span
-                  aria-hidden="true"
                   className="h-2 w-2 flex-shrink-0 rounded-full bg-teal-400"
                 />
                 {feature}
@@ -220,17 +218,15 @@ export default function Login() {
 
       {/* 右侧表单区 */}
       <section
-        aria-label={tab === 'login' ? '登录表单' : '注册表单'}
         className="flex flex-1 items-center justify-center bg-gradient-to-br from-gray-50 to-white p-8 md:p-12"
       >
         <div className="w-full max-w-[420px]">
           <Button
-            aria-label="返回上一页"
             className="mb-8 gap-2 shadow-sm"
             onClick={() => router.back()}
             variant="outline"
           >
-            <ArrowLeft aria-hidden="true" size={16} />
+            <ArrowLeft size={16} />
             返回
           </Button>
 
@@ -242,13 +238,10 @@ export default function Login() {
           </div>
 
           <div
-            aria-label="选择登录或注册"
             className="mb-8 flex rounded-2xl bg-gray-100 p-1.5"
-            role="group"
           >
             {(['login', 'register'] as const).map(t => (
               <button
-                aria-pressed={tab === t}
                 className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 ${
                   tab === t
                     ? 'bg-white text-gray-900 shadow-sm'
@@ -266,20 +259,18 @@ export default function Login() {
           {formError && (
             <div
               className="mb-6 rounded-2xl border border-red-200/60 bg-red-50/80 p-4 text-sm leading-relaxed text-red-600 backdrop-blur-sm animate-fade-in-up"
-              role="alert"
             >
               {formError}
             </div>
           )}
 
-          <form aria-busy={loading} noValidate onSubmit={handleSubmit}>
+          <form noValidate onSubmit={handleSubmit}>
             <div className="mb-6 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
               <Label className="mb-2 text-gray-700" htmlFor="login-username">
                 用户名
-                <span aria-hidden="true" className="ml-1 text-red-500">*</span>
+                <span className="ml-1 text-red-500">*</span>
               </Label>
               <Input
-                aria-invalid={Boolean(fieldErrors.username)}
                 autoComplete="username"
                 className="h-12 mt-2 border-gray-200 hover:border-gray-300 focus:border-teal-300 focus:ring-2 focus:ring-teal-100 aria-[invalid=true]:border-red-400 aria-[invalid=true]:ring-2 aria-[invalid=true]:ring-red-100"
                 id="login-username"
@@ -302,7 +293,7 @@ export default function Login() {
                 value={username}
               />
               {touched.username && fieldErrors.username && (
-                <p aria-live="polite" className="mt-2 text-xs font-medium text-red-500">
+                <p className="mt-2 text-xs font-medium text-red-500">
                   {fieldErrors.username}
                 </p>
               )}
@@ -311,11 +302,10 @@ export default function Login() {
             <div className="mb-6 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
               <Label className="mb-2 text-gray-700" htmlFor="login-password">
                 密码
-                <span aria-hidden="true" className="ml-1 text-red-500">*</span>
+                <span className="ml-1 text-red-500">*</span>
               </Label>
               <div className="relative mt-2">
                 <Input
-                  aria-invalid={Boolean(fieldErrors.password)}
                   autoComplete={tab === 'register' ? 'new-password' : 'current-password'}
                   className="h-12 pr-12 border-gray-200 hover:border-gray-300 focus:border-teal-300 focus:ring-2 focus:ring-teal-100 aria-[invalid=true]:border-red-400 aria-[invalid=true]:ring-2 aria-[invalid=true]:ring-red-100"
                   id="login-password"
@@ -337,25 +327,23 @@ export default function Login() {
                   value={password}
                 />
                 <Button
-                  aria-label={showPassword ? '隐藏密码' : '显示密码'}
                   className="absolute top-1/2 right-1 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   onClick={() => setShowPassword(v => !v)}
                   size="icon"
-                  tabIndex={-1}
                   type="button"
                   variant="ghost"
                 >
                   {showPassword
                     ? (
-                        <EyeOff aria-hidden="true" size={18} />
+                        <EyeOff size={18} />
                       )
                     : (
-                        <Eye aria-hidden="true" size={18} />
+                        <Eye size={18} />
                       )}
                 </Button>
               </div>
               {touched.password && fieldErrors.password && (
-                <p aria-live="polite" className="mt-2 text-xs font-medium text-red-500">
+                <p className="mt-2 text-xs font-medium text-red-500">
                   {fieldErrors.password}
                 </p>
               )}
@@ -370,7 +358,6 @@ export default function Login() {
             >
               {loading && (
                 <span
-                  aria-hidden="true"
                   className="h-4 w-4 animate-spin-slow rounded-full border-2 border-white/30 border-t-white"
                 />
               )}

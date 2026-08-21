@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useModels } from '@/hooks/useModels'
 import { useTravelChat } from '@/hooks/useTravelChat'
 
@@ -43,10 +44,7 @@ export default function ChatPage() {
   }
 
   return (
-    <section
-      className="flex h-full min-h-0 flex-col overflow-hidden bg-gradient-to-br from-gray-50 to-white text-travel-ink"
-      onClick={() => showModelDropdown && setShowModelDropdown(false)}
-    >
+    <section className="flex h-full min-h-0 flex-col overflow-hidden bg-gradient-to-br from-gray-50 to-white text-travel-ink">
       {/* Hero 区域 */}
       <div className="relative flex-shrink-0 overflow-hidden bg-teal-50/60 pb-10 pl-5 pr-5 pt-6">
         {/* 装饰元素 */}
@@ -70,86 +68,86 @@ export default function ChatPage() {
           </div>
           <div className="flex items-center gap-2">
             {/* 模型选择下拉框 */}
-            <div className="relative" onClick={e => e.stopPropagation()}>
-              <Button
-                className="flex-shrink-0 gap-1.5 border-white/60 bg-white/80 text-gray-600 shadow-sm backdrop-blur-sm hover:-translate-y-0.5 hover:bg-white hover:shadow-md"
-                disabled={modelsLoading}
-                onClick={() => setShowModelDropdown(!showModelDropdown)}
-                variant="outline"
-              >
-                <span className="text-xs font-medium">
-                  {modelsLoading ? '加载中...' : currentModelLabel}
-                </span>
-                <ChevronDown className="h-3.5 w-3.5 opacity-60" />
-              </Button>
-              {showModelDropdown && (
-                <div
-                  className="fixed z-[200] mt-1 min-w-[200px] overflow-hidden rounded-xl border border-white/60 bg-white/95 shadow-xl backdrop-blur-sm"
-                  style={{ right: '1rem', top: '4.5rem' }}
+            <Popover open={showModelDropdown} onOpenChange={setShowModelDropdown}>
+              <PopoverTrigger asChild>
+                <Button
+                  className="flex-shrink-0 gap-1.5 border-white/60 bg-white/80 text-gray-600 shadow-sm backdrop-blur-sm hover:-translate-y-0.5 hover:bg-white hover:shadow-md"
+                  disabled={modelsLoading}
+                  variant="outline"
                 >
-                  {models.map(option => (
-                    <div
-                      className={`flex items-center justify-between px-3 py-2 text-xs font-medium transition-colors ${
-                        !option.available
-                          ? 'cursor-not-allowed opacity-40'
-                          : model === option.value
-                            ? 'bg-teal-50 text-teal-700'
-                            : 'text-gray-600 hover:bg-gray-50 cursor-pointer'
-                      }`}
-                      key={option.value}
-                    >
-                      <button
-                        className="flex-1 text-left"
-                        disabled={!option.available}
-                        onClick={() => {
-                          if (option.available) {
-                            setModel(option.value)
-                            setShowModelDropdown(false)
-                          }
-                        }}
-                        type="button"
-                      >
-                        <span>{option.label}</span>
-                        {!option.available && (
-                          <span className="ml-1.5 text-[10px] text-red-400">（未配置）</span>
-                        )}
-                      </button>
-                      {option.custom && (
-                        <button
-                          className="ml-2 p-0.5 text-gray-400 hover:text-red-500"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            if (window.confirm(`删除模型「${option.label}」？`)) {
-                              removeCustomModel(option.value)
-                              if (model === option.value) {
-                                setModel('siliconflow')
-                              }
-                            }
-                          }}
-                          title="删除模型"
-                          type="button"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                  <div className="border-t border-gray-100">
+                  <span className="text-xs font-medium">
+                    {modelsLoading ? '加载中...' : currentModelLabel}
+                  </span>
+                  <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="end"
+                className="w-[200px] overflow-hidden rounded-xl border-white/60 bg-white/95 p-0 shadow-xl backdrop-blur-sm"
+                sideOffset={4}
+              >
+                {models.map(option => (
+                  <div
+                    className={`flex items-center justify-between px-3 py-2 text-xs font-medium transition-colors ${
+                      !option.available
+                        ? 'cursor-not-allowed opacity-40'
+                        : model === option.value
+                          ? 'bg-teal-50 text-teal-700'
+                          : 'text-gray-600 hover:bg-gray-50 cursor-pointer'
+                    }`}
+                    key={option.value}
+                  >
                     <button
-                      className="flex w-full items-center gap-1.5 px-3 py-2 text-xs font-medium text-teal-600 hover:bg-teal-50"
+                      className="flex-1 text-left"
+                      disabled={!option.available}
                       onClick={() => {
-                        setShowModelDropdown(false)
-                        setShowAddDialog(true)
+                        if (option.available) {
+                          setModel(option.value)
+                          setShowModelDropdown(false)
+                        }
                       }}
                       type="button"
                     >
-                      <Plus className="h-3 w-3" />
-                      添加模型
+                      <span>{option.label}</span>
+                      {!option.available && (
+                        <span className="ml-1.5 text-[10px] text-red-400">（未配置）</span>
+                      )}
                     </button>
+                    {option.custom && (
+                      <button
+                        className="ml-2 p-0.5 text-gray-400 hover:text-red-500"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          if (window.confirm(`删除模型「${option.label}」？`)) {
+                            removeCustomModel(option.value)
+                            if (model === option.value) {
+                              setModel('siliconflow')
+                            }
+                          }
+                        }}
+                        title="删除模型"
+                        type="button"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    )}
                   </div>
+                ))}
+                <div className="border-t border-gray-100">
+                  <button
+                    className="flex w-full items-center gap-1.5 px-3 py-2 text-xs font-medium text-teal-600 hover:bg-teal-50"
+                    onClick={() => {
+                      setShowModelDropdown(false)
+                      setShowAddDialog(true)
+                    }}
+                    type="button"
+                  >
+                    <Plus className="h-3 w-3" />
+                    添加模型
+                  </button>
                 </div>
-              )}
-            </div>
+              </PopoverContent>
+            </Popover>
             <Button
               className="flex-shrink-0 border-white/60 bg-white/80 text-gray-500 shadow-sm backdrop-blur-sm hover:-translate-y-0.5 hover:bg-white hover:text-red-500 hover:shadow-md"
               onClick={() => {

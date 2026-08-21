@@ -21,6 +21,9 @@ export interface AiQuotaStatus {
   used: number
 }
 
+/** 用户角色 */
+export type UserRole = 'admin' | 'user'
+
 export interface AuthResult {
   token: string
   user: { createdAt: string, id: string, username: string }
@@ -28,6 +31,7 @@ export interface AuthResult {
 
 export interface JwtPayload {
   id: string
+  role?: UserRole
   username: string
 }
 
@@ -36,6 +40,7 @@ export interface UserProfile {
   createdAt: string
   favoriteIds: string[]
   id: string
+  role: UserRole
   username: string
 }
 
@@ -114,10 +119,18 @@ async function changePassword(
   await query('UPDATE users SET password_hash = $1 WHERE id = $2', [newHashed, userId])
 }
 
-/** 消耗一次 AI 配额（单条 SQL UPSERT + RETURNING），超限抛出 429 错误 */
+/** 管理员无限额度标记 */
+const UNLIMITED = -1
+
+/** 消耗一次 AI 配额（单条 SQL UPSERT + RETURNING），超限抛出 429 错误。管理员不限次数 */
 async function consumeAiQuota(userId: string, date = getTodayKey()): Promise<AiQuotaStatus> {
   if (!userId)
     throw new Error('用户信息无效')
+
+  // 管理员跳过额度限制
+  if (await isAdmin(userId)) {
+    return { limit: UNLIMITED, remaining: UNLIMITED, used: 0 }
+  }
 
   const updatedAt = new Date().toISOString()
 
@@ -152,13 +165,18 @@ async function consumeAiQuota(userId: string, date = getTodayKey()): Promise<AiQ
   }
 }
 
-/** 查询用户当日 AI 配额使用情况 */
+/** 查询用户当日 AI 配额使用情况（管理员返回无限额度） */
 async function getAiQuotaStatus(
   userId: string | undefined,
   date = getTodayKey(),
 ): Promise<AiQuotaStatus> {
   if (!userId)
     throw new Error('用户信息无效')
+
+  // 管理员返回无限额度
+  if (await isAdmin(userId)) {
+    return { limit: UNLIMITED, remaining: UNLIMITED, used: 0 }
+  }
 
   const result = await query(
     'SELECT used_count FROM ai_usage WHERE user_id = $1 AND usage_date = $2',
@@ -174,6 +192,12 @@ async function getAiQuotaStatus(
   }
 }
 
+/** 判断用户是否为管理员 */
+async function isAdmin(userId: string): Promise<boolean> {
+  const result = await query('SELECT role FROM users WHERE id = $1', [userId])
+  return result.rows.length > 0 && result.rows[0].role === 'admin'
+}
+
 /** 获取 JWT 签名密钥 */
 function getJwtKey(): Uint8Array {
   return new TextEncoder().encode(env.JWT_SECRET)
@@ -183,7 +207,7 @@ async function getProfile(userId: string): Promise<UserProfile> {
   if (!userId)
     throw new Error('用户信息无效')
 
-  const result = await query('SELECT id, username, created_at FROM users WHERE id = $1', [userId])
+  const result = await query('SELECT id, username, role, created_at FROM users WHERE id = $1', [userId])
   if (result.rows.length === 0)
     throw new Error('用户不存在')
 
@@ -196,6 +220,7 @@ async function getProfile(userId: string): Promise<UserProfile> {
     createdAt: user.created_at.toISOString(),
     favoriteIds,
     id: user.id,
+    role: user.role || 'user',
     username: user.username,
   }
 }
@@ -227,7 +252,7 @@ async function login(username: string, password: string): Promise<AuthResult> {
     throw new Error('用户名和密码不能为空')
 
   const result = await query(
-    'SELECT id, username, password_hash, created_at FROM users WHERE username = $1',
+    'SELECT id, username, password_hash, role, created_at FROM users WHERE username = $1',
     [username],
   )
 
@@ -239,7 +264,8 @@ async function login(username: string, password: string): Promise<AuthResult> {
   if (!match)
     throw new Error('用户名或密码错误')
 
-  const token = await signJwt({ id: user.id, username: user.username })
+  const role: UserRole = user.role || 'user'
+  const token = await signJwt({ id: user.id, role, username: user.username })
   return {
     token,
     user: {
@@ -272,7 +298,7 @@ async function register(username: string, password: string, email?: string): Pro
     [id, username, hashed, userEmail, new Date(createdAt)],
   )
 
-  const token = await signJwt({ id, username })
+  const token = await signJwt({ id, role: 'user', username })
   return { token, user: { createdAt, id, username } }
 }
 
@@ -289,7 +315,7 @@ async function removeFavoriteAttraction(userId: string, attractionId: string): P
 }
 
 /** 签发 JWT（有效期 7 天） */
-async function signJwt(payload: { id: string, username: string }): Promise<string> {
+async function signJwt(payload: { id: string, role?: UserRole, username: string }): Promise<string> {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setExpirationTime('7d')
@@ -314,7 +340,7 @@ async function verifyToken(token: string): Promise<JwtPayload> {
   if (typeof payload.id !== 'string' || typeof payload.username !== 'string') {
     throw new TypeError('无效的 token 结构')
   }
-  return { id: payload.id, username: payload.username }
+  return { id: payload.id, role: payload.role as UserRole | undefined, username: payload.username }
 }
 
 export {

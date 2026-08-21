@@ -16,6 +16,7 @@ const log = createLogger('http')
 /** 认证结果 */
 export interface AuthUser {
   id: string
+  role?: string
   username: string
 }
 

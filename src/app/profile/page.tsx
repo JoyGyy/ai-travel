@@ -157,8 +157,9 @@ export default function Profile() {
   }
 
   const quota = profile?.aiQuota
-  const quotaPercent = quota ? Math.min(100, Math.round((quota.used / quota.limit) * 100)) : 0
-  const quotaDanger = quotaPercent >= 80
+  const isUnlimited = quota?.limit === -1
+  const quotaPercent = isUnlimited ? 0 : quota ? Math.min(100, Math.round((quota.used / quota.limit) * 100)) : 0
+  const quotaDanger = !isUnlimited && quotaPercent >= 80
   const displayName = user?.username ?? profile?.username ?? '用户'
 
   // 加载中骨架屏
@@ -271,33 +272,37 @@ export default function Profile() {
                         <div className="mb-3 flex items-center justify-between">
                           <span className="text-sm text-gray-500">今日已使用</span>
                           <Badge
-                            className={quota.remaining > 0
+                            className={isUnlimited || quota.remaining > 0
                               ? 'bg-green-100 text-green-700 border-green-200'
                               : 'bg-red-100 text-red-700 border-red-200'}
                             variant="outline"
                           >
-                            {quota.used}
-                            {' / '}
-                            {quota.limit}
+                            {isUnlimited ? `${quota.used} / 不限` : `${quota.used} / ${quota.limit}`}
                           </Badge>
                         </div>
-                        <div
-                          aria-label={`AI 额度已使用 ${quota.used} 次，共 ${quota.limit} 次`}
-                          aria-valuemax={100}
-                          aria-valuemin={0}
-                          aria-valuenow={quotaPercent}
-                          className="h-2.5 w-full rounded-full bg-gray-100"
-                          role="progressbar"
-                        >
-                          <div
-                            className={`h-full rounded-full transition-all ${quotaDanger ? 'bg-red-500' : 'bg-gradient-to-r from-blue-500 to-indigo-500'}`}
-                            style={{ width: `${quotaPercent}%` }}
-                          />
-                        </div>
+                        {!isUnlimited && (
+                          <>
+                            <div
+                              aria-label={`AI 额度已使用 ${quota.used} 次，共 ${quota.limit} 次`}
+                              aria-valuemax={100}
+                              aria-valuemin={0}
+                              aria-valuenow={quotaPercent}
+                              className="h-2.5 w-full rounded-full bg-gray-100"
+                              role="progressbar"
+                            >
+                              <div
+                                className={`h-full rounded-full transition-all ${quotaDanger ? 'bg-red-500' : 'bg-gradient-to-r from-blue-500 to-indigo-500'}`}
+                                style={{ width: `${quotaPercent}%` }}
+                              />
+                            </div>
+                          </>
+                        )}
                         <p className="mt-2 text-xs text-gray-400">
-                          {quota.remaining > 0
-                            ? `剩余 ${quota.remaining} 次，每日重置`
-                            : '今日额度已用完，明天重置'}
+                          {isUnlimited
+                            ? '管理员不限次数'
+                            : quota.remaining > 0
+                              ? `剩余 ${quota.remaining} 次，每日重置`
+                              : '今日额度已用完，明天重置'}
                         </p>
                       </div>
                     )

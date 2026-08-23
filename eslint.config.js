@@ -35,5 +35,6 @@ export default antfu({
     '*.config.ts',
     'db/**',
     'scripts/**',
+    '.superpowers/**',
   ],
 })

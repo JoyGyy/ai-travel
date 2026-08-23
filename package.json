@@ -15,8 +15,10 @@
     "db:migrate": "tsx --env-file=.env db/migrate.ts run",
     "db:migrate:status": "tsx --env-file=.env db/migrate.ts status",
     "db:migrate:fresh": "tsx --env-file=.env db/migrate.ts fresh",
+    "rag:evaluate": "tsx --env-file=.env scripts/evaluate-rag.ts",
+    "db:seed:attractions": "tsx --env-file=.env scripts/seed-attractions.ts",
     "prepare": "husky",
-    "images:update": "tsx scripts/update-attraction-images.ts"
+    "images:verify": "tsx scripts/verify-image-assets.ts"
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "^3.0.16",
@@ -43,7 +45,7 @@
     "jose": "^6.2.8",
     "lucide-react": "^1.27.0",
     "nanoid": "^6.0.0",
-    "next": "16.2.11",
+    "next": "16.3.1",
     "pg": "^8.22.0",
     "react": "19.2.4",
     "react-day-picker": "^10.0.1",
@@ -56,7 +58,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^4.16.2",
     "@eslint-react/eslint-plugin": "^1.52.2",
-    "@next/eslint-plugin-next": "^15.3.5",
+    "@next/eslint-plugin-next": "^16.3.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@testing-library/jest-dom": "^7.0.0",
     "@testing-library/react": "^16.3.2",

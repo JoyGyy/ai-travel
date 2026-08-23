@@ -47,13 +47,13 @@ export function LoadingState({
     <div
       className="flex justify-center py-7"
     >
-      <div className="w-full max-w-[min(100%,580px)] overflow-hidden rounded-3xl border border-travel-ink/8 bg-travel-surface shadow-sm">
+      <div className="w-full max-w-[min(100%,580px)] overflow-hidden rounded-lg border border-travel-ink/8 bg-travel-surface shadow-sm">
         <div className="flex items-center justify-between px-5 pb-2 pt-[18px]">
           <span className="text-2.75 font-extrabold tracking-[2px] text-travel-ink">
             AI 规划中
           </span>
           <button
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-stone-900/8 bg-white/72 text-sm text-stone-900/72 transition-all hover:rotate-[8deg] hover:scale-105 hover:bg-accent/20 hover:text-[#d63350]"
+            className="flex h-11 w-11 items-center justify-center rounded-lg border border-stone-900/8 bg-white/72 text-sm text-stone-900/72 transition-all hover:bg-destructive/10 hover:text-destructive"
             onClick={onClose}
             type="button"
           >

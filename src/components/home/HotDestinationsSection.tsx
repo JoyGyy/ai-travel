@@ -18,7 +18,7 @@ export function HotDestinationsSection() {
           className="flex items-center gap-3 text-2xl font-bold"
           id="hot-dest-title"
         >
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-500 text-white shadow-lg">
+          <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white shadow-lg shadow-primary/20">
             <Flame size={20} />
           </span>
           <span className="bg-gradient-to-r from-travel-ink to-travel-ink/70 bg-clip-text text-transparent">
@@ -37,7 +37,7 @@ export function HotDestinationsSection() {
       <div className="grid grid-cols-2 gap-5 sm:grid-cols-3">
         {hotDestinations.map((dest, index) => (
           <Link
-            className="group block overflow-hidden rounded-2xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] hover:-translate-y-2 hover:ring-2 hover:ring-teal-200 scroll-reveal"
+            className="group block overflow-hidden rounded-lg bg-white shadow-[0_2px_12px_rgba(34,111,120,0.08)] transition-all duration-300 hover:-translate-y-2 hover:ring-2 hover:ring-primary/20 hover:shadow-[0_12px_40px_rgba(34,111,120,0.14)] scroll-reveal"
             data-delay={index}
             href={`/detail?city=${encodeURIComponent(dest.name)}`}
             key={dest.name}

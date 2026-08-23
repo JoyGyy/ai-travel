@@ -6,6 +6,8 @@
  */
 import type { WeatherResponse } from '@/types/api'
 
+import { Droplets, LoaderCircle, MapPin, Thermometer } from 'lucide-react'
+
 import { WeatherIcon } from '@/components/WeatherIcon'
 
 interface HomeWeatherProps {
@@ -17,13 +19,9 @@ export function HomeWeather({ loading, weather }: HomeWeatherProps) {
   // 加载中或无数据时显示 loading 状态
   if (loading || !weather) {
     return (
-      <div
-        className="w-full min-w-0 overflow-hidden border border-travel-ink/6 rounded-3xl bg-travel-surface shadow-sm min-h-23 py-[18px] px-5 flex items-center gap-3"
-      >
-        <div
-          className="w-8 h-8 flex-[0_0_auto] border-2 border-[rgba(46,198,213,0.24)] border-t-primary rounded-full animate-[spin_1s_linear_infinite] motion-reduce:animate-[spin_1.8s_linear_infinite]"
-        />
-        <span className="min-w-0 text-[rgba(62,73,88,0.7)] text-[13px] font-bold">
+      <div className="flex min-h-28 w-full min-w-0 items-center gap-3 overflow-hidden rounded-lg border border-travel-ink/8 bg-travel-surface px-5 py-4 shadow-sm">
+        <LoaderCircle className="h-6 w-6 flex-none animate-spin text-primary motion-reduce:animate-none" />
+        <span className="min-w-0 text-sm font-medium text-travel-muted">
           正在查询天气…
         </span>
       </div>
@@ -31,67 +29,48 @@ export function HomeWeather({ loading, weather }: HomeWeatherProps) {
   }
 
   return (
-    <section
-      className="w-full min-w-0 overflow-hidden border border-travel-ink/6 rounded-3xl max-sm:rounded-[20px] bg-travel-surface shadow-sm"
-    >
+    <section className="w-full min-w-0 overflow-hidden rounded-lg border border-travel-ink/8 bg-travel-surface shadow-sm">
       {/* ---- 当前天气 ---- */}
-      <div className="min-w-0 p-5 flex items-center justify-between gap-4 max-sm:p-4 max-sm:flex-col max-sm:items-stretch">
-        <div className="min-w-0 flex items-center gap-3.5 max-sm:items-start">
-          <WeatherIcon
-            className="[--weather-icon-size:54px] max-sm:[--weather-icon-size:48px]"
-            desc={weather.weatherDesc}
-          />
+      <div className="grid min-w-0 gap-6 border-b border-travel-ink/8 p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:p-6">
+        <div className="flex min-w-0 items-center gap-4">
+          <span className="flex h-14 w-14 flex-none items-center justify-center rounded-lg bg-primary/8 text-primary sm:h-16 sm:w-16">
+            <WeatherIcon className="h-8 w-8 sm:h-9 sm:w-9" desc={weather.weatherDesc} />
+          </span>
           <div className="min-w-0">
-            <div className="flex items-baseline gap-1">
-              <span
-                className="text-[clamp(30px,8vw,42px)] font-black font-serif leading-none tracking-[-0.04em] tabular-nums text-travel-ocean"
-                style={{ textShadow: '0 8px 24px rgba(20, 184, 166, 0.18)' }}
-              >
+            <div className="flex items-start gap-1">
+              <span className="font-serif text-[clamp(38px,10vw,56px)] font-bold leading-none tabular-nums text-travel-ink">
                 {weather.temperature}
               </span>
-              <span className="text-primary text-[15px] font-black">°C</span>
+              <span className="mt-1 text-sm font-semibold text-primary">°C</span>
             </div>
-            <p className="min-w-0 mt-1.5 overflow-hidden text-[rgba(62,73,88,0.68)] text-xs font-bold leading-[1.35] text-ellipsis whitespace-nowrap">
-              {weather.weatherDesc}
-              {' '}
-              · 体感
-              {weather.feelsLike}
-              °C
-            </p>
+            <p className="mt-1 text-sm font-semibold text-travel-ink">{weather.weatherDesc}</p>
           </div>
         </div>
-        <div className="min-w-[88px] flex-[0_1_auto] text-right max-sm:min-w-0 max-sm:flex max-sm:items-center max-sm:justify-between max-sm:gap-3 max-sm:text-left">
-          <p className="m-0 overflow-hidden text-travel-ocean text-[15px] font-black leading-[1.35] text-ellipsis whitespace-nowrap">
-            {weather.city}
-          </p>
-          <p className="mt-[5px] text-[rgba(62,73,88,0.62)] text-xs font-extrabold tabular-nums max-sm:flex-[0_0_auto] max-sm:mt-0">
-            湿度
-            {weather.humidity}
-            %
-          </p>
+        <div className="grid grid-cols-3 gap-2 sm:min-w-[300px]">
+          <WeatherMetric icon={MapPin} label="城市" value={weather.city} />
+          <WeatherMetric icon={Thermometer} label="体感" value={`${weather.feelsLike}°`} />
+          <WeatherMetric icon={Droplets} label="湿度" value={`${weather.humidity}%`} />
         </div>
       </div>
       {/* ---- 未来三天预报 ---- */}
       {weather.forecast && weather.forecast.length > 0 && (
-        <div
-          className="min-w-0 px-3.5 pb-3.5 grid grid-cols-3 gap-2.5 max-sm:px-2.5 max-sm:pb-2.5 max-sm:gap-2 max-[380px]:grid-cols-1"
-        >
+        <div className="grid min-w-0 grid-cols-3 divide-x divide-travel-ink/8 p-3 max-[380px]:grid-cols-1 max-[380px]:divide-x-0 max-[380px]:divide-y sm:p-4">
           {weather.forecast.map((day, i) => (
             <div
-              className="min-w-0 min-h-22 py-2.5 px-2 flex flex-col items-center justify-center gap-[5px] border border-travel-ink/5 rounded-2xl bg-travel-ink/2 shadow-[0_10px_24px_rgba(41,37,36,0.08)] max-sm:min-h-19.5 max-sm:py-[9px] max-sm:px-1.5 max-[380px]:min-h-16 max-[380px]:flex-row max-[380px]:justify-between max-[380px]:py-2.5 max-[380px]:px-3"
+              className="flex min-w-0 flex-col items-center justify-center gap-1.5 px-2 py-3 max-[380px]:min-h-14 max-[380px]:flex-row max-[380px]:justify-between max-[380px]:px-3"
               key={day.date}
             >
-              <span className="text-[rgba(41,37,36,0.62)] text-[11px] font-black tracking-[0.08em]">
+              <span className="text-xs font-medium text-travel-muted">
                 {i === 0 ? '今天' : i === 1 ? '明天' : '后天'}
               </span>
-              <WeatherIcon className="[--weather-icon-size:22px]" desc={day.weatherDesc} />
-              <span className="max-w-full overflow-hidden text-primary text-xs font-black leading-[1.25] text-ellipsis whitespace-nowrap tabular-nums">
+              <WeatherIcon className="h-5 w-5 text-primary" desc={day.weatherDesc} />
+              <span className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold leading-tight tabular-nums text-travel-ink">
                 {day.minTemp}
                 ~
                 {day.maxTemp}
                 °
               </span>
-              <span className="max-w-full overflow-hidden text-[rgba(62,73,88,0.58)] text-[10px] font-bold text-ellipsis whitespace-nowrap">
+              <span className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-xs text-travel-muted">
                 {day.weatherDesc}
               </span>
             </div>
@@ -99,5 +78,25 @@ export function HomeWeather({ loading, weather }: HomeWeatherProps) {
         </div>
       )}
     </section>
+  )
+}
+
+function WeatherMetric({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: typeof MapPin
+  label: string
+  value: string
+}) {
+  return (
+    <div className="min-w-0 rounded-lg bg-travel-surface-muted px-2 py-3 text-center">
+      <Icon aria-hidden="true" className="mx-auto mb-1.5 h-4 w-4 text-primary" />
+      <p className="text-2.5 font-medium text-travel-muted">{label}</p>
+      <p className="mt-0.5 overflow-hidden text-ellipsis whitespace-nowrap text-xs font-semibold tabular-nums text-travel-ink">
+        {value}
+      </p>
+    </div>
   )
 }

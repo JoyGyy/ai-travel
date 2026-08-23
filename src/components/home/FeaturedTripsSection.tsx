@@ -22,7 +22,7 @@ export function FeaturedTripsSection() {
           className="flex items-center gap-3 text-2xl font-bold"
           id="featured-title"
         >
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500 text-white shadow-lg">
+          <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white shadow-lg shadow-primary/20">
             <Star size={20} />
           </span>
           <span className="bg-gradient-to-r from-travel-ink to-travel-ink/70 bg-clip-text text-transparent">
@@ -41,7 +41,7 @@ export function FeaturedTripsSection() {
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {featuredTrips.map((trip, index) => (
           <Link
-            className="group block overflow-hidden rounded-2xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] hover:-translate-y-2 hover:ring-2 hover:ring-cyan-200 scroll-reveal"
+            className="group block overflow-hidden rounded-lg bg-white shadow-[0_2px_12px_rgba(34,111,120,0.08)] transition-all duration-300 hover:-translate-y-2 hover:ring-2 hover:ring-primary/20 hover:shadow-[0_12px_40px_rgba(34,111,120,0.14)] scroll-reveal"
             data-delay={index}
             href={`/detail?city=${encodeURIComponent(trip.city)}`}
             key={trip.title}

@@ -5,7 +5,7 @@ AI 驱动的智能旅行规划助手，基于 Next.js App Router 全栈架构。
 ## 技术栈
 
 - **前端**: React 19 + TypeScript + Tailwind CSS v4 + shadcn/ui + Zustand 5
-- **后端**: Next.js Route Handlers + PostgreSQL + Drizzle ORM
+- **后端**: Next.js Route Handlers + PostgreSQL (`pg` 连接池 + SQL migrations)
 - **AI**: SiliconFlow LLM + ReAct Agent + RAG
 - **认证**: jose (JWT) + bcryptjs
 - **测试**: Vitest
@@ -36,8 +36,7 @@ cp .env.example .env
 # 创建数据库
 createdb travel_db
 
-# 推送 schema（使用 Drizzle Kit）
-pnpm db:generate
+# 执行 SQL migrations
 pnpm db:migrate
 ```
 
@@ -60,9 +59,8 @@ pnpm dev
 | `pnpm typecheck`  | TypeScript 类型检查       |
 | `pnpm test`       | Vitest 测试（watch 模式） |
 | `pnpm test:run`   | 运行一次测试              |
-| `pnpm db:generate`| 生成 Drizzle 迁移文件     |
 | `pnpm db:migrate` | 执行数据库迁移            |
-| `pnpm db:studio`  | 打开 Drizzle Studio       |
+| `pnpm rag:evaluate` | 运行 RAG 离线检索评测（需数据库） |
 
 ## 项目结构
 
@@ -81,7 +79,7 @@ src/
 ├── stores/                 # Zustand 状态管理
 ├── hooks/                  # 自定义 Hooks
 ├── api/                    # 前端 API 客户端
-├── db/                     # Drizzle ORM schema + 数据库配置
+├── db/                     # SQL migrations + 数据库迁移脚本
 ├── constants/              # 常量数据
 ├── knowledge/              # RAG 知识库（JSON）
 ├── types/                  # TypeScript 类型定义
@@ -106,6 +104,13 @@ src/
 - **密码策略**: 至少 8 位，包含大小写字母和数字
 - **安全头**: CSP、X-Frame-Options、X-Content-Type-Options
 - **环境校验**: 生产环境缺少关键变量时阻止启动
+- **模型凭据隔离**: 模型 API Key 只保存在服务端环境变量中，不接受浏览器传入的第三方密钥或 URL
+
+## AI 可观测性与评测
+
+- 每次 AI 请求都会记录关联 ID、操作类型、耗时、token 用量、结束原因和调用过的工具名；日志不包含用户输入或密钥。
+- 工具调用获得的景点数据会作为“参考来源”展示在对话回答下方，便于用户追溯回答依据。
+- `pnpm rag:evaluate` 运行 12 条固定旅行查询，输出 `Hit@1`、`Hit@3` 和 `MRR`。更新知识库、Embedding 模型或排序权重后，应对比指标并人工检查低分用例。
 
 ## 部署
 

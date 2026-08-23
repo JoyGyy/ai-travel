@@ -8,11 +8,16 @@
 import { NextResponse } from 'next/server'
 
 import { searchCities } from '@/lib/services/cityService'
+import { withRateLimit } from '@/lib/utils/http'
+import { readPositiveInteger } from '@/lib/utils/validation'
 
-export async function GET(request: Request) {
+export const GET = withRateLimit('cities:read', 60, 60_000, async (request) => {
   const { searchParams } = new URL(request.url)
   const keyword = searchParams.get('keyword')?.trim() || ''
-  const subdistrict = Number(searchParams.get('subdistrict')) || 0
+  const subdistrict = readPositiveInteger(searchParams.get('subdistrict') || '0', '子级数量', {
+    max: 5,
+    min: 0,
+  })
 
   // 无关键字时返回空数组（避免返回过多数据）
   if (!keyword || keyword.length < 1) {
@@ -37,4 +42,4 @@ export async function GET(request: Request) {
     source: 'amap',
     success: true,
   })
-}
+})

@@ -292,7 +292,7 @@ export function HeroSearch() {
   return (
     <section
 
-      className="relative isolate min-h-[85vh] flex items-center overflow-hidden"
+      className="planner-hero relative isolate flex min-h-[78vh] items-center overflow-hidden"
     >
       {/* 背景图片 */}
       <div className="absolute inset-0 -z-10">
@@ -308,17 +308,11 @@ export function HeroSearch() {
         <div className="absolute inset-0 bg-linear-to-r from-black/30 via-transparent to-black/30" />
       </div>
 
-      {/* 装饰光晕 */}
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute top-20 left-[10%] h-72 w-72 rounded-full bg-teal-500/10 blur-[100px]" />
-        <div className="absolute bottom-20 right-[10%] h-72 w-72 rounded-full bg-blue-500/10 blur-[100px]" />
-      </div>
-
       <div className="relative mx-auto w-full max-w-300 px-6 py-20">
         {/* 标题区域 */}
         <div className="mb-12 text-center">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-md">
-            <Bot size={16} className="text-teal-400" />
+            <Bot size={16} className="text-[#b8e0df]" />
             <span className="text-sm font-medium text-white/90">AI 驱动的智能旅行规划</span>
           </div>
           <h1
@@ -327,19 +321,19 @@ export function HeroSearch() {
           >
             去你想去的地方
             <br />
-            <span className="bg-gradient-to-r from-teal-400 via-cyan-400 to-sky-400 bg-clip-text text-transparent">
+            <span className="text-[#b8e0df]">
               AI 帮你规划
             </span>
           </h1>
           <p className="mx-auto max-w-[600px] text-lg text-white/80 md:text-xl">
             <span>{typedText}</span>
-            <span className="inline-block h-[1.1em] w-[2px] translate-y-[2px] animate-blink bg-teal-400" />
+            <span className="inline-block h-[1.1em] w-[2px] translate-y-[2px] animate-blink bg-[#b8e0df]" />
           </p>
         </div>
 
         {/* 搜索表单 */}
         <form
-          className="relative z-10 mx-auto max-w-[860px] rounded-3xl bg-white/95 p-6 shadow-2xl backdrop-blur-xl"
+          className="planner-form relative z-10 mx-auto max-w-[860px] rounded-lg bg-white p-6 shadow-2xl"
           noValidate
           onSubmit={submitPlanner}
         >
@@ -388,9 +382,9 @@ export function HeroSearch() {
                           ? displayCities.slice(0, 10).map((name, index) => (
                               <Button
 
-                                className={`w-full justify-start gap-2 px-4 py-2.5 text-left text-sm hover:bg-teal-50 hover:text-teal-700 ${
+                                className={`w-full justify-start gap-2 px-4 py-2.5 text-left text-sm hover:bg-primary/8 hover:text-primary ${
                                   city === name || activeCityIndex === index
-                                    ? 'bg-teal-50 text-teal-600'
+                                    ? 'bg-primary/8 text-primary'
                                     : 'text-gray-700'
                                 }`}
                                 id={`home-city-option-${index}`}
@@ -548,7 +542,7 @@ export function HeroSearch() {
             {/* 搜索按钮 */}
             <Button
 
-              className="h-12 gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-slate-600 px-8 text-sm font-bold text-white shadow-lg shadow-teal-500/25 hover:shadow-xl hover:shadow-teal-500/30 disabled:hover:shadow-lg lg:w-auto"
+              className="h-12 gap-2 rounded-lg bg-primary px-8 text-sm font-bold text-white shadow-lg shadow-primary/20 hover:bg-primary-strong disabled:hover:bg-primary lg:w-auto"
               disabled={isSubmitting}
               type="submit"
             >
@@ -575,7 +569,7 @@ export function HeroSearch() {
                   {weatherLoading
                     ? (
                         <>
-                          <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-gray-300 border-t-teal-500" />
+                          <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-gray-300 border-t-primary" />
                           正在查询天气...
                         </>
                       )
@@ -600,7 +594,7 @@ export function HeroSearch() {
         {/* 热门搜索标签 */}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
           <span className="flex items-center gap-1 text-sm text-white/60">
-            <Flame className="h-3.5 w-3.5 text-teal-400" />
+            <Flame className="h-3.5 w-3.5 text-[#b8e0df]" />
             热门：
           </span>
           {['三亚', '丽江', '西安', '成都', '大理', '厦门'].map(tag => (

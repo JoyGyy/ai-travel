@@ -132,7 +132,7 @@ export default function AttractionDetail() {
   return (
     <main className="travel-page-shell">
       <button
-        className="inline-flex w-fit items-center gap-2 rounded-full bg-white/78 px-4 py-2.5 text-sm font-extrabold text-travel-ink shadow-sm transition-all hover:-translate-x-1 hover:text-accent hover:shadow-md"
+        className="inline-flex w-fit items-center gap-2 rounded-lg border border-travel-ink/10 bg-white px-4 py-2.5 text-sm font-semibold text-travel-ink shadow-sm transition-all hover:-translate-x-1 hover:border-primary/25 hover:text-primary hover:shadow-md"
         onClick={() => router.back()}
         type="button"
       >
@@ -144,7 +144,7 @@ export default function AttractionDetail() {
       <section className="travel-surface-card travel-ticket-edge travel-route-line overflow-hidden">
         <Image
           alt={`${attraction.name}，${attraction.city}景点封面`}
-          className="h-125 w-full object-cover"
+          className="h-[clamp(280px,50vw,500px)] w-full object-cover"
           height={500}
           loading="eager"
           sizes="100vw"
@@ -153,7 +153,7 @@ export default function AttractionDetail() {
         />
         <div className="p-6">
           <p className="mb-2 text-sm font-medium text-primary">{attraction.city}</p>
-          <h1 className="mb-3 text-3xl font-bold text-travel-ink" id="attraction-detail-title">
+          <h1 className="mb-3 text-2xl font-bold text-travel-ink md:text-3xl" id="attraction-detail-title">
             {attraction.name}
           </h1>
           <p className="mb-4 text-travel-muted">{attraction.summary}</p>
@@ -168,10 +168,12 @@ export default function AttractionDetail() {
               </Badge>
             ))}
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row">
             <Button
+              className="border-primary/25 bg-white text-primary hover:bg-primary/5 hover:text-primary"
               disabled={favoritePending}
               onClick={handleToggleFavorite}
+              variant="outline"
             >
               <Heart
                 className={`mr-2 h-4 w-4 ${attraction.isFavorite ? 'fill-current' : ''}`}
@@ -179,7 +181,7 @@ export default function AttractionDetail() {
               {favoritePending ? '处理中...' : attraction.isFavorite ? '已收藏' : '收藏'}
             </Button>
             <Link
-              className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
+              className="inline-flex h-10 items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
               href={`/chat?prompt=${prompt}`}
             >
               让 AI 规划这站

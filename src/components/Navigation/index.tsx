@@ -45,17 +45,15 @@ function TopNav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <nav
-      className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200/60 shadow-sm"
-    >
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-travel-ink/10 bg-travel-surface/95 shadow-sm">
       <div className="max-w-300 h-16 mx-auto px-4 sm:px-6 flex items-center justify-between gap-2.5 sm:gap-3.5">
 
         <Link
-          className="min-h-11 inline-flex items-center gap-2.5 shrink-0 rounded-2xl no-underline text-travel-ink"
+          className="min-h-11 inline-flex shrink-0 items-center gap-2.5 rounded-lg no-underline text-travel-ink"
           href="/"
         >
           <span
-            className="w-10 h-10 inline-flex items-center justify-center rounded-[14px] text-white bg-primary shadow-[0_10px_24px_rgba(20,184,166,0.28)] text-base"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-base text-white shadow-[0_8px_20px_rgba(34,111,120,0.22)]"
           >
             <Compass size={20} />
           </span>
@@ -71,7 +69,7 @@ function TopNav() {
               = pathname === tab.key || (tab.key !== '/' && pathname?.startsWith(tab.key))
             return (
               <Link
-                className={`min-h-11 flex items-center gap-1.75 px-4 border border-transparent rounded-2xl text-travel-ink/72 text-sm font-extrabold relative transition-all hover:-translate-y-px hover:bg-primary/8 hover:text-travel-ink motion-reduce:transition-none ${
+                className={`relative flex min-h-11 items-center gap-1.75 rounded-lg border border-transparent px-4 text-sm font-extrabold text-travel-ink/72 transition-colors hover:bg-primary/8 hover:text-travel-ink motion-reduce:transition-none ${
                   isActive
                     ? 'bg-primary/12 text-travel-ink border-primary/24'
                     : ''

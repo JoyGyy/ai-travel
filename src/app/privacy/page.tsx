@@ -12,7 +12,7 @@ export default function Privacy() {
       className="min-h-full py-[clamp(32px,6vw,72px)] sm:py-6 px-6 sm:px-4 text-travel-ink"
       style={{
         background:
-          'radial-gradient(circle, rgba(28, 25, 23, 0.06) 1px, transparent 1px) 18px 18px, linear-gradient(180deg, #fffaf4 0%, #fafaf8 46%, #f8fafc 100%)',
+          'linear-gradient(180deg, #f5f8f8 0%, #edf4f4 100%)',
       }}
     >
       <div className="max-w-220 mx-auto">

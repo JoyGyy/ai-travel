@@ -140,8 +140,8 @@ export function CommunityImageGrid({ compact = false, images }: CommunityImageGr
 /** 根据图片数量和 compact 模式决定网格列数和最大宽度 */
 function getGridClasses(count: number, compact: boolean) {
   const base = compact
-    ? 'gap-1.5 rounded-2xl max-sm:gap-1.5 max-sm:rounded-2xl'
-    : 'gap-2.5 rounded-[22px] max-sm:gap-1.5 max-sm:rounded-2xl'
+    ? 'gap-1.5 rounded-lg max-sm:gap-1.5'
+    : 'gap-2.5 rounded-lg max-sm:gap-1.5'
 
   if (count === 1) {
     return `grid grid-cols-1 max-w-[520px] ${base}`

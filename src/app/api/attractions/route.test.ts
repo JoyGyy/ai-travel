@@ -106,4 +106,18 @@ describe('gET /api/attractions', () => {
       'u1',
     )
   })
+
+  it.each([
+    ['page=0', '页码必须是 1-10000 之间的整数'],
+    ['page=abc', '页码必须是 1-10000 之间的整数'],
+    ['pageSize=101', '每页数量必须是 1-100 之间的整数'],
+  ])('拒绝非法分页参数：%s', async (query, message) => {
+    const req = new Request(`http://localhost/api/attractions?${query}`)
+    const res = await GET(req)
+    const data = await res.json()
+
+    expect(res.status).toBe(400)
+    expect(data).toMatchObject({ message, success: false })
+    expect(mockListAttractions).not.toHaveBeenCalled()
+  })
 })

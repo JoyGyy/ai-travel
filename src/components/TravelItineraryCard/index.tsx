@@ -5,7 +5,9 @@
  * 将纯文本行程解析为结构化的卡片形式展示
  * 支持解析 Markdown 格式的行程文本
  */
-import { Calendar, Clock, MapPin, Star } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+
+import { Calendar, Clock, CloudSun, MapPin, Moon, Soup, Star, Sun, Sunrise, Sunset } from 'lucide-react'
 
 /* ========== 类型定义 ========== */
 
@@ -19,7 +21,7 @@ interface DayPlan {
 interface PeriodPlan {
   content: string
   highlights?: string
-  icon: string
+  icon: LucideIcon
   time: string
 }
 
@@ -30,13 +32,13 @@ interface TravelItineraryCardProps {
 /* ========== 解析工具 ========== */
 
 /** 时间段图标映射 */
-const TIME_ICONS: Record<string, string> = {
-  傍晚: '🌆',
-  上午: '🌅',
-  中午: '🍜',
-  下午: '🌤️',
-  晚上: '🌙',
-  早晨: '🌄',
+const TIME_ICONS: Record<string, LucideIcon> = {
+  傍晚: Sunset,
+  上午: Sunrise,
+  中午: Soup,
+  下午: CloudSun,
+  晚上: Moon,
+  早晨: Sun,
 }
 
 /** 从文本中提取标题 */
@@ -90,7 +92,7 @@ function parseDays(text: string): DayPlan[] {
         currentDay.periods.push({
           content: cleanContent,
           highlights,
-          icon: TIME_ICONS[time] || '📍',
+          icon: TIME_ICONS[time] || MapPin,
           time,
         })
       }
@@ -126,7 +128,7 @@ function parseDays(text: string): DayPlan[] {
             tableDay.periods.push({
               content,
               highlights: highlights !== '亮点' ? highlights : undefined,
-              icon: TIME_ICONS[time] || '📍',
+              icon: TIME_ICONS[time] || MapPin,
               time,
             })
           }
@@ -145,9 +147,9 @@ function parseDays(text: string): DayPlan[] {
 
 function DayCard({ plan }: { plan: DayPlan }) {
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-travel-ink/8 bg-travel-surface shadow-sm transition-all hover:shadow-md">
+    <div className="group relative overflow-hidden rounded-lg border border-travel-ink/8 bg-travel-surface shadow-sm transition-all hover:shadow-md">
       {/* 天数标题 */}
-      <div className="flex items-center gap-3 bg-gradient-to-r from-travel-ocean/8 to-transparent px-4 py-3">
+      <div className="flex items-center gap-3 bg-primary/5 px-4 py-3">
         <span className="flex h-8 w-8 items-center justify-center rounded-full bg-travel-ocean text-sm font-bold text-white">
           {plan.day}
         </span>
@@ -167,37 +169,40 @@ function DayCard({ plan }: { plan: DayPlan }) {
 
       {/* 时间段列表 */}
       <div className="px-4 pb-4">
-        {plan.periods.map(period => (
-          <div
-            className="flex gap-3 border-b border-travel-ink/5 py-2.5 last:border-0"
-            key={`${plan.day}-${period.time}`}
-          >
-            {/* 时间图标 */}
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-travel-sand/30 text-base">
-              {period.icon}
-            </div>
-
-            {/* 内容 */}
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-travel-ocean">
-                  {period.time}
-                </span>
+        {plan.periods.map((period) => {
+          const PeriodIcon = period.icon
+          return (
+            <div
+              className="flex gap-3 border-b border-travel-ink/5 py-2.5 last:border-0"
+              key={`${plan.day}-${period.time}`}
+            >
+              {/* 时间图标 */}
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/8 text-primary">
+                <PeriodIcon className="h-4 w-4" />
               </div>
-              <p className="mt-0.5 text-sm leading-relaxed text-travel-ink/80">
-                {period.content}
-              </p>
-              {period.highlights && (
-                <div className="mt-1.5 flex items-start gap-1.5">
-                  <Star className="mt-0.5 h-3 w-3 shrink-0 text-amber-500" />
-                  <span className="text-xs text-travel-muted">
-                    {period.highlights}
+
+              {/* 内容 */}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-travel-ocean">
+                    {period.time}
                   </span>
                 </div>
-              )}
+                <p className="mt-0.5 text-sm leading-relaxed text-travel-ink/80">
+                  {period.content}
+                </p>
+                {period.highlights && (
+                  <div className="mt-1.5 flex items-start gap-1.5">
+                    <Star className="mt-0.5 h-3 w-3 shrink-0 text-amber-500" />
+                    <span className="text-xs text-travel-muted">
+                      {period.highlights}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
 
         {plan.periods.length === 0 && (
           <p className="py-3 text-center text-sm text-travel-muted">
@@ -223,8 +228,8 @@ export function TravelItineraryCard({ content }: TravelItineraryCardProps) {
   return (
     <div className="space-y-4">
       {/* 标题区域 */}
-      <div className="flex items-center gap-3 rounded-2xl border border-travel-ink/8 bg-gradient-to-r from-travel-ocean/10 to-travel-sand/20 p-4">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-travel-ocean text-white">
+      <div className="flex items-center gap-3 rounded-lg border border-travel-ink/8 bg-primary/5 p-4">
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-travel-ocean text-white">
           <MapPin size={20} />
         </div>
         <div>

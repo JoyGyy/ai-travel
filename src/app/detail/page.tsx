@@ -182,31 +182,15 @@ export default function Detail() {
 
   /* ---------- Undo/Redo 状态 ---------- */
 
-  const [canUndo, setCanUndo] = useState(false)
-  const [canRedo, setCanRedo] = useState(false)
-
-  // 更新 undo/redo 状态
-  useEffect(() => {
-    if (!isEditing)
-      return
-
-    const temporal = getItineraryTemporal()
-    const updateHistoryState = () => {
-      // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
-      setCanUndo(temporal.canUndo())
-      // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
-      setCanRedo(temporal.canRedo())
-    }
-
-    updateHistoryState()
-    const timer = setInterval(updateHistoryState, 100)
-    return () => clearInterval(timer)
-  }, [isEditing])
+  // temporal 历史记录不参与 Zustand 的 React 订阅；行程编辑、撤销和重做
+  // 都会同时更新行程状态，从当前渲染直接派生按钮状态即可，避免轮询。
+  const temporal = getItineraryTemporal()
+  const canUndo = isEditing && temporal.canUndo()
+  const canRedo = isEditing && temporal.canRedo()
 
   /* ---------- 编辑模式操作 ---------- */
 
   function toggleEditMode() {
-    const temporal = getItineraryTemporal()
     if (isEditing) {
       temporal.clear()
       setEditing(false)
@@ -239,11 +223,12 @@ export default function Detail() {
 
   /* ---------- 数据加载：优先缓存 → SSE 流式生成 ---------- */
 
-  /** 防止重复发送消息的 ref */
-  const hasSentMessage = useRef(false)
+  /** 防止同一组参数重复发送消息；参数变化时允许重新生成 */
+  const sentRequestKey = useRef<string | null>(null)
 
   useEffect(() => {
     if (!hasValidParams) {
+      sentRequestKey.current = null
       setShowLoading(false)
       setErrorMessage('缺少目的地或预算信息，请返回首页重新规划。')
       return
@@ -251,6 +236,8 @@ export default function Detail() {
 
     setShowLoading(true)
     setErrorMessage('')
+
+    const requestKey = `${city}:${budget}:${days}`
 
     const cached = loadItineraryCache(city, budget, days)
     if (cached) {
@@ -265,15 +252,15 @@ export default function Detail() {
       setAttractionRefs(cached.attractionRefs || [])
       setActiveKeys(cachedItinerary[0]?.day ? [String(cachedItinerary[0].day)] : [])
       setShowLoading(false)
-      hasSentMessage.current = true
+      sentRequestKey.current = requestKey
       return
     }
 
     // 防止重复发送消息
-    if (hasSentMessage.current) {
+    if (sentRequestKey.current === requestKey) {
       return
     }
-    hasSentMessage.current = true
+    sentRequestKey.current = requestKey
 
     useItineraryStore.setState({ agentSteps: [], currentAgentStep: 0 })
     sendMessage({ text: `请为我规划 ${city} ${days} 天旅行，预算 ${budget} 元` })
@@ -340,7 +327,7 @@ export default function Detail() {
                   )}
 
                   {/* AI 行程规划结果 */}
-                  <div className="overflow-hidden rounded-[22px] border border-travel-ink/8 bg-travel-surface shadow-sm">
+                  <div className="overflow-hidden rounded-lg border border-travel-ink/8 bg-travel-surface shadow-sm">
                     <div className="flex items-center justify-between px-5 pb-2 pt-[18px]">
                       <span className="text-2.75 font-extrabold tracking-[2px] text-travel-ink">
                         AI 生成的行程规划
@@ -393,7 +380,7 @@ export default function Detail() {
           <>
             {/* 摘要卡片 */}
             <div
-              className="travel-ticket-edge relative z-10 -mt-10 flex items-center overflow-hidden rounded-[22px] border border-travel-ink/8 bg-travel-surface-strong p-[18px_20px] shadow-sm"
+              className="travel-ticket-edge relative z-10 -mt-10 flex items-center overflow-hidden rounded-lg border border-travel-ink/8 bg-travel-surface-strong p-[18px_20px] shadow-sm"
             >
               <div className="flex min-w-0 flex-1 flex-col items-center gap-1.5">
                 <span className="text-2.5 font-extrabold uppercase tracking-[2px] text-stone-900/62">
@@ -418,7 +405,7 @@ export default function Detail() {
                 <span className="text-2.5 font-extrabold uppercase tracking-[2px] text-stone-900/62">
                   预算
                 </span>
-                <span className="max-w-full overflow-wrap-anywhere text-center font-serif text-base font-extrabold tabular-nums text-[#d63350]">
+                <span className="max-w-full overflow-wrap-anywhere text-center font-serif text-base font-bold tabular-nums text-accent">
                   ¥
                   {budget}
                 </span>
@@ -450,7 +437,7 @@ export default function Detail() {
                   </span>
                 )}
               </SectionTitle>
-              <div className="overflow-hidden rounded-3xl border border-travel-ink/8 bg-travel-surface shadow-sm">
+              <div className="overflow-hidden rounded-lg border border-travel-ink/8 bg-travel-surface shadow-sm">
                 {itinerary.map((item, dayIndex) => (
                   <DaySection
                     attractionRefs={attractionRefs}
@@ -479,7 +466,7 @@ export default function Detail() {
             {tips.length > 0 && (
               <section className="pt-[22px]">
                 <SectionTitle id="detail-tips-title">温馨提示</SectionTitle>
-                <div className="rounded-3xl border border-travel-ink/8 bg-travel-surface p-4 shadow-sm">
+                <div className="rounded-lg border border-travel-ink/8 bg-travel-surface p-4 shadow-sm">
                   {tips.map(tip => (
                     <div
                       className="flex items-start gap-3 py-2 text-3.25 leading-relaxed text-stone-900/72"
@@ -496,9 +483,9 @@ export default function Detail() {
             )}
 
             {/* 分享与咨询操作 */}
-            <div className="grid gap-3 pt-6">
+            <div className="grid gap-3 pt-6 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
               <button
-                className="inline-flex min-h-12.5 w-full items-center justify-center gap-2 rounded-4xl border-none bg-primary text-3.75 font-black text-white shadow-[0_4px_16px_rgba(20,184,166,0.25)] transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(20,184,166,0.35)]"
+                className="inline-flex min-h-12.5 w-full items-center justify-center gap-2 rounded-lg border border-primary/25 bg-white text-3.75 font-semibold text-primary shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:bg-primary/5 hover:shadow-md"
                 onClick={() => router.push('/community/new')}
                 type="button"
               >
@@ -506,7 +493,7 @@ export default function Detail() {
                 分享到社区
               </button>
               <button
-                className="inline-flex min-h-12.5 w-full items-center justify-center gap-2 rounded-4xl border-none bg-primary text-3.75 font-black text-white shadow-[0_4px_16px_rgba(20,184,166,0.25)] transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(20,184,166,0.35)]"
+                className="inline-flex min-h-12.5 w-full items-center justify-center gap-2 rounded-lg border border-primary bg-primary text-3.75 font-semibold text-white shadow-[0_4px_16px_rgba(34,111,120,0.24)] transition-all hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-[0_8px_24px_rgba(34,111,120,0.3)]"
                 onClick={() => router.push('/chat')}
                 type="button"
               >

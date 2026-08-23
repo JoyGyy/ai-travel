@@ -31,6 +31,17 @@ async function currentUploadFolder() {
   return { folder, month, year }
 }
 
+async function hasValidImageSignature(file: File, ext: string): Promise<boolean> {
+  const bytes = new Uint8Array(await file.slice(0, 12).arrayBuffer())
+  if (ext === 'jpg')
+    return bytes[0] === 0xFF && bytes[1] === 0xD8 && bytes[2] === 0xFF
+  if (ext === 'png')
+    return bytes.length >= 8 && bytes.slice(0, 8).every((value, index) => value === [137, 80, 78, 71, 13, 10, 26, 10][index])
+  return bytes.length >= 12
+    && String.fromCharCode(...bytes.slice(0, 4)) === 'RIFF'
+    && String.fromCharCode(...bytes.slice(8, 12)) === 'WEBP'
+}
+
 export const POST = withProtected(
   async (req) => {
     const formData = await req.formData()
@@ -42,21 +53,26 @@ export const POST = withProtected(
     if (files.length > MAX_IMAGES_PER_POST)
       throw httpError(400, `每次最多上传 ${MAX_IMAGES_PER_POST} 张图片`)
 
+    const validatedFiles = await Promise.all(files.map(async (file) => {
+      const ext = allowedMimeTypes.get(file.type)
+      if (!ext)
+        throw httpError(400, '仅支持 JPG、PNG 或 WebP 图片')
+      if (file.size === 0 || file.size > MAX_IMAGE_SIZE)
+        throw httpError(413, '图片大小需在 1B 到 5MB 之间')
+      if (!await hasValidImageSignature(file, ext))
+        throw httpError(400, '图片内容与文件类型不匹配')
+      return { ext, file }
+    }))
+
     const { folder, month, year } = await currentUploadFolder()
     const images: Array<{ altText: string, storageKey: string, url: string }> = []
 
     // 并行写入所有文件，用 map 返回结果保证顺序与用户选择一致
     const results = await Promise.all(
-      files.map(async (file) => {
-        const ext = allowedMimeTypes.get(file.type)
-        if (!ext)
-          throw httpError(400, '仅支持 JPG、PNG 或 WebP 图片')
-
-        if (file.size > MAX_IMAGE_SIZE)
-          throw httpError(413, '单张图片不能超过 5MB')
-
+      validatedFiles.map(async ({ ext, file }) => {
         const filename = `${nanoid(16)}.${ext}`
-        const filePath = path.join(folder, filename)
+        // 年月目录在运行时生成，避免 Turbopack 将整个项目加入服务端追踪产物。
+        const filePath = path.join(/* turbopackIgnore: true */ folder, filename)
         const buffer = Buffer.from(await file.arrayBuffer())
         await writeFile(filePath, buffer)
 

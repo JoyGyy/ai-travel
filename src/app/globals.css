@@ -4,57 +4,56 @@
 
 :root {
   /* shadcn 变量 */
-  --background: 40 29% 98%;
-  --foreground: 24 10% 10%;
+  --background: 195 24% 97%;
+  --foreground: 203 30% 16%;
   --card: 0 0% 100%;
-  --card-foreground: 24 10% 10%;
+  --card-foreground: 203 30% 16%;
   --popover: 0 0% 100%;
-  --popover-foreground: 24 10% 10%;
-  --primary: 174 84% 40%;
+  --popover-foreground: 203 30% 16%;
+  --primary: 184 57% 31%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 38 92% 50%;
-  --secondary-foreground: 24 10% 10%;
-  --muted: 40 18% 94%;
-  --muted-foreground: 24 8% 45%;
-  --accent: 351 79% 58%;
+  --secondary: 40 53% 50%;
+  --secondary-foreground: 203 30% 16%;
+  --muted: 197 20% 92%;
+  --muted-foreground: 204 13% 40%;
+  --accent: 8 53% 55%;
   --accent-foreground: 0 0% 100%;
   --destructive: 0 72% 51%;
   --destructive-foreground: 0 0% 100%;
-  --border: 24 12% 88%;
-  --input: 24 12% 88%;
-  --ring: 174 84% 40%;
-  --radius: 0.875rem;
+  --border: 198 17% 86%;
+  --input: 198 17% 86%;
+  --ring: 184 57% 31%;
+  --radius: 0.5rem;
 
-  /* 旅行平台配色：青色主调 */
-  --color-primary: #14b8a6;
-  --color-primary-strong: #0d9488;
-  --color-secondary: #f59e0b;
-  --color-accent: #e84057;
-  --color-accent-strong: #d63350;
-  --color-sky: #3b82f6;
-  --color-sand: #d4a76a;
-  --color-warning: #d97706;
-  --color-success: #059669;
+  /* 海岸青：主操作集中使用青色，其他色只承载明确语义。 */
+  --color-primary: #226f78;
+  --color-primary-strong: #185c65;
+  --color-secondary: #bf8d42;
+  --color-accent: #c85d52;
+  --color-accent-strong: #aa473f;
+  --color-sky: #4d8ca8;
+  --color-sand: #b89562;
+  --color-warning: #a97328;
+  --color-success: #277b70;
   --color-danger: #dc2626;
-  --color-background: #fafaf8;
+  --color-background: #f5f8f8;
   --color-surface: #ffffff;
-  --color-ink: #1c1917;
-  --color-muted: rgba(28, 25, 23, 0.76);
+  --color-ink: #19343c;
+  --color-muted: rgba(25, 52, 60, 0.72);
 
-  /* 冷色对比：深石板蓝，打破全站纯暖 */
-  --travel-slate: #334155;
-  --travel-slate-rgb: 51, 65, 85;
-  --travel-slate-deep: #1e293b;
+  --travel-slate: #36535d;
+  --travel-slate-rgb: 54, 83, 93;
+  --travel-slate-deep: #19343c;
 
   --travel-mint: var(--color-background);
-  --travel-mint-light: #f5f3ef;
+  --travel-mint-light: #edf4f4;
   --travel-sand: var(--color-sand);
-  --travel-sand-light: #fff0d6;
-  --travel-cream: #f8f7f4;
+  --travel-sand-light: #f7f0e4;
+  --travel-cream: #f2f6f6;
   --travel-accent: var(--color-accent);
   --travel-accent-strong: var(--color-accent-strong);
-  --travel-ocean: #292524;
-  --travel-ocean-light: #57534e;
+  --travel-ocean: #19343c;
+  --travel-ocean-light: #4b666e;
   --travel-sky: var(--color-sky);
   --travel-ink: var(--color-ink);
   --travel-muted: var(--color-muted);
@@ -66,13 +65,8 @@
   --travel-primary-strong: var(--color-primary-strong);
 
   /* 页面级旅行手账视觉 token */
-  --travel-hero-gradient: linear-gradient(
-    135deg,
-    rgba(20, 184, 166, 0.16),
-    rgba(245, 158, 11, 0.12) 48%,
-    rgba(232, 64, 87, 0.1)
-  );
-  --travel-ticket-border: rgba(20, 184, 166, 0.2);
+  --travel-hero-gradient: linear-gradient(135deg, rgba(34, 111, 120, 0.12), rgba(77, 140, 168, 0.04));
+  --travel-ticket-border: rgba(34, 111, 120, 0.2);
   --travel-tag-free-bg: rgba(5, 150, 105, 0.1);
   --travel-tag-free-text: #047857;
   --travel-tag-paid-bg: rgba(217, 119, 6, 0.12);
@@ -84,21 +78,21 @@
   --travel-tag-success-bg: rgba(5, 150, 105, 0.1);
   --travel-tag-success-text: #047857;
 
-  --travel-primary-rgb: 20, 184, 166;
-  --travel-secondary-rgb: 245, 158, 11;
-  --travel-ocean-rgb: 41, 37, 36;
-  --travel-sky-rgb: 59, 130, 246;
-  --travel-sand-rgb: 212, 167, 106;
-  --travel-accent-rgb: 232, 64, 87;
-  --travel-ink-rgb: 28, 25, 23;
+  --travel-primary-rgb: 34, 111, 120;
+  --travel-secondary-rgb: 191, 141, 66;
+  --travel-ocean-rgb: 25, 52, 60;
+  --travel-sky-rgb: 77, 140, 168;
+  --travel-sand-rgb: 184, 149, 98;
+  --travel-accent-rgb: 200, 93, 82;
+  --travel-ink-rgb: 25, 52, 60;
   --travel-white-rgb: 255, 255, 255;
 
   --travel-surface: #ffffff;
   --travel-surface-strong: #ffffff;
-  --travel-surface-muted: #f5f3ef;
-  --travel-frosted: #f0eeeb;
-  --travel-frosted-border: rgba(28, 25, 23, 0.08);
-  --travel-border: rgba(28, 25, 23, 0.08);
+  --travel-surface-muted: #edf4f4;
+  --travel-frosted: #eaf1f2;
+  --travel-frosted-border: rgba(25, 52, 60, 0.1);
+  --travel-border: rgba(25, 52, 60, 0.1);
 
   /* 纹理图案（纯 CSS，无图片） */
   --texture-linen: repeating-linear-gradient(
@@ -126,24 +120,24 @@
       rgba(28, 25, 23, 0.02) 7px
     );
 
-  --travel-radius-sm: 10px;
-  --travel-radius-md: 14px;
-  --travel-radius-lg: 18px;
-  --travel-radius-xl: 24px;
-  --travel-radius-2xl: 32px;
+  --travel-radius-sm: 6px;
+  --travel-radius-md: 8px;
+  --travel-radius-lg: 12px;
+  --travel-radius-xl: 16px;
+  --travel-radius-2xl: 20px;
 
   --travel-blur-sm: 14px;
   --travel-blur-md: 18px;
   --travel-blur-lg: 22px;
-  --travel-glass: rgba(255, 255, 255, 0.72);
-  --travel-glass-strong: rgba(255, 255, 255, 0.88);
+  --travel-glass: rgba(255, 255, 255, 0.84);
+  --travel-glass-strong: rgba(255, 255, 255, 0.94);
   --travel-glass-highlight: rgba(255, 255, 255, 0.95);
-  --travel-glass-border: rgba(28, 25, 23, 0.08);
+  --travel-glass-border: rgba(25, 52, 60, 0.1);
   --travel-glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.9);
 
   /* 阴影分层：不同层级用不同色调 */
-  --travel-shadow-card: 0 4px 24px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.03);
-  --travel-shadow-floating: 0 12px 48px rgba(28, 25, 23, 0.14), 0 2px 8px rgba(28, 25, 23, 0.06);
+  --travel-shadow-card: 0 4px 18px rgba(25, 52, 60, 0.07), 0 1px 2px rgba(25, 52, 60, 0.04);
+  --travel-shadow-floating: 0 12px 36px rgba(25, 52, 60, 0.13), 0 2px 8px rgba(25, 52, 60, 0.06);
   --shadow-paper: 0 1px 3px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.03);
   --shadow-paper-hover: 0 4px 12px rgba(0, 0, 0, 0.07), 0 0 0 1px rgba(0, 0, 0, 0.05);
 
@@ -166,19 +160,19 @@
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-bounce: cubic-bezier(0.68, -0.55, 0.27, 1.55);
 
-  --travel-period-morning: #f59e0b;
-  --travel-period-afternoon: #3b82f6;
-  --travel-period-evening: #7c3aed;
+  --travel-period-morning: #bf8d42;
+  --travel-period-afternoon: #4d8ca8;
+  --travel-period-evening: #557b88;
   --travel-budget-accommodation: var(--travel-accent);
-  --travel-budget-food: #d97706;
-  --travel-budget-transportation: #3b82f6;
+  --travel-budget-food: #a97328;
+  --travel-budget-transportation: #4d8ca8;
   --travel-budget-tickets: var(--color-primary);
   --travel-budget-other: rgba(28, 25, 23, 0.5);
 
   /* 兼容旧变量名 */
   --c-terracotta: var(--travel-accent);
-  --c-terracotta-light: #fb7185;
-  --c-sand: rgba(245, 158, 11, 0.1);
+  --c-terracotta-light: #dc887d;
+  --c-sand: rgba(191, 141, 66, 0.1);
   --c-cream: var(--travel-cream);
   --c-forest: var(--travel-ocean);
   --c-forest-light: var(--travel-ocean-light);
@@ -220,8 +214,65 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: var(--texture-linen), var(--color-background);
+  background: var(--color-background);
   color: var(--travel-ink);
+}
+
+/* 首页使用编辑式旅行视觉，避免工具页与营销页混杂的装饰效果。 */
+.home-editorial {
+  --home-border: rgba(25, 52, 60, 0.12);
+  background: var(--color-background);
+}
+
+.home-editorial section:not(.planner-hero) {
+  max-width: 1200px;
+}
+
+.home-editorial .scroll-reveal {
+  transition-duration: 200ms;
+}
+
+.home-editorial .group {
+  border-color: var(--home-border);
+}
+
+.home-editorial h2 {
+  letter-spacing: 0;
+}
+
+.home-editorial a:focus-visible,
+.home-editorial button:focus-visible {
+  outline: 3px solid rgba(34, 111, 120, 0.42);
+  outline-offset: 3px;
+}
+
+.planner-hero::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 96px;
+  background: linear-gradient(transparent, var(--color-background));
+  content: '';
+}
+
+.planner-form {
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+@media (max-width: 640px) {
+  .home-editorial section:not(.planner-hero) {
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
+
+  .planner-hero {
+    min-height: 720px;
+  }
+
+  .planner-form {
+    padding: 1rem;
+  }
 }
 
 button,
@@ -263,7 +314,7 @@ button {
   min-height: 100%;
   padding: clamp(16px, 3vw, 28px);
   padding-bottom: max(clamp(24px, 4vw, 40px), env(safe-area-inset-bottom));
-  background: var(--texture-linen), var(--travel-bg);
+  background: var(--travel-bg);
 }
 
 /* Web 端容器 - 限制最大宽度并居中 */
@@ -342,35 +393,8 @@ button {
   padding: clamp(22px, 4vw, 34px);
   border: 1px solid var(--travel-ticket-border);
   border-radius: var(--travel-radius-2xl);
-  background: var(--texture-dots), var(--travel-hero-gradient), var(--travel-surface);
-  background-size: var(--texture-dots-size), auto, auto;
+  background: var(--travel-surface-muted);
   box-shadow: var(--shadow-paper);
-}
-
-.travel-page-hero::before {
-  position: absolute;
-  inset: auto 24px 18px auto;
-  width: min(180px, 38vw);
-  height: 82px;
-  content: '';
-  border-radius: 999px;
-  background:
-    radial-gradient(
-      circle at 18px 50%,
-      rgba(var(--travel-primary-rgb), 0.32) 0 4px,
-      transparent 5px
-    ),
-    linear-gradient(
-      90deg,
-      rgba(var(--travel-primary-rgb), 0.18),
-      rgba(var(--travel-secondary-rgb), 0.02)
-    );
-  background-size:
-    28px 28px,
-    auto;
-  opacity: 0.6;
-  transform: rotate(-6deg);
-  pointer-events: none;
 }
 
 .travel-page-hero > * {
@@ -467,93 +491,6 @@ button {
   .travel-route-line::before {
     content: none;
   }
-}
-
-/* 统一天气图标：用可控 CSS 图形替代 emoji */
-.travel-weather-icon {
-  --weather-icon-size: 1em;
-  position: relative;
-  width: var(--weather-icon-size);
-  height: var(--weather-icon-size);
-  display: inline-flex;
-  flex: 0 0 auto;
-  border-radius: 999px;
-  background: radial-gradient(circle at 35% 30%, #fff7c2 0 26%, #f59e0b 27% 70%, #f97316 100%);
-  box-shadow:
-    0 0 0 0.16em rgba(245, 158, 11, 0.16),
-    0 0.28em 0.6em rgba(180, 83, 9, 0.18);
-}
-
-.travel-weather-icon--cloudy,
-.travel-weather-icon--default {
-  border-radius: 45% 55% 48% 52%;
-  background: linear-gradient(135deg, #f8fafc, #c7d2fe 60%, #93c5fd);
-  box-shadow: 0 0.2em 0.55em rgba(var(--travel-ocean-rgb), 0.16);
-}
-
-.travel-weather-icon--cloudy::before,
-.travel-weather-icon--default::before {
-  position: absolute;
-  left: -14%;
-  bottom: 12%;
-  width: 62%;
-  height: 54%;
-  border-radius: 999px;
-  content: '';
-  background: inherit;
-}
-
-.travel-weather-icon--rain,
-.travel-weather-icon--storm {
-  border-radius: 45% 55% 48% 52%;
-  background: linear-gradient(135deg, #e0f2fe, #7dd3fc 58%, #2563eb);
-  box-shadow: 0 0.2em 0.55em rgba(37, 99, 235, 0.22);
-}
-
-.travel-weather-icon--rain::after,
-.travel-weather-icon--storm::after {
-  position: absolute;
-  left: 18%;
-  right: 18%;
-  bottom: -28%;
-  height: 34%;
-  border-radius: 999px;
-  content: '';
-  background: repeating-linear-gradient(90deg, #0ea5e9 0 12%, transparent 12% 34%);
-}
-
-.travel-weather-icon--storm::before {
-  position: absolute;
-  left: 42%;
-  bottom: -34%;
-  width: 22%;
-  height: 58%;
-  clip-path: polygon(35% 0, 100% 0, 58% 42%, 100% 42%, 20% 100%, 42% 52%, 0 52%);
-  content: '';
-  background: #facc15;
-}
-
-.travel-weather-icon--snow {
-  border-radius: 45% 55% 48% 52%;
-  background: linear-gradient(135deg, #f8fafc, #dbeafe 68%, #93c5fd);
-  box-shadow: 0 0.2em 0.55em rgba(59, 130, 246, 0.16);
-}
-
-.travel-weather-icon--snow::after {
-  position: absolute;
-  left: 18%;
-  right: 18%;
-  bottom: -22%;
-  height: 28%;
-  border-radius: 999px;
-  content: '';
-  background: radial-gradient(circle, #60a5fa 0 18%, transparent 20%) 0 0 / 33% 100%;
-}
-
-.travel-weather-icon--fog {
-  border-radius: 35%;
-  background: repeating-linear-gradient(180deg, #e2e8f0 0 22%, #94a3b8 23% 30%, #e2e8f0 31% 52%);
-  box-shadow: 0 0.2em 0.55em rgba(100, 116, 139, 0.16);
 }
 
 /* 动画 */

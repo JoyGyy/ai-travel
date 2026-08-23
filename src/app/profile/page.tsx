@@ -189,11 +189,11 @@ export default function Profile() {
   return (
     <main className="min-h-screen bg-background">
       {/* Hero 区域 */}
-      <div className="bg-teal-50/60">
+      <div className="border-b border-travel-ink/8 bg-travel-surface-muted">
         <div className="travel-container py-12">
           <div className="flex items-center justify-between">
             <div>
-              <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-teal-500">
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-primary">
                 PROFILE
               </p>
               <h1 className="text-3xl font-black tracking-tight text-gray-900 lg:text-4xl">
@@ -233,7 +233,7 @@ export default function Profile() {
           <div className="space-y-6">
             {/* 用户卡片 */}
             <Card className="overflow-hidden border-white/60 bg-white/80 backdrop-blur-sm">
-              <div className="bg-teal-500 p-6">
+              <div className="bg-primary p-6">
                 <div className="flex items-center gap-4">
                   <Avatar className="h-20 w-20 border-4 border-white/20">
                     <AvatarFallback className="bg-white/20 text-3xl font-bold text-white backdrop-blur-sm">
@@ -261,7 +261,7 @@ export default function Profile() {
             <Card className="border-white/60 bg-white/80 backdrop-blur-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <Bot size={18} className="text-blue-500" />
+                  <Bot size={18} className="text-primary" />
                   AI 使用额度
                 </CardTitle>
               </CardHeader>
@@ -314,7 +314,7 @@ export default function Profile() {
                   className="flex items-center gap-3 rounded-xl p-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
                   href="/attractions"
                 >
-                  <MapPin size={16} className="text-blue-500" />
+                  <MapPin size={16} className="text-primary" />
                   浏览景点
                 </Link>
                 <Link
@@ -328,7 +328,7 @@ export default function Profile() {
                   className="flex items-center gap-3 rounded-xl p-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
                   href="/weather"
                 >
-                  <Cloud size={16} className="text-cyan-500" />
+                  <Cloud size={16} className="text-primary" />
                   天气查询
                 </Link>
               </CardContent>
@@ -341,7 +341,7 @@ export default function Profile() {
             <Card className="border-white/60 bg-white/80 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Key size={20} className="text-cyan-500" />
+                  <Key size={20} className="text-primary" />
                   修改密码
                 </CardTitle>
               </CardHeader>
@@ -442,7 +442,7 @@ export default function Profile() {
                             key={item.id}
                           >
                             <div className="flex items-center gap-3">
-                              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-100 text-teal-600">
+                              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                                 <MapPin size={18} />
                               </div>
                               <div>

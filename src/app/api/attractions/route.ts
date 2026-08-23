@@ -7,13 +7,14 @@ import { NextResponse } from 'next/server'
 
 import { listAttractions } from '@/lib/services/attractions/attractionService'
 import { withAuth } from '@/lib/utils/http'
+import { readPositiveInteger } from '@/lib/utils/validation'
 
 function readFilters(query: URLSearchParams): Record<string, unknown> {
   return {
     city: query.get('city')?.trim() || '',
     keyword: query.get('keyword')?.trim() || '',
-    page: Number(query.get('page')) || 1,
-    pageSize: Number(query.get('pageSize')) || 20,
+    page: readPositiveInteger(query.get('page') || '1', '页码', { max: 10_000, min: 1 }),
+    pageSize: readPositiveInteger(query.get('pageSize') || '20', '每页数量', { max: 100, min: 1 }),
     tag: query.get('tag')?.trim() || '',
     ticketType: ['free', 'paid'].includes(query.get('ticketType') || '')
       ? query.get('ticketType')

@@ -12,7 +12,7 @@ export default function Terms() {
       className="min-h-full py-[clamp(32px,6vw,72px)] sm:py-6 px-6 sm:px-4 text-travel-ink"
       style={{
         background:
-          'radial-gradient(circle, rgba(28, 25, 23, 0.06) 1px, transparent 1px) 18px 18px, linear-gradient(180deg, #fffaf4 0%, #fafaf8 46%, #f8fafc 100%)',
+          'linear-gradient(180deg, #f5f8f8 0%, #edf4f4 100%)',
       }}
     >
       <div className="max-w-[880px] mx-auto">
@@ -22,7 +22,7 @@ export default function Terms() {
         >
           返回首页
         </Link>
-        <article className="p-[clamp(24px,5vw,44px)] border border-travel-ink/6 sm:rounded-[28px] rounded-[22px] bg-white/90 shadow-sm">
+        <article className="rounded-lg border border-travel-ink/6 bg-white/90 p-[clamp(24px,5vw,44px)] shadow-sm">
           <p className="m-0 mb-2.5 text-primary text-xs font-black tracking-[0.12em] uppercase">
             Terms of Service
           </p>
@@ -34,7 +34,7 @@ export default function Terms() {
             用户协议
           </h1>
           <p className="mt-3 m-0 text-travel-muted text-3.25">更新日期：2026 年 7 月 22 日</p>
-          <p className="mt-[26px] m-0 p-4 px-[18px] rounded-[18px] text-travel-ocean/76 bg-primary/8 leading-[1.8]">
+          <p className="m-0 mt-[26px] rounded-lg bg-primary/8 p-4 px-[18px] leading-[1.8] text-travel-ocean/76">
             欢迎使用 Travel AI。本协议适用于你访问和使用本站提供的 AI
             旅行规划、天气查询、景点推荐和旅行咨询等服务。本站为个人备案网站，由 ICP
             备案主体作为本站运营者负责运营。

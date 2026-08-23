@@ -5,9 +5,9 @@
 import { NextResponse } from 'next/server'
 
 import { getWeather } from '@/lib/services/weather'
-import { errorResponse, httpError } from '@/lib/utils/http'
+import { errorResponse, httpError, withRateLimit } from '@/lib/utils/http'
 
-export async function GET(req: Request) {
+export const GET = withRateLimit('weather:read', 60, 60_000, async (req) => {
   try {
     const { searchParams } = new URL(req.url)
     const city = searchParams.get('city')?.trim()
@@ -26,4 +26,4 @@ export async function GET(req: Request) {
   catch (err) {
     return errorResponse(err)
   }
-}
+})

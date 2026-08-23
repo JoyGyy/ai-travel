@@ -166,12 +166,10 @@ export default function Login() {
         <div className="absolute inset-0 z-[1] bg-gradient-to-br from-gray-900/95 via-gray-900/80 to-gray-800/90" />
 
         {/* 装饰元素 */}
-        <div className="absolute -right-20 -top-20 z-[1] h-[400px] w-[400px] rounded-full bg-teal-500/5 blur-3xl" />
-        <div className="absolute -bottom-20 -left-20 z-[1] h-[300px] w-[300px] rounded-full bg-gradient-to-br from-blue-500/10 to-purple-500/10 blur-3xl" />
 
         {/* 品牌标识 */}
         <div className="relative z-[2] flex items-center gap-3 animate-fade-in-up">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-500 text-lg text-white shadow-lg shadow-teal-500/20">
+          <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-lg text-white shadow-lg shadow-primary/20">
             <Compass />
           </span>
           <span className="text-lg font-bold tracking-wide text-white">Travel AI</span>
@@ -179,13 +177,13 @@ export default function Login() {
 
         {/* 主标语 */}
         <div className="relative z-[2] flex flex-1 flex-col justify-center gap-6 py-8 md:max-w-[440px]">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-teal-400 animate-fade-in-up">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#b8e0df] animate-fade-in-up">
             AI Travel Planner
           </p>
           <h1 className="text-3xl font-bold leading-tight text-white md:text-[36px] animate-fade-in-up" style={{ animationDelay: '100ms' }}>
             登录后保存你的
             <br />
-            <span className="text-teal-400">
+            <span className="text-[#b8e0df]">
               智能旅行地图
             </span>
           </h1>
@@ -200,7 +198,7 @@ export default function Login() {
                 variant="outline"
               >
                 <span
-                  className="h-2 w-2 flex-shrink-0 rounded-full bg-teal-400"
+                  className="h-2 w-2 flex-shrink-0 rounded-full bg-[#b8e0df]"
                 />
                 {feature}
               </Badge>
@@ -212,9 +210,7 @@ export default function Login() {
       </section>
 
       {/* 右侧表单区 */}
-      <section
-        className="flex flex-1 items-center justify-center bg-gradient-to-br from-gray-50 to-white p-8 md:p-12"
-      >
+      <section className="flex flex-1 items-center justify-center bg-travel-surface-muted p-8 md:p-12">
         <div className="w-full max-w-[420px]">
           <Button
             className="mb-8 gap-2 shadow-sm"
@@ -267,7 +263,7 @@ export default function Login() {
               </Label>
               <Input
                 autoComplete="username"
-                className="h-12 mt-2 border-gray-200 hover:border-gray-300 focus:border-teal-300 focus:ring-2 focus:ring-teal-100"
+                className="h-12 mt-2 border-gray-200 hover:border-primary/30 focus:border-primary/50 focus:ring-2 focus:ring-primary/15"
                 id="login-username"
                 name="username"
                 onBlur={() => {
@@ -302,7 +298,7 @@ export default function Login() {
               <div className="relative mt-2">
                 <Input
                   autoComplete={tab === 'register' ? 'new-password' : 'current-password'}
-                  className="h-12 pr-12 border-gray-200 hover:border-gray-300 focus:border-teal-300 focus:ring-2 focus:ring-teal-100"
+                  className="h-12 pr-12 border-gray-200 hover:border-primary/30 focus:border-primary/50 focus:ring-2 focus:ring-primary/15"
                   id="login-password"
                   name="password"
                   onBlur={() => {
@@ -345,7 +341,7 @@ export default function Login() {
             </div>
 
             <Button
-              className="h-12 w-full gap-2 bg-teal-500 text-white shadow-lg shadow-teal-500/20 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-teal-500/25 disabled:hover:translate-y-0 animate-fade-in-up"
+              className="h-12 w-full gap-2 bg-primary text-white shadow-lg shadow-primary/20 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/25 disabled:hover:translate-y-0 animate-fade-in-up"
               disabled={loading}
               size="lg"
               style={{ animationDelay: '300ms' }}

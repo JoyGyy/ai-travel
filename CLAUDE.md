@@ -18,7 +18,10 @@ AI 驱动的智能旅行规划助手，基于 Next.js 16 全栈框架，集成 S
 
 ## 自动化协作准则 (Agent Workflow Guidelines)
 
-- **自动 Git 提交**: 每次代码修改与测试验证（TypeScript/ESLint）通过后，**必须自动执行 `git add` 并使用清晰规范的 commit message 提交代码**。
+- **分批原子化 Git 提交 (Atomic Batch Commits)**:
+  - 每次代码修改与测试验证通过后，必须自动执行 Git 提交。
+  - **严禁堆积多个模块一次性大提交**，必须按照功能/页面/模块进行**小步分批提交**（如单独提交 `feat(home): ...`、`feat(detail): ...`、`fix(auth): ...`）。
+  - 每个 Commit 粒度聚焦单一职责，并编写规范、清晰的 commit message。
 
 ## 架构要点
 

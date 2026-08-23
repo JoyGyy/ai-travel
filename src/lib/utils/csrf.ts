@@ -19,13 +19,13 @@ export function extractCsrfToken(headers: Headers, cookies?: string): null | str
     return headerToken
 
   // 其次从 cookie 获取
-  if (cookies) {
-    const match = cookies.match(/csrf_token=([^;]+)/)
-    if (match)
-      return match[1]
-  }
+  return extractCsrfCookie(cookies)
+}
 
-  return null
+/** 从 Cookie header 中读取 CSRF token。 */
+export function extractCsrfCookie(cookies?: string): null | string {
+  const match = cookies?.match(/(?:^|;\s*)csrf_token=([^;]+)/)
+  return match?.[1] || null
 }
 
 /**
@@ -53,8 +53,9 @@ export function verifyCsrfToken(token: string): boolean {
   const [random, timestampStr, signature] = parts
   const timestamp = Number(timestampStr)
 
-  // 检查过期
-  if (Date.now() - timestamp > TOKEN_EXPIRY_MS)
+  // token 不接受未来时间戳，并且必须在有效期内。
+  const age = Date.now() - timestamp
+  if (!Number.isSafeInteger(timestamp) || age < 0 || age > TOKEN_EXPIRY_MS)
     return false
 
   // 使用 HMAC 验证签名，并用 timingSafeEqual 防止时序攻击

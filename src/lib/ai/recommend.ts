@@ -5,6 +5,7 @@ import {
   toUIMessageStream,
 } from 'ai'
 
+import { logAiFinish, logAiRequest } from './observability'
 import { getTravelModel } from './providers'
 import { travelTools } from './tools'
 
@@ -12,12 +13,20 @@ interface RecommendParams {
   budget: number
   city: string
   days: number
+  requestId: string
 }
 
 export function createTravelRecommendStream(params: RecommendParams) {
+  const startedAt = logAiRequest({ operation: 'recommend', requestId: params.requestId })
   const result = streamText({
     maxOutputTokens: 4096,
     model: getTravelModel(),
+    onFinish: event => logAiFinish({
+      ...event,
+      durationMs: Date.now() - startedAt,
+      operation: 'recommend',
+      requestId: params.requestId,
+    }),
     prompt: `请为我规划 ${params.city} ${params.days} 天旅行，预算 ${params.budget} 元。请包含每日安排、交通建议、预算拆分、注意事项和适合收藏分享的摘要。`,
     stopWhen: isStepCount(5),
     system:

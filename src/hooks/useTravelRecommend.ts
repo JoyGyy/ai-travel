@@ -3,6 +3,8 @@
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 
+import { getCsrfHeaders } from '@/api/client'
+
 interface TravelRecommendParams {
   city: string
   budget: number
@@ -15,6 +17,8 @@ export function useTravelRecommend(params: TravelRecommendParams) {
     transport: new DefaultChatTransport({
       api: '/api/travel/recommend',
       body: params,
+      credentials: 'include',
+      headers: getCsrfHeaders,
     }),
   })
 }

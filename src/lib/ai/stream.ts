@@ -8,6 +8,7 @@ import {
   toUIMessageStream,
 } from 'ai'
 
+import { logAiFinish, logAiRequest } from './observability'
 import { getTravelModel } from './providers'
 import { travelTools } from './tools'
 
@@ -22,13 +23,19 @@ export const TRAVEL_SYSTEM_PROMPT = `你是一个专业的旅行规划师，不�
 
 export async function createTravelChatStream(
   messages: UIMessage[],
-  modelName?: string,
-  customModel?: { apiKey?: string, baseUrl?: string, model?: string },
+  requestId: string,
 ) {
+  const startedAt = logAiRequest({ operation: 'chat', requestId })
   const result = streamText({
     maxOutputTokens: 4096,
     messages: await convertToModelMessages(messages),
-    model: getTravelModel(modelName, customModel),
+    model: getTravelModel(),
+    onFinish: event => logAiFinish({
+      ...event,
+      durationMs: Date.now() - startedAt,
+      operation: 'chat',
+      requestId,
+    }),
     stopWhen: isStepCount(5),
     system: TRAVEL_SYSTEM_PROMPT,
     tools: travelTools,

@@ -5,6 +5,22 @@ vi.mock('@/lib/services/auth', () => ({
   getAuthFromHeaders: vi.fn(() => ({ id: 'user-1', username: 'joygy' })),
 }))
 
+vi.mock('@/lib/utils/http', async () => {
+  const actual = await vi.importActual<typeof import('@/lib/utils/http')>('@/lib/utils/http')
+  return {
+    ...actual,
+    withProtectedRaw: (handler: (req: Request, ctx: { user: { id: string, username: string } }) => Promise<Response>) =>
+      async (req: Request) => {
+        try {
+          return await handler(req, { user: { id: 'user-1', username: 'joygy' } })
+        }
+        catch (error) {
+          return actual.errorResponse(error)
+        }
+      },
+  }
+})
+
 vi.mock('@/lib/ai/stream', () => ({
   createTravelChatStream: vi.fn(async () => new Response('ok', { status: 200 })),
 }))

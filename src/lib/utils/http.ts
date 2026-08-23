@@ -8,7 +8,7 @@ import { NextResponse } from 'next/server'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { getAuthFromHeaders } from '@/lib/services/auth'
 
-import { extractCsrfToken, verifyCsrfToken } from './csrf'
+import { extractCsrfCookie, extractCsrfToken, verifyCsrfToken } from './csrf'
 import { createLogger } from './logger'
 
 const log = createLogger('http')
@@ -41,6 +41,15 @@ export function errorResponse(err: unknown): NextResponse {
     return NextResponse.json(payload, { status: err.status })
   }
 
+  // 业务服务可能使用带 status/quota 字段的 Error（例如 AI 配额超限）。
+  // 保留其明确的 HTTP 状态，避免把客户端可处理的 429 错误误报成 500。
+  if (err instanceof Error && isStatusError(err)) {
+    const payload: Record<string, unknown> = { message: err.message, success: false }
+    if (err.quota)
+      payload.quota = err.quota
+    return NextResponse.json(payload, { status: err.status })
+  }
+
   if (err instanceof Error) {
     if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
       return NextResponse.json({ message: '令牌无效或已过期', success: false }, { status: 401 })
@@ -55,6 +64,16 @@ export function errorResponse(err: unknown): NextResponse {
 
   log.error('未知错误:', err)
   return NextResponse.json({ message: '服务器内部错误', success: false }, { status: 500 })
+}
+
+function isStatusError(
+  err: Error,
+): err is Error & { quota?: { limit: number, remaining: number, used: number }, status: number } {
+  return 'status' in err
+    && typeof (err as Error & { status?: unknown }).status === 'number'
+    && Number.isInteger((err as Error & { status: number }).status)
+    && (err as Error & { status: number }).status >= 400
+    && (err as Error & { status: number }).status < 600
 }
 
 /** 创建 HttpError 的便捷工厂函数 */
@@ -78,8 +97,9 @@ export async function requireAuth(req: Request): Promise<AuthUser> {
  * 无效时抛出 403 HttpError
  */
 export function requireCsrf(req: Request): void {
-  const csrfToken = extractCsrfToken(req.headers, req.headers.get('cookie') || undefined)
-  if (!csrfToken || !verifyCsrfToken(csrfToken))
+  const csrfToken = extractCsrfToken(req.headers)
+  const cookieToken = extractCsrfCookie(req.headers.get('cookie') || undefined)
+  if (!csrfToken || !cookieToken || csrfToken !== cookieToken || !verifyCsrfToken(csrfToken))
     throw httpError(403, 'CSRF token 无效')
 }
 
@@ -129,6 +149,32 @@ export function withAuthRaw(handler: (req: Request, ctx: { user: AuthUser }) => 
   }
 }
 
+/**
+ * 流式响应版的认证 + CSRF + 限流包装器。
+ * 用于消耗配额或改变服务端状态的 SSE POST 接口。
+ */
+export function withProtectedRaw(
+  handler: (req: Request, ctx: { user: AuthUser }) => Promise<Response>,
+  options: { rateLimit: { max: number, name: string, windowMs?: number } },
+) {
+  return async (req: Request): Promise<Response> => {
+    try {
+      const user = await requireAuth(req)
+      requireCsrf(req)
+
+      const { max, name, windowMs } = options.rateLimit
+      const blocked = await checkRateLimit(req, name, max, windowMs, user.id)
+      if (blocked)
+        return blocked
+
+      return await handler(req, { user })
+    }
+    catch (err) {
+      return errorResponse(err)
+    }
+  }
+}
+
 /** 包装 Route Handler，自动捕获错误并返回统一格式 */
 export function withErrorHandler(
   handler: (req: Request, context?: unknown) => Promise<NextResponse>,
@@ -168,7 +214,7 @@ export function withProtected<TContext = unknown>(
 
       if (options?.rateLimit) {
         const { max, name, windowMs } = options.rateLimit
-        const blocked = await checkRateLimit(req, name, max, windowMs)
+        const blocked = await checkRateLimit(req, name, max, windowMs, user.id)
         if (blocked)
           return blocked
       }

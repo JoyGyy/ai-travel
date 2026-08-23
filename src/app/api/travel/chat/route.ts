@@ -1,10 +1,12 @@
 import type { UIMessage } from 'ai'
 
+import { nanoid } from 'nanoid'
+
 import { createTravelChatStream } from '@/lib/ai/stream'
 import { consumeAiQuota } from '@/lib/services/auth'
-import { httpError, withAuthRaw } from '@/lib/utils/http'
+import { httpError, withProtectedRaw } from '@/lib/utils/http'
 
-export const POST = withAuthRaw(async (req, { user }) => {
+export const POST = withProtectedRaw(async (req, { user }) => {
   const body = await req.json().catch(() => {
     throw httpError(400, '请求格式无效')
   })
@@ -13,12 +15,6 @@ export const POST = withAuthRaw(async (req, { user }) => {
     throw httpError(400, '消息不能为空')
   }
 
-  // 支持 model 参数：'siliconflow' | 'custom-xxx'
-  const model = typeof body.model === 'string' ? body.model : undefined
-
-  // 支持自定义模型配置
-  const customModel = body.customModel as { apiKey?: string, baseUrl?: string, model?: string } | undefined
-
   await consumeAiQuota(user.id)
-  return createTravelChatStream(messages, model, customModel)
-})
+  return createTravelChatStream(messages, nanoid())
+}, { rateLimit: { max: 10, name: 'ai:chat', windowMs: 60_000 } })

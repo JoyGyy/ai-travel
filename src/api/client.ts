@@ -155,6 +155,12 @@ function getCsrfHeader(): Record<string, string> {
   return token ? { 'X-CSRF-Token': token } : {}
 }
 
+/** 为 AI SDK 等独立请求通道准备 CSRF 请求头。 */
+export async function getCsrfHeaders(): Promise<Record<string, string>> {
+  await ensureCsrfToken()
+  return getCsrfHeader()
+}
+
 /**
  * 获取 CSRF token（从 cookie）
  */

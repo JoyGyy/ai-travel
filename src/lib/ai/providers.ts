@@ -8,22 +8,8 @@ const siliconflow = createOpenAICompatible({
   name: 'siliconflow',
 })
 
-export function getTravelModel(
-  modelName?: string,
-  customModel?: { apiKey?: string, baseUrl?: string, model?: string },
-) {
-  // 自定义模型：动态创建 provider
-  if (modelName?.startsWith('custom-') && customModel?.baseUrl && customModel?.model) {
-    const provider = createOpenAICompatible({
-      apiKey: customModel.apiKey || 'no-key',
-      baseURL: customModel.baseUrl,
-      name: 'custom',
-    })
-    return provider(customModel.model)
-  }
-
-  // 内置模型仅保留硅基流动
-  if (modelName === 'siliconflow' && env.SILICONFLOW_API_KEY) {
+export function getTravelModel(modelName?: string) {
+  if ((modelName === undefined || modelName === 'siliconflow') && env.SILICONFLOW_API_KEY) {
     return siliconflow(env.SILICONFLOW_MODEL)
   }
 

@@ -3,6 +3,8 @@ import type { ReactNode } from 'react'
 
 import { MainWrapper } from '@/components/MainWrapper'
 import { Navigation } from '@/components/Navigation'
+import { AmbienceSoundPlayer } from '@/components/ui/AmbienceSoundPlayer'
+import { CursorTrail } from '@/components/ui/CursorTrail'
 import { Toaster } from '@/components/ui/toaster'
 
 import './globals.css'
@@ -18,8 +20,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="zh-CN">
       <body>
+        <CursorTrail />
         <Navigation />
         <MainWrapper>{children}</MainWrapper>
+        <AmbienceSoundPlayer />
         <Toaster />
       </body>
     </html>

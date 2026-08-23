@@ -1,971 +1,2114 @@
 [
   {
-    "id": "beijing-gugong",
-    "name": "故宫博物院",
-    "city": "北京",
-    "ticketType": "paid",
-    "priceText": "60元",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/The_Forbidden_City_-_View_from_Coal_Hill.jpg/1280px-The_Forbidden_City_-_View_from_Coal_Hill.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "summary": "明清两代皇家宫殿，世界上现存规模最大的宫殿型建筑群",
-    "description": "北京故宫是中国明清两代的皇家宫殿，旧称紫禁城，位于北京中轴线的中心。",
-    "address": "北京市东城区景山前街4号",
-    "openingHours": "08:30-17:00",
-    "recommendedDuration": "3-4小时",
-    "tags": [
-      "历史",
-      "文化",
-      "建筑",
-      "必去"
-    ],
-    "aliases": [
-      "紫禁城"
-    ],
-    "highlights": [
-      "太和殿",
-      "乾清宫",
-      "御花园"
-    ],
-    "tips": [
-      "建议提前网上预约，周一闭馆"
-    ],
-    "suitableFor": [
-      "历史爱好者",
-      "摄影爱好者"
-    ],
-    "bookingLinks": {
-      "ctrip": "https://you.ctrip.com/sight/beijing1/229.html",
-      "fliggy": "",
-      "ly": ""
-    }
-  },
-  {
-    "id": "beijing-badaling",
+    "id": "beijing-badaling-great-wall",
     "name": "八达岭长城",
     "city": "北京",
     "ticketType": "paid",
-    "priceText": "40元",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/The_Great_Wall_of_China_at_Jinshanling-edit.jpg/1280px-The_Great_Wall_of_China_at_Jinshanling-edit.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "summary": "明长城中保存最好的一段，气势雄伟",
-    "description": "八达岭长城位于北京市延庆区，是明长城中保存最好的地段。",
+    "priceText": "参考价 ¥35-40，以平台实际为准",
+    "coverImage": "/images/attractions/beijing/beijing-badaling-great-wall.webp",
+    "summary": "八达岭长城是北京代表性景点，适合历史、自然主题游玩。",
+    "description": "八达岭长城适合安排在北京行程中重点体验，兼顾历史、自然、必去等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
     "address": "北京市延庆区G6京藏高速58号出口",
-    "openingHours": "06:30-19:00",
-    "recommendedDuration": "半天",
-    "tags": [
-      "历史",
-      "户外",
-      "必去"
-    ],
-    "aliases": [
-      "八达岭"
-    ],
-    "highlights": [
-      "北八楼",
-      "南四楼"
-    ],
-    "tips": [
-      "建议早出发避开人流"
-    ],
-    "suitableFor": [
-      "历史爱好者",
-      "户外运动爱好者"
-    ],
-    "bookingLinks": {
-      "ctrip": "https://you.ctrip.com/sight/beijing1/77.html",
-      "fliggy": "",
-      "ly": ""
-    }
-  },
-  {
-    "id": "beijing-tiantan",
-    "name": "天坛公园",
-    "city": "北京",
-    "ticketType": "paid",
-    "priceText": "15元",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Temple_of_Heaven_20160323_01.jpg/1280px-Temple_of_Heaven_20160323_01.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "summary": "明清两代皇帝祭天祈谷的场所",
-    "description": "天坛公园位于北京市东城区，是明清两代皇帝祭祀皇天、祈五谷丰登之场所。",
-    "address": "北京市东城区天坛内东里7号",
-    "openingHours": "06:00-21:00",
+    "openingHours": "以景区官方公告为准",
     "recommendedDuration": "2-3小时",
     "tags": [
       "历史",
-      "文化",
-      "建筑"
+      "必去",
+      "自然"
     ],
     "aliases": [
-      "天坛"
+      "长城",
+      "八达岭"
     ],
     "highlights": [
-      "祈年殿",
-      "圜丘",
-      "回音壁"
+      "体验历史主题",
+      "适合北京首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
     ],
     "tips": [
-      "联票34元含祈年殿等景点"
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
     ],
     "suitableFor": [
-      "历史爱好者",
-      "摄影爱好者"
+      "第一次到访",
+      "亲友出行"
     ],
-    "bookingLinks": {
-      "ctrip": "https://you.ctrip.com/sight/beijing1/230.html",
-      "fliggy": "",
-      "ly": ""
-    }
+    "bookingLinks": {}
   },
   {
-    "id": "beijing-yiheyuan",
-    "name": "颐和园",
+    "id": "beijing-national-museum",
+    "name": "中国国家博物馆",
+    "city": "北京",
+    "ticketType": "free",
+    "priceText": "免费预约，以官方公告为准",
+    "coverImage": "/images/attractions/beijing/beijing-national-museum.webp",
+    "summary": "中国国家博物馆是北京代表性景点，适合博物馆、历史主题游玩。",
+    "description": "中国国家博物馆适合安排在北京行程中重点体验，兼顾博物馆、历史、亲子等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "北京市东城区东长安街16号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "亲子",
+      "博物馆",
+      "历史"
+    ],
+    "aliases": [
+      "国家博物馆",
+      "国博"
+    ],
+    "highlights": [
+      "体验博物馆主题",
+      "适合北京首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "亲子出行",
+      "第一次到访"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "beijing-palace-museum",
+    "name": "故宫博物院",
     "city": "北京",
     "ticketType": "paid",
-    "priceText": "30元",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Longevity_Hill_of_the_Summer_Palace.jpg/1280px-Longevity_Hill_of_the_Summer_Palace.jpg",
-    "summary": "皇家园林，以昆明湖、万寿山为基础",
-    "description": "颐和园位于北京市海淀区，是中国清朝时期皇家园林。",
-    "address": "北京市海淀区新建宫门路19号",
-    "openingHours": "06:30-18:00",
-    "recommendedDuration": "3-4小时",
+    "priceText": "参考价 ¥40-60，以平台实际为准",
+    "coverImage": "/images/attractions/beijing/beijing-palace-museum.webp",
+    "summary": "故宫博物院是北京代表性景点，适合历史、博物馆主题游玩。",
+    "description": "故宫博物院适合安排在北京行程中重点体验，兼顾历史、博物馆、亲子等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "北京市东城区景山前街4号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
     "tags": [
-      "自然",
-      "历史",
-      "园林"
+      "亲子",
+      "博物馆",
+      "历史"
     ],
     "aliases": [
-      "颐和园"
+      "故宫"
     ],
     "highlights": [
-      "长廊",
-      "佛香阁",
-      "昆明湖"
+      "体验历史主题",
+      "适合北京首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
     ],
     "tips": [
-      "建议从东宫门进入"
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
     ],
     "suitableFor": [
-      "摄影爱好者",
-      "家庭游客"
+      "亲子出行",
+      "第一次到访"
     ],
-    "bookingLinks": {
-      "ctrip": "https://you.ctrip.com/sight/beijing1/75.html",
-      "fliggy": "",
-      "ly": ""
-    }
-  },
-  {
-    "id": "beijing-tiananmen",
-    "name": "天安门广场",
-    "city": "北京",
-    "ticketType": "free",
-    "priceText": "免费",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Tiananmen_Square_%2854137047250%29.jpg/1280px-Tiananmen_Square_%2854137047250%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "summary": "世界上最大的城市广场之一",
-    "description": "天安门广场位于北京市中心，是世界上最大的城市广场之一。",
-    "address": "北京市东城区东长安街",
-    "openingHours": "全天开放",
-    "recommendedDuration": "1小时",
-    "tags": [
-      "历史",
-      "文化",
-      "免费"
-    ],
-    "aliases": [
-      "天安门"
-    ],
-    "highlights": [
-      "升旗仪式",
-      "人民英雄纪念碑"
-    ],
-    "tips": [
-      "升旗仪式每天时间不同，提前查询"
-    ],
-    "suitableFor": [
-      "历史爱好者",
-      "首次来京游客"
-    ],
-    "bookingLinks": {
-      "ctrip": "",
-      "fliggy": "",
-      "ly": ""
-    }
-  },
-  {
-    "id": "beijing-nanluoguxiang",
-    "name": "南锣鼓巷",
-    "city": "北京",
-    "ticketType": "free",
-    "priceText": "免费",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/2016-09-04_Beijing_Nanluoguxiang_anagoria_23.jpg/1280px-2016-09-04_Beijing_Nanluoguxiang_anagoria_23.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "summary": "北京最有名的胡同街区",
-    "description": "南锣鼓巷是北京最古老的街区之一，文创小店林立。",
-    "address": "北京市东城区南锣鼓巷",
-    "openingHours": "全天开放",
-    "recommendedDuration": "2小时",
-    "tags": [
-      "文化",
-      "美食",
-      "购物",
-      "免费"
-    ],
-    "aliases": [
-      "南锣鼓巷"
-    ],
-    "highlights": [
-      "文创小店",
-      "特色小吃"
-    ],
-    "tips": [
-      "周末人多，建议工作日前往"
-    ],
-    "suitableFor": [
-      "年轻人",
-      "文艺爱好者"
-    ],
-    "bookingLinks": {
-      "ctrip": "",
-      "fliggy": "",
-      "ly": ""
-    }
+    "bookingLinks": {}
   },
   {
     "id": "beijing-shichahai",
     "name": "什刹海",
     "city": "北京",
     "ticketType": "free",
-    "priceText": "免费",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Beijing_Shichahai_1.jpg/1280px-Beijing_Shichahai_1.jpg",
-    "summary": "历史文化旅游风景区",
-    "description": "什刹海是北京城内面积最大、风貌保存最完整的历史街区。",
-    "address": "北京市西城区什刹海",
-    "openingHours": "全天开放",
+    "priceText": "免费开放，部分项目另收费",
+    "coverImage": "/images/attractions/beijing/beijing-shichahai.webp",
+    "summary": "什刹海是北京代表性景点，适合夜游、美食主题游玩。",
+    "description": "什刹海适合安排在北京行程中重点体验，兼顾夜游、美食、城市漫步等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "北京市西城区什刹海地区",
+    "openingHours": "以景区官方公告为准",
     "recommendedDuration": "2-3小时",
     "tags": [
-      "文化",
-      "自然",
-      "免费"
+      "城市漫步",
+      "夜游",
+      "美食"
     ],
     "aliases": [
-      "什刹海"
+      "后海"
     ],
     "highlights": [
-      "后海酒吧街",
-      "银锭桥"
+      "体验夜游主题",
+      "适合北京首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
     ],
     "tips": [
-      "傍晚散步最佳"
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
     ],
     "suitableFor": [
-      "情侣",
-      "文艺爱好者"
+      "第一次到访",
+      "亲友出行"
     ],
-    "bookingLinks": {
-      "ctrip": "",
-      "fliggy": "",
-      "ly": ""
-    }
+    "bookingLinks": {}
   },
   {
-    "id": "beijing-yuanmingyuan",
-    "name": "圆明园",
+    "id": "beijing-summer-palace",
+    "name": "颐和园",
     "city": "北京",
     "ticketType": "paid",
-    "priceText": "10元",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/20090731_Remains_of_the_Old_Summer_Palace_02.jpg/1280px-20090731_Remains_of_the_Old_Summer_Palace_02.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "summary": "清代皇家园林遗址",
-    "description": "圆明园是清代大型皇家园林遗址，见证历史沧桑。",
-    "address": "北京市海淀区清华西路28号",
-    "openingHours": "07:00-19:30",
+    "priceText": "参考价 ¥20-60，以平台实际为准",
+    "coverImage": "/images/attractions/beijing/beijing-summer-palace.webp",
+    "summary": "颐和园是北京代表性景点，适合历史、自然主题游玩。",
+    "description": "颐和园适合安排在北京行程中重点体验，兼顾历史、自然、亲子等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "北京市海淀区新建宫门路19号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "亲子",
+      "历史",
+      "自然"
+    ],
+    "aliases": [
+      "颐和园景区"
+    ],
+    "highlights": [
+      "体验历史主题",
+      "适合北京首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "亲子出行",
+      "第一次到访"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "beijing-temple-of-heaven",
+    "name": "天坛公园",
+    "city": "北京",
+    "ticketType": "paid",
+    "priceText": "参考价 ¥15-34，以平台实际为准",
+    "coverImage": "/images/attractions/beijing/beijing-temple-of-heaven.webp",
+    "summary": "天坛公园是北京代表性景点，适合历史、自然主题游玩。",
+    "description": "天坛公园适合安排在北京行程中重点体验，兼顾历史、自然、文化等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "北京市东城区天坛东里甲1号",
+    "openingHours": "以景区官方公告为准",
     "recommendedDuration": "2-3小时",
     "tags": [
       "历史",
       "文化",
-      "园林"
+      "自然"
     ],
     "aliases": [
-      "圆明园"
+      "天坛"
     ],
     "highlights": [
-      "西洋楼遗址",
-      "大水法"
+      "体验历史主题",
+      "适合北京首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
     ],
     "tips": [
-      "联票25元含西洋楼遗址区"
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
     ],
     "suitableFor": [
-      "历史爱好者",
-      "学生研学"
+      "第一次到访",
+      "亲友出行"
     ],
-    "bookingLinks": {
-      "ctrip": "https://you.ctrip.com/sight/beijing1/231.html",
-      "fliggy": "",
-      "ly": ""
-    }
+    "bookingLinks": {}
   },
   {
-    "id": "beijing-798",
-    "name": "798艺术区",
-    "city": "北京",
+    "id": "shanghai-disneyland",
+    "name": "上海迪士尼度假区",
+    "city": "上海",
+    "ticketType": "paid",
+    "priceText": "参考价 ¥475 起，以平台实际为准",
+    "coverImage": "/images/attractions/shanghai/shanghai-disneyland.webp",
+    "summary": "上海迪士尼度假区是上海代表性景点，适合亲子、娱乐主题游玩。",
+    "description": "上海迪士尼度假区适合安排在上海行程中重点体验，兼顾亲子、娱乐、主题乐园等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "上海市浦东新区川沙镇黄赵路310号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "半天-1天",
+    "tags": [
+      "主题乐园",
+      "亲子",
+      "娱乐"
+    ],
+    "aliases": [
+      "上海迪士尼",
+      "迪士尼"
+    ],
+    "highlights": [
+      "体验亲子主题",
+      "适合上海首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "亲子出行",
+      "第一次到访"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "shanghai-museum",
+    "name": "上海博物馆",
+    "city": "上海",
     "ticketType": "free",
-    "priceText": "免费",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Beijing_798_Art_District.jpg/1280px-Beijing_798_Art_District.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "summary": "由旧工厂改造的当代艺术聚集地",
-    "description": "798艺术区是北京都市文化的新地标。",
-    "address": "北京市朝阳区酒仙桥路2号",
-    "openingHours": "10:00-18:00",
+    "priceText": "免费预约，以官方公告为准",
+    "coverImage": "/images/attractions/shanghai/shanghai-museum.webp",
+    "summary": "上海博物馆是上海代表性景点，适合博物馆、历史主题游玩。",
+    "description": "上海博物馆适合安排在上海行程中重点体验，兼顾博物馆、历史、文化等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "上海市黄浦区人民大道201号",
+    "openingHours": "以景区官方公告为准",
     "recommendedDuration": "2-3小时",
     "tags": [
-      "艺术",
-      "文化",
-      "免费"
-    ],
-    "aliases": [
-      "798艺术区"
-    ],
-    "highlights": [
-      "UCCA尤伦斯当代艺术中心"
-    ],
-    "tips": [
-      "周一很多画廊闭馆"
-    ],
-    "suitableFor": [
-      "艺术爱好者",
-      "文艺青年"
-    ],
-    "bookingLinks": {
-      "ctrip": "",
-      "fliggy": "",
-      "ly": ""
-    }
-  },
-  {
-    "id": "beijing-gongwangfu",
-    "name": "恭王府",
-    "city": "北京",
-    "ticketType": "paid",
-    "priceText": "40元",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Gongwangfu1.jpg/1280px-Gongwangfu1.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "summary": "清代规模最大的王府建筑群",
-    "description": "恭王府是清代规模最大的一座王府。",
-    "address": "北京市西城区什刹海前海西街17号",
-    "openingHours": "08:00-17:00",
-    "recommendedDuration": "2小时",
-    "tags": [
+      "博物馆",
       "历史",
-      "建筑",
       "文化"
     ],
     "aliases": [
-      "恭王府"
+      "上博"
     ],
     "highlights": [
-      "银安殿",
-      "嘉乐堂"
+      "体验博物馆主题",
+      "适合上海首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
     ],
     "tips": [
-      "需要提前预约"
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
     ],
     "suitableFor": [
-      "历史爱好者",
-      "建筑爱好者"
+      "第一次到访",
+      "亲友出行"
     ],
-    "bookingLinks": {
-      "ctrip": "https://you.ctrip.com/sight/beijing1/232.html",
-      "fliggy": "",
-      "ly": ""
-    }
+    "bookingLinks": {}
   },
   {
-    "id": "beijing-yonghegong",
-    "name": "雍和宫",
-    "city": "北京",
-    "ticketType": "paid",
-    "priceText": "25元",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/65618-Beijing-Lama-Temple_%2828098480603%29.jpg/1280px-65618-Beijing-Lama-Temple_%2828098480603%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "summary": "北京最大的藏传佛教寺院",
-    "description": "雍和宫是汉族地区最大的藏传佛教寺院之一。",
-    "address": "北京市东城区雍和宫大街12号",
-    "openingHours": "09:00-16:00",
-    "recommendedDuration": "1-2小时",
-    "tags": [
-      "文化",
-      "宗教",
-      "建筑"
-    ],
-    "aliases": [
-      "雍和宫"
-    ],
-    "highlights": [
-      "万福阁",
-      "弥勒大佛"
-    ],
-    "tips": [
-      "免费领取环保香"
-    ],
-    "suitableFor": [
-      "文化爱好者",
-      "宗教信仰者"
-    ],
-    "bookingLinks": {
-      "ctrip": "https://you.ctrip.com/sight/beijing1/233.html",
-      "fliggy": "",
-      "ly": ""
-    }
-  },
-  {
-    "id": "beijing-guojiaBowuguan",
-    "name": "国家博物馆",
-    "city": "北京",
-    "ticketType": "free",
-    "priceText": "免费",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/62684-Beijing-Tiananmen-Square_%2828609003992%29.jpg/1280px-62684-Beijing-Tiananmen-Square_%2828609003992%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "summary": "世界上单体建筑面积最大的博物馆",
-    "description": "中国国家博物馆是代表国家收藏、研究、展示、阐释能够充分反映中华优秀传统文化代表性物证的最高机构。",
-    "address": "北京市东城区东长安街16号",
-    "openingHours": "09:00-17:00",
-    "recommendedDuration": "3-4小时",
-    "tags": [
-      "历史",
-      "文化",
-      "免费"
-    ],
-    "aliases": [
-      "国博"
-    ],
-    "highlights": [
-      "古代中国基本陈列",
-      "青铜器"
-    ],
-    "tips": [
-      "需要提前预约，周一闭馆"
-    ],
-    "suitableFor": [
-      "历史爱好者",
-      "学生"
-    ],
-    "bookingLinks": {
-      "ctrip": "",
-      "fliggy": "",
-      "ly": ""
-    }
-  },
-  {
-    "id": "shanghai-waitan",
-    "name": "外滩",
-    "city": "上海",
-    "ticketType": "free",
-    "priceText": "免费",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/The_Bund_2.jpg/1280px-The_Bund_2.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "summary": "上海的标志性景观，万国建筑博览群",
-    "description": "外滩位于上海市黄浦区黄浦江畔，是上海的标志性景观。",
-    "address": "上海市黄浦区中山东一路",
-    "openingHours": "全天开放",
-    "recommendedDuration": "1-2小时",
-    "tags": [
-      "建筑",
-      "夜景",
-      "必去",
-      "免费"
-    ],
-    "aliases": [
-      "外滩"
-    ],
-    "highlights": [
-      "万国建筑博览群",
-      "陆家嘴天际线"
-    ],
-    "tips": [
-      "夜景最美，建议傍晚前往"
-    ],
-    "suitableFor": [
-      "摄影爱好者",
-      "情侣"
-    ],
-    "bookingLinks": {
-      "ctrip": "",
-      "fliggy": "",
-      "ly": ""
-    }
-  },
-  {
-    "id": "shanghai-dongfangmingzhu",
+    "id": "shanghai-oriental-pearl",
     "name": "东方明珠",
     "city": "上海",
     "ticketType": "paid",
-    "priceText": "199元",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Oriental_Pearl_Tower_20251126.jpg/1280px-Oriental_Pearl_Tower_20251126.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "summary": "上海地标性建筑，可俯瞰全城",
-    "description": "东方明珠广播电视塔是上海的标志性文化景观之一。",
+    "priceText": "参考价 ¥199 起，以平台实际为准",
+    "coverImage": "/images/attractions/shanghai/shanghai-oriental-pearl.webp",
+    "summary": "东方明珠是上海代表性景点，适合地标、亲子主题游玩。",
+    "description": "东方明珠适合安排在上海行程中重点体验，兼顾地标、亲子、夜游等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
     "address": "上海市浦东新区世纪大道1号",
-    "openingHours": "08:00-21:30",
+    "openingHours": "以景区官方公告为准",
     "recommendedDuration": "2-3小时",
     "tags": [
+      "亲子",
       "地标",
-      "观光"
+      "夜游"
     ],
     "aliases": [
-      "东方明珠"
+      "东方明珠塔"
     ],
     "highlights": [
-      "观光层",
-      "太空舱"
+      "体验地标主题",
+      "适合上海首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
     ],
     "tips": [
-      "建议买观光层+太空舱联票"
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
     ],
     "suitableFor": [
-      "观光游客",
-      "摄影爱好者"
+      "亲子出行",
+      "第一次到访"
     ],
-    "bookingLinks": {
-      "ctrip": "https://you.ctrip.com/sight/shanghai2/57664.html",
-      "fliggy": "",
-      "ly": ""
-    }
+    "bookingLinks": {}
   },
   {
-    "id": "shanghai-yuyuan",
-    "name": "豫园",
-    "city": "上海",
-    "ticketType": "paid",
-    "priceText": "40元",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Shanghai_-_Yu_Garden_-_0035.jpg/1280px-Shanghai_-_Yu_Garden_-_0035.jpg",
-    "summary": "明代江南古典园林",
-    "description": "豫园是江南古典园林，始建于明代嘉靖年间。",
-    "address": "上海市黄浦区安仁街137号",
-    "openingHours": "09:00-16:45",
-    "recommendedDuration": "2小时",
-    "tags": [
-      "历史",
-      "园林",
-      "文化"
-    ],
-    "aliases": [
-      "豫园"
-    ],
-    "highlights": [
-      "三穗堂",
-      "万花楼"
-    ],
-    "tips": [
-      "城隍庙小吃街就在旁边"
-    ],
-    "suitableFor": [
-      "历史爱好者",
-      "园林爱好者"
-    ],
-    "bookingLinks": {
-      "ctrip": "https://you.ctrip.com/sight/shanghai2/57665.html",
-      "fliggy": "",
-      "ly": ""
-    }
-  },
-  {
-    "id": "shanghai-nanjinglu",
-    "name": "南京路步行街",
+    "id": "shanghai-the-bund",
+    "name": "外滩",
     "city": "上海",
     "ticketType": "free",
-    "priceText": "免费",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/East_Nanjing_Road_2020_%2850361842166%29.jpg/1280px-East_Nanjing_Road_2020_%2850361842166%29.jpg",
-    "summary": "中华商业第一街",
-    "description": "南京路步行街是上海最著名的商业街之一。",
-    "address": "上海市黄浦区南京东路",
-    "openingHours": "全天开放",
-    "recommendedDuration": "2小时",
+    "priceText": "免费开放",
+    "coverImage": "/images/attractions/shanghai/shanghai-the-bund.webp",
+    "summary": "外滩是上海代表性景点，适合夜游、城市漫步主题游玩。",
+    "description": "外滩适合安排在上海行程中重点体验，兼顾夜游、城市漫步、必去等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "上海市黄浦区中山东一路",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
     "tags": [
-      "购物",
-      "美食",
-      "免费"
+      "城市漫步",
+      "夜游",
+      "必去"
     ],
     "aliases": [
-      "南京路"
+      "上海外滩"
     ],
     "highlights": [
-      "第一百货",
-      "永安百货"
+      "体验夜游主题",
+      "适合上海首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
     ],
     "tips": [
-      "晚上灯光很美，适合拍照"
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
     ],
     "suitableFor": [
-      "购物爱好者",
-      "观光游客"
+      "第一次到访",
+      "亲友出行"
     ],
-    "bookingLinks": {
-      "ctrip": "",
-      "fliggy": "",
-      "ly": ""
-    }
+    "bookingLinks": {}
   },
   {
     "id": "shanghai-tianzifang",
     "name": "田子坊",
     "city": "上海",
     "ticketType": "free",
-    "priceText": "免费",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Shanghai_Tianzifang_%E4%B8%8A%E6%B5%B7%E7%94%B0%E5%AD%90%E5%9D%8A_-_panoramio.jpg/1280px-Shanghai_Tianzifang_%E4%B8%8A%E6%B5%B7%E7%94%B0%E5%AD%90%E5%9D%8A_-_panoramio.jpg",
-    "summary": "上海独特的石库门建筑里的文艺街区",
-    "description": "田子坊是上海最有味道的弄堂。",
+    "priceText": "免费开放，消费另计",
+    "coverImage": "/images/attractions/shanghai/shanghai-tianzifang.webp",
+    "summary": "田子坊是上海代表性景点，适合城市漫步、文艺主题游玩。",
+    "description": "田子坊适合安排在上海行程中重点体验，兼顾城市漫步、文艺、美食等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
     "address": "上海市黄浦区泰康路210弄",
-    "openingHours": "全天开放",
-    "recommendedDuration": "2小时",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
     "tags": [
-      "文化",
-      "购物",
-      "免费"
+      "城市漫步",
+      "文艺",
+      "美食"
     ],
     "aliases": [
-      "田子坊"
+      "田子坊街区"
     ],
     "highlights": [
-      "石库门建筑",
-      "文创小店"
+      "体验城市漫步主题",
+      "适合上海首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
     ],
     "tips": [
-      "巷子较多容易迷路"
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
     ],
     "suitableFor": [
-      "文艺青年",
-      "购物爱好者"
+      "第一次到访",
+      "亲友出行"
     ],
-    "bookingLinks": {
-      "ctrip": "",
-      "fliggy": "",
-      "ly": ""
-    }
+    "bookingLinks": {}
   },
   {
-    "id": "shanghai-xintiandi",
-    "name": "新天地",
-    "city": "上海",
-    "ticketType": "free",
-    "priceText": "免费",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Xintiandi5.jpg/1280px-Xintiandi5.jpg",
-    "summary": "时尚休闲文化中心，石库门建筑群",
-    "description": "新天地是上海时尚休闲文化中心。",
-    "address": "上海市黄浦区太仓路181弄",
-    "openingHours": "全天开放",
-    "recommendedDuration": "2小时",
-    "tags": [
-      "美食",
-      "夜景",
-      "免费"
-    ],
-    "aliases": [
-      "新天地"
-    ],
-    "highlights": [
-      "石库门建筑",
-      "酒吧街"
-    ],
-    "tips": [
-      "晚上氛围最好"
-    ],
-    "suitableFor": [
-      "年轻人",
-      "时尚人士"
-    ],
-    "bookingLinks": {
-      "ctrip": "",
-      "fliggy": "",
-      "ly": ""
-    }
-  },
-  {
-    "id": "shanghai-disney",
-    "name": "迪士尼乐园",
+    "id": "shanghai-yu-garden",
+    "name": "豫园",
     "city": "上海",
     "ticketType": "paid",
-    "priceText": "475元",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/18-03-12_ShanghaiDisney_013.jpg/1280px-18-03-12_ShanghaiDisney_013.jpg",
-    "summary": "中国大陆首座迪士尼主题乐园",
-    "description": "上海迪士尼乐园是中国大陆首座迪士尼主题乐园。",
-    "address": "上海市浦东新区川沙新镇黄赵路310号",
-    "openingHours": "08:30-20:30",
-    "recommendedDuration": "1天",
+    "priceText": "参考价 ¥30-40，以平台实际为准",
+    "coverImage": "/images/attractions/shanghai/shanghai-yu-garden.webp",
+    "summary": "豫园是上海代表性景点，适合历史、园林主题游玩。",
+    "description": "豫园适合安排在上海行程中重点体验，兼顾历史、园林、美食等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "上海市黄浦区福佑路168号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
     "tags": [
-      "娱乐",
+      "历史",
+      "园林",
+      "美食"
+    ],
+    "aliases": [
+      "豫园景区"
+    ],
+    "highlights": [
+      "体验历史主题",
+      "适合上海首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "hangzhou-hefang-street",
+    "name": "河坊街",
+    "city": "杭州",
+    "ticketType": "free",
+    "priceText": "免费开放，消费另计",
+    "coverImage": "/images/attractions/hangzhou/hangzhou-hefang-street.webp",
+    "summary": "河坊街是杭州代表性景点，适合美食、城市漫步主题游玩。",
+    "description": "河坊街适合安排在杭州行程中重点体验，兼顾美食、城市漫步、历史等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "杭州市上城区河坊街",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "历史",
+      "城市漫步",
+      "美食"
+    ],
+    "aliases": [
+      "清河坊",
+      "河坊街历史街区"
+    ],
+    "highlights": [
+      "体验美食主题",
+      "适合杭州首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "hangzhou-liangzhu",
+    "name": "良渚古城遗址公园",
+    "city": "杭州",
+    "ticketType": "paid",
+    "priceText": "参考价 ¥60 起，以平台实际为准",
+    "coverImage": "/images/attractions/hangzhou/hangzhou-liangzhu.webp",
+    "summary": "良渚古城遗址公园是杭州代表性景点，适合历史、博物馆主题游玩。",
+    "description": "良渚古城遗址公园适合安排在杭州行程中重点体验，兼顾历史、博物馆、亲子等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "杭州市余杭区凤都路与104国道交叉口",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
       "亲子",
-      "必去"
+      "博物馆",
+      "历史"
     ],
     "aliases": [
-      "上海迪士尼"
+      "良渚遗址"
     ],
     "highlights": [
-      "奇幻童话城堡",
-      "创极速光轮"
+      "体验历史主题",
+      "适合杭州首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
     ],
     "tips": [
-      "建议工作日去"
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
     ],
     "suitableFor": [
-      "家庭游客",
-      "年轻人"
+      "亲子出行",
+      "第一次到访"
     ],
-    "bookingLinks": {
-      "ctrip": "https://you.ctrip.com/sight/shanghai2/110651.html",
-      "fliggy": "",
-      "ly": ""
-    }
+    "bookingLinks": {}
   },
   {
-    "id": "shanghai-zhujiajiao",
-    "name": "朱家角古镇",
-    "city": "上海",
-    "ticketType": "free",
-    "priceText": "免费",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/1_zhujiajiao_2023_aerial.jpg/1280px-1_zhujiajiao_2023_aerial.jpg",
-    "summary": "上海保存最完整的江南水乡古镇",
-    "description": "朱家角古镇是典型的江南水乡古镇。",
-    "address": "上海市青浦区朱家角镇",
-    "openingHours": "全天开放",
-    "recommendedDuration": "半天",
-    "tags": [
-      "古镇",
-      "文化",
-      "免费"
-    ],
-    "aliases": [
-      "朱家角"
-    ],
-    "highlights": [
-      "放生桥",
-      "北大街"
-    ],
-    "tips": [
-      "建议坐船游览"
-    ],
-    "suitableFor": [
-      "文化爱好者",
-      "摄影爱好者"
-    ],
-    "bookingLinks": {
-      "ctrip": "https://you.ctrip.com/sight/shanghai2/57666.html",
-      "fliggy": "",
-      "ly": ""
-    }
-  },
-  {
-    "id": "shanghai-shanghaiBowuguan",
-    "name": "上海博物馆",
-    "city": "上海",
-    "ticketType": "free",
-    "priceText": "免费",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Shanghai_Museum_exterior_1.jpg/1280px-Shanghai_Museum_exterior_1.jpg",
-    "summary": "中国古代艺术博物馆",
-    "description": "上海博物馆是一座大型的中国古代艺术博物馆。",
-    "address": "上海市黄浦区人民大道201号",
-    "openingHours": "09:00-17:00",
-    "recommendedDuration": "3小时",
+    "id": "hangzhou-lingyin-temple",
+    "name": "灵隐寺",
+    "city": "杭州",
+    "ticketType": "paid",
+    "priceText": "参考价 ¥30-75，以平台实际为准",
+    "coverImage": "/images/attractions/hangzhou/hangzhou-lingyin-temple.webp",
+    "summary": "灵隐寺是杭州代表性景点，适合历史、文化主题游玩。",
+    "description": "灵隐寺适合安排在杭州行程中重点体验，兼顾历史、文化、祈福等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "杭州市西湖区灵隐路法云弄1号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
     "tags": [
       "历史",
       "文化",
-      "免费"
+      "祈福"
     ],
     "aliases": [
-      "上博"
+      "灵隐飞来峰"
     ],
     "highlights": [
-      "青铜器馆",
-      "陶瓷馆"
+      "体验历史主题",
+      "适合杭州首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
     ],
     "tips": [
-      "需要提前预约，周一闭馆"
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
     ],
     "suitableFor": [
-      "历史爱好者",
-      "文化研究者"
+      "第一次到访",
+      "亲友出行"
     ],
-    "bookingLinks": {
-      "ctrip": "",
-      "fliggy": "",
-      "ly": ""
-    }
+    "bookingLinks": {}
   },
   {
-    "id": "shanghai-wukanglu",
-    "name": "武康路",
-    "city": "上海",
-    "ticketType": "free",
-    "priceText": "免费",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Wukang_Mansion_20251128.jpg/1280px-Wukang_Mansion_20251128.jpg",
-    "summary": "上海最有腔调的马路，梧桐树下的老洋房",
-    "description": "武康路是上海中心城区最具欧陆风情的街区之一。",
-    "address": "上海市徐汇区武康路",
-    "openingHours": "全天开放",
-    "recommendedDuration": "1-2小时",
+    "id": "hangzhou-songcheng",
+    "name": "宋城",
+    "city": "杭州",
+    "ticketType": "paid",
+    "priceText": "参考价 ¥300 起，以平台实际为准",
+    "coverImage": "/images/attractions/hangzhou/hangzhou-songcheng.webp",
+    "summary": "宋城是杭州代表性景点，适合演艺、亲子主题游玩。",
+    "description": "宋城适合安排在杭州行程中重点体验，兼顾演艺、亲子、文化等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "杭州市西湖区之江路148号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "半天-1天",
     "tags": [
-      "建筑",
+      "亲子",
       "文化",
-      "免费"
+      "演艺"
     ],
     "aliases": [
-      "武康路"
+      "杭州宋城"
     ],
     "highlights": [
-      "武康大楼",
-      "巴金故居"
+      "体验演艺主题",
+      "适合杭州首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
     ],
     "tips": [
-      "适合散步拍照"
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
     ],
     "suitableFor": [
-      "文艺青年",
-      "摄影爱好者"
+      "亲子出行",
+      "第一次到访"
     ],
-    "bookingLinks": {
-      "ctrip": "",
-      "fliggy": "",
-      "ly": ""
-    }
+    "bookingLinks": {}
   },
   {
-    "id": "shanghai-lujiazui",
-    "name": "陆家嘴",
-    "city": "上海",
-    "ticketType": "free",
-    "priceText": "免费",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Huangpu_Park_20124-Shanghai_%2832208802494%29.jpg/1280px-Huangpu_Park_20124-Shanghai_%2832208802494%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "summary": "上海金融中心，摩天大楼群",
-    "description": "陆家嘴是上海最具影响力的金融中心。",
-    "address": "上海市浦东新区陆家嘴",
-    "openingHours": "全天开放",
-    "recommendedDuration": "1-2小时",
-    "tags": [
-      "地标",
-      "建筑",
-      "免费"
-    ],
-    "aliases": [
-      "陆家嘴"
-    ],
-    "highlights": [
-      "上海中心大厦",
-      "环球金融中心"
-    ],
-    "tips": [
-      "夜景壮观"
-    ],
-    "suitableFor": [
-      "观光游客",
-      "摄影爱好者"
-    ],
-    "bookingLinks": {
-      "ctrip": "",
-      "fliggy": "",
-      "ly": ""
-    }
-  },
-  {
-    "id": "hangzhou-xihu",
+    "id": "hangzhou-west-lake",
     "name": "西湖",
     "city": "杭州",
     "ticketType": "free",
-    "priceText": "免费",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/West_Lake%2C_Hangzhou_2025.jpg/1280px-West_Lake%2C_Hangzhou_2025.jpg",
-    "summary": "杭州的标志性景点，人间天堂的代表",
-    "description": "西湖是中国著名的旅游胜地，也是中国十大风景名胜之一。",
+    "priceText": "免费开放，部分景点另收费",
+    "coverImage": "/images/attractions/hangzhou/hangzhou-west-lake.webp",
+    "summary": "西湖是杭州代表性景点，适合自然、城市漫步主题游玩。",
+    "description": "西湖适合安排在杭州行程中重点体验，兼顾自然、必去、城市漫步等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
     "address": "杭州市西湖区龙井路1号",
-    "openingHours": "全天开放",
-    "recommendedDuration": "半天-1天",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
     "tags": [
-      "自然",
-      "历史",
+      "城市漫步",
       "必去",
-      "免费"
+      "自然"
     ],
     "aliases": [
-      "西湖"
+      "杭州西湖"
     ],
     "highlights": [
-      "断桥残雪",
-      "三潭印月",
-      "雷峰塔"
+      "体验自然主题",
+      "适合杭州首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
     ],
     "tips": [
-      "可以乘坐游船游览"
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
     ],
     "suitableFor": [
-      "摄影爱好者",
-      "情侣"
+      "第一次到访",
+      "亲友出行"
     ],
-    "bookingLinks": {
-      "ctrip": "https://you.ctrip.com/sight/hangzhou1/135.html",
-      "fliggy": "",
-      "ly": ""
-    }
+    "bookingLinks": {}
   },
   {
-    "id": "chengdu-daxiongmao",
-    "name": "大熊猫繁育研究基地",
+    "id": "hangzhou-xixi-wetland",
+    "name": "西溪国家湿地公园",
+    "city": "杭州",
+    "ticketType": "paid",
+    "priceText": "参考价 ¥70-80，以平台实际为准",
+    "coverImage": "/images/attractions/hangzhou/hangzhou-xixi-wetland.webp",
+    "summary": "西溪国家湿地公园是杭州代表性景点，适合自然、亲子主题游玩。",
+    "description": "西溪国家湿地公园适合安排在杭州行程中重点体验，兼顾自然、亲子、湿地等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "杭州市西湖区天目山路518号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "亲子",
+      "湿地",
+      "自然"
+    ],
+    "aliases": [
+      "西溪湿地"
+    ],
+    "highlights": [
+      "体验自然主题",
+      "适合杭州首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "亲子出行",
+      "第一次到访"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "chengdu-dufu-cottage",
+    "name": "杜甫草堂",
     "city": "成都",
     "ticketType": "paid",
-    "priceText": "55元",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Chengdu_Research_Base_Eingang.jpg/1280px-Chengdu_Research_Base_Eingang.jpg",
-    "summary": "世界著名的大熊猫保护研究机构",
-    "description": "成都大熊猫繁育研究基地是世界著名的大熊猫保护研究机构。",
-    "address": "成都市成华区外北熊猫大道1375号",
-    "openingHours": "07:30-18:00",
-    "recommendedDuration": "3-4小时",
+    "priceText": "参考价 ¥50，以平台实际为准",
+    "coverImage": "/images/attractions/chengdu/chengdu-dufu-cottage.webp",
+    "summary": "杜甫草堂是成都代表性景点，适合历史、文学主题游玩。",
+    "description": "杜甫草堂适合安排在成都行程中重点体验，兼顾历史、文学、园林等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "成都市青羊区青华路37号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
     "tags": [
-      "动物",
+      "历史",
+      "园林",
+      "文学"
+    ],
+    "aliases": [
+      "草堂"
+    ],
+    "highlights": [
+      "体验历史主题",
+      "适合成都首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "chengdu-jinli",
+    "name": "锦里古街",
+    "city": "成都",
+    "ticketType": "free",
+    "priceText": "免费开放，消费另计",
+    "coverImage": "/images/attractions/chengdu/chengdu-jinli.webp",
+    "summary": "锦里古街是成都代表性景点，适合美食、夜游主题游玩。",
+    "description": "锦里古街适合安排在成都行程中重点体验，兼顾美食、夜游、历史等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "成都市武侯区武侯祠大街231号附1号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "历史",
+      "夜游",
+      "美食"
+    ],
+    "aliases": [
+      "锦里"
+    ],
+    "highlights": [
+      "体验美食主题",
+      "适合成都首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "chengdu-kuanzhai-alley",
+    "name": "宽窄巷子",
+    "city": "成都",
+    "ticketType": "free",
+    "priceText": "免费开放，消费另计",
+    "coverImage": "/images/attractions/chengdu/chengdu-kuanzhai-alley.webp",
+    "summary": "宽窄巷子是成都代表性景点，适合美食、城市漫步主题游玩。",
+    "description": "宽窄巷子适合安排在成都行程中重点体验，兼顾美食、城市漫步、历史等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "成都市青羊区金河路口宽窄巷子",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "历史",
+      "城市漫步",
+      "美食"
+    ],
+    "aliases": [
+      "宽窄巷"
+    ],
+    "highlights": [
+      "体验美食主题",
+      "适合成都首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "chengdu-panda-base",
+    "name": "成都大熊猫繁育研究基地",
+    "city": "成都",
+    "ticketType": "paid",
+    "priceText": "参考价 ¥55，以平台实际为准",
+    "coverImage": "/images/attractions/chengdu/chengdu-panda-base.webp",
+    "summary": "成都大熊猫繁育研究基地是成都代表性景点，适合亲子、动物主题游玩。",
+    "description": "成都大熊猫繁育研究基地适合安排在成都行程中重点体验，兼顾亲子、动物、必去等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "成都市成华区熊猫大道1375号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
       "亲子",
+      "动物",
       "必去"
     ],
     "aliases": [
-      "熊猫基地"
+      "熊猫基地",
+      "成都熊猫基地"
     ],
     "highlights": [
-      "大熊猫别墅",
-      "小熊猫活动场"
+      "体验亲子主题",
+      "适合成都首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
     ],
     "tips": [
-      "建议早上前往，熊猫比较活跃"
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
     ],
     "suitableFor": [
-      "亲子游",
-      "动物爱好者"
+      "亲子出行",
+      "第一次到访"
     ],
-    "bookingLinks": {
-      "ctrip": "https://you.ctrip.com/sight/chengdu14/1409.html",
-      "fliggy": "",
-      "ly": ""
-    }
+    "bookingLinks": {}
   },
   {
-    "id": "xian-bingmayong",
+    "id": "chengdu-qingcheng-mountain",
+    "name": "青城山",
+    "city": "成都",
+    "ticketType": "paid",
+    "priceText": "参考价 ¥80，以平台实际为准",
+    "coverImage": "/images/attractions/chengdu/chengdu-qingcheng-mountain.webp",
+    "summary": "青城山是成都代表性景点，适合自然、文化主题游玩。",
+    "description": "青城山适合安排在成都行程中重点体验，兼顾自然、文化、徒步等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "成都市都江堰市青城山镇",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "半天-1天",
+    "tags": [
+      "徒步",
+      "文化",
+      "自然"
+    ],
+    "aliases": [
+      "青城山景区"
+    ],
+    "highlights": [
+      "体验自然主题",
+      "适合成都首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "chengdu-wuhou-shrine",
+    "name": "武侯祠",
+    "city": "成都",
+    "ticketType": "paid",
+    "priceText": "参考价 ¥50，以平台实际为准",
+    "coverImage": "/images/attractions/chengdu/chengdu-wuhou-shrine.webp",
+    "summary": "武侯祠是成都代表性景点，适合历史、文化主题游玩。",
+    "description": "武侯祠适合安排在成都行程中重点体验，兼顾历史、文化、三国等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "成都市武侯区武侯祠大街231号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "三国",
+      "历史",
+      "文化"
+    ],
+    "aliases": [
+      "成都武侯祠"
+    ],
+    "highlights": [
+      "体验历史主题",
+      "适合成都首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "xian-city-wall",
+    "name": "西安城墙",
+    "city": "西安",
+    "ticketType": "paid",
+    "priceText": "参考价 ¥54，以平台实际为准",
+    "coverImage": "/images/attractions/xian/xian-city-wall.webp",
+    "summary": "西安城墙是西安代表性景点，适合历史、夜游主题游玩。",
+    "description": "西安城墙适合安排在西安行程中重点体验，兼顾历史、夜游、城市漫步等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "西安市碑林区南大街2号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "历史",
+      "城市漫步",
+      "夜游"
+    ],
+    "aliases": [
+      "明城墙"
+    ],
+    "highlights": [
+      "体验历史主题",
+      "适合西安首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "xian-giant-wild-goose-pagoda",
+    "name": "大雁塔",
+    "city": "西安",
+    "ticketType": "paid",
+    "priceText": "参考价 ¥25-40，以平台实际为准",
+    "coverImage": "/images/attractions/xian/xian-giant-wild-goose-pagoda.webp",
+    "summary": "大雁塔是西安代表性景点，适合历史、夜游主题游玩。",
+    "description": "大雁塔适合安排在西安行程中重点体验，兼顾历史、夜游、文化等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "西安市雁塔区雁塔路南段11号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "历史",
+      "夜游",
+      "文化"
+    ],
+    "aliases": [
+      "大慈恩寺大雁塔"
+    ],
+    "highlights": [
+      "体验历史主题",
+      "适合西安首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "xian-huaqing-palace",
+    "name": "华清宫",
+    "city": "西安",
+    "ticketType": "paid",
+    "priceText": "参考价 ¥120，以平台实际为准",
+    "coverImage": "/images/attractions/xian/xian-huaqing-palace.webp",
+    "summary": "华清宫是西安代表性景点，适合历史、演艺主题游玩。",
+    "description": "华清宫适合安排在西安行程中重点体验，兼顾历史、演艺、文化等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "西安市临潼区华清路38号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "历史",
+      "文化",
+      "演艺"
+    ],
+    "aliases": [
+      "华清池"
+    ],
+    "highlights": [
+      "体验历史主题",
+      "适合西安首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "xian-muslim-quarter",
+    "name": "回民街",
+    "city": "西安",
+    "ticketType": "free",
+    "priceText": "免费开放，消费另计",
+    "coverImage": "/images/attractions/xian/xian-muslim-quarter.webp",
+    "summary": "回民街是西安代表性景点，适合美食、夜游主题游玩。",
+    "description": "回民街适合安排在西安行程中重点体验，兼顾美食、夜游、城市漫步等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "西安市莲湖区北院门街区",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "城市漫步",
+      "夜游",
+      "美食"
+    ],
+    "aliases": [
+      "西安回民街"
+    ],
+    "highlights": [
+      "体验美食主题",
+      "适合西安首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "xian-shaanxi-history-museum",
+    "name": "陕西历史博物馆",
+    "city": "西安",
+    "ticketType": "free",
+    "priceText": "免费预约，部分展览另收费",
+    "coverImage": "/images/attractions/xian/xian-shaanxi-history-museum.webp",
+    "summary": "陕西历史博物馆是西安代表性景点，适合博物馆、历史主题游玩。",
+    "description": "陕西历史博物馆适合安排在西安行程中重点体验，兼顾博物馆、历史、亲子等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
+    "address": "西安市雁塔区小寨东路91号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "亲子",
+      "博物馆",
+      "历史"
+    ],
+    "aliases": [
+      "陕历博"
+    ],
+    "highlights": [
+      "体验博物馆主题",
+      "适合西安首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "亲子出行",
+      "第一次到访"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "xian-terracotta-warriors",
     "name": "秦始皇兵马俑博物馆",
     "city": "西安",
     "ticketType": "paid",
-    "priceText": "120元",
-    "coverImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/51714-Terracota-Army.jpg/1280px-51714-Terracota-Army.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "summary": "世界第八大奇迹",
-    "description": "秦始皇兵马俑博物馆是世界第八大奇迹。",
+    "priceText": "参考价 ¥120，以平台实际为准",
+    "coverImage": "/images/attractions/xian/xian-terracotta-warriors.webp",
+    "summary": "秦始皇兵马俑博物馆是西安代表性景点，适合历史、博物馆主题游玩。",
+    "description": "秦始皇兵马俑博物馆适合安排在西安行程中重点体验，兼顾历史、博物馆、必去等旅行偏好。第一版展示参考价格、开放时间、游玩亮点和第三方购票入口，价格库存以平台和景区公告为准。",
     "address": "西安市临潼区秦陵北路",
-    "openingHours": "08:30-17:00",
-    "recommendedDuration": "3-4小时",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "博物馆",
+      "历史",
+      "必去"
+    ],
+    "aliases": [
+      "兵马俑",
+      "秦始皇兵马俑"
+    ],
+    "highlights": [
+      "体验历史主题",
+      "适合西安首次到访",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "nanjing-fuzimiao",
+    "name": "夫子庙",
+    "city": "南京",
+    "ticketType": "free",
+    "priceText": "免费开放，部分景点另收费",
+    "coverImage": "/images/attractions/nanjing/nanjing-fuzimiao.webp",
+    "summary": "夫子庙是南京代表性景点，适合历史、文化主题游玩。",
+    "description": "夫子庙适合安排在南京行程中重点体验，兼顾历史、文化、夜游、美食等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "南京市秦淮区贡院街",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "历史",
+      "文化",
+      "夜游",
+      "美食"
+    ],
+    "aliases": [
+      "南京夫子庙",
+      "秦淮风光带"
+    ],
+    "highlights": [
+      "体验历史主题",
+      "感受南京代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "nanjing-ming-xiaoling",
+    "name": "明孝陵",
+    "city": "南京",
+    "ticketType": "paid",
+    "priceText": "参考价 ¥70，以平台实际为准",
+    "coverImage": "/images/attractions/nanjing/nanjing-ming-xiaoling.webp",
+    "summary": "明孝陵是南京代表性景点，适合历史、自然主题游玩。",
+    "description": "明孝陵适合安排在南京行程中重点体验，兼顾历史、自然、世界遗产等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "南京市玄武区石象路7号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "历史",
+      "自然",
+      "世界遗产"
+    ],
+    "aliases": [
+      "明太祖孝陵"
+    ],
+    "highlights": [
+      "体验历史主题",
+      "感受南京代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "nanjing-museum",
+    "name": "南京博物院",
+    "city": "南京",
+    "ticketType": "free",
+    "priceText": "免费预约，以官方公告为准",
+    "coverImage": "/images/attractions/nanjing/nanjing-museum.webp",
+    "summary": "南京博物院是南京代表性景点，适合博物馆、历史主题游玩。",
+    "description": "南京博物院适合安排在南京行程中重点体验，兼顾博物馆、历史、文化等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "南京市玄武区中山东路321号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "博物馆",
+      "历史",
+      "文化"
+    ],
+    "aliases": [
+      "南博"
+    ],
+    "highlights": [
+      "体验博物馆主题",
+      "感受南京代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "nanjing-presidential-palace",
+    "name": "南京总统府",
+    "city": "南京",
+    "ticketType": "paid",
+    "priceText": "参考价 ¥35，以平台实际为准",
+    "coverImage": "/images/attractions/nanjing/nanjing-presidential-palace.webp",
+    "summary": "南京总统府是南京代表性景点，适合历史、建筑主题游玩。",
+    "description": "南京总统府适合安排在南京行程中重点体验，兼顾历史、建筑、博物馆等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "南京市玄武区长江路292号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "历史",
+      "建筑",
+      "博物馆"
+    ],
+    "aliases": [
+      "总统府"
+    ],
+    "highlights": [
+      "体验历史主题",
+      "感受南京代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "nanjing-xuanwu-lake",
+    "name": "玄武湖",
+    "city": "南京",
+    "ticketType": "free",
+    "priceText": "免费开放，部分项目另收费",
+    "coverImage": "/images/attractions/nanjing/nanjing-xuanwu-lake.webp",
+    "summary": "玄武湖是南京代表性景点，适合自然、城市漫步主题游玩。",
+    "description": "玄武湖适合安排在南京行程中重点体验，兼顾自然、城市漫步、亲子等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "南京市玄武区玄武巷1号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "自然",
+      "城市漫步",
+      "亲子"
+    ],
+    "aliases": [
+      "玄武湖公园"
+    ],
+    "highlights": [
+      "体验自然主题",
+      "感受南京代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "亲子出行",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "nanjing-zhongshanling",
+    "name": "中山陵",
+    "city": "南京",
+    "ticketType": "free",
+    "priceText": "免费预约，以官方公告为准",
+    "coverImage": "/images/attractions/nanjing/nanjing-zhongshanling.webp",
+    "summary": "中山陵是南京代表性景点，适合历史、文化主题游玩。",
+    "description": "中山陵适合安排在南京行程中重点体验，兼顾历史、文化、必去等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "南京市玄武区石象路7号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
     "tags": [
       "历史",
       "文化",
       "必去"
     ],
     "aliases": [
-      "兵马俑"
+      "孙中山陵墓"
     ],
     "highlights": [
-      "一号坑",
-      "二号坑",
-      "三号坑"
+      "体验历史主题",
+      "感受南京代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
     ],
     "tips": [
-      "建议请导游讲解"
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
     ],
     "suitableFor": [
-      "历史爱好者",
-      "文化研究者"
+      "第一次到访",
+      "亲友出行"
     ],
-    "bookingLinks": {
-      "ctrip": "https://you.ctrip.com/sight/xian7/226.html",
-      "fliggy": "",
-      "ly": ""
-    }
+    "bookingLinks": {}
+  },
+  {
+    "id": "xiamen-gulangyu",
+    "name": "鼓浪屿",
+    "city": "厦门",
+    "ticketType": "paid",
+    "priceText": "上岛船票及部分景点另收费",
+    "coverImage": "/images/attractions/xiamen/xiamen-gulangyu.webp",
+    "summary": "鼓浪屿是厦门代表性景点，适合世界遗产、建筑主题游玩。",
+    "description": "鼓浪屿适合安排在厦门行程中重点体验，兼顾世界遗产、建筑、城市漫步等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "厦门市思明区鼓浪屿",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "半天-1天",
+    "tags": [
+      "世界遗产",
+      "建筑",
+      "城市漫步"
+    ],
+    "aliases": [
+      "鼓浪屿景区"
+    ],
+    "highlights": [
+      "体验世界遗产主题",
+      "感受厦门代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "xiamen-huandao-road",
+    "name": "环岛路",
+    "city": "厦门",
+    "ticketType": "free",
+    "priceText": "免费开放",
+    "coverImage": "/images/attractions/xiamen/xiamen-huandao-road.webp",
+    "summary": "环岛路是厦门代表性景点，适合自然、骑行主题游玩。",
+    "description": "环岛路适合安排在厦门行程中重点体验，兼顾自然、骑行、城市漫步等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "厦门市思明区环岛南路",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "自然",
+      "骑行",
+      "城市漫步"
+    ],
+    "aliases": [
+      "厦门环岛路"
+    ],
+    "highlights": [
+      "体验自然主题",
+      "感受厦门代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "xiamen-hulishan-fortress",
+    "name": "胡里山炮台",
+    "city": "厦门",
+    "ticketType": "paid",
+    "priceText": "参考价 ¥25，以平台实际为准",
+    "coverImage": "/images/attractions/xiamen/xiamen-hulishan-fortress.webp",
+    "summary": "胡里山炮台是厦门代表性景点，适合历史、建筑主题游玩。",
+    "description": "胡里山炮台适合安排在厦门行程中重点体验，兼顾历史、建筑、海滨等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "厦门市思明区曾厝垵路2号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "1-2小时",
+    "tags": [
+      "历史",
+      "建筑",
+      "海滨"
+    ],
+    "aliases": [
+      "胡里山炮台景区"
+    ],
+    "highlights": [
+      "体验历史主题",
+      "感受厦门代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "xiamen-jimei-school-village",
+    "name": "集美学村",
+    "city": "厦门",
+    "ticketType": "free",
+    "priceText": "免费开放，部分场馆需预约",
+    "coverImage": "/images/attractions/xiamen/xiamen-jimei-school-village.webp",
+    "summary": "集美学村是厦门代表性景点，适合建筑、文化主题游玩。",
+    "description": "集美学村适合安排在厦门行程中重点体验，兼顾建筑、文化、城市漫步等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "厦门市集美区银江路183号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "建筑",
+      "文化",
+      "城市漫步"
+    ],
+    "aliases": [
+      "集美学村景区"
+    ],
+    "highlights": [
+      "体验建筑主题",
+      "感受厦门代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "xiamen-nanputuo-temple",
+    "name": "南普陀寺",
+    "city": "厦门",
+    "ticketType": "free",
+    "priceText": "免费预约，以官方公告为准",
+    "coverImage": "/images/attractions/xiamen/xiamen-nanputuo-temple.webp",
+    "summary": "南普陀寺是厦门代表性景点，适合文化、建筑主题游玩。",
+    "description": "南普陀寺适合安排在厦门行程中重点体验，兼顾文化、建筑、祈福等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "厦门市思明区思明南路515号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "1-2小时",
+    "tags": [
+      "文化",
+      "建筑",
+      "祈福"
+    ],
+    "aliases": [
+      "南普陀"
+    ],
+    "highlights": [
+      "体验文化主题",
+      "感受厦门代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "xiamen-university",
+    "name": "厦门大学",
+    "city": "厦门",
+    "ticketType": "free",
+    "priceText": "免费预约，以官方公告为准",
+    "coverImage": "/images/attractions/xiamen/xiamen-university.webp",
+    "summary": "厦门大学是厦门代表性景点，适合建筑、校园主题游玩。",
+    "description": "厦门大学适合安排在厦门行程中重点体验，兼顾建筑、校园、城市漫步等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "厦门市思明区思明南路422号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "1-2小时",
+    "tags": [
+      "建筑",
+      "校园",
+      "城市漫步"
+    ],
+    "aliases": [
+      "厦大"
+    ],
+    "highlights": [
+      "体验建筑主题",
+      "感受厦门代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "dali-ancient-city",
+    "name": "大理古城",
+    "city": "大理",
+    "ticketType": "free",
+    "priceText": "免费开放，消费另计",
+    "coverImage": "/images/attractions/dali/dali-ancient-city.webp",
+    "summary": "大理古城是大理代表性景点，适合历史、美食主题游玩。",
+    "description": "大理古城适合安排在大理行程中重点体验，兼顾历史、美食、城市漫步等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "大理白族自治州大理市古城区",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "历史",
+      "美食",
+      "城市漫步"
+    ],
+    "aliases": [
+      "叶榆城"
+    ],
+    "highlights": [
+      "体验历史主题",
+      "感受大理代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "dali-cangshan",
+    "name": "苍山",
+    "city": "大理",
+    "ticketType": "paid",
+    "priceText": "进山免费，索道等项目另收费",
+    "coverImage": "/images/attractions/dali/dali-cangshan.webp",
+    "summary": "苍山是大理代表性景点，适合自然、徒步主题游玩。",
+    "description": "苍山适合安排在大理行程中重点体验，兼顾自然、徒步、摄影等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "大理白族自治州大理市苍山景区",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "半天-1天",
+    "tags": [
+      "自然",
+      "徒步",
+      "摄影"
+    ],
+    "aliases": [
+      "点苍山"
+    ],
+    "highlights": [
+      "体验自然主题",
+      "感受大理代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "dali-erhai",
+    "name": "洱海",
+    "city": "大理",
+    "ticketType": "free",
+    "priceText": "免费开放，游船等项目另收费",
+    "coverImage": "/images/attractions/dali/dali-erhai.webp",
+    "summary": "洱海是大理代表性景点，适合自然、摄影主题游玩。",
+    "description": "洱海适合安排在大理行程中重点体验，兼顾自然、摄影、必去等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "大理白族自治州大理市洱海",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "半天-1天",
+    "tags": [
+      "自然",
+      "摄影",
+      "必去"
+    ],
+    "aliases": [
+      "洱海景区"
+    ],
+    "highlights": [
+      "体验自然主题",
+      "感受大理代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "dali-shuanglang-ancient-town",
+    "name": "双廊古镇",
+    "city": "大理",
+    "ticketType": "free",
+    "priceText": "免费开放，消费另计",
+    "coverImage": "/images/attractions/dali/dali-shuanglang-ancient-town.webp",
+    "summary": "双廊古镇是大理代表性景点，适合自然、摄影主题游玩。",
+    "description": "双廊古镇适合安排在大理行程中重点体验，兼顾自然、摄影、城市漫步等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "大理白族自治州大理市双廊镇",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "自然",
+      "摄影",
+      "城市漫步"
+    ],
+    "aliases": [
+      "双廊"
+    ],
+    "highlights": [
+      "体验自然主题",
+      "感受大理代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "dali-three-pagodas",
+    "name": "崇圣寺三塔",
+    "city": "大理",
+    "ticketType": "paid",
+    "priceText": "参考价 ¥75，以平台实际为准",
+    "coverImage": "/images/attractions/dali/dali-three-pagodas.webp",
+    "summary": "崇圣寺三塔是大理代表性景点，适合历史、建筑主题游玩。",
+    "description": "崇圣寺三塔适合安排在大理行程中重点体验，兼顾历史、建筑、文化等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "大理白族自治州大理市三塔路",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "历史",
+      "建筑",
+      "文化"
+    ],
+    "aliases": [
+      "大理三塔",
+      "崇圣寺"
+    ],
+    "highlights": [
+      "体验历史主题",
+      "感受大理代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "dali-xizhou-ancient-town",
+    "name": "喜洲古镇",
+    "city": "大理",
+    "ticketType": "free",
+    "priceText": "免费开放，消费另计",
+    "coverImage": "/images/attractions/dali/dali-xizhou-ancient-town.webp",
+    "summary": "喜洲古镇是大理代表性景点，适合历史、建筑主题游玩。",
+    "description": "喜洲古镇适合安排在大理行程中重点体验，兼顾历史、建筑、美食等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "大理白族自治州大理市喜洲镇",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "历史",
+      "建筑",
+      "美食"
+    ],
+    "aliases": [
+      "喜洲"
+    ],
+    "highlights": [
+      "体验历史主题",
+      "感受大理代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "lijiang-ancient-city",
+    "name": "丽江古城",
+    "city": "丽江",
+    "ticketType": "free",
+    "priceText": "古城免费开放，部分项目另收费",
+    "coverImage": "/images/attractions/lijiang/lijiang-ancient-city.webp",
+    "summary": "丽江古城是丽江代表性景点，适合世界遗产、历史主题游玩。",
+    "description": "丽江古城适合安排在丽江行程中重点体验，兼顾世界遗产、历史、夜游等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "丽江市古城区大研街道",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "半天-1天",
+    "tags": [
+      "世界遗产",
+      "历史",
+      "夜游"
+    ],
+    "aliases": [
+      "大研古城"
+    ],
+    "highlights": [
+      "体验世界遗产主题",
+      "感受丽江代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "lijiang-black-dragon-pool",
+    "name": "黑龙潭公园",
+    "city": "丽江",
+    "ticketType": "free",
+    "priceText": "开放政策以官方公告为准",
+    "coverImage": "/images/attractions/lijiang/lijiang-black-dragon-pool.webp",
+    "summary": "黑龙潭公园是丽江代表性景点，适合自然、园林主题游玩。",
+    "description": "黑龙潭公园适合安排在丽江行程中重点体验，兼顾自然、园林、摄影等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "丽江市古城区民主路1号",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "1-2小时",
+    "tags": [
+      "自然",
+      "园林",
+      "摄影"
+    ],
+    "aliases": [
+      "丽江黑龙潭",
+      "玉泉公园"
+    ],
+    "highlights": [
+      "体验自然主题",
+      "感受丽江代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "lijiang-blue-moon-valley",
+    "name": "蓝月谷",
+    "city": "丽江",
+    "ticketType": "paid",
+    "priceText": "包含在玉龙雪山景区相关票务中",
+    "coverImage": "/images/attractions/lijiang/lijiang-blue-moon-valley.webp",
+    "summary": "蓝月谷是丽江代表性景点，适合自然、摄影主题游玩。",
+    "description": "蓝月谷适合安排在丽江行程中重点体验，兼顾自然、摄影、湖泊等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "丽江市玉龙纳西族自治县玉龙雪山景区内",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "自然",
+      "摄影",
+      "湖泊"
+    ],
+    "aliases": [
+      "白水河",
+      "蓝月谷景区"
+    ],
+    "highlights": [
+      "体验自然主题",
+      "感受丽江代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "lijiang-jade-dragon-snow-mountain",
+    "name": "玉龙雪山",
+    "city": "丽江",
+    "ticketType": "paid",
+    "priceText": "参考价随索道套票变化，以平台实际为准",
+    "coverImage": "/images/attractions/lijiang/lijiang-jade-dragon-snow-mountain.webp",
+    "summary": "玉龙雪山是丽江代表性景点，适合自然、雪山主题游玩。",
+    "description": "玉龙雪山适合安排在丽江行程中重点体验，兼顾自然、雪山、必去等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "丽江市玉龙纳西族自治县玉龙雪山景区",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "半天-1天",
+    "tags": [
+      "自然",
+      "雪山",
+      "必去"
+    ],
+    "aliases": [
+      "玉龙雪山景区"
+    ],
+    "highlights": [
+      "体验自然主题",
+      "感受丽江代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "lijiang-lugu-lake",
+    "name": "泸沽湖",
+    "city": "丽江",
+    "ticketType": "paid",
+    "priceText": "参考价 ¥70，以平台实际为准",
+    "coverImage": "/images/attractions/lijiang/lijiang-lugu-lake.webp",
+    "summary": "泸沽湖是丽江代表性景点，适合自然、摄影主题游玩。",
+    "description": "泸沽湖适合安排在丽江行程中重点体验，兼顾自然、摄影、文化等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "丽江市宁蒗彝族自治县泸沽湖景区",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "1天",
+    "tags": [
+      "自然",
+      "摄影",
+      "文化"
+    ],
+    "aliases": [
+      "泸沽湖景区"
+    ],
+    "highlights": [
+      "体验自然主题",
+      "感受丽江代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "lijiang-shuhe-ancient-town",
+    "name": "束河古镇",
+    "city": "丽江",
+    "ticketType": "free",
+    "priceText": "免费开放，部分项目另收费",
+    "coverImage": "/images/attractions/lijiang/lijiang-shuhe-ancient-town.webp",
+    "summary": "束河古镇是丽江代表性景点，适合历史、城市漫步主题游玩。",
+    "description": "束河古镇适合安排在丽江行程中重点体验，兼顾历史、城市漫步、文化等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "丽江市古城区束河街道",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "历史",
+      "城市漫步",
+      "文化"
+    ],
+    "aliases": [
+      "束河古城"
+    ],
+    "highlights": [
+      "体验历史主题",
+      "感受丽江代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "sanya-dadonghai",
+    "name": "大东海",
+    "city": "三亚",
+    "ticketType": "free",
+    "priceText": "免费开放，项目另收费",
+    "coverImage": "/images/attractions/sanya/sanya-dadonghai.webp",
+    "summary": "大东海是三亚代表性景点，适合海滨、游泳主题游玩。",
+    "description": "大东海适合安排在三亚行程中重点体验，兼顾海滨、游泳、亲子等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "三亚市吉阳区榆亚大道",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "半天",
+    "tags": [
+      "海滨",
+      "游泳",
+      "亲子"
+    ],
+    "aliases": [
+      "大东海旅游区"
+    ],
+    "highlights": [
+      "体验海滨主题",
+      "感受三亚代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "亲子出行",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "sanya-luhuitou-scenic-area",
+    "name": "鹿回头风景区",
+    "city": "三亚",
+    "ticketType": "free",
+    "priceText": "免费开放，观光车等项目另收费",
+    "coverImage": "/images/attractions/sanya/sanya-luhuitou-scenic-area.webp",
+    "summary": "鹿回头风景区是三亚代表性景点，适合自然、夜景主题游玩。",
+    "description": "鹿回头风景区适合安排在三亚行程中重点体验，兼顾自然、夜景、城市观景等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "三亚市吉阳区鹿岭路",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "自然",
+      "夜景",
+      "城市观景"
+    ],
+    "aliases": [
+      "鹿回头"
+    ],
+    "highlights": [
+      "体验自然主题",
+      "感受三亚代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "sanya-nanshan-cultural-tourism-zone",
+    "name": "南山文化旅游区",
+    "city": "三亚",
+    "ticketType": "paid",
+    "priceText": "参考价 ¥108，以平台实际为准",
+    "coverImage": "/images/attractions/sanya/sanya-nanshan-cultural-tourism-zone.webp",
+    "summary": "南山文化旅游区是三亚代表性景点，适合文化、海滨主题游玩。",
+    "description": "南山文化旅游区适合安排在三亚行程中重点体验，兼顾文化、海滨、祈福等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "三亚市崖州区南山村",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "半天",
+    "tags": [
+      "文化",
+      "海滨",
+      "祈福"
+    ],
+    "aliases": [
+      "南山景区",
+      "南山寺"
+    ],
+    "highlights": [
+      "体验文化主题",
+      "感受三亚代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "sanya-tianya-haijiao",
+    "name": "天涯海角",
+    "city": "三亚",
+    "ticketType": "free",
+    "priceText": "免费预约，游览项目另收费",
+    "coverImage": "/images/attractions/sanya/sanya-tianya-haijiao.webp",
+    "summary": "天涯海角是三亚代表性景点，适合海滨、文化主题游玩。",
+    "description": "天涯海角适合安排在三亚行程中重点体验，兼顾海滨、文化、必去等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "三亚市天涯区马岭山麓",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "2-3小时",
+    "tags": [
+      "海滨",
+      "文化",
+      "必去"
+    ],
+    "aliases": [
+      "天涯海角游览区"
+    ],
+    "highlights": [
+      "体验海滨主题",
+      "感受三亚代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "sanya-wuzhizhou-island",
+    "name": "蜈支洲岛",
+    "city": "三亚",
+    "ticketType": "paid",
+    "priceText": "参考价随船票套票变化，以平台实际为准",
+    "coverImage": "/images/attractions/sanya/sanya-wuzhizhou-island.webp",
+    "summary": "蜈支洲岛是三亚代表性景点，适合海岛、海滨主题游玩。",
+    "description": "蜈支洲岛适合安排在三亚行程中重点体验，兼顾海岛、海滨、水上活动等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "三亚市海棠区海棠湾镇蜈支洲岛",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "半天-1天",
+    "tags": [
+      "海岛",
+      "海滨",
+      "水上活动"
+    ],
+    "aliases": [
+      "蜈支洲岛旅游区"
+    ],
+    "highlights": [
+      "体验海岛主题",
+      "感受三亚代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "第一次到访",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
+  },
+  {
+    "id": "sanya-yalong-bay",
+    "name": "亚龙湾",
+    "city": "三亚",
+    "ticketType": "free",
+    "priceText": "海滩免费开放，项目另收费",
+    "coverImage": "/images/attractions/sanya/sanya-yalong-bay.webp",
+    "summary": "亚龙湾是三亚代表性景点，适合海滨、自然主题游玩。",
+    "description": "亚龙湾适合安排在三亚行程中重点体验，兼顾海滨、自然、亲子等旅行偏好。开放时间、价格和预约规则以景区官方公告为准。",
+    "address": "三亚市吉阳区亚龙湾国家旅游度假区",
+    "openingHours": "以景区官方公告为准",
+    "recommendedDuration": "半天",
+    "tags": [
+      "海滨",
+      "自然",
+      "亲子"
+    ],
+    "aliases": [
+      "亚龙湾海滩"
+    ],
+    "highlights": [
+      "体验海滨主题",
+      "感受三亚代表性风貌",
+      "可结合 AI 行程规划安排顺路游玩"
+    ],
+    "tips": [
+      "建议出行前确认开放时间和预约规则",
+      "价格、库存和优惠以第三方平台及景区公告为准"
+    ],
+    "suitableFor": [
+      "亲子出行",
+      "亲友出行"
+    ],
+    "bookingLinks": {}
   }
 ]

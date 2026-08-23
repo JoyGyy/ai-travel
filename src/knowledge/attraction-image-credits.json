@@ -1,0 +1,542 @@
+[
+  {
+    "attractionId": "beijing-badaling-great-wall",
+    "localPath": "/images/attractions/beijing/beijing-badaling-great-wall.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Badaling_China_Great-Wall-of-China-01.jpg",
+    "author": "CEphoto, Uwe Aranas",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "verified": true
+  },
+  {
+    "attractionId": "beijing-national-museum",
+    "localPath": "/images/attractions/beijing/beijing-national-museum.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:National_Museum_of_China_building_wide.jpg",
+    "author": "Erin van V",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "verified": true
+  },
+  {
+    "attractionId": "beijing-palace-museum",
+    "localPath": "/images/attractions/beijing/beijing-palace-museum.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Forbidden_City_Beijing_Shenwumen_Gate.JPG",
+    "author": "user:kallgan",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "verified": true
+  },
+  {
+    "attractionId": "beijing-shichahai",
+    "localPath": "/images/attractions/beijing/beijing-shichahai.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Shishahai.jpg",
+    "author": "用心阁 from zh.wikipedia",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "verified": true
+  },
+  {
+    "attractionId": "beijing-summer-palace",
+    "localPath": "/images/attractions/beijing/beijing-summer-palace.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:%E9%A2%90%E5%92%8C%E5%9B%AD%E4%B8%87%E5%AF%BF%E5%B1%B1%E4%BD%9B%E9%A6%99%E9%98%81.jpg",
+    "author": "shizhao",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "verified": true
+  },
+  {
+    "attractionId": "beijing-temple-of-heaven",
+    "localPath": "/images/attractions/beijing/beijing-temple-of-heaven.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Temple_of_Heaven_20160323_01.jpg",
+    "author": "Shujianyang",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "verified": true
+  },
+  {
+    "attractionId": "chengdu-dufu-cottage",
+    "localPath": "/images/attractions/chengdu/chengdu-dufu-cottage.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Du_Fu_cao_tang.jpg",
+    "author": "User:唐戈",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "verified": true
+  },
+  {
+    "attractionId": "chengdu-jinli",
+    "localPath": "/images/attractions/chengdu/chengdu-jinli.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Jinli_Street_35201-Chengdu_(49068150581).jpg",
+    "author": "xiquinhosilva",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "verified": true
+  },
+  {
+    "attractionId": "chengdu-kuanzhai-alley",
+    "localPath": "/images/attractions/chengdu/chengdu-kuanzhai-alley.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Chengdu_travel_045_(36150300546).jpg",
+    "author": "JianEn Yu",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "verified": true
+  },
+  {
+    "attractionId": "chengdu-panda-base",
+    "localPath": "/images/attractions/chengdu/chengdu-panda-base.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Chengdu_Research_Base_Eingang.jpg",
+    "author": "Kreisverkehrsampel",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "verified": true
+  },
+  {
+    "attractionId": "chengdu-qingcheng-mountain",
+    "localPath": "/images/attractions/chengdu/chengdu-qingcheng-mountain.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:%E5%9B%9B%E5%B7%9D%E9%9D%92%E5%9F%8E%E5%B1%B1_-_panoramio.jpg",
+    "author": "中国郑开亮",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "verified": true
+  },
+  {
+    "attractionId": "chengdu-wuhou-shrine",
+    "localPath": "/images/attractions/chengdu/chengdu-wuhou-shrine.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Gateway_-_Wuhou_Shrine_-_Chengdu,_China_-_DSC05423.jpg",
+    "author": "Daderot",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "verified": true
+  },
+  {
+    "attractionId": "dali-ancient-city",
+    "localPath": "/images/attractions/dali/dali-ancient-city.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:%E5%A4%A7%E7%90%86%E5%8F%A4%E5%9F%8E%E5%8D%97%E9%97%A8-2064560.jpg",
+    "author": "https://pixabay.com/users/4537668-4537668/",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "verified": true
+  },
+  {
+    "attractionId": "dali-cangshan",
+    "localPath": "/images/attractions/dali/dali-cangshan.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Dali-Cangshan_Erhai_Lake_2017-11-16.jpg",
+    "author": "Toni Wöhrl",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "verified": true
+  },
+  {
+    "attractionId": "dali-erhai",
+    "localPath": "/images/attractions/dali/dali-erhai.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:%E6%B4%B1%E6%B5%B7%E4%B8%8B%E5%92%8C%E6%B9%BE%E6%B9%BF%E5%9C%B0%E5%85%AC%E5%9B%AD_2025-07-24_01.jpg",
+    "author": "Kcx36",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "verified": true
+  },
+  {
+    "attractionId": "dali-shuanglang-ancient-town",
+    "localPath": "/images/attractions/dali/dali-shuanglang-ancient-town.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:%E5%A4%A7%E7%90%86%E5%8F%8C%E5%BB%8A-2489796.jpg",
+    "author": "Zhouqiyang",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "verified": true
+  },
+  {
+    "attractionId": "dali-three-pagodas",
+    "localPath": "/images/attractions/dali/dali-three-pagodas.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Dalisanta.jpg",
+    "author": "The original uploader was TIY at Chinese Wikipedia .",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "verified": true
+  },
+  {
+    "attractionId": "dali-xizhou-ancient-town",
+    "localPath": "/images/attractions/dali/dali-xizhou-ancient-town.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Xizhou_03.JPG",
+    "author": "Brücke-Osteuropa",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "verified": true
+  },
+  {
+    "attractionId": "hangzhou-hefang-street",
+    "localPath": "/images/attractions/hangzhou/hangzhou-hefang-street.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Hefang_Street.jpg",
+    "author": "钉钉",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "verified": true
+  },
+  {
+    "attractionId": "hangzhou-liangzhu",
+    "localPath": "/images/attractions/hangzhou/hangzhou-liangzhu.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Liangzhu_Ancient_City_Site,_2016-06-18_02.jpg",
+    "author": "Siyuwj",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "verified": true
+  },
+  {
+    "attractionId": "hangzhou-lingyin-temple",
+    "localPath": "/images/attractions/hangzhou/hangzhou-lingyin-temple.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Hangzhou_Lingyin-Temple_20161003.jpg",
+    "author": "Tyg728",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "verified": true
+  },
+  {
+    "attractionId": "hangzhou-songcheng",
+    "localPath": "/images/attractions/hangzhou/hangzhou-songcheng.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Song_Dynasty_City_(2970193581).jpg",
+    "author": "kanegen",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "verified": true
+  },
+  {
+    "attractionId": "hangzhou-west-lake",
+    "localPath": "/images/attractions/hangzhou/hangzhou-west-lake.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:West_Lake,_Hangzhou_2025.jpg",
+    "author": "Takashishin",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "verified": true
+  },
+  {
+    "attractionId": "hangzhou-xixi-wetland",
+    "localPath": "/images/attractions/hangzhou/hangzhou-xixi-wetland.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Xixi_Wetland_Park,_Hangzhou,_China.jpg",
+    "author": "Yoshi Canopus",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "verified": true
+  },
+  {
+    "attractionId": "lijiang-ancient-city",
+    "localPath": "/images/attractions/lijiang/lijiang-ancient-city.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:1_lijiang_old_town_2012a.jpg",
+    "author": "chensiyuan",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "verified": true
+  },
+  {
+    "attractionId": "lijiang-black-dragon-pool",
+    "localPath": "/images/attractions/lijiang/lijiang-black-dragon-pool.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Lijiang_Yunnan_Black-Dragon-Pool-01.jpg",
+    "author": "CEphoto, Uwe Aranas",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "verified": true
+  },
+  {
+    "attractionId": "lijiang-blue-moon-valley",
+    "localPath": "/images/attractions/lijiang/lijiang-blue-moon-valley.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:%E6%B0%B4%E8%89%B2%E6%9C%83%E8%AE%8A%E7%9A%84%E8%97%8D%E6%9C%88%E8%B0%B7_20190928195012.jpg",
+    "author": "Ping an Chang",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "verified": true
+  },
+  {
+    "attractionId": "lijiang-jade-dragon-snow-mountain",
+    "localPath": "/images/attractions/lijiang/lijiang-jade-dragon-snow-mountain.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Yulong_mount.jpg",
+    "author": "Munford",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "verified": true
+  },
+  {
+    "attractionId": "lijiang-lugu-lake",
+    "localPath": "/images/attractions/lijiang/lijiang-lugu-lake.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Overlooking_Lugu_Lake.jpg",
+    "author": "石璐",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "verified": true
+  },
+  {
+    "attractionId": "lijiang-shuhe-ancient-town",
+    "localPath": "/images/attractions/lijiang/lijiang-shuhe-ancient-town.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:%E4%B8%BD%E6%B1%9F%E6%9D%9F%E6%B2%B3%E5%8F%A4%E9%95%87.JPG",
+    "author": "Gisling",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "verified": true
+  },
+  {
+    "attractionId": "nanjing-fuzimiao",
+    "localPath": "/images/attractions/nanjing/nanjing-fuzimiao.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:LingXingMen_of_Nanjing_Confucian_Temple.jpg",
+    "author": "Kinden Kuo from Taipei, Taiwan",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "verified": true
+  },
+  {
+    "attractionId": "nanjing-ming-xiaoling",
+    "localPath": "/images/attractions/nanjing/nanjing-ming-xiaoling.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Nanjing_Ming_Xiaoling_2017.11.11_08-10-27.jpg",
+    "author": "Zhangzhugang",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "verified": true
+  },
+  {
+    "attractionId": "nanjing-museum",
+    "localPath": "/images/attractions/nanjing/nanjing-museum.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Banner_of_Nanjing_Museum,_2015-06-20.jpg",
+    "author": "Siyuwj",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "verified": true
+  },
+  {
+    "attractionId": "nanjing-presidential-palace",
+    "localPath": "/images/attractions/nanjing/nanjing-presidential-palace.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:%E4%B8%AD%E5%8D%8E%E6%B0%91%E5%9B%BD%E6%80%BB%E7%BB%9F%E5%BA%9C%C2%B7%E5%8D%97%E4%BA%AC%C2%B7%E8%88%AA%E6%8B%8D.jpg",
+    "author": "Legolas1024",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "verified": true
+  },
+  {
+    "attractionId": "nanjing-xuanwu-lake",
+    "localPath": "/images/attractions/nanjing/nanjing-xuanwu-lake.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Xuanwuhu.jpg",
+    "author": "CL4-LCLC",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "verified": true
+  },
+  {
+    "attractionId": "nanjing-zhongshanling",
+    "localPath": "/images/attractions/nanjing/nanjing-zhongshanling.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Hall_of_Sun_Yat-sen_Mausoleum.jpg",
+    "author": "Jiong Sheng from London, United Kingdom",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "verified": true
+  },
+  {
+    "attractionId": "sanya-dadonghai",
+    "localPath": "/images/attractions/sanya/sanya-dadonghai.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Dadonghai_beach_Sanya.jpg",
+    "author": "Kellykaneshiro",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "verified": true
+  },
+  {
+    "attractionId": "sanya-luhuitou-scenic-area",
+    "localPath": "/images/attractions/sanya/sanya-luhuitou-scenic-area.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Luhuitou.JPG",
+    "author": "Brookqi",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "verified": true
+  },
+  {
+    "attractionId": "sanya-nanshan-cultural-tourism-zone",
+    "localPath": "/images/attractions/sanya/sanya-nanshan-cultural-tourism-zone.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Sanya_Nanshan_Temple._Sanya_Nanshan_Buddhism_Cultural_Tourism_Zone._%D0%A1%D0%B0%D0%BD%D1%8C%D1%8F,_%D0%A5%D0%B0%D0%B9%D0%BD%D0%B0%D0%BD%D1%8C,_%D0%9A%D0%B8%D1%82%D0%B0%D0%B9_-_panoramio.jpg",
+    "author": "Николай Максимович",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "verified": true
+  },
+  {
+    "attractionId": "sanya-tianya-haijiao",
+    "localPath": "/images/attractions/sanya/sanya-tianya-haijiao.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Tianya_Haijiao,_Sanya.jpg",
+    "author": "钉钉",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "verified": true
+  },
+  {
+    "attractionId": "sanya-wuzhizhou-island",
+    "localPath": "/images/attractions/sanya/sanya-wuzhizhou-island.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Haitang,_Sanya,_Hainan,_China_-_panoramio_(6).jpg",
+    "author": "song songroov",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "verified": true
+  },
+  {
+    "attractionId": "sanya-yalong-bay",
+    "localPath": "/images/attractions/sanya/sanya-yalong-bay.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:%E4%BA%9A%E9%BE%99%E6%B9%BE.JPG",
+    "author": "The original uploader was TIY at Chinese Wikipedia .",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "verified": true
+  },
+  {
+    "attractionId": "shanghai-disneyland",
+    "localPath": "/images/attractions/shanghai/shanghai-disneyland.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:%E4%B8%8A%E6%B5%B7%E8%BF%AA%E5%A3%AB%E5%B0%BC%E4%B9%90%E5%9B%AD%E5%A5%87%E5%B9%BB%E7%AB%A5%E8%AF%9D%E5%9F%8E%E5%A0%A1%E6%AD%A3%E9%9D%A2.jpg",
+    "author": "MasaneMiyaPA",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "verified": true
+  },
+  {
+    "attractionId": "shanghai-museum",
+    "localPath": "/images/attractions/shanghai/shanghai-museum.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:20694-Shanghai_(32225501024).jpg",
+    "author": "xiquinhosilva from Cacau",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "verified": true
+  },
+  {
+    "attractionId": "shanghai-oriental-pearl",
+    "localPath": "/images/attractions/shanghai/shanghai-oriental-pearl.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Oriental_Pearl_Tower_in_Shanghai.jpg",
+    "author": "Dmitry A. Mottl",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "verified": true
+  },
+  {
+    "attractionId": "shanghai-the-bund",
+    "localPath": "/images/attractions/shanghai/shanghai-the-bund.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:A_picture_from_China_every_day_101.jpg",
+    "author": "Carsten Ullrich from Shanghai, China",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "verified": true
+  },
+  {
+    "attractionId": "shanghai-tianzifang",
+    "localPath": "/images/attractions/shanghai/shanghai-tianzifang.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Shanghai_Tianzifang_%E4%B8%8A%E6%B5%B7%E7%94%B0%E5%AD%90%E5%9D%8A_-_panoramio.jpg",
+    "author": "lienyuan lee",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "verified": true
+  },
+  {
+    "attractionId": "shanghai-yu-garden",
+    "localPath": "/images/attractions/shanghai/shanghai-yu-garden.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Shanghai_-_Yu_Garden_-_0035.jpg",
+    "author": "Stefan Fussan",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "verified": true
+  },
+  {
+    "attractionId": "xiamen-gulangyu",
+    "localPath": "/images/attractions/xiamen/xiamen-gulangyu.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:%E9%BC%93%E6%B5%AA%E5%B1%BF_-_panoramio.jpg",
+    "author": "gdczjkk",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "verified": true
+  },
+  {
+    "attractionId": "xiamen-huandao-road",
+    "localPath": "/images/attractions/xiamen/xiamen-huandao-road.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Huandao_Rd.JPG",
+    "author": "Xmhaoyu",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "verified": true
+  },
+  {
+    "attractionId": "xiamen-hulishan-fortress",
+    "localPath": "/images/attractions/xiamen/xiamen-hulishan-fortress.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Hulishan_Fort,_2019-09-27_01.jpg",
+    "author": "Siyuwj",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "verified": true
+  },
+  {
+    "attractionId": "xiamen-jimei-school-village",
+    "localPath": "/images/attractions/xiamen/xiamen-jimei-school-village.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Jimei_School_Village_20250717.jpg",
+    "author": "水餃喵",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "verified": true
+  },
+  {
+    "attractionId": "xiamen-nanputuo-temple",
+    "localPath": "/images/attractions/xiamen/xiamen-nanputuo-temple.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:South_Putuo_Temple_07235-Xiamen_(48814044816).jpg",
+    "author": "xiquinhosilva",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "verified": true
+  },
+  {
+    "attractionId": "xiamen-university",
+    "localPath": "/images/attractions/xiamen/xiamen-university.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:(CHN-Fujian)_Xiamen_University_Siming_Campus_West_Gate_2025-03-20.jpg",
+    "author": "S5A-0043",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "verified": true
+  },
+  {
+    "attractionId": "xian-city-wall",
+    "localPath": "/images/attractions/xian/xian-city-wall.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:City_wall_of_Xi%27an_51550-Xian_(27959363326).jpg",
+    "author": "xiquinhosilva",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "verified": true
+  },
+  {
+    "attractionId": "xian-giant-wild-goose-pagoda",
+    "localPath": "/images/attractions/xian/xian-giant-wild-goose-pagoda.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Giant_Wild_Goose_Pagoda.jpg",
+    "author": "Alex Kwok",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "verified": true
+  },
+  {
+    "attractionId": "xian-huaqing-palace",
+    "localPath": "/images/attractions/xian/xian-huaqing-palace.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:%E5%8D%8E%E6%B8%85%E5%AE%AB.jpg",
+    "author": "Gisling",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "verified": true
+  },
+  {
+    "attractionId": "xian-muslim-quarter",
+    "localPath": "/images/attractions/xian/xian-muslim-quarter.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:1_xian_muslim_quarter_china_2011.JPG",
+    "author": "chensiyuan",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "verified": true
+  },
+  {
+    "attractionId": "xian-shaanxi-history-museum",
+    "localPath": "/images/attractions/xian/xian-shaanxi-history-museum.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:%E9%99%95%E5%8E%86%E5%8D%9A%E6%AD%A3%E9%97%A8.jpg",
+    "author": "Nishino Asuka",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "verified": true
+  },
+  {
+    "attractionId": "xian-terracotta-warriors",
+    "localPath": "/images/attractions/xian/xian-terracotta-warriors.webp",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:51714-Terracota-Army.jpg",
+    "author": "xiquinhosilva",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "verified": true
+  }
+]

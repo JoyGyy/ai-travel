@@ -17,6 +17,7 @@ function sanitizeAiResponse(text: string): string {
   if (!text)
     return ''
   return text
+    .replace(/^#*\s*travel\s+markdown\s*/gi, '')
     .replace(/\{\s*"type"\s*:\s*"function"[\s\S]*?\}/g, '')
     .replace(/工具\s*-\s*\[[\s\S]*?\]/g, '')
     .replace(/\{"工具"[\s\S]*?\}\}/g, '')
@@ -122,6 +123,14 @@ export default function ChatPage() {
         )}
 
         {messages.map((message) => {
+          const rawText = message.parts
+            .filter(part => part.type === 'text')
+            .map(part => (part as { text: string }).text)
+            .join('\n\n')
+          const cleanedText = sanitizeAiResponse(rawText)
+          const isToolExecuting = message.parts.some(
+            part => part.type.startsWith('tool-') || part.type === 'dynamic-tool',
+          )
           const sources = extractRagSources(
             message.parts
               .filter(part => part.type.startsWith('tool-') || part.type === 'dynamic-tool')
@@ -147,50 +156,25 @@ export default function ChatPage() {
               <div
                 className={
                   message.role === 'user'
-                    ? 'inline-block max-w-[75%] rounded-2xl rounded-tr-xs bg-emerald-700 p-3.5 px-4.5 text-white shadow-md shadow-emerald-800/15'
+                    ? 'inline-block max-w-[75%] rounded-2xl rounded-tr-xs bg-emerald-700 p-3.5 px-4.5 text-white shadow-md shadow-emerald-800/15 text-sm leading-relaxed whitespace-pre-wrap'
                     : 'flex-1 max-w-[85%]'
                 }
               >
-                {message.parts.map((part, index) => {
-                  if (part.type === 'text') {
-                    const cleaned = sanitizeAiResponse(part.text)
-                    if (!cleaned)
-                      return null
-                    return (
-                      <div
-                        className={
-                          message.role === 'user'
-                            ? 'm-0 text-sm leading-relaxed whitespace-pre-wrap'
-                            : 'rounded-2xl rounded-tl-xs border border-stone-200/90 bg-[#FDFBF7] p-4 text-stone-900 shadow-sm text-sm leading-relaxed prose prose-stone max-w-none'
-                        }
-                        // eslint-disable-next-line react/no-array-index-key
-                        key={index}
-                      >
-                        {message.role === 'user' ? (
-                          cleaned
-                        ) : (
-                          <ReactMarkdown>{cleaned}</ReactMarkdown>
-                        )}
-                      </div>
-                    )
-                  }
-                  // 工具调用状态
-                  if (part.type.startsWith('tool-') || part.type === 'dynamic-tool') {
-                    return (
-                      <div
-                        className="my-1.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900"
-                        // eslint-disable-next-line react/no-array-index-key
-                        key={index}
-                      >
-                        <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-ping" />
+                {message.role === 'user' ? (
+                  cleanedText || rawText
+                ) : (
+                  <>
+                    {isToolExecuting && !cleanedText && (
+                      <div className="my-1.5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 animate-pulse">
+                        <span className="h-2 w-2 rounded-full bg-amber-500 animate-ping" />
                         <span>正在检索当地气象与景点数据...</span>
                       </div>
-                    )
-                  }
-                  return null
-                })}
-                {message.role === 'assistant' && (
-                  <>
+                    )}
+                    {cleanedText && (
+                      <div className="rounded-2xl rounded-tl-xs border border-stone-200/90 bg-[#FDFBF7] p-4 text-stone-900 shadow-sm text-sm leading-relaxed prose prose-stone max-w-none">
+                        <ReactMarkdown>{cleanedText}</ReactMarkdown>
+                      </div>
+                    )}
                     <div className="mt-2"><RAGSource sources={sources} /></div>
                     {/* 快捷微调指令胶囊 */}
                     <div className="mt-2.5 flex flex-wrap gap-1.5 pt-1">

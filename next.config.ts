@@ -44,6 +44,11 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: '10mb',
     },
+    // 显式声明 instantInsights（Next 16 默认值），规避 16.3.1 中
+    // base-server.js 在未配置时直接访问 undefined.validationLevel 的回归崩溃。
+    instantInsights: {
+      validationLevel: 'warning',
+    },
   },
 }
 

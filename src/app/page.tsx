@@ -268,7 +268,7 @@ export default function HomePage() {
       </section>
 
       {/* 底部 CTA */}
-      <section className="relative overflow-hidden bg-emerald-800 py-16 md:py-20 text-white">
+      <section className="relative w-full overflow-hidden bg-emerald-900 py-16 md:py-20 text-white">
         <div className="relative mx-auto max-w-[1200px] px-6 text-center scroll-reveal-scale">
           <span className="font-serif italic text-amber-300 text-sm tracking-widest block mb-2">
             — START YOUR JOURNEY —

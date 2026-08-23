@@ -224,10 +224,6 @@ body {
   background: var(--color-background);
 }
 
-.home-editorial section:not(.planner-hero) {
-  max-width: 1200px;
-}
-
 .home-editorial .scroll-reveal {
   transition-duration: 200ms;
 }

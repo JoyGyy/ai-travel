@@ -2,55 +2,55 @@
  * 首页静态数据
  */
 
-/** 真实目的地图片（高德地图） */
-const IMAGES = {
-  chengdu: 'http://store.is.autonavi.com/showpic/a053c92a40b8a3591e3c24fd3d9bc40a',
-  dali: 'http://store.is.autonavi.com/showpic/259f92e8e83511f6ef58afd321d2a08e',
-  lijiang: 'http://store.is.autonavi.com/showpic/c229c50a07284982a5f93aecdd309b81',
-  sanya: 'http://store.is.autonavi.com/showpic/b9c402b7d34ea98654cc915e567761dd',
-  xiamen: 'http://store.is.autonavi.com/showpic/4aa0a6a1b6ee72c9833441f363cbb43a',
-  xian: 'http://store.is.autonavi.com/showpic/00f713e61c99c4956ab27df73afdde71',
-}
+/** 城市 → 本地景点图片（取自 60 景点目录，路径以 /images/attractions/ 开头） */
+const CITY_IMAGES = {
+  成都: '/images/attractions/chengdu/chengdu-panda-base.webp',
+  大理: '/images/attractions/dali/dali-erhai.webp',
+  丽江: '/images/attractions/lijiang/lijiang-ancient-city.webp',
+  三亚: '/images/attractions/sanya/sanya-yalong-bay.webp',
+  厦门: '/images/attractions/xiamen/xiamen-gulangyu.webp',
+  西安: '/images/attractions/xian/xian-terracotta-warriors.webp',
+} as const
 
 /** 热门目的地 */
 export const hotDestinations = [
   {
-    img: IMAGES.sanya,
+    img: CITY_IMAGES.三亚,
     name: '三亚',
     price: '¥2,899起',
     tag: '海岛度假',
     temp: '28°C',
   },
   {
-    img: IMAGES.lijiang,
+    img: CITY_IMAGES.丽江,
     name: '丽江',
     price: '¥1,599起',
     tag: '古城慢游',
     temp: '18°C',
   },
   {
-    img: IMAGES.xian,
+    img: CITY_IMAGES.西安,
     name: '西安',
     price: '¥1,299起',
     tag: '历史探秘',
     temp: '22°C',
   },
   {
-    img: IMAGES.chengdu,
+    img: CITY_IMAGES.成都,
     name: '成都',
     price: '¥1,499起',
     tag: '美食之都',
     temp: '24°C',
   },
   {
-    img: IMAGES.dali,
+    img: CITY_IMAGES.大理,
     name: '大理',
     price: '¥1,899起',
     tag: '风花雪月',
     temp: '20°C',
   },
   {
-    img: IMAGES.xiamen,
+    img: CITY_IMAGES.厦门,
     name: '厦门',
     price: '¥1,699起',
     tag: '文艺小城',
@@ -63,7 +63,7 @@ export const featuredTrips = [
   {
     city: '三亚',
     desc: '蜈支洲岛 + 亚龙湾 + 南山寺，含五星酒店',
-    image: IMAGES.sanya,
+    image: CITY_IMAGES.三亚,
     originalPrice: 4599,
     price: 3299,
     rating: 4.9,
@@ -74,7 +74,7 @@ export const featuredTrips = [
   {
     city: '丽江',
     desc: '纳西古韵 + 雪山索道 + 蓝月谷',
-    image: IMAGES.lijiang,
+    image: CITY_IMAGES.丽江,
     originalPrice: 3199,
     price: 2199,
     rating: 4.8,
@@ -85,7 +85,7 @@ export const featuredTrips = [
   {
     city: '西安',
     desc: '世界遗产 + 回民街美食 + 大唐不夜城',
-    image: IMAGES.xian,
+    image: CITY_IMAGES.西安,
     originalPrice: 2499,
     price: 1699,
     rating: 4.7,

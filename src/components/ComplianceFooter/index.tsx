@@ -82,6 +82,9 @@ export function ComplianceFooter({
       <Link className={`${linkBase} ${linkColor} ${linkFocus}`} href="/privacy">
         隐私政策
       </Link>
+      <Link className={`${linkBase} ${linkColor} ${linkFocus}`} href="/image-credits">
+        图片版权
+      </Link>
     </footer>
   )
 }

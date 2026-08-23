@@ -10,6 +10,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 import { userReviews } from '@/app/home-data'
+import { ComplianceFooter } from '@/components/ComplianceFooter'
 import { FeaturedTripsSection } from '@/components/home/FeaturedTripsSection'
 import { HeroSearch } from '@/components/home/HeroSearch'
 import { HotDestinationsSection } from '@/components/home/HotDestinationsSection'
@@ -30,7 +31,7 @@ const quickEntries = [
     style: 'image' as const,
   },
   {
-    bgColor: 'bg-[#1a1a2e]',
+    bgColor: 'bg-travel-ocean',
     desc: '发现身边好去处',
     href: '/attractions',
     icon: <MapPin size={20} />,
@@ -39,7 +40,7 @@ const quickEntries = [
     style: 'dark' as const,
   },
   {
-    bgColor: 'bg-[#f5f0eb]',
+    bgColor: 'bg-travel-surface-muted',
     desc: '旅友分享攻略',
     href: '/community',
     icon: <Users size={20} />,
@@ -48,7 +49,7 @@ const quickEntries = [
     style: 'light' as const,
   },
   {
-    bgColor: 'bg-[#e8f4f8]',
+    bgColor: 'bg-primary/8',
     desc: '实时天气预报',
     href: '/weather',
     icon: <Cloud size={20} />,
@@ -57,7 +58,7 @@ const quickEntries = [
     style: 'cool' as const,
   },
   {
-    bgColor: 'bg-[#2d2d2d]',
+    bgColor: 'bg-travel-slate',
     desc: '24h 旅行顾问',
     href: '/chat',
     icon: <Bot size={20} />,
@@ -86,21 +87,21 @@ export default function HomePage() {
   }
 
   return (
-    <main className="min-h-dvh overflow-x-hidden bg-background text-travel-ink">
+    <main className="home-editorial min-h-dvh overflow-x-hidden bg-background text-travel-ink">
       {/* Hero 搜索区 */}
       <HeroSearch />
 
       {/* Bento Grid 功能区 */}
       <section className="relative mx-auto max-w-[1200px] px-6 py-16">
         <div className="mb-10 text-center scroll-reveal">
-          <h2 className="text-2xl font-bold text-gray-900 md:text-3xl">探索旅行的无限可能</h2>
-          <p className="mt-2 text-gray-500">AI 帮你规划行程，发现精彩目的地</p>
+          <h2 className="text-2xl font-bold text-travel-ink md:text-3xl">探索旅行的无限可能</h2>
+          <p className="mt-2 text-travel-muted">AI 帮你规划行程，发现精彩目的地</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-2">
           {quickEntries.map((entry, index) => (
             <Link
-              className={`group relative overflow-hidden rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl scroll-reveal ${entry.span} ${
+              className={`group relative overflow-hidden rounded-lg transition-all duration-200 hover:shadow-xl scroll-reveal ${entry.span} ${
                 entry.style === 'image' ? '' : entry.bgColor
               }`}
               data-delay={index}
@@ -120,7 +121,7 @@ export default function HomePage() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                       <div className="absolute inset-0 p-6 flex flex-col justify-end">
-                        <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm text-white">
+                        <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-white/15 text-white">
                           {entry.icon}
                         </div>
                         <h3 className="text-2xl font-bold text-white mb-1">{entry.label}</h3>
@@ -128,7 +129,7 @@ export default function HomePage() {
                         <div className="mt-3 flex items-center gap-1 text-xs font-medium text-white/50 transition-all group-hover:text-white/80 group-hover:gap-2">
                           开始规划
                           {' '}
-                          <span>&rarr;</span>
+                          <span aria-hidden="true">&rarr;</span>
                         </div>
                       </div>
                     </>
@@ -146,23 +147,23 @@ export default function HomePage() {
                         <div className="mt-4 flex items-center gap-1 text-xs font-medium text-white/40 transition-all group-hover:text-white/70 group-hover:gap-2">
                           了解更多
                           {' '}
-                          <span>&rarr;</span>
+                          <span aria-hidden="true">&rarr;</span>
                         </div>
                       </div>
                     )
                   : (
                       <div className="p-5 flex flex-col justify-between h-full">
                         <div>
-                          <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-gray-900/5 text-gray-700">
+                          <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-travel-ink/6 text-travel-ocean">
                             {entry.icon}
                           </div>
-                          <h3 className="text-lg font-bold text-gray-900 mb-1">{entry.label}</h3>
-                          <p className="text-xs text-gray-500">{entry.desc}</p>
+                          <h3 className="text-lg font-bold text-travel-ink mb-1">{entry.label}</h3>
+                          <p className="text-xs text-travel-muted">{entry.desc}</p>
                         </div>
-                        <div className="mt-4 flex items-center gap-1 text-xs font-medium text-gray-400 transition-all group-hover:text-gray-700 group-hover:gap-2">
+                        <div className="mt-4 flex items-center gap-1 text-xs font-medium text-travel-muted transition-all group-hover:text-travel-ocean group-hover:gap-2">
                           了解更多
                           {' '}
-                          <span>&rarr;</span>
+                          <span aria-hidden="true">&rarr;</span>
                         </div>
                       </div>
                     )}
@@ -184,13 +185,10 @@ export default function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 p-8 text-white scroll-reveal-left">
-            {/* 装饰元素 */}
-            <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-cyan-400/10 blur-3xl" />
-            <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-gradient-to-br from-blue-400/20 to-purple-500/20 blur-3xl" />
+          <div className="relative overflow-hidden rounded-lg bg-stone-900 p-8 text-white scroll-reveal-left">
 
             <div className="relative mb-8 flex items-center gap-4">
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500 shadow-lg">
+              <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary">
                 <Zap size={24} />
               </span>
               <h3 className="text-2xl font-bold" id="ai-feature-title">
@@ -212,23 +210,23 @@ export default function HomePage() {
                 </li>
               ))}
             </ul>
-            <div className="relative grid grid-cols-3 gap-6 rounded-2xl bg-white/5 p-6 backdrop-blur-sm">
+            <div className="relative grid grid-cols-3 gap-4 border-t border-white/15 pt-6">
               {[
-                { label: '行程已生成', num: '50,000+' },
-                { label: '覆盖城市', num: '300+' },
-                { label: '满意率', num: '98%' },
+                { label: '实时生成', num: '流式' },
+                { label: '回答依据', num: '可追溯' },
+                { label: '行程调整', num: '可编辑' },
               ].map(stat => (
                 <div className="text-center" key={stat.label}>
-                  <span className="block text-3xl font-bold text-cyan-400">{stat.num}</span>
-                  <span className="mt-1 block text-sm text-slate-400">{stat.label}</span>
+                  <span className="block text-lg font-bold text-white">{stat.num}</span>
+                  <span className="mt-1 block text-sm text-white/62">{stat.label}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="rounded-3xl bg-white p-8 shadow-lg scroll-reveal-right">
+          <div className="rounded-lg border border-travel-ink/10 bg-white p-8 scroll-reveal-right">
             <h3 className="mb-8 flex items-center gap-3 text-xl font-bold text-travel-ink">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10">
+              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                 <Users className="text-primary" size={20} />
               </span>
               用户怎么说
@@ -236,7 +234,7 @@ export default function HomePage() {
             <div className="space-y-6">
               {userReviews.map((review, index) => (
                 <div
-                  className="rounded-2xl border border-travel-border/50 p-4 transition-all duration-300 hover:border-primary/20 hover:shadow-sm animate-fade-in-up"
+                  className="border-b border-travel-ink/10 pb-5 last:border-b-0 last:pb-0 animate-fade-in-up"
                   key={review.name}
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
@@ -269,31 +267,25 @@ export default function HomePage() {
       </section>
 
       {/* 底部 CTA */}
-      <section className="relative overflow-hidden bg-teal-500 py-20">
-        {/* 装饰元素 */}
-        <div className="absolute inset-0">
-          <div className="absolute top-0 left-1/4 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2230%22%20height%3D%2230%22%20viewBox%3D%220%200%2030%2030%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Ccircle%20cx%3D%2215%22%20cy%3D%2215%22%20r%3D%221%22%20fill%3D%22rgba(255%2C255%2C255%2C0.1)%22%2F%3E%3C%2Fsvg%3E')] opacity-50" />
-        </div>
-
+      <section className="relative overflow-hidden bg-primary py-20">
         <div className="relative mx-auto max-w-[1200px] px-6 text-center scroll-reveal-scale">
-          <h2 className="mb-4 text-4xl font-bold text-white drop-shadow-lg">
+          <h2 className="mb-4 text-4xl font-bold text-white">
             准备好出发了吗？
           </h2>
           <p className="mb-10 text-lg text-white/90">
             让 AI 为你量身定制下一段旅程
           </p>
           <Button
-            className="group gap-3 rounded-full bg-white px-10 py-5 text-lg font-bold text-primary shadow-2xl hover:-translate-y-1 hover:scale-105 hover:shadow-3xl"
+            className="group gap-3 rounded-lg bg-white px-10 py-5 text-lg font-bold text-primary shadow-lg hover:bg-stone-100"
             onClick={onStart}
             size="lg"
           >
-            <Compass className="transition-transform duration-300 group-hover:rotate-45" />
+            <Compass />
             {user ? '立即规划行程' : '登录开始规划'}
           </Button>
         </div>
       </section>
+      <ComplianceFooter />
     </main>
   )
 }

@@ -8,15 +8,9 @@ const nextConfig: NextConfig = {
   },
 
   // 图片域名白名单
+  // 景点图片已全部改为本地 /images/attractions/，远程图片源已移除。
   images: {
-    remotePatterns: [
-      { hostname: '*.aliyuncs.com' },
-      { hostname: '*.githubusercontent.com' },
-      { hostname: 'upload.wikimedia.org' },
-      { hostname: 'images.pexels.com' },
-      { hostname: 'store.is.autonavi.com' },
-      { hostname: '*.amap.com' },
-    ],
+    remotePatterns: [],
   },
 
   // 安全响应头
@@ -34,7 +28,7 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https://*.aliyuncs.com https://*.githubusercontent.com https://upload.wikimedia.org https://images.pexels.com http://store.is.autonavi.com https://*.amap.com",
+              "img-src 'self' data: blob:",
               "font-src 'self' data:",
               "connect-src 'self' https://api.siliconflow.cn",
               "frame-ancestors 'none'",

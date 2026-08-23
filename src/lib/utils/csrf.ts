@@ -7,7 +7,8 @@ import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto'
 import { env } from '../env'
 
 const CSRF_SECRET = env.JWT_SECRET
-const TOKEN_EXPIRY_MS = 60 * 60 * 1000 // 1 小时过期
+const TOKEN_EXPIRY_MS = 24 * 60 * 60 * 1000 // 24 小时过期
+const CLOCK_SKEW_TOLERANCE_MS = 10 * 1000 // 10 秒时钟容差
 
 /**
  * 从请求头或 cookie 中提取 CSRF token
@@ -53,9 +54,9 @@ export function verifyCsrfToken(token: string): boolean {
   const [random, timestampStr, signature] = parts
   const timestamp = Number(timestampStr)
 
-  // token 不接受未来时间戳，并且必须在有效期内。
+  // token 不接受未来超出容差的时间戳，并且必须在有效期内。
   const age = Date.now() - timestamp
-  if (!Number.isSafeInteger(timestamp) || age < 0 || age > TOKEN_EXPIRY_MS)
+  if (!Number.isSafeInteger(timestamp) || age < -CLOCK_SKEW_TOLERANCE_MS || age > TOKEN_EXPIRY_MS)
     return false
 
   // 使用 HMAC 验证签名，并用 timingSafeEqual 防止时序攻击

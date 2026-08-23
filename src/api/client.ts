@@ -142,6 +142,8 @@ export function del<T = ApiSuccess>(path: string, options: RequestMethodOptions 
 
 export { del as delete, del as deleteRequest }
 
+let cachedCsrfToken = ''
+
 /** 写请求前确保浏览器已有有效的 CSRF cookie */
 async function ensureCsrfToken(): Promise<void> {
   if (readCsrfToken())
@@ -162,32 +164,60 @@ export async function getCsrfHeaders(): Promise<Record<string, string>> {
 }
 
 /**
- * 获取 CSRF token（从 cookie）
+ * 获取 CSRF token（优先内存缓存，其次从 cookie 获取）
  */
 function readCsrfToken(): string {
+  if (cachedCsrfToken) {
+    const parts = cachedCsrfToken.split(':')
+    if (parts.length === 3) {
+      const timestamp = Number(parts[1])
+      if (Number.isFinite(timestamp) && Date.now() - timestamp < 24 * 60 * 60 * 1000) {
+        return cachedCsrfToken
+      }
+      cachedCsrfToken = ''
+    }
+  }
+
+  if (typeof document === 'undefined')
+    return ''
+
   const raw = document.cookie.match(/csrf_token=([^;]+)/)?.[1] || ''
   if (!raw)
     return ''
 
   const token = decodeURIComponent(raw)
 
-  // 格式: random:timestamp:signature，检查 timestamp 是否在 1 小时内
+  // 格式: random:timestamp:signature，检查 timestamp 是否在 24 小时内
   const parts = token.split(':')
   if (parts.length === 3) {
     const timestamp = Number(parts[1])
-    if (Number.isFinite(timestamp) && Date.now() - timestamp > 60 * 60 * 1000) {
+    if (Number.isFinite(timestamp) && Date.now() - timestamp > 24 * 60 * 60 * 1000) {
       document.cookie = 'csrf_token=; max-age=0; path=/'
       return ''
     }
+    cachedCsrfToken = token
   }
 
   return token
 }
 
-/** 强制刷新 CSRF token（清除旧 cookie 后重新获取） */
-async function refreshCsrfToken(): Promise<void> {
-  document.cookie = 'csrf_token=; max-age=0; path=/'
+/** 强制刷新 CSRF token（清除旧 cookie 后重新获取，并同时写入内存与 cookie） */
+async function refreshCsrfToken(): Promise<string> {
+  cachedCsrfToken = ''
+  if (typeof document !== 'undefined') {
+    document.cookie = 'csrf_token=; max-age=0; path=/'
+  }
   const res = await fetch('/api/auth/csrf-token', { credentials: 'include' })
   if (!res.ok)
     throw new ApiError('CSRF token 获取失败', { status: res.status })
+
+  const data = (await res.json().catch(() => ({}))) as { csrfToken?: string }
+  if (data?.csrfToken) {
+    cachedCsrfToken = data.csrfToken
+    if (typeof document !== 'undefined') {
+      document.cookie = `csrf_token=${encodeURIComponent(data.csrfToken)}; path=/; max-age=86400; SameSite=Lax`
+    }
+    return data.csrfToken
+  }
+  return ''
 }

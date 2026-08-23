@@ -243,9 +243,10 @@ export function withPublicPost(
       if (blocked)
         return blocked
 
-      // CSRF token 存在时验证有效性，不存在时放行（首次访问场景）
-      const csrfToken = extractCsrfToken(req.headers, req.headers.get('cookie') || undefined)
-      if (csrfToken && !verifyCsrfToken(csrfToken)) {
+      // 公开接口（登录/注册）：
+      // 当客户端显式传递了 CSRF Header 时验证其有效性；若无 Header 或仅携带过期旧 Cookie 时放行
+      const headerToken = req.headers.get('x-csrf-token') || req.headers.get('x-xsrf-token')
+      if (headerToken && !verifyCsrfToken(headerToken)) {
         throw httpError(403, 'CSRF token 无效')
       }
 

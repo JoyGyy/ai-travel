@@ -12,7 +12,7 @@ export async function GET() {
   const response = NextResponse.json({ csrfToken: token })
   response.cookies.set('csrf_token', token, {
     httpOnly: false, // 前端需要读取
-    maxAge: 60 * 60, // 1 小时
+    maxAge: 24 * 60 * 60, // 24 小时
     path: '/',
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',

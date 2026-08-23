@@ -8,7 +8,7 @@ import { NextResponse } from 'next/server'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { getAuthFromHeaders } from '@/lib/services/auth'
 
-import { extractCsrfCookie, extractCsrfToken, verifyCsrfToken } from './csrf'
+import { extractCsrfCookie, verifyCsrfToken } from './csrf'
 import { createLogger } from './logger'
 
 const log = createLogger('http')

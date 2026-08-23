@@ -47,23 +47,26 @@ export function DaySection({
   }
 
   return (
-    <div className="border-b border-stone-900/8 last:border-b-0">
+    <div className="border-b border-stone-200/80 last:border-b-0">
       <button
-        className="flex min-h-14 w-full items-center justify-between gap-4 bg-transparent py-4 px-5 text-left text-3.75 font-extrabold text-travel-ink transition-colors hover:bg-stone-900/[0.03]"
+        className="flex min-h-14 w-full items-center justify-between gap-4 bg-transparent py-4 px-5 text-left font-serif text-base font-bold text-stone-900 transition-colors hover:bg-stone-200/40 cursor-pointer"
         onClick={onToggle}
         type="button"
       >
-        <span>{item.date}</span>
+        <span className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-700" />
+          <span>{item.date}</span>
+        </span>
         <span
-          className={`inline-flex h-[26px] w-[26px] flex-shrink-0 items-center justify-center rounded-full bg-stone-900/8 text-2.5 text-travel-ink transition-all ${
-            isOpen ? 'rotate-180 bg-accent/22' : ''
+          className={`inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-stone-200/70 text-xs text-stone-700 transition-all ${
+            isOpen ? 'rotate-180 bg-emerald-100 text-emerald-900 font-bold' : ''
           }`}
         >
           ▼
         </span>
       </button>
       {isOpen && (
-        <div className="bg-stone-900/[0.015] p-[6px_14px_16px]" id={panelId}>
+        <div className="bg-[#FAF7F0]/40 p-4 space-y-2" id={panelId}>
           {item.spots && item.spots.length > 0 ? (
             item.spots.map((spot, spotIndex) => {
               const periodLabel = PERIOD_LABELS[spotIndex % PERIOD_LABELS.length]

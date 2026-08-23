@@ -14,11 +14,11 @@ interface SectionTitleProps {
 export function SectionTitle({ children, id }: SectionTitleProps) {
   return (
     <h2
-      className="flex items-center gap-2.5 pb-3 pl-1 font-serif text-base font-extrabold text-travel-ink"
+      className="flex items-center gap-2.5 pb-3 pl-1 font-serif text-base font-extrabold text-stone-900"
       id={id}
     >
       <span
-        className="h-2 w-2 rounded-full bg-accent shadow-[0_0_0_5px_rgba(232,64,87,0.15)]"
+        className="h-2 w-2 rounded-full bg-emerald-700 shadow-[0_0_0_4px_rgba(5,150,105,0.15)]"
       />
       {children}
     </h2>

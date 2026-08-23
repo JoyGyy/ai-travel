@@ -22,7 +22,7 @@ import { useAuthStore } from '@/stores/auth'
 
 const quickEntries = [
   {
-    desc: '告诉我目的地和预算，AI 实时生成专属行程',
+    desc: '告诉我目的地和预算，AI 实时生成专属旅行手账',
     href: '/detail',
     icon: <Compass size={32} />,
     image: '/images/home/hero-boat.jpg',
@@ -31,8 +31,8 @@ const quickEntries = [
     style: 'image' as const,
   },
   {
-    bgColor: 'bg-travel-ocean',
-    desc: '发现身边好去处',
+    bgColor: 'bg-emerald-800',
+    desc: '发现身边宝藏去处',
     href: '/attractions',
     icon: <MapPin size={20} />,
     label: '精选景点',
@@ -40,29 +40,29 @@ const quickEntries = [
     style: 'dark' as const,
   },
   {
-    bgColor: 'bg-travel-surface-muted',
-    desc: '旅友分享攻略',
+    bgColor: 'bg-[#F4EFE6] border border-stone-200/80',
+    desc: '旅友真实游记手账',
     href: '/community',
     icon: <Users size={20} />,
-    label: '旅友社区',
+    label: '旅人社区',
     span: 'col-span-1 row-span-1',
     style: 'light' as const,
   },
   {
-    bgColor: 'bg-primary/8',
-    desc: '实时天气预报',
+    bgColor: 'bg-amber-50/80 border border-amber-200/70',
+    desc: '当地实时天气感知',
     href: '/weather',
     icon: <Cloud size={20} />,
-    label: '天气查询',
+    label: '出行天气',
     span: 'col-span-1 row-span-1',
-    style: 'cool' as const,
+    style: 'light' as const,
   },
   {
-    bgColor: 'bg-travel-slate',
-    desc: '24h 旅行顾问',
+    bgColor: 'bg-stone-800',
+    desc: '24h 智能旅伴顾问',
     href: '/chat',
     icon: <Bot size={20} />,
-    label: 'AI 咨询',
+    label: 'AI 对话',
     span: 'col-span-1 row-span-1',
     style: 'dark' as const,
   },
@@ -87,21 +87,24 @@ export default function HomePage() {
   }
 
   return (
-    <main className="home-editorial min-h-dvh overflow-x-hidden bg-background text-travel-ink">
+    <main className="home-editorial min-h-dvh overflow-x-hidden bg-[#FAF7F0] text-stone-900">
       {/* Hero 搜索区 */}
       <HeroSearch />
 
       {/* Bento Grid 功能区 */}
       <section className="relative mx-auto max-w-[1200px] px-6 py-16">
         <div className="mb-10 text-center scroll-reveal">
-          <h2 className="text-2xl font-bold text-travel-ink md:text-3xl">探索旅行的无限可能</h2>
-          <p className="mt-2 text-travel-muted">AI 帮你规划行程，发现精彩目的地</p>
+          <span className="font-serif italic text-amber-800 text-xs tracking-widest block mb-1">
+            — DISCOVER & TRAVEL —
+          </span>
+          <h2 className="font-serif text-2xl font-extrabold text-stone-900 md:text-3xl">探索旅行的无限可能</h2>
+          <p className="mt-2 text-sm text-stone-600">AI 帮你规划灵感路线，生成专属视觉手账</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-2">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:grid-rows-2">
           {quickEntries.map((entry, index) => (
             <Link
-              className={`group relative overflow-hidden rounded-lg transition-all duration-200 hover:shadow-xl scroll-reveal ${entry.span} ${
+              className={`group relative overflow-hidden rounded-3xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 scroll-reveal ${entry.span} ${
                 entry.style === 'image' ? '' : entry.bgColor
               }`}
               data-delay={index}
@@ -119,16 +122,15 @@ export default function HomePage() {
                         sizes="(max-width: 768px) 100vw, 50vw"
                         src={entry.image}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                      <div className="absolute inset-0 p-6 flex flex-col justify-end">
-                        <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-white/15 text-white">
+                      <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-stone-950/30 to-transparent" />
+                      <div className="absolute inset-0 p-6 sm:p-8 flex flex-col justify-end">
+                        <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-md text-white shadow-md">
                           {entry.icon}
                         </div>
-                        <h3 className="text-2xl font-bold text-white mb-1">{entry.label}</h3>
-                        <p className="text-sm text-white/70">{entry.desc}</p>
-                        <div className="mt-3 flex items-center gap-1 text-xs font-medium text-white/50 transition-all group-hover:text-white/80 group-hover:gap-2">
-                          开始规划
-                          {' '}
+                        <h3 className="font-serif text-2xl font-bold text-white mb-1">{entry.label}</h3>
+                        <p className="text-xs sm:text-sm text-stone-200">{entry.desc}</p>
+                        <div className="mt-4 flex items-center gap-1.5 text-xs font-bold text-amber-300 transition-all group-hover:gap-2.5">
+                          开启手账定制
                           <span aria-hidden="true">&rarr;</span>
                         </div>
                       </div>
@@ -136,33 +138,31 @@ export default function HomePage() {
                   )
                 : entry.style === 'dark'
                   ? (
-                      <div className="p-5 flex flex-col justify-between h-full">
+                      <div className="p-6 flex flex-col justify-between h-full">
                         <div>
-                          <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 text-white/80">
+                          <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 text-white shadow-sm">
                             {entry.icon}
                           </div>
-                          <h3 className="text-lg font-bold text-white mb-1">{entry.label}</h3>
-                          <p className="text-xs text-white/50">{entry.desc}</p>
+                          <h3 className="font-serif text-lg font-bold text-white mb-1">{entry.label}</h3>
+                          <p className="text-xs text-stone-300">{entry.desc}</p>
                         </div>
-                        <div className="mt-4 flex items-center gap-1 text-xs font-medium text-white/40 transition-all group-hover:text-white/70 group-hover:gap-2">
-                          了解更多
-                          {' '}
+                        <div className="mt-4 flex items-center gap-1 text-xs font-semibold text-stone-300 transition-all group-hover:text-white group-hover:gap-2">
+                          探索更多
                           <span aria-hidden="true">&rarr;</span>
                         </div>
                       </div>
                     )
                   : (
-                      <div className="p-5 flex flex-col justify-between h-full">
+                      <div className="p-6 flex flex-col justify-between h-full">
                         <div>
-                          <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-travel-ink/6 text-travel-ocean">
+                          <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-700/10 text-emerald-800 shadow-2xs">
                             {entry.icon}
                           </div>
-                          <h3 className="text-lg font-bold text-travel-ink mb-1">{entry.label}</h3>
-                          <p className="text-xs text-travel-muted">{entry.desc}</p>
+                          <h3 className="font-serif text-lg font-bold text-stone-900 mb-1">{entry.label}</h3>
+                          <p className="text-xs text-stone-600">{entry.desc}</p>
                         </div>
-                        <div className="mt-4 flex items-center gap-1 text-xs font-medium text-travel-muted transition-all group-hover:text-travel-ocean group-hover:gap-2">
-                          了解更多
-                          {' '}
+                        <div className="mt-4 flex items-center gap-1 text-xs font-semibold text-emerald-800 transition-all group-hover:text-emerald-900 group-hover:gap-2">
+                          探索更多
                           <span aria-hidden="true">&rarr;</span>
                         </div>
                       </div>
@@ -179,86 +179,87 @@ export default function HomePage() {
       <FeaturedTripsSection />
 
       {/* AI 特色 + 用户评价 */}
-      <section className="relative mx-auto max-w-[1200px] px-6 py-12">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute top-0 left-1/2 h-px w-3/4 -translate-x-1/2 bg-gradient-to-r from-transparent via-accent/20 to-transparent" />
-        </div>
-
+      <section className="relative mx-auto max-w-[1200px] px-6 py-16">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          <div className="relative overflow-hidden rounded-lg bg-stone-900 p-8 text-white scroll-reveal-left">
-
+          {/* 左侧 AI 优势卡片 */}
+          <div className="relative overflow-hidden rounded-3xl bg-emerald-900 p-8 text-white shadow-lg border border-emerald-700/40 scroll-reveal-left">
             <div className="relative mb-8 flex items-center gap-4">
-              <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary">
-                <Zap size={24} />
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-400 text-stone-900 shadow-md">
+                <Zap size={24} className="fill-stone-900" />
               </span>
-              <h3 className="text-2xl font-bold" id="ai-feature-title">
-                为什么选择 AI 规划？
-              </h3>
+              <div>
+                <span className="text-xs uppercase font-bold text-emerald-300 tracking-wider">AI SUPERPOWER</span>
+                <h3 className="font-serif text-2xl font-bold" id="ai-feature-title">
+                  为什么选择 AI 旅行规划？
+                </h3>
+              </div>
             </div>
-            <ul className="relative mb-10 space-y-5">
+            <ul className="relative mb-10 space-y-4">
               {[
-                '实时天气 + 预算智能匹配',
-                '景点、酒店、交通一站式规划',
-                '支持 300+ 国内城市',
-                '行程可随时调整优化',
+                '实时气象 + 预算智能匹配与权衡',
+                '景点、酒店、交通与路线一站式推演',
+                '覆盖国内 300+ 热门城市深度路书',
+                '行程随时随心调整，全流程可回溯',
               ].map((text, index) => (
-                <li className="flex items-center gap-4" key={text}>
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-sm font-bold text-cyan-400 backdrop-blur-sm">
+                <li className="flex items-center gap-3.5" key={text}>
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-white/15 text-xs font-bold text-amber-300 backdrop-blur-sm">
                     {index + 1}
                   </span>
-                  <span className="text-base">{text}</span>
+                  <span className="text-sm sm:text-base text-stone-100">{text}</span>
                 </li>
               ))}
             </ul>
             <div className="relative grid grid-cols-3 gap-4 border-t border-white/15 pt-6">
               {[
-                { label: '实时生成', num: '流式' },
-                { label: '回答依据', num: '可追溯' },
-                { label: '行程调整', num: '可编辑' },
+                { label: '实时生成', num: '秒级流式' },
+                { label: '回答依据', num: '100%可溯' },
+                { label: '行程调整', num: '手账卡片' },
               ].map(stat => (
                 <div className="text-center" key={stat.label}>
-                  <span className="block text-lg font-bold text-white">{stat.num}</span>
-                  <span className="mt-1 block text-sm text-white/62">{stat.label}</span>
+                  <span className="block text-base font-bold text-amber-300">{stat.num}</span>
+                  <span className="mt-1 block text-xs text-stone-300">{stat.label}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="rounded-lg border border-travel-ink/10 bg-white p-8 scroll-reveal-right">
-            <h3 className="mb-8 flex items-center gap-3 text-xl font-bold text-travel-ink">
-              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                <Users className="text-primary" size={20} />
+          {/* 右侧 用户评价 */}
+          <div className="rounded-3xl border border-stone-200/90 bg-[#FDFBF7] p-8 shadow-sm scroll-reveal-right">
+            <h3 className="mb-6 flex items-center gap-3 font-serif text-xl font-bold text-stone-900">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800">
+                <Users size={18} />
               </span>
-              用户怎么说
+              旅人原声手账
             </h3>
-            <div className="space-y-6">
+            <div className="space-y-5">
               {userReviews.map((review, index) => (
                 <div
-                  className="border-b border-travel-ink/10 pb-5 last:border-b-0 last:pb-0 animate-fade-in-up"
+                  className="border-b border-stone-200/80 pb-4.5 last:border-b-0 last:pb-0"
                   key={review.name}
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <div className="mb-3 flex items-center gap-3">
-                    <Avatar className="h-12 w-12">
-                      <AvatarFallback className="bg-gradient-to-br from-primary/20 to-secondary/20 text-xl">
+                  <div className="mb-2.5 flex items-center gap-3">
+                    <Avatar className="h-10 w-10 border border-stone-200">
+                      <AvatarFallback className="bg-emerald-100 text-emerald-800 font-bold text-sm">
                         {review.avatar}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <span className="block font-semibold text-travel-ink">{review.name}</span>
-                      <span className="text-sm text-travel-muted">
-                        去了
+                      <span className="block text-sm font-bold text-stone-900">{review.name}</span>
+                      <span className="text-xs text-stone-500">
+                        去过 ·
+                        {' '}
                         {review.dest}
                       </span>
                     </div>
-                    <span className="ml-auto flex items-center gap-0.5 text-cyan-500">
+                    <span className="ml-auto flex items-center gap-0.5 text-amber-500">
                       {Array.from({ length: review.rating }).map((_, i) => (
                         // eslint-disable-next-line react/no-array-index-key
-                        <Star className="h-4 w-4 fill-current" key={i} />
+                        <Star className="h-3.5 w-3.5 fill-current" key={i} />
                       ))}
                     </span>
                   </div>
-                  <p className="text-sm leading-relaxed text-travel-muted">{review.text}</p>
+                  <p className="text-xs sm:text-sm leading-relaxed text-stone-600">{review.text}</p>
                 </div>
               ))}
             </div>
@@ -267,21 +268,24 @@ export default function HomePage() {
       </section>
 
       {/* 底部 CTA */}
-      <section className="relative overflow-hidden bg-primary py-20">
+      <section className="relative overflow-hidden bg-emerald-800 py-16 md:py-20 text-white">
         <div className="relative mx-auto max-w-[1200px] px-6 text-center scroll-reveal-scale">
-          <h2 className="mb-4 text-4xl font-bold text-white">
-            准备好出发了吗？
+          <span className="font-serif italic text-amber-300 text-sm tracking-widest block mb-2">
+            — START YOUR JOURNEY —
+          </span>
+          <h2 className="mb-3 font-serif text-3xl md:text-4xl font-extrabold text-white">
+            准备好开启下一段山海之旅了吗？
           </h2>
-          <p className="mb-10 text-lg text-white/90">
-            让 AI 为你量身定制下一段旅程
+          <p className="mb-8 text-sm md:text-base text-emerald-100 max-w-lg mx-auto">
+            告诉我目的地与预算，AI 顾问立即为你手绘专属路书
           </p>
           <Button
-            className="group gap-3 rounded-lg bg-white px-10 py-5 text-lg font-bold text-primary shadow-lg hover:bg-stone-100"
+            className="group gap-2.5 rounded-2xl bg-white px-8 py-5 text-base font-bold text-emerald-900 shadow-xl hover:bg-[#FAF7F0] transition-all hover:scale-105 cursor-pointer"
             onClick={onStart}
             size="lg"
           >
-            <Compass />
-            {user ? '立即规划行程' : '登录开始规划'}
+            <Compass className="text-emerald-800" />
+            {user ? '立即规划行程手账' : '登录开始规划'}
           </Button>
         </div>
       </section>

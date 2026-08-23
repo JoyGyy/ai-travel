@@ -26,25 +26,24 @@ export default function ChatPage() {
   }
 
   return (
-    <section className="flex h-full min-h-0 flex-col overflow-hidden bg-travel-surface-muted text-travel-ink">
+    <section className="flex h-full min-h-0 flex-col overflow-hidden bg-[#FAF7F0] text-stone-900">
       {/* Hero 区域 */}
-      <div className="relative flex-shrink-0 overflow-hidden border-b border-travel-ink/8 bg-travel-surface-muted pb-10 pl-5 pr-5 pt-6">
-
+      <div className="relative flex-shrink-0 overflow-hidden border-b border-stone-200/80 bg-[#FAF7F0] pb-9 pl-5 pr-5 pt-6">
         <div className="relative z-1 mx-auto flex w-full max-w-[900px] items-start justify-between gap-4">
           <div className="animate-fade-in-up">
-            <p className="mb-2 text-2.75 font-bold uppercase tracking-[0.16em] text-primary">
-              AI 旅行助手
+            <p className="mb-1 text-xs font-bold uppercase tracking-widest text-emerald-800">
+              AI 旅行顾问手账
             </p>
-            <h1 className="font-serif text-[clamp(24px,5vw,32px)] font-extrabold leading-[1.16] tracking-tight">
-              AI 旅行规划师
+            <h1 className="font-serif text-2xl sm:text-3xl font-extrabold tracking-tight text-stone-900">
+              AI 智能旅伴
             </h1>
-            <p className="mt-2 text-3.25 leading-relaxed text-gray-500">
-              告诉我目的地、天数、预算和偏好，我会帮你规划路线。
+            <p className="mt-1.5 text-xs sm:text-sm leading-relaxed text-stone-500">
+              告诉我目的地、天数、预算和偏好，为你绘制专属视觉路书。
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Button
-              className="flex-shrink-0 border-travel-ink/10 bg-white text-travel-muted shadow-sm hover:-translate-y-0.5 hover:bg-white hover:text-destructive hover:shadow-md"
+              className="flex-shrink-0 rounded-2xl border-stone-200 bg-white text-stone-500 shadow-2xs hover:bg-stone-100 hover:text-red-600 transition-all cursor-pointer"
               onClick={() => {
                 if (window.confirm('确定要清空对话记录吗？')) {
                   setMessages([])
@@ -54,53 +53,53 @@ export default function ChatPage() {
               title="清空对话"
               variant="outline"
             >
-              <Trash2 className="h-5 w-5" />
+              <Trash2 className="h-4 w-4" />
             </Button>
           </div>
         </div>
       </div>
 
       {/* 消息列表 */}
-      <div className="relative z-2 mx-auto -mt-6 flex w-full max-w-[900px] flex-1 flex-col gap-4 overflow-x-hidden overflow-y-auto overscroll-contain rounded-t-2xl border border-travel-ink/10 bg-white p-4 pb-5.5 shadow-[0_18px_54px_rgba(25,52,60,0.08)] scrollbar-thin scrollbar-thumb-gray-200">
+      <div className="relative z-2 mx-auto -mt-4 flex w-full max-w-[900px] flex-1 flex-col gap-4 overflow-x-hidden overflow-y-auto overscroll-contain rounded-t-3xl border border-stone-200/80 bg-[#FAF7F0]/60 p-4 pb-6 shadow-[0_10px_30px_rgba(28,25,23,0.04)]">
         {messages.length === 0 && (
-          <div className="mx-auto w-full max-w-[680px] py-[clamp(12px,3vh,28px)]">
+          <div className="mx-auto w-full max-w-[680px] py-4 sm:py-8">
             {/* 空状态卡片 */}
-            <div className="relative mb-4.5 overflow-hidden rounded-xl border border-travel-ink/10 bg-white p-8 text-center shadow-sm animate-fade-in-up">
-              <div className="relative z-1 mx-auto mb-4.5 flex h-18 w-18 items-center justify-center rounded-lg bg-primary text-white shadow-lg shadow-primary/20">
-                <Plane className="h-8 w-8" />
+            <div className="relative mb-6 overflow-hidden rounded-3xl border border-stone-200/90 bg-[#FDFBF7] p-8 text-center shadow-sm animate-fade-in-up">
+              <div className="relative z-1 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-700 text-white shadow-md shadow-emerald-800/20">
+                <Plane className="h-7 w-7" />
               </div>
-              <h2 className="relative z-1 mb-3 font-serif text-5.5 font-extrabold tracking-tight text-gray-900">
-                开始规划你的旅行
+              <h2 className="relative z-1 mb-2 font-serif text-xl sm:text-2xl font-bold tracking-tight text-stone-900">
+                开启你的手账定制之旅
               </h2>
-              <p className="relative z-1 mb-2 text-3.25 leading-relaxed text-gray-500">
-                告诉我你想去哪里，我会为你制定详细的行程计划
+              <p className="relative z-1 mb-1 text-xs sm:text-sm leading-relaxed text-stone-500">
+                输入任何旅行想法，AI 会结合天气与本地精选景点为你规划
               </p>
-              <p className="relative z-1 text-xs text-gray-400">试试下方的快捷问题</p>
+              <p className="relative z-1 text-xs text-amber-700 font-medium">💡 点击下方灵感问题快速体验</p>
             </div>
 
             {/* 快捷问题 */}
-            <p className="mb-4 ml-0.5 font-serif text-3.25 font-bold tracking-[0.1em] text-gray-900">
-              快捷问题
+            <p className="mb-3 ml-0.5 font-serif text-xs font-bold tracking-wider text-stone-700">
+              灵感手账快捷提问
             </p>
             <div className="flex flex-wrap gap-3">
               {[
-                '帮我规划杭州3天2晚行程',
-                '推荐上海周末游路线',
-                '北京5天深度游攻略',
-                '成都美食之旅怎么安排',
+                '帮我规划杭州3天2晚慢节奏行程',
+                '推荐大理洱海自驾与民宿路线',
+                '西安4天3晚盛唐文化探索手账',
+                '成都美食与看大熊猫怎么安排',
               ].map((question, index) => (
                 <button
-                  className="inline-flex min-w-[min(260px,100%)] flex-1 basis-[calc(50%-12px)] items-center gap-3 rounded-lg border border-travel-ink/10 bg-white p-4 text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:bg-primary/5 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/40 animate-fade-in-up"
+                  className="inline-flex min-w-[min(260px,100%)] flex-1 basis-[calc(50%-12px)] items-center gap-3 rounded-2xl border border-stone-200/90 bg-white p-3.5 text-left shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-700/60 hover:bg-emerald-50/50 hover:shadow-md cursor-pointer animate-fade-in-up"
                   // eslint-disable-next-line react/no-array-index-key
                   key={index}
                   onClick={() => sendMessage({ text: question })}
                   style={{ animationDelay: `${index * 80}ms` }}
                   type="button"
                 >
-                  <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-primary text-2.75 font-bold tabular-nums text-white shadow-sm">
+                  <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-lg bg-emerald-700 text-xs font-bold tabular-nums text-white shadow-2xs">
                     {index + 1}
                   </span>
-                  <span className="min-w-0 text-3.25 font-semibold leading-[1.45] text-gray-700">
+                  <span className="min-w-0 text-xs sm:text-sm font-semibold text-stone-800">
                     {question}
                   </span>
                 </button>
@@ -127,7 +126,7 @@ export default function ChatPage() {
             >
               {message.role === 'assistant' && (
                 <Avatar className="h-8 w-8 flex-shrink-0 rounded-xl">
-                  <AvatarFallback className="rounded-xl border border-stone-900/6 bg-primary/8 text-primary">
+                  <AvatarFallback className="rounded-xl border border-emerald-200 bg-emerald-100 text-emerald-800 font-bold">
                     <Bot className="h-4 w-4" />
                   </AvatarFallback>
                 </Avatar>
@@ -135,39 +134,62 @@ export default function ChatPage() {
               <div
                 className={
                   message.role === 'user'
-                    ? 'inline-block max-w-[70%] rounded-[18px_18px_4px_18px] bg-primary p-3 px-4 text-white shadow-[0_8px_20px_rgba(20,184,166,0.3)]'
-                    : ''
+                    ? 'inline-block max-w-[75%] rounded-2xl rounded-tr-xs bg-emerald-700 p-3.5 px-4.5 text-white shadow-md shadow-emerald-800/15'
+                    : 'flex-1 max-w-[85%]'
                 }
               >
                 {message.parts.map((part, index) => {
                   if (part.type === 'text') {
                     return (
-                      <p
-                        className={message.role === 'user' ? 'm-0 text-sm leading-relaxed' : ''}
+                      <div
+                        className={message.role === 'user' ? 'm-0 text-sm leading-relaxed' : 'rounded-2xl rounded-tl-xs border border-stone-200/90 bg-[#FDFBF7] p-4 text-stone-900 shadow-sm text-sm leading-relaxed'}
                         // eslint-disable-next-line react/no-array-index-key
                         key={index}
                       >
                         {part.text}
-                      </p>
+                      </div>
                     )
                   }
-                  // 隐藏工具调用的原始数据，只显示一个简洁的状态
+                  // 工具调用状态
                   if (part.type.startsWith('tool-') || part.type === 'dynamic-tool') {
                     return (
                       <div
-                        className="my-1 flex items-center gap-1.5 text-xs text-gray-400"
+                        className="my-1.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900"
                         // eslint-disable-next-line react/no-array-index-key
                         key={index}
                       >
-                        <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                        <span>正在查询...</span>
+                        <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-ping" />
+                        <span>正在检索当地气象与景点数据...</span>
                       </div>
                     )
                   }
                   return null
                 })}
+                {message.role === 'assistant' && (
+                  <>
+                    <div className="mt-2"><RAGSource sources={sources} /></div>
+                    {/* 快捷微调指令胶囊 */}
+                    <div className="mt-2.5 flex flex-wrap gap-1.5 pt-1">
+                      {[
+                        '💰 帮我优化预算并节省开支',
+                        '🍜 推荐路线附近的特色美食',
+                        '🌿 增加适合拍照打卡的小众景点',
+                        '🚗 提供交通换乘与出行指南',
+                      ].map(pill => (
+                        <button
+                          className="inline-flex items-center gap-1 rounded-full border border-stone-200/90 bg-white/90 px-3 py-1 text-[11px] font-bold text-stone-700 shadow-2xs transition-all hover:-translate-y-0.5 hover:border-emerald-700/60 hover:bg-emerald-50 hover:text-emerald-900 cursor-pointer"
+                          disabled={status !== 'ready'}
+                          key={pill}
+                          onClick={() => sendMessage({ text: pill })}
+                          type="button"
+                        >
+                          <span>{pill}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
-              {message.role === 'assistant' && <RAGSource sources={sources} />}
             </div>
           )
         })}
@@ -175,25 +197,25 @@ export default function ChatPage() {
         {status === 'submitted' && (
           <div className="mx-2 mb-3 flex items-start gap-2.5">
             <Avatar className="h-8 w-8 flex-shrink-0 rounded-xl">
-              <AvatarFallback className="rounded-xl border border-stone-900/6 bg-primary/8 text-primary">
+              <AvatarFallback className="rounded-xl border border-emerald-200 bg-emerald-100 text-emerald-800">
                 <Bot className="h-4 w-4" />
               </AvatarFallback>
             </Avatar>
-            <div className="flex gap-1.5 rounded-[6px_18px_18px] border border-stone-900/6 bg-travel-surface p-3 px-4 shadow-[0_10px_28px_rgba(41,37,36,0.08)]">
-              <span className="h-1.5 w-1.5 animate-[dotBounce_1.2s_infinite] rounded-full bg-primary" />
-              <span className="h-1.5 w-1.5 animate-[dotBounce_1.2s_infinite_0.15s] rounded-full bg-primary" />
-              <span className="h-1.5 w-1.5 animate-[dotBounce_1.2s_infinite_0.3s] rounded-full bg-primary" />
+            <div className="flex gap-1.5 rounded-2xl rounded-tl-xs border border-stone-200/90 bg-[#FDFBF7] p-3 px-4 shadow-sm">
+              <span className="h-1.5 w-1.5 animate-[dotBounce_1.2s_infinite] rounded-full bg-emerald-700" />
+              <span className="h-1.5 w-1.5 animate-[dotBounce_1.2s_infinite_0.15s] rounded-full bg-emerald-700" />
+              <span className="h-1.5 w-1.5 animate-[dotBounce_1.2s_infinite_0.3s] rounded-full bg-emerald-700" />
             </div>
           </div>
         )}
 
         {error && (
           <div
-            className="mx-2 mb-3 flex items-center justify-between gap-3 rounded-lg border border-red-500/20 bg-red-100/80 p-3 px-3.5 text-3.25 font-semibold text-destructive"
+            className="mx-2 mb-3 flex items-center justify-between gap-3 rounded-2xl border border-red-200 bg-red-50 p-3.5 px-4 text-xs font-semibold text-red-700"
           >
             <span>{error.message}</span>
             <Button
-              className="border-red-500/22 bg-white/72 font-semibold text-destructive"
+              className="border-red-300 bg-white font-bold text-red-700 hover:bg-red-50 rounded-xl"
               onClick={() => sendMessage({ text: '请重试' })}
               size="sm"
               variant="outline"
@@ -205,26 +227,26 @@ export default function ChatPage() {
       </div>
 
       {/* 输入栏 */}
-      <div className="flex-shrink-0 border-t border-stone-900/6 bg-travel-surface p-3 pb-[max(18px,env(safe-area-inset-bottom))] shadow-[0_-18px_42px_rgba(41,37,36,0.08)]">
+      <div className="flex-shrink-0 border-t border-stone-200/80 bg-[#FAF7F0] p-3.5 pb-[max(18px,env(safe-area-inset-bottom))] shadow-lg">
         <form
-          className="mx-auto flex w-full max-w-[900px] items-center gap-2.5 rounded-5 border border-stone-900/8 bg-white p-2"
+          className="mx-auto flex w-full max-w-[900px] items-center gap-2.5 rounded-2xl border border-stone-200/90 bg-white p-1.5 shadow-sm"
           onSubmit={handleSubmit}
         >
           <Input
-            className="h-11 flex-1 rounded-lg border-travel-ink/10 bg-white shadow-[inset_0_1px_4px_rgba(25,52,60,0.06)] placeholder:text-travel-muted focus:border-primary/44 focus:shadow-[0_0_0_3px_rgba(34,111,120,0.14),inset_0_1px_4px_rgba(25,52,60,0.06)] disabled:text-travel-muted disabled:bg-white/42"
+            className="h-11 flex-1 rounded-xl border-none bg-transparent pl-3 text-sm text-stone-900 placeholder:text-stone-400 focus-visible:ring-0 shadow-none"
             disabled={status !== 'ready'}
             onChange={event => setInput(event.target.value)}
-            placeholder="例如：帮我规划杭州 3 天 2 晚，预算 3000 元"
+            placeholder="例如：帮我规划大理 4 天 3 晚深度慢游，预算 4000 元"
             value={input}
           />
           <Button
-            className="h-11 w-11 flex-shrink-0 rounded-lg shadow-[0_12px_24px_rgba(34,111,120,0.28)] hover:-translate-y-px hover:shadow-[0_16px_30px_rgba(34,111,120,0.36)] disabled:text-travel-muted disabled:bg-travel-ink/10 disabled:shadow-none"
+            className="h-10 w-10 flex-shrink-0 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white shadow-md shadow-emerald-800/20 disabled:bg-stone-200 disabled:text-stone-400 cursor-pointer"
             disabled={!input.trim() || status !== 'ready'}
             size="icon"
             title="发送"
             type="submit"
           >
-            <Send className="h-5 w-5" />
+            <Send className="h-4 w-4" />
           </Button>
         </form>
       </div>

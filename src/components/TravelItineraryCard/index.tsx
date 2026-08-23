@@ -145,56 +145,55 @@ function parseDays(text: string): DayPlan[] {
 
 /* ========== 单日卡片组件 ========== */
 
+/* ========== 单日卡片组件 ========== */
+
 function DayCard({ plan }: { plan: DayPlan }) {
   return (
-    <div className="group relative overflow-hidden rounded-lg border border-travel-ink/8 bg-travel-surface shadow-sm transition-all hover:shadow-md">
+    <div className="group relative overflow-hidden rounded-3xl border border-stone-200/90 bg-[#FDFBF7] shadow-sm transition-all hover:shadow-md">
       {/* 天数标题 */}
-      <div className="flex items-center gap-3 bg-primary/5 px-4 py-3">
-        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-travel-ocean text-sm font-bold text-white">
+      <div className="flex items-center gap-3 bg-emerald-50/70 border-b border-stone-200/80 px-5 py-3.5">
+        <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-700 text-xs font-bold text-white shadow-sm">
           {plan.day}
         </span>
         <div>
-          <h4 className="font-bold text-travel-ink">
+          <h4 className="font-serif font-bold text-stone-900 text-sm">
             Day
             {' '}
             {plan.day}
+            {' '}
+            {plan.title && `· ${plan.title}`}
           </h4>
-          {plan.title && (
-            <p className="text-xs text-travel-muted">
-              {plan.title}
-            </p>
-          )}
         </div>
       </div>
 
       {/* 时间段列表 */}
-      <div className="px-4 pb-4">
+      <div className="px-5 pb-4 pt-1">
         {plan.periods.map((period) => {
           const PeriodIcon = period.icon
           return (
             <div
-              className="flex gap-3 border-b border-travel-ink/5 py-2.5 last:border-0"
+              className="flex gap-3.5 border-b border-stone-200/70 py-3 last:border-0"
               key={`${plan.day}-${period.time}`}
             >
               {/* 时间图标 */}
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/8 text-primary">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-100/70 text-emerald-800">
                 <PeriodIcon className="h-4 w-4" />
               </div>
 
               {/* 内容 */}
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold text-travel-ocean">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span className="text-xs font-bold text-emerald-900 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                     {period.time}
                   </span>
                 </div>
-                <p className="mt-0.5 text-sm leading-relaxed text-travel-ink/80">
+                <p className="mt-1 text-xs sm:text-sm leading-relaxed text-stone-700">
                   {period.content}
                 </p>
                 {period.highlights && (
-                  <div className="mt-1.5 flex items-start gap-1.5">
-                    <Star className="mt-0.5 h-3 w-3 shrink-0 text-amber-500" />
-                    <span className="text-xs text-travel-muted">
+                  <div className="mt-1.5 flex items-start gap-1.5 text-xs text-amber-800 bg-amber-50/80 px-2.5 py-1 rounded-xl border border-amber-200 w-max max-w-full">
+                    <Star className="mt-0.5 h-3 w-3 shrink-0 fill-amber-500 text-amber-500" />
+                    <span className="truncate">
                       {period.highlights}
                     </span>
                   </div>
@@ -205,7 +204,7 @@ function DayCard({ plan }: { plan: DayPlan }) {
         })}
 
         {plan.periods.length === 0 && (
-          <p className="py-3 text-center text-sm text-travel-muted">
+          <p className="py-4 text-center text-xs text-stone-400">
             暂无详细安排
           </p>
         )}
@@ -228,24 +227,25 @@ export function TravelItineraryCard({ content }: TravelItineraryCardProps) {
   return (
     <div className="space-y-4">
       {/* 标题区域 */}
-      <div className="flex items-center gap-3 rounded-lg border border-travel-ink/8 bg-primary/5 p-4">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-travel-ocean text-white">
+      <div className="flex items-center gap-3.5 rounded-3xl border border-stone-200/90 bg-[#FDFBF7] p-5 shadow-sm">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-700 text-white shadow-md shadow-emerald-800/20">
           <MapPin size={20} />
         </div>
         <div>
-          <h3 className="font-bold text-travel-ink">{title}</h3>
-          <p className="flex items-center gap-2 text-xs text-travel-muted">
-            <Calendar className="h-3 w-3" />
+          <h3 className="font-serif font-bold text-stone-900 text-base">{title}</h3>
+          <p className="flex items-center gap-2 text-xs text-stone-500 mt-0.5">
+            <Calendar className="h-3.5 w-3.5 text-emerald-700" />
             {days.length}
-            天行程
-            <Clock className="ml-1 h-3 w-3" />
-            AI 智能规划
+            {' '}
+            天手账行程
+            <Clock className="ml-1 h-3.5 w-3.5 text-amber-600" />
+            AI 智能推演
           </p>
         </div>
       </div>
 
       {/* 每日行程卡片 */}
-      <div className="space-y-3">
+      <div className="space-y-3.5">
         {days.map(day => (
           <DayCard key={day.day} plan={day} />
         ))}

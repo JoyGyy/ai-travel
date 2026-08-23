@@ -11,10 +11,11 @@ import dynamic from 'next/dynamic'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+import { FlipPostcardModal } from '@/components/detail/FlipPostcardModal'
 import { useTravelRecommend } from '@/hooks/useTravelRecommend'
 import { getItineraryTemporal, useItineraryStore } from '@/stores/itinerary'
-import { loadItineraryCache } from '@/utils/storage'
 
+import { loadItineraryCache } from '@/utils/storage'
 import { DaySection } from './DaySection'
 import { DetailHero } from './DetailHero'
 import { EmptyState, ErrorState, LoadingState } from './DetailStates'
@@ -88,6 +89,8 @@ export default function Detail() {
   const city = searchParams?.get('city') || ''
   const budget = Number(searchParams?.get('budget')) || 0
   const days = Number(searchParams?.get('days')) || 1
+
+  const [showPostcardModal, setShowPostcardModal] = useState(false)
 
   const itinerary = useItineraryStore(s => s.itinerary)
   const budgetBreakdown = useItineraryStore(s => s.budgetBreakdown)
@@ -378,34 +381,35 @@ export default function Detail() {
 
         {!showLoading && !errorMessage && itinerary.length > 0 && (
           <>
-            {/* 摘要卡片 */}
+            {/* 摘要卡片 (手账票根风格) */}
             <div
-              className="travel-ticket-edge relative z-10 -mt-10 flex items-center overflow-hidden rounded-lg border border-travel-ink/8 bg-travel-surface-strong p-[18px_20px] shadow-sm"
+              className="travel-ticket-edge relative z-10 -mt-10 flex items-center overflow-hidden rounded-3xl border border-stone-200/90 bg-[#FDFBF7] p-5 shadow-md"
             >
-              <div className="flex min-w-0 flex-1 flex-col items-center gap-1.5">
-                <span className="text-2.5 font-extrabold uppercase tracking-[2px] text-stone-900/62">
+              <div className="flex min-w-0 flex-1 flex-col items-center gap-1">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
                   目的地
                 </span>
-                <span className="max-w-full overflow-wrap-anywhere text-center font-serif text-base font-extrabold text-travel-ink">
+                <span className="max-w-full overflow-wrap-anywhere text-center font-serif text-base font-extrabold text-stone-900">
                   {city}
                 </span>
               </div>
-              <div className="h-9 w-px bg-stone-900/12" />
-              <div className="flex min-w-0 flex-1 flex-col items-center gap-1.5">
-                <span className="text-2.5 font-extrabold uppercase tracking-[2px] text-stone-900/62">
-                  天数
+              <div className="h-8 w-px bg-stone-200" />
+              <div className="flex min-w-0 flex-1 flex-col items-center gap-1">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
+                  行程天数
                 </span>
-                <span className="max-w-full overflow-wrap-anywhere text-center font-serif text-base font-extrabold text-travel-ink">
+                <span className="max-w-full overflow-wrap-anywhere text-center font-serif text-base font-extrabold text-stone-900">
                   {days}
+                  {' '}
                   天
                 </span>
               </div>
-              <div className="h-9 w-px bg-stone-900/12" />
-              <div className="flex min-w-0 flex-1 flex-col items-center gap-1.5">
-                <span className="text-2.5 font-extrabold uppercase tracking-[2px] text-stone-900/62">
-                  预算
+              <div className="h-8 w-px bg-stone-200" />
+              <div className="flex min-w-0 flex-1 flex-col items-center gap-1">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
+                  预算预估
                 </span>
-                <span className="max-w-full overflow-wrap-anywhere text-center font-serif text-base font-bold tabular-nums text-accent">
+                <span className="max-w-full overflow-wrap-anywhere text-center font-serif text-base font-black text-emerald-800">
                   ¥
                   {budget}
                 </span>
@@ -414,30 +418,30 @@ export default function Detail() {
 
             {/* 天气 */}
             {weather && (
-              <section className="pt-[22px]">
-                <SectionTitle id="detail-weather-title">实时天气</SectionTitle>
+              <section className="pt-6">
+                <SectionTitle id="detail-weather-title">实时天气感知</SectionTitle>
                 <WeatherCard weather={weather} />
               </section>
             )}
 
             {/* 住宿推荐 */}
             {(accommodation.length > 0 || nightlife.length > 0) && (
-              <section className="pt-[22px]">
+              <section className="pt-6">
                 <AccommodationCard accommodation={accommodation} nightlife={nightlife} />
               </section>
             )}
 
             {/* 每日行程 */}
-            <section className="pt-[22px]">
+            <section className="pt-6">
               <SectionTitle id="detail-itinerary-title">
-                每日行程
+                每日手账日程
                 {isEditing && (
-                  <span className="ml-2 text-xs font-normal text-accent">
-                    （编辑模式：可移动/删除景点，支持撤销）
+                  <span className="ml-2 text-xs font-normal text-amber-700 font-sans">
+                    （编辑模式：可上下移动/删除景点，支持撤销）
                   </span>
                 )}
               </SectionTitle>
-              <div className="overflow-hidden rounded-lg border border-travel-ink/8 bg-travel-surface shadow-sm">
+              <div className="overflow-hidden rounded-3xl border border-stone-200/90 bg-[#FDFBF7] shadow-sm">
                 {itinerary.map((item, dayIndex) => (
                   <DaySection
                     attractionRefs={attractionRefs}
@@ -464,16 +468,16 @@ export default function Detail() {
 
             {/* 温馨提示 */}
             {tips.length > 0 && (
-              <section className="pt-[22px]">
-                <SectionTitle id="detail-tips-title">温馨提示</SectionTitle>
-                <div className="rounded-lg border border-travel-ink/8 bg-travel-surface p-4 shadow-sm">
+              <section className="pt-6">
+                <SectionTitle id="detail-tips-title">顾问温馨贴士</SectionTitle>
+                <div className="rounded-3xl border border-stone-200/90 bg-[#FDFBF7] p-5 shadow-sm space-y-2">
                   {tips.map(tip => (
                     <div
-                      className="flex items-start gap-3 py-2 text-3.25 leading-relaxed text-stone-900/72"
+                      className="flex items-start gap-3 py-1.5 text-xs sm:text-sm leading-relaxed text-stone-700"
                       key={tip}
                     >
                       <span
-                        className="mt-2 h-[7px] w-[7px] flex-shrink-0 rounded-full bg-travel-sand shadow-[0_0_0_5px_rgba(212,167,106,0.16)]"
+                        className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-amber-500 shadow-[0_0_0_4px_rgba(217,119,6,0.15)]"
                       />
                       {tip}
                     </div>
@@ -483,23 +487,39 @@ export default function Detail() {
             )}
 
             {/* 分享与咨询操作 */}
-            <div className="grid gap-3 pt-6 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+            <div className="grid gap-3 pt-8 pb-10 sm:grid-cols-3">
               <button
-                className="inline-flex min-h-12.5 w-full items-center justify-center gap-2 rounded-lg border border-primary/25 bg-white text-3.75 font-semibold text-primary shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:bg-primary/5 hover:shadow-md"
+                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-amber-500 hover:bg-amber-600 text-stone-950 text-sm font-bold shadow-md shadow-amber-500/20 transition-all hover:scale-102 cursor-pointer"
+                onClick={() => setShowPostcardModal(true)}
+                type="button"
+              >
+                💌 生成 3D 手账明信片
+              </button>
+              <button
+                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl border border-stone-300 bg-white text-sm font-bold text-stone-800 shadow-sm transition-all hover:bg-stone-50 cursor-pointer"
                 onClick={() => router.push('/community/new')}
                 type="button"
               >
-                <Share2 />
-                分享到社区
+                <Share2 size={16} />
+                分享至旅人社区
               </button>
               <button
-                className="inline-flex min-h-12.5 w-full items-center justify-center gap-2 rounded-lg border border-primary bg-primary text-3.75 font-semibold text-white shadow-[0_4px_16px_rgba(34,111,120,0.24)] transition-all hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-[0_8px_24px_rgba(34,111,120,0.3)]"
+                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-emerald-700 text-sm font-bold text-white shadow-md shadow-emerald-800/25 transition-all hover:bg-emerald-800 cursor-pointer"
                 onClick={() => router.push('/chat')}
                 type="button"
               >
-                咨询 AI 优化行程
+                继续咨询 AI 优化
               </button>
             </div>
+
+            {/* 3D 翻转手账明信片弹窗 */}
+            <FlipPostcardModal
+              budget={budget}
+              city={city}
+              days={days}
+              isOpen={showPostcardModal}
+              onClose={() => setShowPostcardModal(false)}
+            />
           </>
         )}
       </div>

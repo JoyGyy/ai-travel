@@ -158,45 +158,44 @@ export default function Community() {
   return (
     <main className="travel-page-shell gap-6">
       {/* Hero 区域 */}
-      <section className="relative overflow-hidden rounded-lg border border-travel-ink/8 bg-travel-surface-muted p-5 sm:p-8">
-
+      <section className="relative overflow-hidden rounded-3xl border border-stone-200/90 bg-[#FDFBF7] p-6 sm:p-8 shadow-sm">
         <div className="relative flex flex-col items-stretch gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="animate-fade-in-up">
-            <p className="mb-2 text-xs font-bold uppercase tracking-[0.15em] text-primary">
-              TRAVEL COMMUNITY
+            <p className="mb-1 text-xs font-bold uppercase tracking-widest text-emerald-800">
+              TRAVEL COMMUNITY · 旅人手账广场
             </p>
             <h1
-              className="text-[clamp(1.8rem,4vw,3rem)] leading-[1.15]"
+              className="font-serif text-2xl sm:text-4xl font-extrabold text-stone-900 leading-tight"
               id="community-title"
             >
-              <span className="text-travel-ink">旅友正在路上</span>
+              旅友正在路上
             </h1>
-            <p className="mt-2 max-w-[500px] text-[0.95rem] leading-relaxed text-gray-500">
-              把 AI 规划、实拍照片和旅行心得做成一张明信片，让下一位出发的人少走弯路。
+            <p className="mt-2 max-w-[500px] text-xs sm:text-sm leading-relaxed text-stone-500">
+              把 AI 规划、实拍风景与旅行手账分享给同行的旅人，让每一次出发都有迹可循。
             </p>
           </div>
           <Button
-            className="w-full flex-shrink-0 gap-2 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/25 sm:w-auto"
+            className="w-full flex-shrink-0 gap-2 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold shadow-md shadow-emerald-800/20 sm:w-auto cursor-pointer"
             disabled={!hasHydrated}
             onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}
             size="lg"
           >
             <Plus className="h-4 w-4" />
-            {!hasHydrated ? '加载中...' : '发布旅行分享'}
+            {!hasHydrated ? '加载中...' : '发布手账分享'}
           </Button>
         </div>
 
         {/* 社区统计 */}
         <div className="relative mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
           {getStats(total).map(stat => (
-            <Card className="border-travel-ink/10 bg-white" key={stat.label}>
-              <CardContent className="flex items-center gap-2 p-2.5 sm:gap-3 sm:p-3">
-                <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary sm:h-10 sm:w-10">
+            <Card className="rounded-2xl border-stone-200/80 bg-white shadow-2xs" key={stat.label}>
+              <CardContent className="flex items-center gap-3 p-3 sm:p-3.5">
+                <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 sm:h-10 sm:w-10">
                   {stat.icon}
                 </span>
                 <div>
-                  <p className="text-lg font-bold text-gray-900">{loading ? '-' : stat.value.toLocaleString()}</p>
-                  <p className="whitespace-nowrap text-2.75 text-gray-500">{stat.label}</p>
+                  <p className="font-serif text-base sm:text-lg font-black text-stone-900">{loading ? '-' : stat.value.toLocaleString()}</p>
+                  <p className="whitespace-nowrap text-xs text-stone-400">{stat.label}</p>
                 </div>
               </CardContent>
             </Card>
@@ -206,14 +205,14 @@ export default function Community() {
 
       {/* 热门标签 */}
       <section className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-        <div className="mb-4 flex items-center gap-3">
-          <TrendingUp className="h-4 w-4 text-primary" />
-          <h2 className="text-sm font-semibold text-gray-700">热门话题</h2>
+        <div className="mb-3 flex items-center gap-2">
+          <TrendingUp className="h-4 w-4 text-emerald-800" />
+          <h2 className="font-serif text-sm font-bold text-stone-800">热门灵感话题</h2>
         </div>
         <div className="flex flex-wrap gap-2">
           {TRENDING_TAGS.map(tag => (
             <Badge
-              className={`cursor-pointer border px-3 py-1.5 text-xs font-semibold transition-all hover:-translate-y-0.5 hover:shadow-sm ${tag.color}`}
+              className="cursor-pointer border border-stone-200/80 bg-white hover:border-emerald-700/60 hover:bg-emerald-50 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all hover:-translate-y-0.5 text-stone-700"
               key={tag.label}
               onClick={() => {
                 setCityInput('')
@@ -232,45 +231,45 @@ export default function Community() {
       {/* 每日旅行语录 + 城市聚焦 */}
       <div className="grid gap-4 sm:grid-cols-2 animate-fade-in-up" style={{ animationDelay: '250ms' }}>
         {/* 旅行语录 */}
-        <Card className="relative overflow-hidden border-travel-ink/10 bg-white">
+        <Card className="relative overflow-hidden rounded-3xl border-stone-200/90 bg-[#FDFBF7] shadow-sm">
           <CardContent className="relative p-5">
             <div className="mb-3 flex items-center gap-2">
-              <Quote className="h-4 w-4 text-primary" />
-              <span className="text-xs font-semibold text-primary uppercase tracking-wider">旅行语录</span>
+              <Quote className="h-4 w-4 text-amber-600" />
+              <span className="text-xs font-bold text-amber-800 uppercase tracking-wider">每日手账随笔</span>
             </div>
-            <blockquote className="text-sm leading-relaxed text-gray-700 italic">
+            <blockquote className="font-serif text-sm leading-relaxed text-stone-700 italic">
               {TRAVEL_QUOTES[new Date().getDay() % 4]}
             </blockquote>
-            <p className="mt-3 text-xs text-gray-400">— 每日一句，送给在路上的你</p>
+            <p className="mt-3 text-xs text-stone-400">— 远方手账 · 每日一句送给在路上的你</p>
           </CardContent>
         </Card>
 
         {/* 城市聚焦 */}
-        <Card className="relative overflow-hidden border-travel-ink/10 bg-white">
+        <Card className="relative overflow-hidden rounded-3xl border-stone-200/90 bg-[#FDFBF7] shadow-sm">
           <CardContent className="relative p-5">
             <div className="mb-3 flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-primary" />
-              <span className="text-xs font-semibold text-primary uppercase tracking-wider">城市聚焦</span>
+              <MapPin className="h-4 w-4 text-emerald-800" />
+              <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider">本周探索焦点</span>
             </div>
             <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg bg-primary text-white shadow-lg shadow-primary/20">
+              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-emerald-700 text-white shadow-md shadow-emerald-800/20">
                 <MapPinned className="h-6 w-6" />
               </div>
               <div>
-                <p className="text-base font-bold text-gray-900">成都</p>
-                <p className="text-xs text-gray-500">美食之都 · 大熊猫故乡</p>
-                <div className="mt-1.5 flex items-center gap-1">
+                <p className="font-serif text-base font-bold text-stone-900">成都</p>
+                <p className="text-xs text-stone-500">慢调烟火气 · 蜀道川西枢纽</p>
+                <div className="mt-1 flex items-center gap-1">
                   {Array.from({ length: 5 }).map((_, i) => (
                     // eslint-disable-next-line react/no-array-index-key
-                    <Star key={i} className={`h-3 w-3 ${i < 4 ? 'fill-secondary text-secondary' : 'text-gray-300'}`} />
+                    <Star key={i} className={`h-3 w-3 ${i < 4 ? 'fill-amber-400 text-amber-400' : 'text-stone-300'}`} />
                   ))}
-                  <span className="ml-1 text-2.5 text-gray-400">旅友推荐</span>
+                  <span className="ml-1 text-[11px] text-stone-400">旅人高分推荐</span>
                 </div>
               </div>
             </div>
             <div className="mt-3 flex flex-wrap gap-1.5">
               {CITY_FOCUS_TAGS.map(tag => (
-                <Badge className="border-primary/20 bg-primary/8 text-2.5 text-primary" key={tag} variant="outline">
+                <Badge className="border border-emerald-200 bg-emerald-50 text-[11px] font-bold text-emerald-900 rounded-full px-2.5 py-0.5" key={tag} variant="outline">
                   {tag}
                 </Badge>
               ))}
@@ -281,7 +280,7 @@ export default function Community() {
 
       {/* 筛选区 */}
       <section
-        className="grid gap-3.5 rounded-lg border border-travel-ink/8 bg-white/80 p-5 shadow-sm backdrop-blur-sm"
+        className="grid gap-3.5 rounded-3xl border border-stone-200/90 bg-[#FDFBF7] p-5 shadow-sm"
       >
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-base font-semibold text-travel-ink" id="community-filter-title">

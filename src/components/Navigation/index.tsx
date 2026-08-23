@@ -45,75 +45,77 @@ function TopNav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-travel-ink/10 bg-travel-surface/95 shadow-sm">
-      <div className="max-w-300 h-16 mx-auto px-4 sm:px-6 flex items-center justify-between gap-2.5 sm:gap-3.5">
-
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-stone-200/80 bg-[#FAF7F0]/92 backdrop-blur-md shadow-[0_2px_12px_rgba(28,25,23,0.04)]">
+      <div className="max-w-[1240px] h-16 mx-auto px-4 sm:px-6 flex items-center justify-between gap-3">
+        {/* Brand Logo */}
         <Link
-          className="min-h-11 inline-flex shrink-0 items-center gap-2.5 rounded-lg no-underline text-travel-ink"
+          className="inline-flex shrink-0 items-center gap-2.5 rounded-xl no-underline text-stone-900 group"
           href="/"
         >
           <span
-            className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-base text-white shadow-[0_8px_20px_rgba(34,111,120,0.22)]"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-700 text-white shadow-md shadow-emerald-800/20 transition-transform group-hover:scale-105"
           >
-            <Compass size={20} />
+            <Compass size={19} />
           </span>
-          <span className="text-[15px] font-black tracking-[0.08em] text-travel-ink uppercase">
-            Travel AI
-          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="font-serif text-lg font-bold tracking-tight text-stone-900">
+              远方
+            </span>
+            <span className="text-[10px] font-sans font-medium px-2 py-0.5 rounded-full bg-amber-100/90 text-amber-900 border border-amber-300/60 shadow-2xs">
+              Travel Log
+            </span>
+          </div>
         </Link>
 
-        <div className="hidden sm:flex flex-1 items-center justify-center gap-2">
-
+        {/* Desktop Navigation Tabs */}
+        <div className="hidden sm:flex flex-1 items-center justify-center gap-1.5">
           {tabs.map((tab) => {
             const isActive
               = pathname === tab.key || (tab.key !== '/' && pathname?.startsWith(tab.key))
             return (
               <Link
-                className={`relative flex min-h-11 items-center gap-1.75 rounded-lg border border-transparent px-4 text-sm font-extrabold text-travel-ink/72 transition-colors hover:bg-primary/8 hover:text-travel-ink motion-reduce:transition-none ${
+                className={`relative flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all motion-reduce:transition-none ${
                   isActive
-                    ? 'bg-primary/12 text-travel-ink border-primary/24'
-                    : ''
+                    ? 'bg-emerald-700 text-white shadow-sm shadow-emerald-800/15'
+                    : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/60'
                 }`}
                 href={tab.key}
                 key={tab.key}
               >
-                <span className="text-base text-primary">{tab.icon}</span>
+                <span className={isActive ? 'text-white' : 'text-emerald-700'}>{tab.icon}</span>
                 <span>{tab.title}</span>
-                <span
-                  className={`absolute -bottom-1.75 left-1/2 w-5.5 h-0.75 rounded-full bg-primary opacity-0 -translate-x-1/2 scale-x-[0.6] transition-all motion-reduce:transition-none ${
-                    isActive ? 'opacity-100 scale-x-100' : ''
-                  }`}
-                />
               </Link>
             )
           })}
         </div>
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0 mr-1">
+
+        {/* Right Actions / User */}
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           {user
             ? (
                 <Link
-                  className={`min-h-11 inline-flex items-center justify-center gap-1.5 px-4 rounded-full bg-travel-surface text-travel-ink border border-travel-ink/6 text-sm font-extrabold transition-all hover:-translate-y-px hover:border-primary/28 hover:bg-primary/10 motion-reduce:transition-none no-underline ${
+                  className={`min-h-9 inline-flex items-center justify-center gap-1.5 px-3.5 rounded-full bg-white text-stone-800 border border-stone-200 text-xs font-bold transition-all hover:-translate-y-px hover:border-emerald-600/40 hover:bg-emerald-50/50 shadow-2xs no-underline ${
                     pathname === '/profile'
-                      ? '-translate-y-px border-primary/28 bg-primary/10'
+                      ? 'border-emerald-700 bg-emerald-50 text-emerald-800'
                       : ''
                   }`}
                   href="/profile"
                 >
-                  <User size={16} />
+                  <User size={15} className="text-emerald-700" />
                   <span className="hidden sm:inline">{user.username}</span>
                 </Link>
               )
             : (
                 <Link
-                  className="min-h-11 inline-flex items-center justify-center gap-1.5 px-4 rounded-full bg-travel-surface text-travel-ink border border-primary/24 text-sm font-extrabold transition-all hover:-translate-y-px hover:border-primary/38 hover:bg-primary/10 motion-reduce:transition-none no-underline"
+                  className="min-h-9 inline-flex items-center justify-center gap-1.5 px-4 rounded-full bg-emerald-700 text-white text-xs font-bold transition-all hover:bg-emerald-800 hover:shadow-md shadow-2xs no-underline"
                   href="/login"
                 >
-                  <LogIn size={16} />
-                  <span className="hidden sm:inline">登录</span>
+                  <LogIn size={15} />
+                  <span>登录</span>
                 </Link>
               )}
           <Button
-            className="sm:hidden text-travel-ink hover:bg-primary/8"
+            className="sm:hidden text-stone-800 hover:bg-stone-200/70"
             onClick={() => setMobileMenuOpen(v => !v)}
             size="icon"
             variant="ghost"
@@ -122,24 +124,26 @@ function TopNav() {
           </Button>
         </div>
       </div>
+
+      {/* Mobile Menu */}
       {mobileMenuOpen
         ? (
-            <div className="sm:hidden border-t border-travel-ink/6 bg-travel-surface px-4 py-2">
+            <div className="sm:hidden border-t border-stone-200/80 bg-[#FAF7F0] px-4 py-3 space-y-1">
               {tabs.map((tab) => {
                 const isActive
                   = pathname === tab.key || (tab.key !== '/' && pathname?.startsWith(tab.key))
                 return (
                   <Link
-                    className={`flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-semibold no-underline transition-colors hover:bg-primary/8 ${
+                    className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-semibold no-underline transition-colors ${
                       isActive
-                        ? 'bg-primary/12 text-travel-ink'
-                        : 'text-travel-ink/72'
+                        ? 'bg-emerald-700 text-white'
+                        : 'text-stone-700 hover:bg-stone-200/60'
                     }`}
                     href={tab.key}
                     key={tab.key}
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <span className="text-primary">{tab.icon}</span>
+                    <span className={isActive ? 'text-white' : 'text-emerald-700'}>{tab.icon}</span>
                     <span>{tab.title}</span>
                   </Link>
                 )

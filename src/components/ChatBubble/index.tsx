@@ -32,16 +32,16 @@ export function ChatBubble({ content, role }: ChatBubbleProps) {
       {/* AI 消息显示机器人头像 */}
       {!isUser && (
         <div
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-travel-ink/6 bg-primary/8 text-[15px] text-travel-ocean"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-100/80 text-emerald-800 shadow-2xs"
         >
-          <Bot size={20} />
+          <Bot size={18} />
         </div>
       )}
       <div
-        className={`min-w-0 max-w-[min(78%,640px)] overflow-wrap-anywhere break-words text-sm leading-[1.7] whitespace-pre-wrap max-sm:max-w-[84%] ${
+        className={`min-w-0 max-w-[min(78%,640px)] overflow-wrap-anywhere break-words text-sm leading-[1.75] whitespace-pre-wrap max-sm:max-w-[84%] ${
           isUser
-            ? 'rounded-[20px_20px_6px] bg-primary px-4 py-[11px] text-white shadow-[0_14px_28px_rgba(20,184,166,0.32)]'
-            : 'rounded-[6px_20px_20px] border border-travel-ink/6 bg-travel-surface px-4 py-3 text-travel-ocean shadow-[0_12px_30px_rgba(41,37,36,0.08)]'
+            ? 'rounded-2xl rounded-tr-xs bg-emerald-700 px-4.5 py-3 text-white shadow-md shadow-emerald-800/15'
+            : 'rounded-2xl rounded-tl-xs border border-stone-200/90 bg-[#FDFBF7] px-4.5 py-3.5 text-stone-900 shadow-sm'
         }`}
       >
         {/* 用户消息纯文本，AI 消息走 Markdown 渲染 */}
@@ -50,8 +50,8 @@ export function ChatBubble({ content, role }: ChatBubbleProps) {
               content
             )
           : (
-              <div className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_a]:font-bold [&_a]:text-travel-ocean [&_code]:rounded-md [&_code]:bg-[rgba(249,224,189,0.72)] [&_code]:text-[#7a4a1e]">
-                <Suspense fallback={<span className="text-travel-muted">加载中...</span>}>
+              <div className="[&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_a]:font-bold [&_a]:text-emerald-800 [&_code]:rounded-md [&_code]:bg-amber-100/70 [&_code]:text-amber-900 [&_code]:px-1.5 [&_code]:py-0.5">
+                <Suspense fallback={<span className="text-stone-400">正在生成手账建议...</span>}>
                   <Markdown>{content}</Markdown>
                 </Suspense>
               </div>

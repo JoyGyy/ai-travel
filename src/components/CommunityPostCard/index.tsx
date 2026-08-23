@@ -1,6 +1,7 @@
 'use client'
 
 import type { CommunityPost } from '@/types/community'
+import { motion } from 'framer-motion'
 import { Heart, MapPin, MessageCircle, Repeat2, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -86,13 +87,13 @@ export const CommunityPostCard = React.memo(
 
     return (
       <Card
-        className={`group overflow-hidden rounded-xl transition-transform transition-shadow duration-200 ease-standard hover:-translate-y-0.5 hover:shadow-md motion-reduce:transition-none motion-reduce:transform-none ${hasImages ? '' : ''}`}
+        className={`group overflow-hidden rounded-3xl border border-stone-200/90 bg-[#FDFBF7] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-emerald-700/50 ${hasImages ? '' : ''}`}
       >
         <CardContent className="p-0">
           {/* 图片区域 - 占主要面积 */}
           {hasImages && (
             <Link
-              className="block overflow-hidden cursor-pointer [&_.community-image-grid]:rounded-none [&_.community-image-grid__image]:transition-transform [&_.community-image-grid__image]:duration-300 [&_.community-image-grid__image]:ease-standard group-hover:[&_.community-image-grid__image]:scale-103 motion-reduce:[&_.community-image-grid__image]:transition-none"
+              className="block overflow-hidden cursor-pointer [&_.community-image-grid]:rounded-none [&_.community-image-grid__image]:transition-transform [&_.community-image-grid__image]:duration-500 group-hover:[&_.community-image-grid__image]:scale-105"
               href={`/community/${post.id}`}
             >
               <CommunityImageGrid compact images={post.images} />
@@ -100,21 +101,21 @@ export const CommunityPostCard = React.memo(
           )}
 
           {/* 内容区域 */}
-          <div className="flex flex-col gap-2 p-2.5 sm:p-3">
+          <div className="flex flex-col gap-2 p-3 sm:p-4">
             {/* 用户信息 */}
             <div className="flex items-center justify-between gap-2">
               <Link
                 className="flex items-center gap-2 no-underline text-inherit group/username"
                 href={`/community?authorId=${post.author.id}`}
               >
-                <Avatar className="h-7 w-7 shrink-0 bg-gradient-to-br from-primary to-accent text-xs font-bold">
-                  <AvatarFallback>{post.author.username.slice(0, 1).toUpperCase()}</AvatarFallback>
+                <Avatar className="h-7 w-7 shrink-0 bg-emerald-700 text-white text-xs font-bold shadow-2xs">
+                  <AvatarFallback className="bg-emerald-700 text-white font-bold">{post.author.username.slice(0, 1).toUpperCase()}</AvatarFallback>
                 </Avatar>
-                <span className="max-w-[120px] truncate text-[13px] font-semibold transition-colors duration-200 group-hover/username:text-primary">
+                <span className="max-w-[120px] truncate text-[13px] font-bold text-stone-900 transition-colors duration-200 group-hover/username:text-emerald-800">
                   {displayAuthor}
                 </span>
               </Link>
-              <span className="shrink-0 text-xs text-muted-foreground">
+              <span className="shrink-0 text-xs text-stone-400">
                 {formatTime(post.createdAt)}
               </span>
             </div>
@@ -125,12 +126,12 @@ export const CommunityPostCard = React.memo(
               href={`/community/${post.id}`}
             >
               {post.title && (
-                <p className="!m-0 text-[13px] sm:text-sm font-semibold leading-snug text-travel-ink transition-colors duration-200 hover:text-primary motion-reduce:transition-none line-clamp-2">
+                <p className="!m-0 font-serif text-sm font-bold leading-snug text-stone-900 transition-colors duration-200 hover:text-emerald-800 line-clamp-2">
                   {post.title}
                 </p>
               )}
               {post.content && (
-                <p className="!m-0 text-[13px] leading-relaxed text-muted-foreground line-clamp-2">
+                <p className="!m-0 text-xs leading-relaxed text-stone-600 line-clamp-2">
                   {getPostExcerpt(post.content)}
                 </p>
               )}
@@ -138,7 +139,7 @@ export const CommunityPostCard = React.memo(
 
             {/* 城市标签 */}
             {post.city && (
-              <Badge className="self-start m-0 text-xs" variant="secondary">
+              <Badge className="self-start m-0 text-xs bg-emerald-50 text-emerald-900 border border-emerald-200 rounded-full font-bold">
                 <MapPin className="mr-1" size={12} />
                 {post.city}
               </Badge>
@@ -165,23 +166,31 @@ export const CommunityPostCard = React.memo(
                 </span>
               </Link>
             )}
-            {post.postType === 'repost' && !post.originalPost && (
-              <span className="text-xs py-1 text-muted-foreground">原帖已删除</span>
-            )}
-
             {/* 操作栏 */}
-            <div className="flex items-center justify-between mt-1 pt-2 border-t border-travel-border">
+            <div className="flex items-center justify-between mt-1 pt-2 border-t border-stone-200/80">
               <div className="flex gap-2">
-                <Button
-                  className={`text-travel-muted transition-colors transition-transform duration-200 ease-standard hover:text-travel-ink hover:scale-105 active:scale-95 motion-reduce:transition-none motion-reduce:transform-none ${post.likedByMe ? 'text-destructive' : ''} ${isLikeAnimating ? 'animate-[likeHeartbeat_0.4s_var(--ease-spring)] motion-reduce:animate-none' : ''}`}
-                  disabled={likePending}
-                  onClick={handleLike}
-                  size="sm"
-                  variant="ghost"
-                >
-                  <Heart className={post.likedByMe ? 'fill-current' : ''} size={16} />
-                  {post.likeCount || ''}
-                </Button>
+                <div className="relative">
+                  <Button
+                    className={`text-stone-500 transition-all duration-200 hover:text-stone-900 hover:scale-105 active:scale-95 ${post.likedByMe ? 'text-red-500 hover:text-red-600' : ''} ${isLikeAnimating ? 'scale-125' : ''}`}
+                    disabled={likePending}
+                    onClick={handleLike}
+                    size="sm"
+                    variant="ghost"
+                  >
+                    <Heart className={post.likedByMe ? 'fill-red-500 text-red-500' : ''} size={16} />
+                    <span className="font-bold text-xs">{post.likeCount || ''}</span>
+                  </Button>
+                  {isLikeAnimating && (
+                    <motion.div
+                      animate={{ opacity: 0, scale: 2 }}
+                      className="pointer-events-none absolute inset-0 flex items-center justify-center"
+                      initial={{ opacity: 1, scale: 0.8 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <span className="text-red-500 text-xs font-black">💖 +1</span>
+                    </motion.div>
+                  )}
+                </div>
                 <Button
                   className="text-travel-muted transition-colors transition-transform duration-200 ease-standard hover:text-travel-ink hover:scale-105 active:scale-95 motion-reduce:transition-none motion-reduce:transform-none"
                   onClick={() => onComment?.(post)}

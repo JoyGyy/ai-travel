@@ -7,13 +7,25 @@
 import type { ChangeEvent, KeyboardEvent } from 'react'
 import type { DateRange } from 'react-day-picker'
 
+import type { MysteryDestination } from './AdventureMysteryBox'
 import { differenceInDays, format, startOfDay } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
-import { Bot, Calendar, CircleDollarSign, Cloud, Flame, Loader2, MapPin, Search } from 'lucide-react'
+import {
+  Calendar,
+  CircleDollarSign,
+  Cloud,
+  Compass,
+  Dices,
+  Flame,
+  Loader2,
+  MapPin,
+  Search,
+  Sparkles,
+} from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Calendar as CalendarComponent } from '@/components/ui/calendar'
@@ -25,6 +37,17 @@ import { useWeather } from '@/hooks/useWeather'
 import { imageUrl } from '@/lib/images'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth'
+import { AdventureMysteryBox } from './AdventureMysteryBox'
+
+// 出行偏好风格标签
+const TRAVEL_PREFERENCES = [
+  { emoji: '🌿', key: 'nature', label: '自然疗愈' },
+  { emoji: '🍜', key: 'food', label: '老饕美食' },
+  { emoji: '🏛️', key: 'history', label: '历史古韵' },
+  { emoji: '📸', key: 'photo', label: '出片摄影' },
+  { emoji: '🏄‍♂️', key: 'hiking', label: '户外徒步' },
+  { emoji: '☕', key: 'slow', label: '慢调度假' },
+]
 
 // 打字机动画文案列表
 const TYPEWRITER_PHRASES = [
@@ -59,6 +82,8 @@ export function HeroSearch() {
   const [isSearching, setIsSearching] = useState(false)
   const [budget, setBudget] = useState('')
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
+  const [selectedPreference, setSelectedPreference] = useState('nature')
+  const [showMysteryBox, setShowMysteryBox] = useState(false)
   const [showDropdown, setShowDropdown] = useState(false)
   const [activeCityIndex, setActiveCityIndex] = useState(0)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
@@ -276,18 +301,24 @@ export function HeroSearch() {
     if (!isValid)
       return
     setIsSubmitting(true)
-    const startDate = dateRange?.from ? format(dateRange.from, 'yyyy-MM-dd') : ''
-    const endDate = dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd') : ''
-    router.push(`/detail?city=${encodeURIComponent(city.trim())}&budget=${budgetNum}&days=${days}&startDate=${startDate}&endDate=${endDate}`)
-  }, [hasHydrated, user, router, validatePlanner, city, days, dateRange, toast])
+    const days = differenceInDays(dateRange!.to!, dateRange!.from!) + 1
+    router.push(`/detail?city=${encodeURIComponent(city.trim())}&budget=${budgetNum}&days=${days}&pref=${selectedPreference}`)
+  }, [hasHydrated, user, validatePlanner, toast, dateRange, router, city, selectedPreference])
 
-  const submitPlanner = useCallback(
-    (event: { preventDefault: () => void }) => {
-      event.preventDefault()
-      onStart()
-    },
-    [onStart],
-  )
+  const handleApplyMystery = useCallback((dest: MysteryDestination) => {
+    setCity(dest.city)
+    setBudget(String(dest.budget))
+    const today = new Date()
+    const returnDay = new Date()
+    returnDay.setDate(today.getDate() + dest.days)
+    setDateRange({ from: today, to: returnDay })
+    toast.success(`✨ 已装填「${dest.city}」灵感盲盒路线，可直接生成！`)
+  }, [toast])
+
+  const submitPlanner = useCallback((e: React.FormEvent) => {
+    e.preventDefault()
+    onStart()
+  }, [onStart])
 
   return (
     <section
@@ -310,95 +341,131 @@ export function HeroSearch() {
 
       <div className="relative mx-auto w-full max-w-300 px-6 py-20">
         {/* 标题区域 */}
-        <div className="mb-12 text-center">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 backdrop-blur-md">
-            <Bot size={16} className="text-[#b8e0df]" />
-            <span className="text-sm font-medium text-white/90">AI 驱动的智能旅行规划</span>
+        <div className="mb-8 text-center">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-emerald-950/60 border border-emerald-400/30 px-4 py-1.5 backdrop-blur-md shadow-sm">
+            <Sparkles size={15} className="text-amber-300" />
+            <span className="text-xs font-semibold tracking-wide text-emerald-100">AI 驱动的智能旅行手账规划</span>
           </div>
+
+          <p className="font-serif italic text-amber-200/90 text-sm md:text-base tracking-widest mb-3">
+            — 每一场旅行，都是生命的一首诗 —
+          </p>
+
           <h1
-            className="mb-6 text-5xl font-black tracking-tight text-white drop-shadow-lg md:text-6xl lg:text-7xl"
+            className="mb-4 font-serif text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white drop-shadow-md"
             id="home-hero-title"
           >
-            去你想去的地方
-            <br />
-            <span className="text-[#b8e0df]">
-              AI 帮你规划
-            </span>
+            去你想去的地方，
+            <span className="text-amber-300 underline decoration-emerald-400/40 decoration-wavy underline-offset-8">绘制独家手账</span>
           </h1>
-          <p className="mx-auto max-w-[600px] text-lg text-white/80 md:text-xl">
+          <p className="mx-auto max-w-[620px] text-base text-stone-200 md:text-lg">
             <span>{typedText}</span>
-            <span className="inline-block h-[1.1em] w-[2px] translate-y-[2px] animate-blink bg-[#b8e0df]" />
+            <span className="inline-block h-[1.1em] w-[2px] translate-y-[2px] animate-blink bg-amber-300" />
           </p>
         </div>
 
-        {/* 搜索表单 */}
+        {/* 灵感盲盒入口 */}
+        <div className="mx-auto mb-6 max-w-[880px]">
+          <div className="flex justify-center mb-3">
+            <button
+              className="inline-flex items-center gap-2 rounded-full border border-amber-300/60 bg-amber-950/60 px-4.5 py-1.5 text-xs font-bold text-amber-200 backdrop-blur-md transition-all hover:bg-amber-900/70 hover:scale-105 cursor-pointer shadow-sm"
+              onClick={() => setShowMysteryBox(prev => !prev)}
+              type="button"
+            >
+              <Dices className="h-4 w-4 text-amber-400" />
+              {showMysteryBox ? '收起灵感盲盒 ✕' : '🎲 纠结去哪？开启目的地灵感盲盒'}
+            </button>
+          </div>
+          {showMysteryBox && (
+            <div className="mb-6 animate-fade-in-up">
+              <AdventureMysteryBox onApply={handleApplyMystery} />
+            </div>
+          )}
+        </div>
+
+        {/* 搜索表单 (手账便签卡片) */}
         <form
-          className="planner-form relative z-10 mx-auto max-w-[860px] rounded-lg bg-white p-6 shadow-2xl"
+          className="planner-form relative z-10 mx-auto max-w-[880px] rounded-3xl bg-[#FDFBF7]/96 backdrop-blur-xl p-6 sm:p-7 border border-stone-200/80 shadow-[0_20px_50px_rgba(28,25,23,0.14)]"
           noValidate
           onSubmit={submitPlanner}
         >
+          {/* 出行偏好风格选择 */}
+          <div className="mb-5 flex flex-wrap items-center justify-center gap-2 border-b border-stone-200/70 pb-4">
+            <span className="text-xs font-bold text-stone-500 mr-1">出行偏好：</span>
+            {TRAVEL_PREFERENCES.map(pref => (
+              <button
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold transition-all cursor-pointer ${
+                  selectedPreference === pref.key
+                    ? 'bg-emerald-700 text-white shadow-sm scale-105'
+                    : 'bg-stone-100/90 text-stone-600 hover:bg-stone-200/80 hover:text-stone-900'
+                }`}
+                key={pref.key}
+                onClick={() => setSelectedPreference(pref.key)}
+                type="button"
+              >
+                <span>{pref.emoji}</span>
+                <span>{pref.label}</span>
+              </button>
+            ))}
+          </div>
+
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
             {/* 目的地 */}
             <div className="relative z-20 flex-1 text-left" onClick={e => e.stopPropagation()}>
-              <Label className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-gray-500" htmlFor="home-city-input">
-                <MapPin className="h-3.5 w-3.5" />
+              <Label className="mb-2 flex items-center gap-1.5 text-xs font-bold text-stone-600" htmlFor="home-city-input">
+                <MapPin className="h-3.5 w-3.5 text-emerald-700" />
                 目的地
-                <span className="text-red-500">*</span>
+                <span className="text-amber-600">*</span>
               </Label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
                 <Input
-
                   autoComplete="off"
-                  className="h-12 rounded-xl border-gray-200 bg-gray-50 pl-10 text-sm focus:bg-white"
+                  className="h-12 rounded-2xl border-stone-200 bg-stone-50/80 pl-10 text-sm text-stone-900 focus:bg-white focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"
                   id="home-city-input"
                   onChange={handleCityChange}
                   onFocus={() => setShowDropdown(true)}
                   onKeyDown={handleCityKeyDown}
-                  placeholder="搜索城市，如 三亚、成都、西安..."
-
+                  placeholder="搜索城市，如 三亚、大理、西安..."
                   type="text"
                   value={city}
                 />
               </div>
               {fieldErrors.city
-                ? <span className="mt-1.5 text-xs text-red-500" id="home-city-error">{fieldErrors.city}</span>
+                ? <span className="mt-1.5 text-xs text-red-500 font-medium" id="home-city-error">{fieldErrors.city}</span>
                 : null}
               {showDropdown && city.trim().length > 0
                 ? (
                     <div
-                      className="absolute left-0 top-full z-50 mt-2 max-h-[280px] w-full overflow-y-auto rounded-xl border border-gray-100 bg-white py-1 shadow-xl"
+                      className="absolute left-0 top-full z-50 mt-2 max-h-[280px] w-full overflow-y-auto rounded-2xl border border-stone-200 bg-[#FAF7F0] py-1 shadow-2xl"
                       id="home-city-dropdown"
-
                     >
                       {isSearching
                         ? (
-                            <div className="flex items-center justify-center gap-2 px-4 py-6 text-sm text-gray-400">
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                              搜索中...
+                            <div className="flex items-center justify-center gap-2 px-4 py-6 text-sm text-stone-500">
+                              <Loader2 className="h-4 w-4 animate-spin text-emerald-700" />
+                              正在检索城市库...
                             </div>
                           )
                         : displayCities.length > 0
                           ? displayCities.slice(0, 10).map((name, index) => (
                               <Button
-
-                                className={`w-full justify-start gap-2 px-4 py-2.5 text-left text-sm hover:bg-primary/8 hover:text-primary ${
+                                className={`w-full justify-start gap-2.5 px-4 py-2.5 text-left text-sm hover:bg-emerald-100/70 hover:text-emerald-900 ${
                                   city === name || activeCityIndex === index
-                                    ? 'bg-primary/8 text-primary'
-                                    : 'text-gray-700'
+                                    ? 'bg-emerald-100 text-emerald-900 font-bold'
+                                    : 'text-stone-700'
                                 }`}
                                 id={`home-city-option-${index}`}
                                 key={name}
                                 onClick={() => selectCity(name)}
-
                                 variant="ghost"
                               >
-                                <MapPin className="h-3.5 w-3.5 flex-shrink-0 opacity-40" />
+                                <MapPin className="h-3.5 w-3.5 flex-shrink-0 text-emerald-700" />
                                 {name}
                               </Button>
                             ))
                           : (
-                              <div className="px-4 py-6 text-center text-sm text-gray-400">未找到匹配城市</div>
+                              <div className="px-4 py-6 text-center text-sm text-stone-500">未找到匹配城市</div>
                             )}
                     </div>
                   )
@@ -407,14 +474,13 @@ export function HeroSearch() {
 
             {/* 预算 */}
             <div className="w-full text-left lg:w-[150px]">
-              <Label className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-gray-500" htmlFor="home-budget-input">
-                <CircleDollarSign className="h-3.5 w-3.5" />
+              <Label className="mb-2 flex items-center gap-1.5 text-xs font-bold text-stone-600" htmlFor="home-budget-input">
+                <CircleDollarSign className="h-3.5 w-3.5 text-amber-600" />
                 预算 (元)
-                <span className="text-red-500">*</span>
+                <span className="text-amber-600">*</span>
               </Label>
               <Input
-
-                className="h-12 rounded-xl border-gray-200 bg-gray-50 text-sm focus:bg-white"
+                className="h-12 rounded-2xl border-stone-200 bg-stone-50/80 text-sm text-stone-900 focus:bg-white focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"
                 id="home-budget-input"
                 inputMode="numeric"
                 min="1"
@@ -428,7 +494,7 @@ export function HeroSearch() {
                 value={budget}
               />
               {fieldErrors.budget
-                ? <span className="mt-1.5 text-xs text-red-500" id="home-budget-error">{fieldErrors.budget}</span>
+                ? <span className="mt-1.5 text-xs text-red-500 font-medium" id="home-budget-error">{fieldErrors.budget}</span>
                 : null}
             </div>
 
@@ -436,27 +502,27 @@ export function HeroSearch() {
             <div className="flex w-full gap-2 lg:w-[320px]">
               {/* 出发日期 */}
               <div className="flex-1 text-left">
-                <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-gray-500">
-                  <Calendar className="h-3.5 w-3.5" />
+                <span className="mb-2 flex items-center gap-1.5 text-xs font-bold text-stone-600">
+                  <Calendar className="h-3.5 w-3.5 text-emerald-700" />
                   出发日期
-                  <span className="text-red-500">*</span>
+                  <span className="text-amber-600">*</span>
                 </span>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       className={cn(
-                        'h-12 w-full justify-start rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm font-normal text-gray-900 hover:bg-gray-100 hover:text-gray-900',
-                        !dateRange?.from && 'text-gray-400',
+                        'h-12 w-full justify-start rounded-2xl border border-stone-200 bg-stone-50/80 px-3 text-sm font-medium text-stone-900 hover:bg-stone-100 hover:text-stone-900',
+                        !dateRange?.from && 'text-stone-400',
                       )}
                       variant="ghost"
                     >
-                      <Calendar className="mr-1.5 h-4 w-4 flex-shrink-0" />
+                      <Calendar className="mr-1.5 h-4 w-4 flex-shrink-0 text-emerald-700" />
                       {dateRange?.from
                         ? format(dateRange.from, 'MM/dd', { locale: zhCN })
                         : '出发'}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent align="start" className="w-auto rounded-2xl border-gray-100 p-0 shadow-xl">
+                  <PopoverContent align="start" className="w-auto rounded-2xl border-stone-200 bg-[#FAF7F0] p-0 shadow-2xl">
                     <CalendarComponent
                       defaultMonth={dateRange?.from}
                       disabled={date => date < startOfDay(new Date())}
@@ -479,36 +545,37 @@ export function HeroSearch() {
 
               {/* 返回日期 */}
               <div className="flex-1 text-left">
-                <span className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-gray-500">
-                  <Calendar className="h-3.5 w-3.5" />
+                <span className="mb-2 flex items-center gap-1.5 text-xs font-bold text-stone-600">
+                  <Calendar className="h-3.5 w-3.5 text-emerald-700" />
                   返回日期
-                  <span className="text-red-500">*</span>
+                  <span className="text-amber-600">*</span>
                 </span>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       className={cn(
-                        'h-12 w-full justify-start rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm font-normal text-gray-900 hover:bg-gray-100 hover:text-gray-900',
-                        !dateRange?.to && 'text-gray-400',
+                        'h-12 w-full justify-start rounded-2xl border border-stone-200 bg-stone-50/80 px-3 text-sm font-medium text-stone-900 hover:bg-stone-100 hover:text-stone-900',
+                        !dateRange?.to && 'text-stone-400',
                       )}
                       disabled={!dateRange?.from}
                       variant="ghost"
                     >
-                      <Calendar className="mr-1.5 h-4 w-4 flex-shrink-0" />
+                      <Calendar className="mr-1.5 h-4 w-4 flex-shrink-0 text-emerald-700" />
                       {dateRange?.to
                         ? (
                             <>
                               {format(dateRange.to, 'MM/dd', { locale: zhCN })}
-                              <span className="ml-1 text-xs text-gray-400">
+                              <span className="ml-1 text-xs text-amber-700 font-bold">
+                                (
                                 {days}
-                                天
+                                天)
                               </span>
                             </>
                           )
                         : '返回'}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent align="start" className="w-auto rounded-2xl border-gray-100 p-0 shadow-xl">
+                  <PopoverContent align="start" className="w-auto rounded-2xl border-stone-200 bg-[#FAF7F0] p-0 shadow-2xl">
                     <CalendarComponent
                       defaultMonth={dateRange?.from}
                       disabled={date => date <= (dateRange?.from ?? startOfDay(new Date()))}
@@ -534,15 +601,14 @@ export function HeroSearch() {
             {fieldErrors.date
               ? (
                   <div className="w-full text-left lg:w-[320px]">
-                    <span className="text-xs text-red-500" id="home-date-error">{fieldErrors.date}</span>
+                    <span className="text-xs text-red-500 font-medium" id="home-date-error">{fieldErrors.date}</span>
                   </div>
                 )
               : null}
 
             {/* 搜索按钮 */}
             <Button
-
-              className="h-12 gap-2 rounded-lg bg-primary px-8 text-sm font-bold text-white shadow-lg shadow-primary/20 hover:bg-primary-strong disabled:hover:bg-primary lg:w-auto"
+              className="h-12 gap-2 rounded-2xl bg-emerald-700 px-8 text-sm font-bold text-white shadow-lg shadow-emerald-800/25 hover:bg-emerald-800 disabled:hover:bg-emerald-700 lg:w-auto cursor-pointer transition-all hover:scale-[1.02]"
               disabled={isSubmitting}
               type="submit"
             >
@@ -550,13 +616,13 @@ export function HeroSearch() {
                 ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>生成中...</span>
+                      <span>生成手账中...</span>
                     </>
                   )
                 : (
                     <>
-                      <Bot className="h-4 w-4" />
-                      <span>AI 规划</span>
+                      <Compass className="h-4 w-4" />
+                      <span>生成行程手账</span>
                     </>
                   )}
             </Button>
@@ -565,24 +631,24 @@ export function HeroSearch() {
           {/* 天气提示 */}
           {weather || weatherLoading
             ? (
-                <div className="mt-4 flex items-center gap-2 text-sm text-gray-500">
+                <div className="mt-4 flex items-center gap-2 text-xs text-stone-600 bg-stone-100/80 px-3 py-1.5 rounded-xl w-max">
                   {weatherLoading
                     ? (
                         <>
-                          <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-gray-300 border-t-primary" />
-                          正在查询天气...
+                          <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-stone-300 border-t-emerald-700" />
+                          正在查询当地气象...
                         </>
                       )
                     : weather
                       ? (
                           <>
-                            <Cloud className="h-4 w-4 text-blue-500" />
-                            {weather.city}
-                            {' '}
-                            {weather.temperature}
-                            °C
-                            {' '}
-                            {weather.weatherDesc}
+                            <Cloud className="h-3.5 w-3.5 text-sky-600" />
+                            <span>{weather.city}</span>
+                            <span className="font-bold text-stone-800">
+                              {weather.temperature}
+                              °C
+                            </span>
+                            <span>{weather.weatherDesc}</span>
                           </>
                         )
                       : null}
@@ -593,17 +659,19 @@ export function HeroSearch() {
 
         {/* 热门搜索标签 */}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
-          <span className="flex items-center gap-1 text-sm text-white/60">
-            <Flame className="h-3.5 w-3.5 text-[#b8e0df]" />
-            热门：
+          <span className="flex items-center gap-1 text-xs text-stone-300 font-medium">
+            <Flame className="h-3.5 w-3.5 text-amber-300" />
+            热门手账：
           </span>
-          {['三亚', '丽江', '西安', '成都', '大理', '厦门'].map(tag => (
+          {['洱海慢生活', '大唐古都西安', '川西甘孜自驾', '三亚椰林落日', '丽江古城', '厦门小资'].map(tag => (
             <Badge
-              className="cursor-pointer border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-white/80 backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:bg-white/20 hover:text-white"
+              className="cursor-pointer border-white/25 bg-white/10 px-3 py-1 text-xs font-medium text-stone-100 backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:bg-emerald-700 hover:border-emerald-500 hover:text-white rounded-full shadow-2xs"
               key={tag}
-              onClick={() => selectCity(tag)}
+              onClick={() => selectCity(tag.replace(/慢生活|古都|自驾|椰林落日|古城|小资/g, ''))}
               variant="outline"
             >
+              🌿
+              {' '}
               {tag}
             </Badge>
           ))}
@@ -611,7 +679,7 @@ export function HeroSearch() {
       </div>
 
       {/* 底部渐变过渡 */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#FAF7F0] to-transparent" />
     </section>
   )
 }

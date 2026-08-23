@@ -6,7 +6,14 @@ BEGIN;
 
 -- ========== 扩展 ==========
 
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
+-- pg_trgm 用于名称模糊搜索；不可用时跳过（应用搜索回退到 ILIKE）
+DO $$
+BEGIN
+  CREATE EXTENSION IF NOT EXISTS pg_trgm;
+EXCEPTION
+  WHEN OTHERS THEN
+    RAISE NOTICE 'pg_trgm 扩展不可用，跳过三字母索引: %', SQLERRM;
+END $$;
 
 DO $$
 BEGIN
@@ -165,7 +172,15 @@ CREATE TABLE IF NOT EXISTS community_post_comments (
 -- ========== 索引 ==========
 
 CREATE INDEX IF NOT EXISTS idx_attractions_city      ON attractions(city);
-CREATE INDEX IF NOT EXISTS idx_attractions_name_trgm ON attractions USING gin (name gin_trgm_ops);
+-- 名称三字母索引依赖 pg_trgm，仅在扩展可用时创建
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm') THEN
+    CREATE INDEX IF NOT EXISTS idx_attractions_name_trgm ON attractions USING gin (name gin_trgm_ops);
+  ELSE
+    RAISE NOTICE 'pg_trgm 不可用，跳过 idx_attractions_name_trgm';
+  END IF;
+END $$;
 CREATE INDEX IF NOT EXISTS idx_knowledge_city        ON attraction_knowledge(city);
 CREATE INDEX IF NOT EXISTS idx_attraction_tags_tag   ON attraction_tags(tag_id);
 

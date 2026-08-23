@@ -27,6 +27,7 @@ import { AttractionCardSkeleton } from './AttractionCardSkeleton'
 const ticketOptions = [
   { label: '全部', value: '' },
   { label: '免费', value: 'free' },
+
   { label: '收费', value: 'paid' },
 ]
 
@@ -151,70 +152,72 @@ export default function Attractions() {
   )
 
   return (
-    <main className="travel-page-shell">
-      <section className="travel-page-hero travel-ticket-edge travel-route-line">
-        <p className="mb-2.5 w-fit rounded-full bg-primary/10 px-2.5 py-1.5 text-3 font-black tracking-[0.14em] text-primary-strong">
-          ATTRACTIONS
+    <main className="travel-page-shell gap-6">
+      <section className="relative overflow-hidden rounded-3xl border border-stone-200/90 bg-[#FDFBF7] p-6 sm:p-8 shadow-sm">
+        <p className="mb-1 text-xs font-bold uppercase tracking-widest text-emerald-800">
+          DESTINATIONS & ATTRACTIONS · 景点漫游志
         </p>
         <h1
-          className="mb-2 font-display text-[clamp(30px,5vw,52px)] leading-[1.05] text-travel-ocean"
+          className="font-serif text-2xl sm:text-4xl font-extrabold text-stone-900 leading-tight"
           id="attractions-title"
         >
-          精选景点
+          探索精选景点
         </h1>
-        <p className="max-w-[640px] text-base leading-relaxed text-stone-900/72">
-          像翻旅行票根一样发现目的地，收藏想去的景点，再让 AI 帮你串成路线。
+        <p className="mt-2 max-w-[640px] text-xs sm:text-sm leading-relaxed text-stone-500">
+          像翻阅旅行手账一样发现各地自然与人文宝藏，收藏心动目的地，随时让 AI 编排进你的路线。
         </p>
       </section>
 
       {/* ---- 筛选面板 ---- */}
       <section
-        className="mx-auto max-w-[1180px] rounded-xl p-[clamp(16px,3vw,22px)]"
+        className="rounded-3xl border border-stone-200/90 bg-[#FDFBF7] p-6 shadow-sm"
       >
         <div className="mb-4 flex items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold text-travel-ocean" id="attractions-filter-title">
-            筛选景点
+          <h2 className="font-serif text-base font-bold text-stone-900" id="attractions-filter-title">
+            筛选景点手账
           </h2>
           {hasActiveFilters
             ? (
-                <Button onClick={handleClearFilters} variant="link">
-                  清空筛选
+                <Button className="text-emerald-800 font-bold" onClick={handleClearFilters} variant="link">
+                  清空所有筛选
                 </Button>
               )
             : null}
         </div>
-        <form className="mt-3.5 grid gap-2" onSubmit={handleSearchSubmit}>
+        <form className="grid gap-2" onSubmit={handleSearchSubmit}>
           <label
-            className="text-3.25 font-extrabold text-stone-900/72"
+            className="text-xs font-bold text-stone-700"
             htmlFor="attractions-keyword"
           >
             搜索关键词
           </label>
           <div className="flex items-center gap-2.5">
             <Input
-              className="flex-1"
+              className="flex-1 rounded-2xl bg-white border-stone-200 text-stone-900 shadow-2xs"
               id="attractions-keyword"
               onChange={event => handleKeywordChange(event.target.value)}
-              placeholder="搜索景点、城市或标签（输入自动搜索）"
+              placeholder="搜索景点名称、城市或标签（输入自动搜索）"
               value={keywordInput}
             />
-            <Button type="submit">搜索</Button>
+            <Button className="rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold cursor-pointer" type="submit">搜索</Button>
           </div>
         </form>
         {cities.length > 0
           ? (
-              <div className="mt-3.5 grid gap-2">
+              <div className="mt-4 grid gap-2">
                 <p
-                  className="text-3.25 font-extrabold text-stone-900/72"
+                  className="text-xs font-bold text-stone-700"
                   id="attractions-city-filter"
                 >
-                  城市
+                  探索城市
                 </p>
                 <div className="flex flex-wrap items-center gap-2">
                   {cities.map(city => (
                     <Button
+                      className={`rounded-full px-3.5 py-1 text-xs font-bold cursor-pointer ${filters.city === city ? 'bg-emerald-700 text-white hover:bg-emerald-800' : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-50'}`}
                       key={city}
                       onClick={() => updateFilters({ city: filters.city === city ? '' : city })}
+                      size="sm"
                       variant={filters.city === city ? 'default' : 'outline'}
                     >
                       {city}
@@ -224,15 +227,15 @@ export default function Attractions() {
               </div>
             )
           : null}
-        <div className="mt-3.5 grid gap-2">
+        <div className="mt-4 grid gap-2">
           <label
-            className="text-3.25 font-extrabold text-stone-900/72"
+            className="text-xs font-bold text-stone-700"
             htmlFor="attractions-ticket-type"
           >
-            收费类型
+            门票类型
           </label>
           <select
-            className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
+            className="flex h-10 w-full max-w-[240px] rounded-2xl border border-stone-200 bg-white px-3 py-2 text-xs font-bold text-stone-800 shadow-2xs"
             id="attractions-ticket-type"
             onChange={event =>
               updateFilters({ ticketType: event.target.value as '' | AttractionTicketType })}
@@ -247,17 +250,20 @@ export default function Attractions() {
         </div>
         {tags.length > 0
           ? (
-              <div className="mt-3.5 grid gap-2">
-                <p className="text-3.25 font-extrabold text-stone-900/72" id="attractions-tag-filter">
-                  标签
+              <div className="mt-4 grid gap-2">
+                <p className="text-xs font-bold text-stone-700" id="attractions-tag-filter">
+                  主题标签
                 </p>
                 <div className="flex flex-wrap items-center gap-2">
                   {tags.map(tag => (
                     <Button
+                      className={`rounded-full px-3 py-1 text-xs font-bold cursor-pointer ${filters.tag === tag ? 'bg-amber-600 text-white hover:bg-amber-700' : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-50'}`}
                       key={tag}
                       onClick={() => updateFilters({ tag: filters.tag === tag ? '' : tag })}
+                      size="sm"
                       variant={filters.tag === tag ? 'default' : 'outline'}
                     >
+                      #
                       {tag}
                     </Button>
                   ))}
@@ -265,27 +271,28 @@ export default function Attractions() {
               </div>
             )
           : null}
-        <p className="mt-2 text-3.25 text-travel-muted">
-          {loading ? '正在应用筛选...' : `共找到 ${total} 个景点`}
+        <p className="mt-3 text-xs text-stone-400">
+          {loading ? '正在检索景点数据...' : `共找到 ${total} 个推荐目的地`}
         </p>
       </section>
 
       {loading && <AttractionCardSkeleton />}
       {!loading && error
         ? (
-            <div className="flex items-center justify-between rounded-xl p-6">
+            <div className="flex items-center justify-between rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-700 font-bold">
               <span>{error}</span>
-              <Button onClick={() => load(filters)}>重试</Button>
+              <Button className="rounded-xl bg-red-600 hover:bg-red-700 text-white" onClick={() => load(filters)}>重试</Button>
             </div>
           )
         : null}
       {!loading && !error && items.length === 0
         ? (
-            <div className="flex flex-col items-center gap-3 rounded-xl p-6">
-              <div className="py-8 text-center text-muted-foreground">
-                <p>没有找到符合筛选条件的景点</p>
+            <div className="flex flex-col items-center gap-3 rounded-3xl border border-stone-200/90 bg-[#FDFBF7] p-8">
+              <div className="py-6 text-center text-stone-500">
+                <p className="font-bold text-base">没有找到符合筛选条件的景点手账</p>
+                <p className="text-xs text-stone-400 mt-1">试试减少筛选条件或搜索其他城市</p>
               </div>
-              {hasActiveFilters ? <Button onClick={handleClearFilters}>清空筛选</Button> : null}
+              {hasActiveFilters ? <Button className="rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white" onClick={handleClearFilters}>清空筛选</Button> : null}
             </div>
           )
         : null}
@@ -304,56 +311,56 @@ export default function Attractions() {
                   href={`/attractions/${item.id}`}
                   key={item.id}
                 >
-                  <article className="travel-surface-card travel-ticket-edge overflow-hidden">
-                    <Image
-                      alt={`${item.name}，${item.city}景点封面`}
-                      className="h-62.5 w-full object-cover"
-                      height={250}
-                      loading="lazy"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      src={item.coverImage}
-                      width={400}
-                    />
+                  <article className="overflow-hidden rounded-3xl border border-stone-200/90 bg-[#FDFBF7] shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-700/60 hover:shadow-xl">
+                    <div className="relative h-[220px] w-full overflow-hidden">
+                      <Image
+                        alt={`${item.name}，${item.city}景点封面`}
+                        className="object-cover transition-transform duration-700 group-hover:scale-108"
+                        fill
+                        loading="lazy"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        src={item.coverImage}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-stone-950/40 via-transparent to-transparent opacity-60" />
+                      <button
+                        className="absolute right-3.5 top-3.5 rounded-full p-2 bg-white/90 backdrop-blur-md text-stone-400 shadow-sm transition-all hover:scale-110 hover:text-red-500 cursor-pointer"
+                        disabled={isFavoritePending}
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          handleToggleFavorite(item)
+                        }}
+                        type="button"
+                      >
+                        <Heart
+                          className={item.isFavorite ? 'fill-red-500 text-red-500' : ''}
+                          size={18}
+                        />
+                      </button>
+                      <Badge className="absolute left-3.5 top-3.5 bg-white/95 text-xs font-bold text-emerald-800 shadow-sm backdrop-blur-md rounded-full border border-stone-200">
+                        🌿
+                        {' '}
+                        {item.city}
+                      </Badge>
+                    </div>
                     <div className="p-5">
-                      <div className="mb-2 flex items-center justify-between">
-                        <h2 className="text-lg font-bold text-travel-ink">{item.name}</h2>
-                        <button
-                          className="rounded-full p-2 text-travel-muted transition-colors hover:text-primary"
-                          disabled={isFavoritePending}
-                          onClick={(e) => {
-                            e.preventDefault()
-                            e.stopPropagation()
-                            handleToggleFavorite(item)
-                          }}
-                          type="button"
-                        >
-                          <Heart
-                            className={item.isFavorite ? 'fill-primary text-primary' : ''}
-                          />
-                        </button>
-                      </div>
-                      <p className="mb-3 text-sm text-travel-muted">{item.summary}</p>
-                      <div className="mb-3 flex items-center gap-2">
+                      <div className="mb-1 flex items-center justify-between">
+                        <h2 className="font-serif text-base font-bold text-stone-900 group-hover:text-emerald-800 transition-colors">{item.name}</h2>
                         <Badge
-                          className={`travel-tag ${item.ticketType === 'free' ? 'travel-tag--free' : 'travel-tag--paid'}`}
+                          className={`rounded-full text-[11px] font-bold ${item.ticketType === 'free' ? 'bg-emerald-100 text-emerald-900 border border-emerald-200' : 'bg-amber-100 text-amber-900 border border-amber-300'}`}
                         >
-                          {item.ticketType === 'free' ? '免费' : '收费'}
+                          {item.ticketType === 'free' ? '免费开放' : item.priceText || '收费'}
                         </Badge>
-                        <span className="text-sm text-travel-ink">{item.city}</span>
-                        <span className="text-sm text-travel-muted">{item.priceText}</span>
                       </div>
-                      <div className="mb-4 flex flex-wrap gap-1.5">
+                      <p className="mb-3 text-xs leading-relaxed text-stone-500 line-clamp-2">{item.summary}</p>
+                      <div className="flex flex-wrap gap-1.5 pt-2 border-t border-stone-200/70">
                         {item.tags.map(tag => (
-                          <Badge className="travel-tag travel-tag--info" key={tag}>
+                          <Badge className="bg-stone-100/80 text-stone-600 border border-stone-200 text-[10px] font-medium rounded-full px-2.5 py-0.5" key={tag}>
+                            #
                             {tag}
                           </Badge>
                         ))}
                       </div>
-                      <span
-                        className="text-sm font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100"
-                      >
-                        查看详情
-                      </span>
                     </div>
                   </article>
                 </Link>

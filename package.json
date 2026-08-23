@@ -18,7 +18,7 @@
     "rag:evaluate": "tsx --env-file=.env scripts/evaluate-rag.ts",
     "db:seed:attractions": "tsx --env-file=.env scripts/seed-attractions.ts",
     "db:seed:community": "tsx --env-file=.env scripts/seed-community.ts",
-    "prepare": "husky",
+    "prepare": "husky || true",
     "images:verify": "tsx scripts/verify-image-assets.ts"
   },
   "dependencies": {

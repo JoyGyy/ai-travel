@@ -66,7 +66,7 @@ describe('pOST /api/auth/login', () => {
     expect(setAuthCookie).toHaveBeenCalled()
   })
 
-  it('用户名或密码错误返回 500', async () => {
+  it('用户名或密码错误返回 401', async () => {
     mockLogin.mockRejectedValueOnce(new Error('用户名或密码错误'))
 
     const req = new Request('http://localhost/api/auth/login', {
@@ -77,7 +77,7 @@ describe('pOST /api/auth/login', () => {
     const res = await POST(req)
     const data = await res.json()
 
-    expect(res.status).toBe(500)
+    expect(res.status).toBe(401)
     expect(data.success).toBe(false)
   })
 

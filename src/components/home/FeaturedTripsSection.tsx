@@ -19,21 +19,19 @@ export function FeaturedTripsSection() {
 
       <div className="mb-8 flex items-center justify-between scroll-reveal">
         <h2
-          className="flex items-center gap-3 text-2xl font-bold"
+          className="flex items-center gap-3 font-serif text-2xl font-bold text-stone-900"
           id="featured-title"
         >
-          <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white shadow-lg shadow-primary/20">
+          <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-700 text-white shadow-md shadow-emerald-800/20">
             <Star size={20} />
           </span>
-          <span className="bg-gradient-to-r from-travel-ink to-travel-ink/70 bg-clip-text text-transparent">
-            精选推荐
-          </span>
+          <span>精选手账路线</span>
         </h2>
         <Link
-          className="group flex items-center gap-1 text-sm font-semibold text-primary transition-colors hover:text-primary-strong"
+          className="group flex items-center gap-1 text-xs font-bold text-emerald-800 transition-colors hover:text-emerald-900"
           href="/detail"
         >
-          更多行程
+          更多精选手账
           <span className="transition-transform group-hover:translate-x-1">&rarr;</span>
         </Link>
       </div>
@@ -41,46 +39,48 @@ export function FeaturedTripsSection() {
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {featuredTrips.map((trip, index) => (
           <Link
-            className="group block overflow-hidden rounded-lg bg-white shadow-[0_2px_12px_rgba(34,111,120,0.08)] transition-all duration-300 hover:-translate-y-2 hover:ring-2 hover:ring-primary/20 hover:shadow-[0_12px_40px_rgba(34,111,120,0.14)] scroll-reveal"
+            className="group block overflow-hidden rounded-3xl bg-[#FDFBF7] border border-stone-200/90 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-700/60 hover:shadow-xl scroll-reveal"
             data-delay={index}
             href={`/detail?city=${encodeURIComponent(trip.city)}`}
             key={trip.title}
           >
-            <div className="relative h-[200px] w-full overflow-hidden">
+            <div className="relative h-[210px] w-full overflow-hidden">
               <Image
                 alt={trip.title}
-                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                className="object-cover transition-transform duration-700 group-hover:scale-108"
                 fill
                 loading="lazy"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 src={trip.image}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-              <Badge className="absolute left-3 top-3 bg-white/90 text-xs font-bold text-primary shadow-sm backdrop-blur-sm">
+              <div className="absolute inset-0 bg-gradient-to-t from-stone-950/50 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-80" />
+              <Badge className="absolute left-3.5 top-3.5 bg-white/95 text-xs font-bold text-emerald-800 shadow-sm backdrop-blur-md rounded-full border border-stone-200">
+                🌿
+                {' '}
                 {trip.city}
               </Badge>
-              <div className="absolute bottom-3 right-3 flex items-center gap-1">
-                <Badge className="border-0 bg-black/60 text-xs text-white backdrop-blur-sm" variant="outline">
-                  <Star className="mr-0.5 h-3 w-3 fill-yellow-400 text-yellow-400" />
+              <div className="absolute bottom-3.5 right-3.5 flex items-center gap-1">
+                <Badge className="border-0 bg-stone-950/70 text-xs font-bold text-amber-300 backdrop-blur-md rounded-full px-2.5 py-0.5" variant="outline">
+                  <Star className="mr-1 h-3 w-3 fill-amber-400 text-amber-400" />
                   {trip.rating}
                 </Badge>
               </div>
             </div>
-            <div className="p-4">
-              <h3 className="mb-1 text-base font-bold text-travel-ink">{trip.title}</h3>
-              <p className="mb-3 text-xs text-travel-muted">{trip.desc}</p>
-              <div className="flex items-center justify-between">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-xl font-black text-primary">
+            <div className="p-5">
+              <h3 className="mb-1 font-serif text-base font-bold text-stone-900 group-hover:text-emerald-800 transition-colors">{trip.title}</h3>
+              <p className="mb-4 text-xs text-stone-500 line-clamp-2 leading-relaxed">{trip.desc}</p>
+              <div className="flex items-center justify-between pt-2 border-t border-stone-200/70">
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-lg font-black text-emerald-800">
                     ¥
                     {trip.price}
                   </span>
-                  <span className="text-xs text-travel-muted line-through">
+                  <span className="text-xs text-stone-400 line-through">
                     ¥
                     {trip.originalPrice}
                   </span>
                 </div>
-                <Badge className="bg-red-50 text-red-600" variant="outline">
+                <Badge className="bg-amber-100 text-amber-900 border border-amber-300/80 rounded-full font-bold text-[11px]" variant="outline">
                   {trip.tag}
                 </Badge>
               </div>

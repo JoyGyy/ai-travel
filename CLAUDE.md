@@ -16,6 +16,10 @@ AI 驱动的智能旅行规划助手，基于 Next.js 16 全栈框架，集成 S
 - `pnpm test` — 启动 Vitest 测试（watch 模式）
 - `pnpm test:run` — 运行一次测试
 
+## 自动化协作准则 (Agent Workflow Guidelines)
+
+- **自动 Git 提交**: 每次代码修改与测试验证（TypeScript/ESLint）通过后，**必须自动执行 `git add` 并使用清晰规范的 commit message 提交代码**。
+
 ## 架构要点
 
 ### 技术栈

@@ -127,22 +127,22 @@ export default function Weather() {
 
   return (
     <main
-      className="flex-1 overflow-x-hidden overflow-y-auto bg-background"
+      className="flex-1 overflow-x-hidden overflow-y-auto bg-[#FAF7F0]"
       onClick={() => showDropdown && setShowDropdown(false)}
     >
       {/* Hero 区域 */}
-      <div className="border-b border-travel-ink/8 bg-travel-surface-muted px-[clamp(20px,5vw,72px)] pb-20 pt-[clamp(36px,7vw,64px)]">
-        <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
-          WEATHER
+      <div className="border-b border-stone-200/80 bg-[#FAF7F0] px-[clamp(20px,5vw,72px)] pb-20 pt-[clamp(36px,7vw,64px)]">
+        <p className="mb-1 text-xs font-bold uppercase tracking-widest text-emerald-800">
+          WEATHER INTELLIGENCE · 旅人气象站
         </p>
         <h1
-          className="font-display text-[clamp(30px,5vw,42px)] font-bold leading-tight text-travel-ink"
+          className="font-serif text-2xl sm:text-4xl font-extrabold text-stone-900 leading-tight"
           id="weather-title"
         >
-          天气查询
+          实时天气感知
         </h1>
-        <p className="mt-2 max-w-[520px] text-sm leading-relaxed text-travel-muted sm:text-base">
-          查询目的地实时天气和未来三日趋势，为出行安排留出余量。
+        <p className="mt-2 max-w-[520px] text-xs sm:text-sm leading-relaxed text-stone-500">
+          查询目的地实时气象与未来三天趋势，为慢节奏旅程准备最舒适的穿搭与装备。
         </p>
       </div>
 
@@ -150,25 +150,25 @@ export default function Weather() {
       <div className="relative z-[2] mx-auto -mt-11 max-w-[1120px] px-4 pb-[max(36px,env(safe-area-inset-bottom))] sm:px-6">
         {/* 搜索框 */}
         <div className="relative" onClick={e => e.stopPropagation()}>
-          <div className="rounded-lg border border-travel-ink/10 bg-white p-3 shadow-[0_12px_32px_rgba(34,111,120,0.1)] focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/15 sm:p-4">
-            <Label className="mb-2 block text-xs font-semibold text-travel-ink" htmlFor="weather-city-input">
-              查询城市
+          <div className="rounded-3xl border border-stone-200/90 bg-[#FDFBF7] p-4 shadow-md focus-within:border-emerald-700/60 focus-within:ring-2 focus-within:ring-emerald-700/10 sm:p-5">
+            <Label className="mb-2 block text-xs font-bold text-stone-700" htmlFor="weather-city-input">
+              查询目标城市气象
             </Label>
             <div className="flex items-center gap-3">
-              <Search aria-hidden="true" className="h-5 w-5 flex-none text-primary" />
+              <Search aria-hidden="true" className="h-5 w-5 flex-none text-emerald-800" />
               <Input
                 aria-activedescendant={showDropdown && filteredCities[activeCityIndex] ? `weather-city-option-${activeCityIndex}` : undefined}
                 aria-autocomplete="list"
                 aria-controls="weather-city-listbox"
                 aria-expanded={showDropdown}
                 autoComplete="off"
-                className="h-11 flex-1 border-0 bg-transparent p-0 text-base text-travel-ink shadow-none focus-visible:ring-0"
+                className="h-11 flex-1 border-0 bg-transparent p-0 text-base font-serif font-bold text-stone-900 shadow-none focus-visible:ring-0 placeholder:text-stone-400"
                 id="weather-city-input"
                 name="weather-city"
                 onChange={handleInputChange}
                 onFocus={() => setShowDropdown(true)}
                 onKeyDown={handleInputKeyDown}
-                placeholder="输入城市，例如杭州"
+                placeholder="输入城市名称，例如大理、杭州、成都"
                 role="combobox"
                 type="text"
                 value={city}
@@ -179,17 +179,17 @@ export default function Weather() {
           {/* 下拉列表 */}
           {showDropdown && (
             <div
-              className="absolute left-0 right-0 z-10 mt-2 max-h-[300px] overflow-y-auto rounded-lg border border-travel-ink/10 bg-white p-1 shadow-lg"
+              className="absolute left-0 right-0 z-10 mt-2 max-h-[300px] overflow-y-auto rounded-2xl border border-stone-200 bg-white p-2 shadow-xl"
               id="weather-city-listbox"
               role="listbox"
             >
               {filteredCities.map((name, index) => (
                 <Button
                   aria-selected={city === name || activeCityIndex === index}
-                  className={`min-h-11 w-full justify-start rounded-md px-3 py-2 text-left text-sm ${
+                  className={`min-h-10 w-full justify-start rounded-xl px-3.5 py-2 text-left text-xs sm:text-sm font-medium ${
                     city === name || activeCityIndex === index
-                      ? 'bg-primary/8 font-medium text-primary'
-                      : 'text-travel-ink'
+                      ? 'bg-emerald-50 font-bold text-emerald-900'
+                      : 'text-stone-700 hover:bg-stone-50'
                   }`}
                   id={`weather-city-option-${index}`}
                   key={name}
@@ -197,11 +197,13 @@ export default function Weather() {
                   role="option"
                   variant="ghost"
                 >
+                  📍
+                  {' '}
                   {name}
                 </Button>
               ))}
               {!filteredCities.length && (
-                <div className="px-4 py-4 text-center text-sm text-gray-500">
+                <div className="px-4 py-4 text-center text-xs text-stone-400">
                   未找到匹配城市
                 </div>
               )}
@@ -282,30 +284,30 @@ export default function Weather() {
         {/* 多城天气速览 */}
         {!weather && !loading && (
           <div className="mt-12 animate-fade-in-up">
-            <Separator className="mb-8 bg-travel-ink/8" />
+            <Separator className="mb-8 bg-stone-200/80" />
             <div className="mb-6 flex items-center gap-3">
-              <Cloud className="h-5 w-5 text-primary" />
-              <h2 className="text-lg font-bold text-travel-ink">多城速览</h2>
-              <span className="text-xs text-travel-muted">点击城市查询</span>
+              <Cloud className="h-5 w-5 text-emerald-800" />
+              <h2 className="font-serif text-lg font-bold text-stone-900">热门城市气象速览</h2>
+              <span className="text-xs text-stone-400">点击卡片快速切换</span>
             </div>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
               {QUICK_CITIES.map(item => (
                 <Card
-                  className="group cursor-pointer border-travel-ink/8 bg-white transition-colors hover:border-primary/25 hover:bg-primary/3"
+                  className="group cursor-pointer rounded-3xl border border-stone-200/90 bg-[#FDFBF7] shadow-2xs transition-all hover:-translate-y-1 hover:border-emerald-700/60 hover:shadow-md"
                   key={item.name}
                   onClick={() => selectCity(item.name)}
                 >
-                  <CardContent className="p-4">
-                    <div className="mb-4 flex items-center justify-between">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/8 text-primary">
+                  <CardContent className="p-4.5">
+                    <div className="mb-3 flex items-center justify-between">
+                      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-100/70 text-emerald-800">
                         <WeatherIcon className="h-5 w-5" desc={item.weather} />
                       </span>
-                      <span className="text-xs font-medium text-travel-muted">
+                      <span className="text-xs font-bold text-stone-500">
                         {item.weather}
                       </span>
                     </div>
-                    <p className="text-sm font-semibold text-travel-ink">{item.name}</p>
-                    <p className="mt-1 font-serif text-xl font-bold tabular-nums text-travel-ink">{item.temp}</p>
+                    <p className="font-serif text-sm font-bold text-stone-900 group-hover:text-emerald-800 transition-colors">{item.name}</p>
+                    <p className="mt-0.5 font-serif text-xl font-black tabular-nums text-emerald-800">{item.temp}</p>
                   </CardContent>
                 </Card>
               ))}
@@ -316,45 +318,46 @@ export default function Weather() {
         {/* 当季推荐 */}
         {!weather && !loading && (
           <div className="mt-12 animate-fade-in-up">
-            <Separator className="mb-8 bg-travel-ink/8" />
+            <Separator className="mb-8 bg-stone-200/80" />
             <div className="mb-6 flex items-center gap-3">
-              <CalendarDays className="h-5 w-5 text-primary" />
-              <h2 className="text-lg font-bold text-travel-ink">当季推荐</h2>
+              <CalendarDays className="h-5 w-5 text-amber-600" />
+              <h2 className="font-serif text-lg font-bold text-stone-900">当季宜游指南</h2>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               {SEASONAL_RECOMMENDS.map((item) => {
                 const SeasonIcon = SEASON_ICONS[item.season] || CalendarDays
                 return (
-                  <Card className="group overflow-hidden border-travel-ink/8 bg-white" key={item.season}>
+                  <Card className="group overflow-hidden rounded-3xl border border-stone-200/90 bg-[#FDFBF7] shadow-sm" key={item.season}>
                     <CardContent className="p-0">
-                      <div className="border-b border-travel-ink/8 bg-travel-surface-muted p-5">
+                      <div className="border-b border-stone-200/80 bg-gradient-to-r from-emerald-50/60 to-amber-50/40 p-5">
                         <div className="flex items-center gap-3">
-                          <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/8 text-primary">
+                          <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-700 text-white shadow-sm">
                             <SeasonIcon aria-hidden="true" className="h-5 w-5" />
                           </span>
                           <div>
-                            <p className="text-base font-semibold text-travel-ink">{item.season}</p>
-                            <p className="text-sm text-travel-muted">{item.desc}</p>
+                            <p className="font-serif text-base font-bold text-stone-900">{item.season}</p>
+                            <p className="text-xs text-stone-500">{item.desc}</p>
                           </div>
                         </div>
                       </div>
-                      <div className="p-4">
+                      <div className="p-5">
                         <div className="flex flex-wrap gap-2">
                           {item.cities.map(c => (
                             <Badge
-                              className="cursor-pointer transition-all hover:-translate-y-0.5"
+                              className="cursor-pointer rounded-full bg-white border border-stone-200 text-stone-700 hover:border-emerald-700 hover:text-emerald-800 px-3 py-1 text-xs font-bold transition-all hover:-translate-y-0.5"
                               key={c}
                               onClick={() => selectCity(c)}
                               variant="secondary"
                             >
-                              <MapPin className="mr-1 h-3 w-3" />
+                              <MapPin className="mr-1 h-3 w-3 text-emerald-700" />
                               {c}
                             </Badge>
                           ))}
                         </div>
-                        <Badge className="mt-3 border-primary/15 bg-primary/5 text-primary" variant="outline">
-                          <Star className="mr-1 h-3 w-3" />
+                        <Badge className="mt-3.5 border border-amber-300 bg-amber-100 text-amber-900 rounded-full font-bold text-xs" variant="outline">
+                          <Star className="mr-1 h-3 w-3 fill-amber-500 text-amber-500" />
                           {item.tag}
+                          {' '}
                           推荐
                         </Badge>
                       </div>
@@ -369,22 +372,22 @@ export default function Weather() {
         {/* 天气知识卡 */}
         {!weather && !loading && (
           <div className="mt-12 animate-fade-in-up">
-            <Separator className="mb-8 bg-travel-ink/8" />
+            <Separator className="mb-8 bg-stone-200/80" />
             <div className="mb-6 flex items-center gap-3">
-              <Lightbulb className="h-5 w-5 text-primary" />
-              <h2 className="text-lg font-bold text-travel-ink">天气小知识</h2>
+              <Lightbulb className="h-5 w-5 text-emerald-800" />
+              <h2 className="font-serif text-lg font-bold text-stone-900">旅人气象手记</h2>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {WEATHER_KNOWLEDGE.map((item) => {
                 const KnowledgeIcon = KNOWLEDGE_ICONS[item.title] || Lightbulb
                 return (
-                  <Card className="border-travel-ink/8 bg-white" key={item.title}>
+                  <Card className="rounded-3xl border border-stone-200/90 bg-[#FDFBF7] shadow-sm" key={item.title}>
                     <CardContent className="p-5">
-                      <span className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-primary/8 text-primary">
+                      <span className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-800">
                         <KnowledgeIcon aria-hidden="true" className="h-5 w-5" />
                       </span>
-                      <h3 className="mt-2 text-sm font-semibold text-travel-ink">{item.title}</h3>
-                      <p className="mt-1 text-xs leading-relaxed text-travel-muted">{item.desc}</p>
+                      <h3 className="font-serif text-sm font-bold text-stone-900">{item.title}</h3>
+                      <p className="mt-1.5 text-xs leading-relaxed text-stone-500">{item.desc}</p>
                     </CardContent>
                   </Card>
                 )

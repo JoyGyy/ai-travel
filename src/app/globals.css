@@ -3,60 +3,60 @@
 @config "../../tailwind.config.ts";
 
 :root {
-  /* shadcn 变量 */
-  --background: 195 24% 97%;
-  --foreground: 203 30% 16%;
-  --card: 0 0% 100%;
-  --card-foreground: 203 30% 16%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 203 30% 16%;
-  --primary: 184 57% 31%;
+  /* shadcn 变量 (温润自然探索调色板) */
+  --background: 43 38% 96%;
+  --foreground: 24 10% 10%;
+  --card: 40 20% 99%;
+  --card-foreground: 24 10% 10%;
+  --popover: 40 20% 99%;
+  --popover-foreground: 24 10% 10%;
+  --primary: 158 94% 24%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 40 53% 50%;
-  --secondary-foreground: 203 30% 16%;
-  --muted: 197 20% 92%;
-  --muted-foreground: 204 13% 40%;
-  --accent: 8 53% 55%;
+  --secondary: 38 92% 50%;
+  --secondary-foreground: 24 10% 10%;
+  --muted: 40 20% 93%;
+  --muted-foreground: 25 5% 45%;
+  --accent: 24 95% 53%;
   --accent-foreground: 0 0% 100%;
   --destructive: 0 72% 51%;
   --destructive-foreground: 0 0% 100%;
-  --border: 198 17% 86%;
-  --input: 198 17% 86%;
-  --ring: 184 57% 31%;
-  --radius: 0.5rem;
+  --border: 35 15% 86%;
+  --input: 35 15% 86%;
+  --ring: 158 94% 24%;
+  --radius: 0.75rem;
 
-  /* 海岸青：主操作集中使用青色，其他色只承载明确语义。 */
-  --color-primary: #226f78;
-  --color-primary-strong: #185c65;
-  --color-secondary: #bf8d42;
-  --color-accent: #c85d52;
-  --color-accent-strong: #aa473f;
-  --color-sky: #4d8ca8;
-  --color-sand: #b89562;
-  --color-warning: #a97328;
-  --color-success: #277b70;
+  /* 森林翡翠与暖阳金沙：清新自然探索视觉体系 */
+  --color-primary: #059669;
+  --color-primary-strong: #047857;
+  --color-secondary: #d97706;
+  --color-accent: #ea580c;
+  --color-accent-strong: #c2410c;
+  --color-sky: #0284c7;
+  --color-sand: #d97706;
+  --color-warning: #d97706;
+  --color-success: #059669;
   --color-danger: #dc2626;
-  --color-background: #f5f8f8;
+  --color-background: #faf7f0;
   --color-surface: #ffffff;
-  --color-ink: #19343c;
-  --color-muted: rgba(25, 52, 60, 0.72);
+  --color-ink: #1c1917;
+  --color-muted: rgba(28, 25, 23, 0.72);
 
-  --travel-slate: #36535d;
-  --travel-slate-rgb: 54, 83, 93;
-  --travel-slate-deep: #19343c;
+  --travel-slate: #44403c;
+  --travel-slate-rgb: 68, 64, 60;
+  --travel-slate-deep: #1c1917;
 
-  --travel-mint: var(--color-background);
-  --travel-mint-light: #edf4f4;
-  --travel-sand: var(--color-sand);
-  --travel-sand-light: #f7f0e4;
-  --travel-cream: #f2f6f6;
-  --travel-accent: var(--color-accent);
-  --travel-accent-strong: var(--color-accent-strong);
-  --travel-ocean: #19343c;
-  --travel-ocean-light: #4b666e;
-  --travel-sky: var(--color-sky);
-  --travel-ink: var(--color-ink);
-  --travel-muted: var(--color-muted);
+  --travel-mint: #faf7f0;
+  --travel-mint-light: #f4efe6;
+  --travel-sand: #d97706;
+  --travel-sand-light: #fef3c7;
+  --travel-cream: #fdfbf7;
+  --travel-accent: #ea580c;
+  --travel-accent-strong: #c2410c;
+  --travel-ocean: #1c1917;
+  --travel-ocean-light: #57534e;
+  --travel-sky: #0284c7;
+  --travel-ink: #1c1917;
+  --travel-muted: #78716c;
   --travel-white: #ffffff;
 
   /* 兼容页面中已使用的旅行语义别名 */
@@ -65,81 +65,81 @@
   --travel-primary-strong: var(--color-primary-strong);
 
   /* 页面级旅行手账视觉 token */
-  --travel-hero-gradient: linear-gradient(135deg, rgba(34, 111, 120, 0.12), rgba(77, 140, 168, 0.04));
-  --travel-ticket-border: rgba(34, 111, 120, 0.2);
-  --travel-tag-free-bg: rgba(5, 150, 105, 0.1);
+  --travel-hero-gradient: linear-gradient(135deg, rgba(5, 150, 105, 0.08), rgba(217, 119, 6, 0.05));
+  --travel-ticket-border: rgba(5, 150, 105, 0.25);
+  --travel-tag-free-bg: rgba(5, 150, 105, 0.12);
   --travel-tag-free-text: #047857;
   --travel-tag-paid-bg: rgba(217, 119, 6, 0.12);
   --travel-tag-paid-text: #b45309;
-  --travel-tag-info-bg: rgba(59, 130, 246, 0.1);
-  --travel-tag-info-text: #1d4ed8;
+  --travel-tag-info-bg: rgba(2, 132, 199, 0.1);
+  --travel-tag-info-text: #0369a1;
   --travel-tag-danger-bg: rgba(220, 38, 38, 0.1);
   --travel-tag-danger-text: #b91c1c;
-  --travel-tag-success-bg: rgba(5, 150, 105, 0.1);
+  --travel-tag-success-bg: rgba(5, 150, 105, 0.12);
   --travel-tag-success-text: #047857;
 
-  --travel-primary-rgb: 34, 111, 120;
-  --travel-secondary-rgb: 191, 141, 66;
-  --travel-ocean-rgb: 25, 52, 60;
-  --travel-sky-rgb: 77, 140, 168;
-  --travel-sand-rgb: 184, 149, 98;
-  --travel-accent-rgb: 200, 93, 82;
-  --travel-ink-rgb: 25, 52, 60;
+  --travel-primary-rgb: 5, 150, 105;
+  --travel-secondary-rgb: 217, 119, 6;
+  --travel-ocean-rgb: 28, 25, 23;
+  --travel-sky-rgb: 2, 132, 199;
+  --travel-sand-rgb: 217, 119, 6;
+  --travel-accent-rgb: 234, 88, 12;
+  --travel-ink-rgb: 28, 25, 23;
   --travel-white-rgb: 255, 255, 255;
 
   --travel-surface: #ffffff;
   --travel-surface-strong: #ffffff;
-  --travel-surface-muted: #edf4f4;
-  --travel-frosted: #eaf1f2;
-  --travel-frosted-border: rgba(25, 52, 60, 0.1);
-  --travel-border: rgba(25, 52, 60, 0.1);
+  --travel-surface-muted: #f4efe6;
+  --travel-frosted: rgba(253, 251, 247, 0.9);
+  --travel-frosted-border: rgba(28, 25, 23, 0.08);
+  --travel-border: rgba(28, 25, 23, 0.09);
 
-  /* 纹理图案（纯 CSS，无图片） */
+  /* 纹理图案（手账轻质感） */
   --texture-linen: repeating-linear-gradient(
     45deg,
     transparent,
     transparent 3px,
-    rgba(28, 25, 23, 0.015) 3px,
-    rgba(28, 25, 23, 0.015) 4px
+    rgba(28, 25, 23, 0.01) 3px,
+    rgba(28, 25, 23, 0.01) 4px
   );
-  --texture-dots: radial-gradient(circle, rgba(28, 25, 23, 0.06) 1px, transparent 1px);
+  --texture-dots: radial-gradient(circle, rgba(28, 25, 23, 0.04) 1px, transparent 1px);
   --texture-dots-size: 18px 18px;
   --texture-crosshatch:
     repeating-linear-gradient(
       45deg,
       transparent,
       transparent 6px,
-      rgba(28, 25, 23, 0.02) 6px,
-      rgba(28, 25, 23, 0.02) 7px
+      rgba(28, 25, 23, 0.015) 6px,
+      rgba(28, 25, 23, 0.015) 7px
     ),
     repeating-linear-gradient(
       -45deg,
       transparent,
       transparent 6px,
-      rgba(28, 25, 23, 0.02) 6px,
-      rgba(28, 25, 23, 0.02) 7px
+      rgba(28, 25, 23, 0.015) 6px,
+      rgba(28, 25, 23, 0.015) 7px
     );
 
-  --travel-radius-sm: 6px;
-  --travel-radius-md: 8px;
-  --travel-radius-lg: 12px;
-  --travel-radius-xl: 16px;
-  --travel-radius-2xl: 20px;
+  --travel-radius-sm: 8px;
+  --travel-radius-md: 12px;
+  --travel-radius-lg: 16px;
+  --travel-radius-xl: 20px;
+  --travel-radius-2xl: 24px;
 
   --travel-blur-sm: 14px;
   --travel-blur-md: 18px;
   --travel-blur-lg: 22px;
-  --travel-glass: rgba(255, 255, 255, 0.84);
-  --travel-glass-strong: rgba(255, 255, 255, 0.94);
+  --travel-glass: rgba(253, 251, 247, 0.88);
+  --travel-glass-strong: rgba(255, 255, 255, 0.96);
   --travel-glass-highlight: rgba(255, 255, 255, 0.95);
-  --travel-glass-border: rgba(25, 52, 60, 0.1);
+  --travel-glass-border: rgba(28, 25, 23, 0.08);
   --travel-glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.9);
 
-  /* 阴影分层：不同层级用不同色调 */
-  --travel-shadow-card: 0 4px 18px rgba(25, 52, 60, 0.07), 0 1px 2px rgba(25, 52, 60, 0.04);
-  --travel-shadow-floating: 0 12px 36px rgba(25, 52, 60, 0.13), 0 2px 8px rgba(25, 52, 60, 0.06);
-  --shadow-paper: 0 1px 3px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.03);
-  --shadow-paper-hover: 0 4px 12px rgba(0, 0, 0, 0.07), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  /* 阴影分层：温暖纸质微弥散 */
+  --travel-shadow-card: 0 4px 20px rgba(28, 25, 23, 0.05), 0 1px 3px rgba(28, 25, 23, 0.03);
+  --travel-shadow-floating: 0 14px 40px rgba(28, 25, 23, 0.08), 0 2px 8px rgba(28, 25, 23, 0.04);
+  --shadow-paper: 0 1px 3px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(28, 25, 23, 0.05);
+  --shadow-paper-hover: 0 6px 18px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(5, 150, 105, 0.2);
 
   --space-1: 4px;
   --space-2: 8px;
@@ -160,22 +160,22 @@
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-bounce: cubic-bezier(0.68, -0.55, 0.27, 1.55);
 
-  --travel-period-morning: #bf8d42;
-  --travel-period-afternoon: #4d8ca8;
-  --travel-period-evening: #557b88;
+  --travel-period-morning: #d97706;
+  --travel-period-afternoon: #059669;
+  --travel-period-evening: #0284c7;
   --travel-budget-accommodation: var(--travel-accent);
-  --travel-budget-food: #a97328;
-  --travel-budget-transportation: #4d8ca8;
+  --travel-budget-food: #d97706;
+  --travel-budget-transportation: #0284c7;
   --travel-budget-tickets: var(--color-primary);
   --travel-budget-other: rgba(28, 25, 23, 0.5);
 
   /* 兼容旧变量名 */
   --c-terracotta: var(--travel-accent);
-  --c-terracotta-light: #dc887d;
-  --c-sand: rgba(191, 141, 66, 0.1);
+  --c-terracotta-light: #fdba74;
+  --c-sand: rgba(217, 119, 6, 0.1);
   --c-cream: var(--travel-cream);
-  --c-forest: var(--travel-ocean);
-  --c-forest-light: var(--travel-ocean-light);
+  --c-forest: #059669;
+  --c-forest-light: #34d399;
   --c-gold: var(--travel-sand);
   --c-gold-light: var(--travel-sand-light);
   --c-ink: var(--travel-ink);
@@ -190,11 +190,11 @@
   --font-sans: 'Plus Jakarta Sans', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
 
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.07), 0 1px 4px rgba(0, 0, 0, 0.03);
-  --shadow-lg: 0 8px 28px rgba(0, 0, 0, 0.09), 0 2px 8px rgba(0, 0, 0, 0.04);
-  --shadow-xl: 0 16px 48px rgba(15, 23, 42, 0.14), 0 4px 12px rgba(15, 23, 42, 0.06);
-  --shadow-inset: inset 0 1px 3px rgba(0, 0, 0, 0.05), inset 0 0 0 1px rgba(0, 0, 0, 0.03);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.02);
+  --shadow-lg: 0 8px 28px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.03);
+  --shadow-xl: 0 16px 48px rgba(28, 25, 23, 0.1), 0 4px 12px rgba(28, 25, 23, 0.04);
+  --shadow-inset: inset 0 1px 3px rgba(0, 0, 0, 0.04), inset 0 0 0 1px rgba(0, 0, 0, 0.03);
 }
 
 /* 注意：不要在此处添加未分层的全局 margin/padding 重置。
@@ -242,7 +242,7 @@ body {
 
 .home-editorial a:focus-visible,
 .home-editorial button:focus-visible {
-  outline: 3px solid rgba(34, 111, 120, 0.42);
+  outline: 3px solid rgba(5, 150, 105, 0.42);
   outline-offset: 3px;
 }
 

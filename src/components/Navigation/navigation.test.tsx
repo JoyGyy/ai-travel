@@ -31,7 +31,8 @@ describe('navigation', () => {
 
   it('显示品牌标识', () => {
     render(<Navigation />)
-    expect(screen.getByText('Travel AI')).toBeInTheDocument()
+    expect(screen.getByText('远方')).toBeInTheDocument()
+    expect(screen.getByText('Travel Log')).toBeInTheDocument()
   })
 
   it('显示导航标签', () => {

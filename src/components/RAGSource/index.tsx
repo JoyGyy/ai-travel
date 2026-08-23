@@ -16,22 +16,24 @@ export function RAGSource({ sources }: RAGSourceProps) {
     return null
 
   return (
-    <div className="mx-2 mb-3.5 rounded-[18px] border border-travel-ink/6 bg-primary/4 p-[13px_16px] shadow-sm animate-[fadeUp_0.3s_cubic-bezier(0.16,1,0.3,1)_both] motion-reduce:animate-none max-sm:mx-1">
+    <div className="mx-2 mb-3.5 rounded-2xl border border-emerald-200/80 bg-emerald-50/60 p-3.5 shadow-sm animate-[fadeUp_0.3s_cubic-bezier(0.16,1,0.3,1)_both] motion-reduce:animate-none max-sm:mx-1">
       {/* ---- 标题栏 ---- */}
-      <div className="mb-[9px] flex items-center gap-[7px] font-extrabold tracking-[0.12em] text-travel-ocean text-[11px]">
+      <div className="mb-2 flex items-center gap-1.5 font-bold tracking-wider text-emerald-900 text-xs">
         <MapPin
-          className="shrink-0 text-primary text-[13px]"
-          size={16}
+          className="shrink-0 text-emerald-700"
+          size={14}
         />
-        <span>参考来源</span>
+        <span>知识库检索与参考来源</span>
       </div>
       {/* ---- 来源标签列表 ---- */}
-      <div className="flex flex-wrap gap-[7px]">
+      <div className="flex flex-wrap gap-1.5">
         {sources.map(source => (
           <span
-            className="max-w-full overflow-wrap-anywhere rounded-full border border-travel-ink/6 bg-white px-2.5 py-[5px] font-bold leading-[1.35] text-travel-ocean text-[11px]"
+            className="max-w-full overflow-wrap-anywhere rounded-full border border-stone-200 bg-white px-3 py-1 font-medium text-stone-800 text-xs shadow-2xs"
             key={source}
           >
+            🌿
+            {' '}
             {source}
           </span>
         ))}

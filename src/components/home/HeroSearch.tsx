@@ -71,6 +71,64 @@ interface CityResult {
   parent?: string
 }
 
+function TypewriterText() {
+  const [typedText, setTypedText] = useState('')
+  const typewriterRef = useRef({
+    charIndex: 0,
+    isDeleting: false,
+    phraseIndex: 0,
+    timer: null as null | ReturnType<typeof setTimeout>,
+  })
+
+  useEffect(() => {
+    const ctx = typewriterRef.current
+
+    const tick = () => {
+      const currentPhrase = TYPEWRITER_PHRASES[ctx.phraseIndex]
+
+      if (!ctx.isDeleting) {
+        ctx.charIndex++
+        setTypedText(currentPhrase.slice(0, ctx.charIndex))
+
+        if (ctx.charIndex >= currentPhrase.length) {
+          ctx.timer = setTimeout(() => {
+            ctx.isDeleting = true
+            tick()
+          }, PAUSE_AFTER_TYPED)
+          return
+        }
+        ctx.timer = setTimeout(tick, TYPING_SPEED)
+      }
+      else {
+        ctx.charIndex--
+        setTypedText(currentPhrase.slice(0, ctx.charIndex))
+
+        if (ctx.charIndex <= 0) {
+          ctx.isDeleting = false
+          ctx.phraseIndex = (ctx.phraseIndex + 1) % TYPEWRITER_PHRASES.length
+          ctx.timer = setTimeout(tick, PAUSE_AFTER_DELETED)
+          return
+        }
+        ctx.timer = setTimeout(tick, DELETING_SPEED)
+      }
+    }
+
+    ctx.timer = setTimeout(tick, 600)
+
+    return () => {
+      if (ctx.timer)
+        clearTimeout(ctx.timer)
+    }
+  }, [])
+
+  return (
+    <p className="mx-auto max-w-[620px] text-base text-stone-200 md:text-lg">
+      <span>{typedText}</span>
+      <span className="inline-block h-[1.1em] w-[2px] translate-y-[2px] animate-blink bg-amber-300" />
+    </p>
+  )
+}
+
 export function HeroSearch() {
   const router = useRouter()
   const toast = useAppToast()
@@ -91,15 +149,6 @@ export function HeroSearch() {
   const { fetchWeather, loading: weatherLoading, weather } = useWeather()
   const searchTimerRef = useRef<null | ReturnType<typeof setTimeout>>(null)
   const searchAbortRef = useRef<AbortController | null>(null)
-
-  // 打字机动画状态
-  const [typedText, setTypedText] = useState('')
-  const typewriterRef = useRef({
-    phraseIndex: 0,
-    charIndex: 0,
-    isDeleting: false,
-    timer: null as null | ReturnType<typeof setTimeout>,
-  })
 
   // 当前显示的城市列表：仅 API 结果
   const displayCities = useMemo(() => {
@@ -227,52 +276,6 @@ export function HeroSearch() {
     }
   }, [])
 
-  // 打字机动画效果
-  useEffect(() => {
-    const ctx = typewriterRef.current
-
-    const tick = () => {
-      const currentPhrase = TYPEWRITER_PHRASES[ctx.phraseIndex]
-
-      if (!ctx.isDeleting) {
-        // 逐字打出
-        ctx.charIndex++
-        setTypedText(currentPhrase.slice(0, ctx.charIndex))
-
-        if (ctx.charIndex >= currentPhrase.length) {
-          // 打完 → 停留 → 开始删除
-          ctx.timer = setTimeout(() => {
-            ctx.isDeleting = true
-            tick()
-          }, PAUSE_AFTER_TYPED)
-          return
-        }
-        ctx.timer = setTimeout(tick, TYPING_SPEED)
-      }
-      else {
-        // 逐字删除
-        ctx.charIndex--
-        setTypedText(currentPhrase.slice(0, ctx.charIndex))
-
-        if (ctx.charIndex <= 0) {
-          // 删完 → 切换下一条
-          ctx.isDeleting = false
-          ctx.phraseIndex = (ctx.phraseIndex + 1) % TYPEWRITER_PHRASES.length
-          ctx.timer = setTimeout(tick, PAUSE_AFTER_DELETED)
-          return
-        }
-        ctx.timer = setTimeout(tick, DELETING_SPEED)
-      }
-    }
-
-    ctx.timer = setTimeout(tick, 600)
-
-    return () => {
-      if (ctx.timer)
-        clearTimeout(ctx.timer)
-    }
-  }, [])
-
   const validatePlanner = useCallback(() => {
     const errors: Record<string, string> = {}
     if (!city.trim())
@@ -358,10 +361,7 @@ export function HeroSearch() {
             去你想去的地方，
             <span className="text-amber-300 underline decoration-emerald-400/40 decoration-wavy underline-offset-8">绘制独家手账</span>
           </h1>
-          <p className="mx-auto max-w-[620px] text-base text-stone-200 md:text-lg">
-            <span>{typedText}</span>
-            <span className="inline-block h-[1.1em] w-[2px] translate-y-[2px] animate-blink bg-amber-300" />
-          </p>
+          <TypewriterText />
         </div>
 
         {/* 灵感盲盒入口 */}

@@ -22,7 +22,6 @@ const COLORS = [
 
 export function CursorTrail() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const isPointerFineRef = useRef(false)
 
   useEffect(() => {
     // 仅在支持高精度鼠标的桌面端启用，触屏设备自动跳过
@@ -32,12 +31,11 @@ export function CursorTrail() {
     if (!mediaQuery.matches || prefersReducedMotion.matches)
       return
 
-    isPointerFineRef.current = true
     const canvas = canvasRef.current
     if (!canvas)
       return
 
-    const ctx = canvas.getContext('2d')
+    const ctx = canvas.getContext('2d', { alpha: true })
     if (!ctx)
       return
 
@@ -48,88 +46,27 @@ export function CursorTrail() {
       width = canvas.width = window.innerWidth
       height = canvas.height = window.innerHeight
     }
-    window.addEventListener('resize', handleResize)
+    window.addEventListener('resize', handleResize, { passive: true })
 
     const particles: Particle[] = []
     let mouseX = -100
     let mouseY = -100
     let lastX = -100
     let lastY = -100
-    let isHoveringInteractive = false
-
-    // 监听鼠标移动
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX = e.clientX
-      mouseY = e.clientY
-
-      // 判断悬停元素是否可点击
-      const target = e.target as HTMLElement | null
-      const isClickable = target?.closest(
-        'a, button, [role="button"], input, select, textarea, .cursor-pointer',
-      )
-      isHoveringInteractive = !!isClickable
-
-      // 计算移动距离与速度
-      const dist = Math.hypot(mouseX - lastX, mouseY - lastY)
-      if (dist > 3) {
-        // 生成 1~2 颗微光粒子
-        const count = isHoveringInteractive ? 2 : 1
-        for (let i = 0; i < count; i++) {
-          const colorBase = COLORS[Math.floor(Math.random() * COLORS.length)]
-          particles.push({
-            alpha: 0.65,
-            color: colorBase,
-            decay: 0.02 + Math.random() * 0.02,
-            size: isHoveringInteractive ? 4 + Math.random() * 3 : 2.5 + Math.random() * 2,
-            vx: (Math.random() - 0.5) * 1.5,
-            vy: (Math.random() - 0.5) * 1.5 - 0.3,
-            x: mouseX + (Math.random() - 0.5) * 6,
-            y: mouseY + (Math.random() - 0.5) * 6,
-          })
-        }
-        lastX = mouseX
-        lastY = mouseY
-      }
-    }
-
-    window.addEventListener('mousemove', handleMouseMove, { passive: true })
-
-    // 动画渲染循环
-    let animationId: number
-    let ringX = -100
-    let ringY = -100
-    let ringSize = 18
+    let isHovering = false
+    let isRunning = false
+    let animationId = 0
 
     const render = () => {
       ctx.clearRect(0, 0, width, height)
 
-      // 1. 绘制跟随鼠标的平滑磁吸光环
-      ringX += (mouseX - ringX) * 0.25
-      ringY += (mouseY - ringY) * 0.25
-      const targetSize = isHoveringInteractive ? 32 : 16
-      ringSize += (targetSize - ringSize) * 0.2
-
-      if (ringX > 0 && ringY > 0) {
-        ctx.beginPath()
-        ctx.arc(ringX, ringY, ringSize / 2, 0, Math.PI * 2)
-        ctx.fillStyle = isHoveringInteractive
-          ? 'rgba(5, 150, 105, 0.14)'
-          : 'rgba(5, 150, 105, 0.06)'
-        ctx.fill()
-        ctx.strokeStyle = isHoveringInteractive
-          ? 'rgba(5, 150, 105, 0.5)'
-          : 'rgba(5, 150, 105, 0.2)'
-        ctx.lineWidth = 1.2
-        ctx.stroke()
-      }
-
-      // 2. 绘制拖尾微光粒子
+      // 绘制并更新粒子
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i]
         p.x += p.vx
         p.y += p.vy
         p.alpha -= p.decay
-        p.size *= 0.96
+        p.size *= 0.94
 
         if (p.alpha <= 0 || p.size <= 0.5) {
           particles.splice(i, 1)
@@ -139,16 +76,63 @@ export function CursorTrail() {
         ctx.beginPath()
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
         ctx.fillStyle = `${p.color}${p.alpha})`
-        ctx.shadowColor = 'rgba(5, 150, 105, 0.4)'
-        ctx.shadowBlur = 4
         ctx.fill()
-        ctx.shadowBlur = 0
       }
 
-      animationId = requestAnimationFrame(render)
+      // 如果粒子全部消散且鼠标静止，暂停渲染循环以节省 100% CPU
+      if (particles.length > 0) {
+        animationId = requestAnimationFrame(render)
+      }
+      else {
+        isRunning = false
+      }
     }
 
-    animationId = requestAnimationFrame(render)
+    const startLoop = () => {
+      if (!isRunning) {
+        isRunning = true
+        animationId = requestAnimationFrame(render)
+      }
+    }
+
+    // 节流处理鼠标移动
+    let lastCheckTime = 0
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX = e.clientX
+      mouseY = e.clientY
+
+      const now = performance.now()
+      // 每 150ms 节流检测一次是否悬停在可点击元素上
+      if (now - lastCheckTime > 150) {
+        const target = e.target as HTMLElement | null
+        isHovering = !!target?.closest('a, button, [role="button"], input, select, textarea, .cursor-pointer')
+        lastCheckTime = now
+      }
+
+      const dist = Math.hypot(mouseX - lastX, mouseY - lastY)
+      // 移动距离大于 12px 时生成 1 颗粒子
+      if (dist > 12) {
+        if (particles.length < 25) { // 限制最大同屏粒子数
+          const colorBase = COLORS[Math.floor(Math.random() * COLORS.length)]
+          particles.push({
+            alpha: 0.6,
+            color: colorBase,
+            decay: 0.035,
+            size: isHovering ? 3.5 : 2.2,
+            vx: (Math.random() - 0.5) * 1.2,
+            vy: (Math.random() - 0.5) * 1.2 - 0.2,
+            x: mouseX,
+            y: mouseY,
+          })
+        }
+        lastX = mouseX
+        lastY = mouseY
+      }
+
+      startLoop()
+    }
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true })
 
     return () => {
       window.removeEventListener('resize', handleResize)
@@ -159,7 +143,7 @@ export function CursorTrail() {
 
   return (
     <canvas
-      className="pointer-events-none fixed inset-0 z-[99999] transition-opacity duration-300"
+      className="pointer-events-none fixed inset-0 z-[99999]"
       ref={canvasRef}
     />
   )

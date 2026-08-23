@@ -22,7 +22,15 @@ const singlePost: SeedPost[] = [{
   title: '测试帖',
   content: '内容',
   images: [{ url: '/images/attractions/sanya/sanya-yalong-bay.webp', storageKey: 'seed:x', altText: '图' }],
-  itinerarySnapshot: { city: '三亚', days: 3 },
+  itinerarySnapshot: {
+    attractionRefs: [],
+    budget: 100,
+    budgetBreakdown: { accommodation: 50, attractions: 10, food: 20, total: 100, transport: 20 },
+    city: '三亚',
+    days: 1,
+    itinerary: [{ day: 1, title: '海边', spots: [{ name: '亚龙湾', description: '散步', duration: '2小时' }] }],
+    tips: ['注意防晒'],
+  },
 }]
 
 const comments = [{ postIndex: 0, authorUsername: 'test', content: '好帖' }]

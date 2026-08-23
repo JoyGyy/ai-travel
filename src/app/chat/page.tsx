@@ -2,8 +2,9 @@
 
 import type { FormEvent } from 'react'
 
-import { Bot, Plane, Send, Trash2 } from 'lucide-react'
+import { Bot, Plane, Send, Square, Trash2 } from 'lucide-react'
 import { useState } from 'react'
+import ReactMarkdown from 'react-markdown'
 
 import { RAGSource } from '@/components/RAGSource'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -12,14 +13,26 @@ import { Input } from '@/components/ui/input'
 import { useTravelChat } from '@/hooks/useTravelChat'
 import { extractRagSources } from '@/lib/ai/sources'
 
+function sanitizeAiResponse(text: string): string {
+  if (!text)
+    return ''
+  return text
+    .replace(/\{\s*"type"\s*:\s*"function"[\s\S]*?\}/g, '')
+    .replace(/工具\s*-\s*\[[\s\S]*?\]/g, '')
+    .replace(/\{"工具"[\s\S]*?\}\}/g, '')
+    .replace(/("[ \t]*){4,}/g, '')
+    .trim()
+}
+
 export default function ChatPage() {
   const [input, setInput] = useState('')
-  const { error, messages, sendMessage, setMessages, status } = useTravelChat()
+  const { error, messages, sendMessage, setMessages, status, stop } = useTravelChat()
+  const isGenerating = status === 'submitted' || status === 'streaming'
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const text = input.trim()
-    if (!text || status !== 'ready')
+    if (!text || isGenerating)
       return
     sendMessage({ text })
     setInput('')
@@ -140,13 +153,24 @@ export default function ChatPage() {
               >
                 {message.parts.map((part, index) => {
                   if (part.type === 'text') {
+                    const cleaned = sanitizeAiResponse(part.text)
+                    if (!cleaned)
+                      return null
                     return (
                       <div
-                        className={message.role === 'user' ? 'm-0 text-sm leading-relaxed' : 'rounded-2xl rounded-tl-xs border border-stone-200/90 bg-[#FDFBF7] p-4 text-stone-900 shadow-sm text-sm leading-relaxed'}
+                        className={
+                          message.role === 'user'
+                            ? 'm-0 text-sm leading-relaxed whitespace-pre-wrap'
+                            : 'rounded-2xl rounded-tl-xs border border-stone-200/90 bg-[#FDFBF7] p-4 text-stone-900 shadow-sm text-sm leading-relaxed prose prose-stone max-w-none'
+                        }
                         // eslint-disable-next-line react/no-array-index-key
                         key={index}
                       >
-                        {part.text}
+                        {message.role === 'user' ? (
+                          cleaned
+                        ) : (
+                          <ReactMarkdown>{cleaned}</ReactMarkdown>
+                        )}
                       </div>
                     )
                   }
@@ -178,7 +202,7 @@ export default function ChatPage() {
                       ].map(pill => (
                         <button
                           className="inline-flex items-center gap-1 rounded-full border border-stone-200/90 bg-white/90 px-3 py-1 text-[11px] font-bold text-stone-700 shadow-2xs transition-all hover:-translate-y-0.5 hover:border-emerald-700/60 hover:bg-emerald-50 hover:text-emerald-900 cursor-pointer"
-                          disabled={status !== 'ready'}
+                          disabled={isGenerating}
                           key={pill}
                           onClick={() => sendMessage({ text: pill })}
                           type="button"
@@ -228,26 +252,52 @@ export default function ChatPage() {
 
       {/* 输入栏 */}
       <div className="flex-shrink-0 border-t border-stone-200/80 bg-[#FAF7F0] p-3.5 pb-[max(18px,env(safe-area-inset-bottom))] shadow-lg">
+        {/* 正在生成时的浮动停止按钮 */}
+        {isGenerating && (
+          <div className="flex justify-center mb-2 animate-fade-in-up">
+            <button
+              className="inline-flex items-center gap-1.5 rounded-full border border-stone-300 bg-white/95 px-4 py-1.5 text-xs font-semibold text-stone-700 shadow-sm backdrop-blur-sm hover:bg-red-50 hover:text-red-600 hover:border-red-300 transition-all cursor-pointer"
+              onClick={() => stop()}
+              type="button"
+            >
+              <Square className="h-3.5 w-3.5 fill-current text-red-500" />
+              <span>停止生成回答</span>
+            </button>
+          </div>
+        )}
+
         <form
           className="mx-auto flex w-full max-w-[900px] items-center gap-2.5 rounded-2xl border border-stone-200/90 bg-white p-1.5 shadow-sm"
           onSubmit={handleSubmit}
         >
           <Input
             className="h-11 flex-1 rounded-xl border-none bg-transparent pl-3 text-sm text-stone-900 placeholder:text-stone-400 focus-visible:ring-0 shadow-none"
-            disabled={status !== 'ready'}
+            disabled={isGenerating}
             onChange={event => setInput(event.target.value)}
-            placeholder="例如：帮我规划大理 4 天 3 晚深度慢游，预算 4000 元"
+            placeholder={isGenerating ? 'AI 正在绘制路书中...' : '例如：大理洱海自驾，顺时针还是逆时针更好？'}
             value={input}
           />
-          <Button
-            className="h-10 w-10 flex-shrink-0 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white shadow-md shadow-emerald-800/20 disabled:bg-stone-200 disabled:text-stone-400 cursor-pointer"
-            disabled={!input.trim() || status !== 'ready'}
-            size="icon"
-            title="发送"
-            type="submit"
-          >
-            <Send className="h-4 w-4" />
-          </Button>
+          {isGenerating ? (
+            <Button
+              className="h-10 px-3.5 flex-shrink-0 gap-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white shadow-md shadow-red-700/20 cursor-pointer"
+              onClick={() => stop()}
+              title="停止生成"
+              type="button"
+            >
+              <Square className="h-3.5 w-3.5 fill-white" />
+              <span className="text-xs font-bold">停止</span>
+            </Button>
+          ) : (
+            <Button
+              className="h-10 w-10 flex-shrink-0 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white shadow-md shadow-emerald-800/20 disabled:bg-stone-200 disabled:text-stone-400 cursor-pointer"
+              disabled={!input.trim()}
+              size="icon"
+              title="发送"
+              type="submit"
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          )}
         </form>
       </div>
     </section>

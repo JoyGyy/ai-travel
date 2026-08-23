@@ -26,7 +26,14 @@ export function extractCsrfToken(headers: Headers, cookies?: string): null | str
 /** 从 Cookie header 中读取 CSRF token。 */
 export function extractCsrfCookie(cookies?: string): null | string {
   const match = cookies?.match(/(?:^|;\s*)csrf_token=([^;]+)/)
-  return match?.[1] || null
+  if (!match?.[1])
+    return null
+  try {
+    return decodeURIComponent(match[1])
+  }
+  catch {
+    return match[1]
+  }
 }
 
 /**
@@ -47,7 +54,15 @@ export function verifyCsrfToken(token: string): boolean {
   if (!token)
     return false
 
-  const parts = token.split(':')
+  let cleanToken = token
+  if (token.includes('%3A') || token.includes('%3a')) {
+    try {
+      cleanToken = decodeURIComponent(token)
+    }
+    catch {}
+  }
+
+  const parts = cleanToken.split(':')
   if (parts.length !== 3)
     return false
 

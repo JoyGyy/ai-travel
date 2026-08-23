@@ -97,10 +97,29 @@ export async function requireAuth(req: Request): Promise<AuthUser> {
  * 无效时抛出 403 HttpError
  */
 export function requireCsrf(req: Request): void {
-  const csrfToken = extractCsrfToken(req.headers)
+  const headerToken = req.headers.get('x-csrf-token') || req.headers.get('x-xsrf-token')
   const cookieToken = extractCsrfCookie(req.headers.get('cookie') || undefined)
-  if (!csrfToken || !cookieToken || csrfToken !== cookieToken || !verifyCsrfToken(csrfToken))
-    throw httpError(403, 'CSRF token 无效')
+
+  // 1. 若同时存在 Header 与 Cookie（Double Submit 模式）
+  if (headerToken && cookieToken) {
+    const rawHeader = decodeURIComponent(headerToken)
+    const rawCookie = decodeURIComponent(cookieToken)
+    if (rawHeader === rawCookie && verifyCsrfToken(rawHeader)) {
+      return
+    }
+  }
+
+  // 2. 若 Header 签名有效
+  if (headerToken && verifyCsrfToken(headerToken)) {
+    return
+  }
+
+  // 3. 若 Cookie 签名有效
+  if (cookieToken && verifyCsrfToken(cookieToken)) {
+    return
+  }
+
+  throw httpError(403, 'CSRF token 无效')
 }
 
 /** 设置认证 cookie 的统一配置 */

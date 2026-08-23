@@ -6,8 +6,12 @@ import { getAllCities, retrieve } from '@/lib/services/rag'
 
 export const travelTools = {
   compareCities: tool({
-    description: '当用户询问两个城市哪个好、如何选择、对比两个目的地时调用。',
+    description:
+      '仅当用户明确对比两个不同的独立城市（如“成都和重庆哪个更好玩”、“去北京还是去上海”）时调用。严禁在针对同一城市内的不同路线、方向或景点对比时调用。',
     execute: async ({ cityA, cityB }) => {
+      if (cityA.trim() === cityB.trim()) {
+        return retrieve(cityA, [], `${cityA} 旅游攻略 景点 路线 交通 季节`)
+      }
       const [a, b] = await Promise.all([
         retrieve(cityA, [], `${cityA} 景点 美食 交通 季节`),
         retrieve(cityB, [], `${cityB} 景点 美食 交通 季节`),
@@ -15,8 +19,8 @@ export const travelTools = {
       return { cityA: a, cityB: b }
     },
     inputSchema: z.object({
-      cityA: z.string().describe('第一个城市名称'),
-      cityB: z.string().describe('第二个城市名称'),
+      cityA: z.string().describe('第一个城市名称（必须与第二个城市不同）'),
+      cityB: z.string().describe('第二个城市名称（必须与第一个城市不同）'),
     }),
   }),
   getCityList: tool({
@@ -51,11 +55,11 @@ export const travelTools = {
     }),
   }),
   searchTravelInfo: tool({
-    description: '当用户询问具体城市、景点、美食、交通、旅行季节等信息时调用，查询旅行知识库。',
+    description: '当用户询问具体城市、景点、美食、交通、旅行季节、特色游览路线（如环洱海顺时针/逆时针方向对比、环湖路线）等信息时调用，查询旅行知识库。',
     execute: async ({ city, query }) => retrieve(city, [], query || city),
     inputSchema: z.object({
-      city: z.string().describe('城市名称，如杭州、北京、成都'),
-      query: z.string().optional().describe('用户的具体查询内容'),
+      city: z.string().describe('城市名称，如大理、杭州、北京、成都'),
+      query: z.string().optional().describe('用户的具体查询内容，如“环洱海顺时针还是逆时针”、“美食推荐”等'),
     }),
   }),
 }

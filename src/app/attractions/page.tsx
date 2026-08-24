@@ -263,7 +263,7 @@ export default function Attractions() {
             {/* 景点卡片网格 */}
             {!loading && !error && items.length > 0 && (
               <>
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
                   {items.map((item) => {
                     const isFavoritePending = favoritePendingIds.has(item.id)
                     return (
@@ -306,12 +306,15 @@ export default function Attractions() {
                           </div>
                           <div className="p-4 sm:p-5 flex flex-col flex-1 justify-between">
                             <div>
-                              <div className="mb-1.5 flex items-center justify-between gap-1">
-                                <h3 className="font-serif text-sm sm:text-base font-bold text-stone-900 group-hover:text-emerald-800 transition-colors truncate">
+                              <div className="mb-2 flex items-start justify-between gap-2 min-h-[2.5rem]">
+                                <h3
+                                  className="font-serif text-sm sm:text-base font-bold text-stone-900 group-hover:text-emerald-800 transition-colors line-clamp-2 leading-snug flex-1 min-w-0"
+                                  title={item.name}
+                                >
                                   {item.name}
                                 </h3>
                                 <Badge
-                                  className={`rounded-full text-[10px] font-bold shrink-0 ${
+                                  className={`rounded-full text-[10px] font-bold shrink-0 whitespace-nowrap mt-0.5 ${
                                     item.ticketType === 'free'
                                       ? 'bg-emerald-100 text-emerald-900 border border-emerald-200'
                                       : 'bg-amber-100 text-amber-900 border border-amber-300'

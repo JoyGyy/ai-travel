@@ -509,12 +509,15 @@ export default function Profile() {
 
                           <div className="p-3.5 flex flex-col justify-between flex-1">
                             <div>
-                              <div className="flex items-center justify-between gap-1 mb-1">
-                                <h4 className="font-serif text-sm font-bold text-stone-900 truncate">
+                              <div className="flex items-start justify-between gap-1.5 mb-1.5 min-h-[2.2rem]">
+                                <h4
+                                  className="font-serif text-sm font-bold text-stone-900 line-clamp-2 leading-snug flex-1 min-w-0"
+                                  title={item.name}
+                                >
                                   {item.name}
                                 </h4>
                                 <Badge
-                                  className={`rounded-full text-[10px] font-bold shrink-0 ${
+                                  className={`rounded-full text-[10px] font-bold shrink-0 whitespace-nowrap mt-0.5 ${
                                     item.ticketType === 'free'
                                       ? 'bg-emerald-100 text-emerald-900 border border-emerald-200'
                                       : 'bg-amber-100 text-amber-900 border border-amber-300'

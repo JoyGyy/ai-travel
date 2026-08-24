@@ -2,6 +2,7 @@
 
 import type { SubmitEvent } from 'react'
 import type { ParsedRouteData } from '@/lib/map/route-parser'
+import type { ChatSession } from '@/stores/chatHistory'
 import {
   Bot,
   Car,
@@ -36,15 +37,24 @@ import {
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import ReactMarkdown from 'react-markdown'
 
+import ReactMarkdown from 'react-markdown'
 import { TravelRouteCardModal } from '@/components/card/TravelRouteCardModal'
 import { TravelMapView } from '@/components/map/TravelMapView'
 import { RAGSource } from '@/components/RAGSource'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import { useAppToast } from '@/hooks/useAppToast'
 import { useTravelChat } from '@/hooks/useTravelChat'
 import { useWeather } from '@/hooks/useWeather'
 import { extractRagSources } from '@/lib/ai/sources'
@@ -143,6 +153,30 @@ function ChatContent() {
   const setActiveSessionId = useChatHistoryStore(state => state.setActiveSessionId)
   const deleteSession = useChatHistoryStore(state => state.deleteSession)
   const clearAllSessions = useChatHistoryStore(state => state.clearAllSessions)
+
+  // 会话删除弹窗状态
+  const [sessionToDelete, setSessionToDelete] = useState<ChatSession | null>(null)
+  const [showClearAllDialog, setShowClearAllDialog] = useState(false)
+  const toast = useAppToast()
+
+  const handleConfirmDeleteSession = () => {
+    if (!sessionToDelete)
+      return
+    const title = sessionToDelete.title
+    deleteSession(sessionToDelete.id)
+    if (activeSessionId === sessionToDelete.id) {
+      setMessages([])
+    }
+    setSessionToDelete(null)
+    toast.success(`已删除会话「${title}」`)
+  }
+
+  const handleConfirmClearAll = () => {
+    clearAllSessions()
+    setMessages([])
+    setShowClearAllDialog(false)
+    toast.success('已清空所有历史手账对话')
+  }
 
   // 当前激活的会话对象
   const activeSession = useMemo(() => {
@@ -495,9 +529,7 @@ function ChatContent() {
                     className="opacity-0 group-hover:opacity-100 p-1 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-all shrink-0 cursor-pointer"
                     onClick={(e) => {
                       e.stopPropagation()
-                      if (window.confirm(`确定删除会话「${session.title}」吗？`)) {
-                        deleteSession(session.id)
-                      }
+                      setSessionToDelete(session)
                     }}
                     title="删除会话"
                     type="button"
@@ -533,13 +565,8 @@ function ChatContent() {
         {sessions.length > 0 && (
           <div className="p-2.5 px-3 border-t border-stone-200/80 bg-white/60">
             <button
-              className="w-full flex items-center justify-center gap-1 py-1.5 text-xs text-stone-400 hover:text-red-600 transition-colors cursor-pointer"
-              onClick={() => {
-                if (window.confirm('确定清空所有手账历史会话吗？此操作无法撤销。')) {
-                  clearAllSessions()
-                  setMessages([])
-                }
-              }}
+              className="w-full flex items-center justify-center gap-1 py-1.5 text-xs text-stone-400 hover:text-red-600 transition-colors cursor-pointer font-medium"
+              onClick={() => setShowClearAllDialog(true)}
               type="button"
             >
               <Trash2 className="h-3 w-3" />
@@ -1336,6 +1363,75 @@ function ChatContent() {
           routeData={selectedRouteCardData}
         />
       )}
+
+      {/* ======================================================== */}
+      {/* 5. 优雅二次确认弹窗：单个会话删除与清空全部会话          */}
+      {/* ======================================================== */}
+      {/* 单个会话删除确认弹窗 */}
+      <Dialog onOpenChange={open => !open && setSessionToDelete(null)} open={Boolean(sessionToDelete)}>
+        <DialogContent className="rounded-3xl border border-stone-200 bg-[#FDFBF7] p-6 max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-base font-bold text-stone-900 flex items-center gap-2">
+              <Trash2 className="w-4 h-4 text-red-600 shrink-0" />
+              <span>确认删除该对话？</span>
+            </DialogTitle>
+            <DialogDescription className="text-xs text-stone-500 pt-2 leading-relaxed">
+              确定要删除「
+              <span className="font-semibold text-stone-800">{sessionToDelete?.title}</span>
+              」吗？此操作将永久清除该手账的所有聊天记录与路线规划。
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 mt-4 flex sm:flex-row flex-col-reverse justify-end">
+            <Button
+              className="rounded-xl border border-stone-200 text-stone-600 hover:bg-stone-100 text-xs font-bold"
+              onClick={() => setSessionToDelete(null)}
+              variant="outline"
+            >
+              取消
+            </Button>
+            <Button
+              className="rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-sm shadow-red-700/20"
+              onClick={handleConfirmDeleteSession}
+            >
+              确认删除
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 清空所有会话确认弹窗 */}
+      <Dialog onOpenChange={setShowClearAllDialog} open={showClearAllDialog}>
+        <DialogContent className="rounded-3xl border border-stone-200 bg-[#FDFBF7] p-6 max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-base font-bold text-stone-900 flex items-center gap-2">
+              <Trash2 className="w-4 h-4 text-red-600 shrink-0" />
+              <span>清空所有历史对话？</span>
+            </DialogTitle>
+            <DialogDescription className="text-xs text-stone-500 pt-2 leading-relaxed">
+              确定清空所有手账历史对话吗（共
+              {' '}
+              <span className="font-bold text-stone-800">{sessions.length}</span>
+              {' '}
+              个会话）？此操作无法撤销。
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 mt-4 flex sm:flex-row flex-col-reverse justify-end">
+            <Button
+              className="rounded-xl border border-stone-200 text-stone-600 hover:bg-stone-100 text-xs font-bold"
+              onClick={() => setShowClearAllDialog(false)}
+              variant="outline"
+            >
+              取消
+            </Button>
+            <Button
+              className="rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-sm shadow-red-700/20"
+              onClick={handleConfirmClearAll}
+            >
+              确认清空全部
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

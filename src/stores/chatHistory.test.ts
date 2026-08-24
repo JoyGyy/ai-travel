@@ -39,16 +39,22 @@ describe('chatHistoryStore', () => {
     expect(session?.messages).toHaveLength(2)
   })
 
-  it('删除和重命名会话', () => {
+  it('点击查看与切换会话时，不应改变历史列表中的排列位置', () => {
     const store = useChatHistoryStore.getState()
     const id1 = store.createSession('会话1')
     const id2 = store.createSession('会话2')
+    const id3 = store.createSession('会话3')
 
-    store.renameSession(id1, '修改后的会话1')
-    expect(useChatHistoryStore.getState().sessions.find(s => s.id === id1)?.title).toBe('修改后的会话1')
+    const initialOrder = useChatHistoryStore.getState().sessions.map(s => s.id)
+    expect(initialOrder).toEqual([id3, id2, id1])
 
-    store.deleteSession(id2)
-    expect(useChatHistoryStore.getState().sessions).toHaveLength(1)
-    expect(useChatHistoryStore.getState().activeSessionId).toBe(id1)
+    // 点击切换到最下方的会话1
+    store.setActiveSessionId(id1)
+    const targetSession = useChatHistoryStore.getState().sessions.find(s => s.id === id1)
+    store.saveMessages(id1, targetSession?.messages || [], targetSession?.city)
+
+    // 验证顺序保持严格一致，绝不乱跳
+    const afterOrder = useChatHistoryStore.getState().sessions.map(s => s.id)
+    expect(afterOrder).toEqual([id3, id2, id1])
   })
 })

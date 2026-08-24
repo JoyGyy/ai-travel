@@ -103,11 +103,10 @@ export const useChatHistoryStore = create<ChatHistoryState>()(
             return
 
           set((state) => {
-            const now = Date.now()
             const existing = state.sessions.find(s => s.id === id)
 
             if (!existing) {
-              // 自动创建
+              const now = Date.now()
               const sessionTitle = deriveTitle(messages)
               const newSession: ChatSession = {
                 city: detectedCity,
@@ -122,9 +121,21 @@ export const useChatHistoryStore = create<ChatHistoryState>()(
               }
             }
 
+            // 检查消息内容是否完全相同，避免无意义的重绘和位置跳动
+            const isSameMessages = existing.messages === messages || (
+              existing.messages.length === messages.length
+              && (messages.length === 0 || existing.messages[existing.messages.length - 1]?.id === messages[messages.length - 1]?.id)
+            )
+
+            if (isSameMessages && (!detectedCity || existing.city === detectedCity)) {
+              return state
+            }
+
+            const now = Date.now()
             const shouldUpdateTitle = existing.title === '新的手账对话' || existing.title === '新建对话'
             const nextTitle = shouldUpdateTitle ? deriveTitle(messages, existing.title) : existing.title
 
+            // 就地更新会话属性，保持在历史列表中位置稳定不变
             const updatedSessions = state.sessions.map((s) => {
               if (s.id === id) {
                 return {
@@ -137,9 +148,6 @@ export const useChatHistoryStore = create<ChatHistoryState>()(
               }
               return s
             })
-
-            // 按最后更新时间倒序排列
-            updatedSessions.sort((a, b) => b.updatedAt - a.updatedAt)
 
             return {
               sessions: updatedSessions,

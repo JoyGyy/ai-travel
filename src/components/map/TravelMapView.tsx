@@ -341,6 +341,48 @@ export function TravelMapView({
     })
   }, [routePoints, mode, city])
 
+  // 4.4 监听全屏切换，自动触发 Leaflet 尺寸重算与视窗重绘
+  useEffect(() => {
+    if (!mapInstanceRef.current)
+      return
+
+    if (isExpanded) {
+      document.body.style.overflow = 'hidden'
+    }
+    else {
+      document.body.style.overflow = ''
+    }
+
+    const timer1 = setTimeout(() => {
+      mapInstanceRef.current?.invalidateSize()
+      if (routePoints.length > 1) {
+        import('leaflet').then((L) => {
+          const latlngs: [number, number][] = routePoints.map(pt => [pt.lat, pt.lng])
+          mapInstanceRef.current?.fitBounds(L.latLngBounds(latlngs), { padding: [48, 48] })
+        })
+      }
+    }, 60)
+
+    const timer2 = setTimeout(() => {
+      mapInstanceRef.current?.invalidateSize()
+    }, 250)
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape' && isExpanded) {
+        setIsExpanded(false)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      clearTimeout(timer1)
+      clearTimeout(timer2)
+      window.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = ''
+    }
+  }, [isExpanded, routePoints])
+
   // 聚焦具体景点
   function handleFocusSpot(index: number) {
     setActiveSpotIndex(index)
@@ -401,7 +443,13 @@ export function TravelMapView({
   )
 
   return (
-    <div className={`overflow-hidden rounded-3xl border border-stone-200/90 bg-[#FDFBF7] shadow-sm transition-all ${className}`}>
+    <div
+      className={
+        isExpanded
+          ? `fixed inset-0 z-50 flex flex-col bg-[#FAF7F0] shadow-2xl h-dvh w-screen overflow-hidden ${className}`
+          : `overflow-hidden rounded-3xl border border-stone-200/90 bg-[#FDFBF7] shadow-sm transition-all ${className}`
+      }
+    >
       {/* 顶栏：城市总览、交通模式切换、底图切换与全屏视野 */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200/80 bg-white/95 px-4 py-3 sm:px-5">
         <div className="flex items-center gap-2.5">
@@ -510,33 +558,50 @@ export function TravelMapView({
             <option value="cartodb">Carto艺术</option>
           </select>
 
-          {/* 展开全景视野 */}
+          {/* 展开/退出全屏视野 */}
           <button
-            aria-label={isExpanded ? '收起地图视野' : '展开地图全屏视野'}
-            className="p-1.5 rounded-xl bg-stone-100 border border-stone-200 text-stone-600 hover:text-stone-900 cursor-pointer"
+            aria-label={isExpanded ? '退出地图全屏 (ESC)' : '展开地图全屏视野'}
+            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              isExpanded
+                ? 'bg-emerald-700 text-white shadow-sm hover:bg-emerald-800 ring-2 ring-emerald-300'
+                : 'bg-stone-100 border border-stone-200 text-stone-600 hover:text-stone-900 hover:bg-stone-200'
+            }`}
             onClick={() => setIsExpanded(!isExpanded)}
-            title={isExpanded ? '收起地图视野' : '展开地图全屏视野'}
+            title={isExpanded ? '退出地图全屏 (ESC)' : '展开地图全屏视野'}
             type="button"
           >
-            {isExpanded ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
+            {isExpanded ? (
+              <>
+                <Minimize2 className="h-3.5 w-3.5" />
+                <span>退出全屏 (ESC)</span>
+              </>
+            ) : (
+              <>
+                <Maximize2 className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">全屏视野</span>
+              </>
+            )}
           </button>
         </div>
       </div>
 
       {/* 主展示区：地图视图 vs 分段路书视图 */}
       {activeTab === 'map' ? (
-        <div className="relative">
+        <div className={`relative ${isExpanded ? 'flex-1 min-h-0 w-full' : ''}`}>
           {/* Leaflet 地图容器 */}
           <div
             className={`w-full bg-stone-100 transition-all duration-300 ${
-              isExpanded ? 'h-[520px]' : 'h-[380px] sm:h-[420px]'
+              isExpanded ? 'h-full w-full' : 'h-[380px] sm:h-[420px]'
             }`}
             ref={mapContainerRef}
           />
         </div>
       ) : (
         /* 分段路书列表视图 (Legs) */
-        <div className="divide-y divide-stone-100 max-h-[420px] overflow-y-auto bg-stone-50/50 p-3 sm:p-4">
+        <div className={`divide-y divide-stone-100 overflow-y-auto bg-stone-50/50 p-3 sm:p-4 ${
+          isExpanded ? 'flex-1 min-h-0 p-4 sm:p-6' : 'max-h-[420px]'
+        }`}
+        >
           <div className="text-xs font-bold text-stone-500 mb-3 px-1 flex items-center justify-between">
             <span>分段行程导航与接驳指南</span>
             <span>

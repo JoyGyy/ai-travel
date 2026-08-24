@@ -4,7 +4,7 @@
  * 景点详情页面
  *
  * 根据 URL 参数加载景点详情，展示封面、介绍、实用信息、
- * 游玩亮点、注意事项和购票入口，支持收藏和 AI 行程规划跳转。
+ * 游玩亮点和注意事项，支持收藏和 AI 行程规划跳转。
  */
 import type { Attraction } from '@/types/attraction'
 import { ArrowLeft, Heart } from 'lucide-react'
@@ -238,60 +238,6 @@ export default function AttractionDetail() {
           ))}
         </ul>
       </section>
-
-      {/* ---- 购票入口 ---- */}
-      <section className="travel-surface-card p-6">
-        <h2 className="mb-4 text-xl font-bold text-travel-ink">购票入口</h2>
-        <p className="mb-4 text-sm text-travel-muted">
-          价格、库存和开放时间以第三方平台及景区官方公告为准。
-        </p>
-        <div className="flex flex-wrap gap-3">
-          {buildBookingLinks(attraction).map(link => (
-            <a
-              className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-travel-ink shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-              href={link.href}
-              key={link.key}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              去
-              {link.label}
-              查看
-            </a>
-          ))}
-        </div>
-      </section>
     </main>
   )
-}
-
-/** 构建购票链接列表，优先使用真实链接，缺失时降级为搜索 URL */
-function buildBookingLinks(attraction: Attraction) {
-  return [
-    {
-      href: attraction.bookingLinks.ctrip || buildSearchUrl('ctrip', attraction),
-      key: 'ctrip' as const,
-      label: '携程',
-    },
-    {
-      href: attraction.bookingLinks.fliggy || buildSearchUrl('fliggy', attraction),
-      key: 'fliggy' as const,
-      label: '飞猪',
-    },
-    {
-      href: attraction.bookingLinks.ly || buildSearchUrl('ly', attraction),
-      key: 'ly' as const,
-      label: '同程',
-    },
-  ]
-}
-
-/** 生成搜索 URL 降级地址（无真实购票链接时使用） */
-function buildSearchUrl(platform: 'ctrip' | 'fliggy' | 'ly', attraction: Attraction) {
-  const keyword = encodeURIComponent(`${attraction.city} ${attraction.name} 门票`)
-  if (platform === 'ctrip')
-    return `https://you.ctrip.com/searchsite/?query=${keyword}`
-  if (platform === 'fliggy')
-    return `https://s.taobao.com/search?q=${keyword}`
-  return `https://www.ly.com/scenery/scenerysearchlist_${keyword}.html`
 }

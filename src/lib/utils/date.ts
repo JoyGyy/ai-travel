@@ -6,8 +6,8 @@
 /**
  * 格式化为本地化日期字符串
  */
-export function formatDate(value: Date | string): string {
-  const date = typeof value === 'string' ? new Date(value) : value
+export function formatDate(value: Date | string | number): string {
+  const date = value instanceof Date ? value : new Date(value)
   if (Number.isNaN(date.getTime()))
     return String(value)
 
@@ -17,8 +17,8 @@ export function formatDate(value: Date | string): string {
 /**
  * 格式化为完整的本地化日期时间字符串
  */
-export function formatFullDateTime(value: Date | string): string {
-  const date = typeof value === 'string' ? new Date(value) : value
+export function formatFullDateTime(value: Date | string | number): string {
+  const date = value instanceof Date ? value : new Date(value)
   if (Number.isNaN(date.getTime()))
     return String(value)
 
@@ -35,8 +35,8 @@ export function formatFullDateTime(value: Date | string): string {
  * 格式化为相对时间（如"3分钟前"、"2小时前"、"昨天"等）
  * 超过 7 天显示绝对日期
  */
-export function formatRelativeTime(value: Date | string): string {
-  const date = typeof value === 'string' ? new Date(value) : value
+export function formatRelativeTime(value: Date | string | number): string {
+  const date = value instanceof Date ? value : new Date(value)
   if (Number.isNaN(date.getTime()))
     return String(value)
 

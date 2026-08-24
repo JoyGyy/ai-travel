@@ -46,6 +46,7 @@ export function TravelRouteCardModal({
   const router = useRouter()
   const toast = useAppToast()
   const user = useAuthStore(state => state.user)
+  const hasHydrated = useAuthStore(state => state._hasHydrated)
   const cardRef = useRef<HTMLDivElement>(null)
 
   const [savingImage, setSavingImage] = useState(false)
@@ -102,6 +103,10 @@ export function TravelRouteCardModal({
 
   // 2. 一键分享发布到社区
   async function handleShareToCommunity() {
+    if (!hasHydrated) {
+      toast.info('正在验证登录信息...')
+      return
+    }
     if (!user) {
       toast.info('请先登录后再分享到旅友社区')
       router.push('/login')

@@ -1,12 +1,12 @@
 import type { AuthUser } from '@/types/api'
-
-import { loginApi, registerApi } from '@/api/auth'
+import { getMeApi, loginApi, registerApi } from '@/api/auth'
 
 import { useAuthStore } from './auth'
 
 // --- Mock API 模块 ---
 
 vi.mock('@/api/auth', () => ({
+  getMeApi: vi.fn(),
   loginApi: vi.fn(),
   registerApi: vi.fn(),
 }))
@@ -94,6 +94,29 @@ describe('useAuthStore', () => {
       useAuthStore.setState({ user: mockUser })
 
       useAuthStore.getState().logout()
+
+      expect(useAuthStore.getState().user).toBeNull()
+    })
+  })
+
+  describe('checkAuth', () => {
+    it('服务端返回当前用户时应更新 user 状态', async () => {
+      vi.mocked(getMeApi).mockResolvedValue({
+        success: true,
+        user: mockUser,
+      })
+
+      await useAuthStore.getState().checkAuth()
+
+      expect(useAuthStore.getState().user).toEqual(mockUser)
+      expect(getMeApi).toHaveBeenCalled()
+    })
+
+    it('服务端抛错（如 401 凭证失效）时应同步清空 user 状态', async () => {
+      useAuthStore.setState({ user: mockUser })
+      vi.mocked(getMeApi).mockRejectedValue(new Error('未登录'))
+
+      await useAuthStore.getState().checkAuth()
 
       expect(useAuthStore.getState().user).toBeNull()
     })

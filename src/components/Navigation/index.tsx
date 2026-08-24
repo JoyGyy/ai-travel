@@ -7,7 +7,7 @@
 import { Bot, Cloud, Compass, Home, LogIn, MapPin, Menu, User, Users, X } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/stores/auth'
@@ -41,8 +41,16 @@ export function Navigation() {
 
 function TopNav() {
   const user = useAuthStore(state => state.user)
+  const checkAuth = useAuthStore(state => state.checkAuth)
+  const hasHydrated = useAuthStore(state => state._hasHydrated)
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  useEffect(() => {
+    if (hasHydrated) {
+      checkAuth()
+    }
+  }, [hasHydrated, checkAuth])
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-stone-200/80 bg-[#FAF7F0]/92 backdrop-blur-md shadow-[0_2px_12px_rgba(28,25,23,0.04)]">

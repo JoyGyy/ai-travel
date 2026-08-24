@@ -6,6 +6,7 @@
  *
  * 功能：
  * - 用户登录/注册（调用后端 API）
+ * - 检查当前会话有效性（与服务端 Cookie 对齐）
  * - 登出（清除本地状态）
  * - 水合状态检测（防止 hydration mismatch）
  */
@@ -14,12 +15,13 @@ import { create } from 'zustand'
 
 import { devtools, persist } from 'zustand/middleware'
 
-import { loginApi, registerApi } from '@/api/auth'
+import { getMeApi, loginApi, registerApi } from '@/api/auth'
 
 // --- 类型定义 ---
 
 interface AuthState {
   _hasHydrated: boolean
+  checkAuth: () => Promise<void>
   login: (username: string, password: string) => Promise<void>
   logout: () => void
   register: (username: string, password: string) => Promise<void>
@@ -34,17 +36,36 @@ export const useAuthStore = create<AuthState>()(
     persist(
       set => ({
         // --- 初始状态 ---
-
         _hasHydrated: false,
+
+        /** 静默校验并与服务端 Session 同步 */
+        async checkAuth() {
+          try {
+            const data = await getMeApi()
+            if (data?.user) {
+              set({ user: data.user })
+            }
+            else {
+              set({ user: null })
+            }
+          }
+          catch {
+            // 服务端 Cookie 无效或过期，清空前端 user，避免 UI 假登录
+            set({ user: null })
+          }
+        },
+
         async login(username, password) {
           const data = await loginApi(username, password)
           if (data) {
             set({ user: data.user })
           }
         },
+
         logout() {
           set({ user: null })
         },
+
         async register(username, password) {
           const data = await registerApi(username, password)
           if (data) {
@@ -52,16 +73,11 @@ export const useAuthStore = create<AuthState>()(
           }
         },
 
-        // --- 异步操作：登录/注册 ---
-
         setHasHydrated: v => set({ _hasHydrated: v }),
-
-        // --- 同步操作：登出 ---
 
         user: null,
       }),
       // --- 持久化配置 ---
-
       {
         merge: (persistedState, currentState) => {
           const state = persistedState as Partial<AuthState> | undefined
@@ -70,6 +86,10 @@ export const useAuthStore = create<AuthState>()(
         name: 'travel_auth',
         onRehydrateStorage: () => (state) => {
           state?.setHasHydrated(true)
+          // 水合完成后自动向服务端验证 Cookie 是否仍然有效
+          if (state?.user) {
+            state.checkAuth()
+          }
         },
         partialize: state => ({ user: state.user }),
       },

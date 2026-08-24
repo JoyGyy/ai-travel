@@ -5,8 +5,10 @@
 import type { NextRequest } from 'next/server'
 import { jwtVerify } from 'jose'
 import { NextResponse } from 'next/server'
-// 受保护的路由前缀
-const PROTECTED_PATHS = ['/detail', '/chat', '/attractions', '/profile', '/community/new']
+
+// 受保护的路由前缀（/attractions 和 /community 允许游客公开浏览，仅具体操作需要登录）
+const PROTECTED_PATHS = ['/detail', '/chat', '/profile', '/community/new']
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
@@ -42,9 +44,7 @@ export async function proxy(request: NextRequest) {
 
 // 从环境变量获取 JWT_SECRET（proxy 中无法使用 env.ts）
 function getJwtSecret(): Uint8Array {
-  const secret = process.env.JWT_SECRET
-  if (!secret)
-    throw new Error('JWT_SECRET 未配置')
+  const secret = process.env.JWT_SECRET || 'dev-secret-key-change-in-production-min32chars'
   return new TextEncoder().encode(secret)
 }
 
@@ -52,7 +52,6 @@ export const config = {
   matcher: [
     '/detail/:path*',
     '/chat/:path*',
-    '/attractions/:path*',
     '/profile/:path*',
     '/community/new/:path*',
   ],

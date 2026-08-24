@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import { getAttractionById } from '@/lib/services/attractions/attractionService'
 import { getAuthFromHeaders } from '@/lib/services/auth'
 
@@ -39,6 +41,7 @@ const mockAttraction = {
 describe('gET /api/attractions/[id]', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(getAuthFromHeaders).mockResolvedValue({ id: 'u1', username: 'testuser' })
   })
 
   it('景点存在返回详情', async () => {
@@ -53,6 +56,19 @@ describe('gET /api/attractions/[id]', () => {
     expect(data.data.name).toBe('故宫博物院')
     expect(data.data.city).toBe('北京')
     expect(data.data.isFavorite).toBe(true)
+  })
+
+  it('未登录游客也可正常查看景点详情', async () => {
+    vi.mocked(getAuthFromHeaders).mockResolvedValueOnce(null)
+    mockGetAttractionById.mockResolvedValueOnce(mockAttraction as never)
+
+    const req = new Request('http://localhost/api/attractions/a1')
+    const res = await GET(req, { params: Promise.resolve({ id: 'a1' }) })
+    const data = await res.json()
+
+    expect(res.status).toBe(200)
+    expect(data.success).toBe(true)
+    expect(mockGetAttractionById).toHaveBeenCalledWith('a1', undefined)
   })
 
   it('景点不存在返回 404', async () => {

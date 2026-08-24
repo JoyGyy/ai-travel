@@ -34,7 +34,8 @@ import {
   X,
 } from 'lucide-react'
 import Link from 'next/link'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 
 import { TravelRouteCardModal } from '@/components/card/TravelRouteCardModal'
@@ -107,7 +108,12 @@ function extractCity(text: string): string | null {
   return null
 }
 
-export default function ChatPage() {
+function ChatContent() {
+  const searchParams = useSearchParams()
+  const initialPrompt = searchParams.get('prompt')
+  const initialCity = searchParams.get('city')
+  const hasTriggeredRef = useRef(false)
+
   const [input, setInput] = useState('')
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [showHistoryDrawer, setShowHistoryDrawer] = useState(false)
@@ -158,8 +164,8 @@ export default function ChatPage() {
           return city
       }
     }
-    return activeSession?.city || null
-  }, [messages, activeSession])
+    return activeSession?.city || initialCity || null
+  }, [messages, activeSession, initialCity])
 
   // 最新一条包含完整路线的助手消息解析数据（用于右侧行程面板）
   const latestParsedRoute = useMemo<ParsedRouteData | null>(() => {
@@ -214,10 +220,29 @@ export default function ChatPage() {
     }
   }, [])
 
-  // 1. 初始化或水合完成时加载会话
+  // 1. 初始化或水合完成时加载会话或处理来自首页的定制请求
   useEffect(() => {
     if (!_hasHydrated)
       return
+
+    if (!hasTriggeredRef.current) {
+      if (initialPrompt) {
+        hasTriggeredRef.current = true
+        const newId = createSession(initialCity ? `【${initialCity}】行程手账` : '定制行程手账')
+        setActiveSessionId(newId)
+        setMessages([])
+        sendMessage({ text: initialPrompt })
+        return
+      }
+      if (initialCity && messages.length === 0) {
+        hasTriggeredRef.current = true
+        const newId = createSession(`【${initialCity}】行程手账`)
+        setActiveSessionId(newId)
+        setMessages([])
+        sendMessage({ text: `请帮我规划一份前往【${initialCity}】的经典旅行手账路线，包含必去景点打卡、地道美食推荐与出行避坑贴士。` })
+        return
+      }
+    }
 
     if (activeSessionId) {
       const current = sessions.find(s => s.id === activeSessionId)
@@ -237,7 +262,7 @@ export default function ChatPage() {
       const newId = createSession('新的手账对话')
       setActiveSessionId(newId)
     }
-  }, [_hasHydrated, activeSessionId, createSession, messages.length, sessions, setActiveSessionId, setMessages, scrollToBottom])
+  }, [_hasHydrated, initialPrompt, initialCity, activeSessionId, createSession, messages.length, sessions, setActiveSessionId, setMessages, sendMessage, scrollToBottom])
 
   // 2. 消息变动时自动持久化到当前会话
   useEffect(() => {
@@ -1297,5 +1322,20 @@ export default function ChatPage() {
         />
       )}
     </div>
+  )
+}
+
+export default function ChatPage() {
+  return (
+    <Suspense fallback={(
+      <div className="h-full w-full bg-[#FAF7F0] flex items-center justify-center">
+        <div className="text-emerald-800 text-sm font-bold animate-pulse flex items-center gap-2">
+          <span>🗺️ 正在唤醒 AI 旅行顾问...</span>
+        </div>
+      </div>
+    )}
+    >
+      <ChatContent />
+    </Suspense>
   )
 }

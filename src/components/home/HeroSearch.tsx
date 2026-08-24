@@ -305,7 +305,9 @@ export function HeroSearch() {
       return
     setIsSubmitting(true)
     const days = differenceInDays(dateRange!.to!, dateRange!.from!) + 1
-    router.push(`/detail?city=${encodeURIComponent(city.trim())}&budget=${budgetNum}&days=${days}&pref=${selectedPreference}`)
+    const prefLabel = TRAVEL_PREFERENCES.find(p => p.key === selectedPreference)?.label || '深度体验'
+    const prompt = `请帮我规划一份前往【${city.trim()}】的${days}天深度旅行手账路线，总预算约 ${budgetNum} 元，出行风格偏好【${prefLabel}】。请提供详细游览路线、景点打卡时间线、地道美食推荐与交通避坑指南。`
+    router.push(`/chat?city=${encodeURIComponent(city.trim())}&prompt=${encodeURIComponent(prompt)}`)
   }, [hasHydrated, user, validatePlanner, toast, dateRange, router, city, selectedPreference])
 
   const handleApplyMystery = useCallback((dest: MysteryDestination) => {

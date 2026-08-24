@@ -37,7 +37,7 @@ export function HotDestinationsSection() {
           <Link
             className="group block overflow-hidden rounded-3xl bg-[#FDFBF7] border border-stone-200/90 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-700/60 hover:shadow-xl scroll-reveal"
             data-delay={index}
-            href={`/detail?city=${encodeURIComponent(dest.name)}`}
+            href={`/chat?city=${encodeURIComponent(dest.name)}`}
             key={dest.name}
           >
             <div className="relative h-[230px] w-full overflow-hidden">

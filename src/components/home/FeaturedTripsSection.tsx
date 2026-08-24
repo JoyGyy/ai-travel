@@ -29,7 +29,7 @@ export function FeaturedTripsSection() {
         </h2>
         <Link
           className="group flex items-center gap-1 text-xs font-bold text-emerald-800 transition-colors hover:text-emerald-900"
-          href="/detail"
+          href="/chat"
         >
           更多精选手账
           <span className="transition-transform group-hover:translate-x-1">&rarr;</span>
@@ -41,7 +41,7 @@ export function FeaturedTripsSection() {
           <Link
             className="group block overflow-hidden rounded-3xl bg-[#FDFBF7] border border-stone-200/90 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-700/60 hover:shadow-xl scroll-reveal"
             data-delay={index}
-            href={`/detail?city=${encodeURIComponent(trip.city)}`}
+            href={`/chat?city=${encodeURIComponent(trip.city)}`}
             key={trip.title}
           >
             <div className="relative h-[210px] w-full overflow-hidden">

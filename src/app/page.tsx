@@ -23,7 +23,7 @@ import { useAuthStore } from '@/stores/auth'
 const quickEntries = [
   {
     desc: '告诉我目的地和预算，AI 实时生成专属旅行手账',
-    href: '/detail',
+    href: '/chat',
     icon: <Compass size={32} />,
     image: '/images/home/hero-boat.jpg',
     label: 'AI 行程规划',

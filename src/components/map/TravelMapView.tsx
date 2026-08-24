@@ -641,7 +641,7 @@ export function TravelMapView({
                   ? 'bg-emerald-700 text-white shadow-xs'
                   : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
               }`}
-              key={spot.name + i}
+              key={`${spot.name}-${spot.lat}-${spot.lng}`}
               onClick={() => {
                 setActiveTab('map')
                 handleFocusSpot(i)

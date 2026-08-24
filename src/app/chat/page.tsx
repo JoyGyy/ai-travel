@@ -12,11 +12,9 @@ import {
   Compass,
   Copy,
   ExternalLink,
-  Footprints,
   History,
   Hotel,
   MapPin,
-  Maximize2,
   PanelLeftClose,
   PanelLeftOpen,
   PanelRightClose,
@@ -34,7 +32,6 @@ import {
   Utensils,
   Wind,
   X,
-  Zap,
 } from 'lucide-react'
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'

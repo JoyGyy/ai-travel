@@ -1,7 +1,25 @@
 'use client'
 
+/**
+ * 旅友社区广场页面
+ *
+ * 采用双栏协同布局：左侧主动态流与搜索过滤，右侧常驻发布手账入口、
+ * 社区数据看板、热门话题榜、探索焦点与每日手账随笔。
+ */
 import type { CommunityPost, CommunityPostFilters } from '@/types/community'
-import { Camera, Heart, MapPin, MapPinned, Plus, Quote, Star, TrendingUp, Users } from 'lucide-react'
+import {
+  Camera,
+  Compass,
+  Heart,
+  MapPin,
+  MapPinned,
+  Plus,
+  Quote,
+  Search,
+  Sparkles,
+  TrendingUp,
+  Users,
+} from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -13,19 +31,17 @@ import { Pagination } from '@/components/Pagination'
 import { RepostModal } from '@/components/RepostModal'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { CITY_FOCUS_TAGS, TRAVEL_QUOTES, TRENDING_TAGS } from '@/constants/community'
 import { useCommunityActions } from '@/hooks/useCommunityActions'
 
-// 社区统计数据（基于 total 动态计算）
 function getStats(total: number) {
   return [
-    { icon: <Camera size={20} />, label: '旅行分享', value: total },
-    { icon: <Users size={20} />, label: '活跃旅友', value: Math.max(1, Math.floor(total * 2.3)) },
-    { icon: <MapPin size={20} />, label: '覆盖城市', value: Math.max(1, Math.floor(total * 0.8)) },
-    { icon: <Heart size={20} />, label: '收获点赞', value: Math.max(1, Math.floor(total * 12.5)) },
+    { icon: <Camera size={18} />, label: '旅行手账', value: total },
+    { icon: <Users size={18} />, label: '活跃旅友', value: Math.max(1, Math.floor(total * 2.3)) },
+    { icon: <MapPin size={18} />, label: '覆盖目的地', value: Math.max(1, Math.floor(total * 0.8)) },
+    { icon: <Heart size={18} />, label: '收获点赞', value: Math.max(1, Math.floor(total * 12.5)) },
   ]
 }
 
@@ -72,8 +88,6 @@ export default function Community() {
   useEffect(() => {
     queueMicrotask(() => load({ page: 1, pageSize: PAGE_SIZE }))
   }, [load])
-
-  // requireLogin 已从 useCommunityActions hook 获取
 
   const updateFilters = useCallback(
     (patch: CommunityPostFilters) => {
@@ -131,7 +145,6 @@ export default function Community() {
       try {
         const success = await submitRepost(repostTarget.id, content)
         if (success) {
-          // 刷新列表以显示新转发
           const data = await fetchCommunityPosts({ ...filters, pageSize: PAGE_SIZE })
           setItems(data.items)
           setTotal(data.total)
@@ -156,239 +169,276 @@ export default function Community() {
   )
 
   return (
-    <main className="travel-page-shell gap-6">
-      {/* Hero 区域 */}
-      <section className="relative overflow-hidden rounded-3xl border border-stone-200/90 bg-[#FDFBF7] p-6 sm:p-8 shadow-sm">
-        <div className="relative flex flex-col items-stretch gap-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="animate-fade-in-up">
-            <p className="mb-1 text-xs font-bold uppercase tracking-widest text-emerald-800">
-              TRAVEL COMMUNITY · 旅人手账广场
-            </p>
+    <main className="flex-1 overflow-x-hidden overflow-y-auto bg-[#FAF7F0] min-h-dvh pb-16">
+      {/* 顶部 Hero 区域 */}
+      <div className="border-b border-stone-200/80 bg-[#FAF7F0] px-4 sm:px-8 lg:px-12 pb-12 pt-8 sm:pt-10">
+        <div className="mx-auto max-w-[1360px] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+          <div>
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100/80 border border-emerald-300/60 px-3 py-0.5 text-xs font-bold text-emerald-800 tracking-wider uppercase mb-2">
+              <Users className="w-3.5 h-3.5 text-emerald-700" />
+              <span>TRAVEL COMMUNITY · 旅人手账广场</span>
+            </div>
             <h1
               className="font-serif text-2xl sm:text-4xl font-extrabold text-stone-900 leading-tight"
               id="community-title"
             >
-              旅友正在路上
+              旅友正在路上 · 真实游记与路线
             </h1>
-            <p className="mt-2 max-w-[500px] text-xs sm:text-sm leading-relaxed text-stone-500">
-              把 AI 规划、实拍风景与旅行手账分享给同行的旅人，让每一次出发都有迹可循。
+            <p className="mt-2 max-w-2xl text-xs sm:text-sm leading-relaxed text-stone-500">
+              把 AI 规划、实拍风景与手账心得分享给同行的旅人，让每一次出发都有迹可循、彼此照映。
             </p>
           </div>
+
           <Button
-            className="w-full flex-shrink-0 gap-2 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold shadow-md shadow-emerald-800/20 sm:w-auto cursor-pointer"
+            className="rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm px-5 h-11 shadow-md shadow-emerald-800/20 cursor-pointer shrink-0"
             disabled={!hasHydrated}
             onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}
-            size="lg"
           >
-            <Plus className="h-4 w-4" />
-            {!hasHydrated ? '加载中...' : '发布手账分享'}
+            <Plus className="h-4 w-4 mr-1" />
+            <span>{!hasHydrated ? '加载中...' : '发布手账分享'}</span>
           </Button>
         </div>
-
-        {/* 社区统计 */}
-        <div className="relative mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
-          {getStats(total).map(stat => (
-            <Card className="rounded-2xl border-stone-200/80 bg-white shadow-2xs" key={stat.label}>
-              <CardContent className="flex items-center gap-3 p-3 sm:p-3.5">
-                <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 sm:h-10 sm:w-10">
-                  {stat.icon}
-                </span>
-                <div>
-                  <p className="font-serif text-base sm:text-lg font-black text-stone-900">{loading ? '-' : stat.value.toLocaleString()}</p>
-                  <p className="whitespace-nowrap text-xs text-stone-400">{stat.label}</p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      {/* 热门标签 */}
-      <section className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-        <div className="mb-3 flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-emerald-800" />
-          <h2 className="font-serif text-sm font-bold text-stone-800">热门灵感话题</h2>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {TRENDING_TAGS.map(tag => (
-            <Badge
-              className="cursor-pointer border border-stone-200/80 bg-white hover:border-emerald-700/60 hover:bg-emerald-50 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all hover:-translate-y-0.5 text-stone-700"
-              key={tag.label}
-              onClick={() => {
-                setCityInput('')
-                updateFilters({ city: '' })
-              }}
-              variant="outline"
-            >
-              #
-              {' '}
-              {tag.label}
-            </Badge>
-          ))}
-        </div>
-      </section>
-
-      {/* 每日旅行语录 + 城市聚焦 */}
-      <div className="grid gap-4 sm:grid-cols-2 animate-fade-in-up" style={{ animationDelay: '250ms' }}>
-        {/* 旅行语录 */}
-        <Card className="relative overflow-hidden rounded-3xl border-stone-200/90 bg-[#FDFBF7] shadow-sm">
-          <CardContent className="relative p-5">
-            <div className="mb-3 flex items-center gap-2">
-              <Quote className="h-4 w-4 text-amber-600" />
-              <span className="text-xs font-bold text-amber-800 uppercase tracking-wider">每日手账随笔</span>
-            </div>
-            <blockquote className="font-serif text-sm leading-relaxed text-stone-700 italic">
-              {TRAVEL_QUOTES[new Date().getDay() % 4]}
-            </blockquote>
-            <p className="mt-3 text-xs text-stone-400">— 远方手账 · 每日一句送给在路上的你</p>
-          </CardContent>
-        </Card>
-
-        {/* 城市聚焦 */}
-        <Card className="relative overflow-hidden rounded-3xl border-stone-200/90 bg-[#FDFBF7] shadow-sm">
-          <CardContent className="relative p-5">
-            <div className="mb-3 flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-emerald-800" />
-              <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider">本周探索焦点</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-emerald-700 text-white shadow-md shadow-emerald-800/20">
-                <MapPinned className="h-6 w-6" />
-              </div>
-              <div>
-                <p className="font-serif text-base font-bold text-stone-900">成都</p>
-                <p className="text-xs text-stone-500">慢调烟火气 · 蜀道川西枢纽</p>
-                <div className="mt-1 flex items-center gap-1">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    // eslint-disable-next-line react/no-array-index-key
-                    <Star key={i} className={`h-3 w-3 ${i < 4 ? 'fill-amber-400 text-amber-400' : 'text-stone-300'}`} />
-                  ))}
-                  <span className="ml-1 text-[11px] text-stone-400">旅人高分推荐</span>
-                </div>
-              </div>
-            </div>
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {CITY_FOCUS_TAGS.map(tag => (
-                <Badge className="border border-emerald-200 bg-emerald-50 text-[11px] font-bold text-emerald-900 rounded-full px-2.5 py-0.5" key={tag} variant="outline">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
-      {/* 筛选区 */}
-      <section
-        className="grid gap-3.5 rounded-3xl border border-stone-200/90 bg-[#FDFBF7] p-5 shadow-sm"
-      >
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="text-base font-semibold text-travel-ink" id="community-filter-title">
-            筛选分享
-          </h2>
-          {hasActiveFilters
-            ? (
-                <Button onClick={clearFilters} variant="link">
-                  清空筛选
+      {/* 主体工作台：双栏协同布局 */}
+      <div className="mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-12 mt-6">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 items-start">
+          {/* ======================================================== */}
+          {/* 左侧主动态流 (8 列)                                      */}
+          {/* ======================================================== */}
+          <div className="lg:col-span-8 space-y-6">
+            {/* 动态筛选工具栏 */}
+            <div className="rounded-3xl border border-stone-200/90 bg-[#FDFBF7] p-4 sm:p-5 shadow-sm space-y-3">
+              <form className="flex items-center gap-2.5" onSubmit={handleSearch}>
+                <div className="relative flex-1">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-800" />
+                  <Input
+                    className="h-11 rounded-2xl bg-white border-stone-200 pl-10 text-xs sm:text-sm text-stone-900 shadow-2xs placeholder:text-stone-400 focus-visible:ring-emerald-700"
+                    id="community-city"
+                    onChange={event => setCityInput(event.target.value)}
+                    placeholder="输入城市搜索，例如 成都、大理、西安"
+                    value={cityInput}
+                  />
+                </div>
+                <Button className="h-11 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-5 cursor-pointer text-xs sm:text-sm" type="submit">
+                  搜索
                 </Button>
-              )
-            : null}
-        </div>
-        <form className="grid gap-1.5" onSubmit={handleSearch}>
-          <Label className="text-3.25 font-medium" htmlFor="community-city">
-            城市
-          </Label>
-          <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
-            <Input
-              className="flex-1"
-              id="community-city"
-              onChange={event => setCityInput(event.target.value)}
-              placeholder="输入城市，例如 成都"
-              value={cityInput}
-            />
-            <Button type="submit">搜索</Button>
-          </div>
-        </form>
-        <div className="flex items-center justify-between gap-3">
-          <span className="text-3.25 font-medium text-travel-ink">只看含行程分享</span>
-          <input
-            checked={Boolean(filters.withItinerary)}
-            onChange={event => updateFilters({ withItinerary: event.target.checked })}
-            type="checkbox"
-          />
-        </div>
-        <p className="text-3.25 text-travel-muted">
-          {loading ? '正在刷新社区...' : `共 ${total} 条旅行分享`}
-        </p>
-      </section>
+              </form>
 
-      {loading
-        ? (
-            <section className="columns-1 sm:columns-2 gap-4">
-              {Array.from({ length: 3 }).map((_, i) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <CommunityPostCardSkeleton key={i} />
-              ))}
-            </section>
-          )
-        : null}
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-stone-100 text-xs">
+                <label className="flex items-center gap-2 cursor-pointer text-stone-700 font-bold select-none">
+                  <input
+                    checked={Boolean(filters.withItinerary)}
+                    className="rounded border-stone-300 text-emerald-700 focus:ring-emerald-600 h-4 w-4 cursor-pointer"
+                    onChange={event => updateFilters({ withItinerary: event.target.checked })}
+                    type="checkbox"
+                  />
+                  <span>仅看包含完整手账路线的分享</span>
+                </label>
 
-      {!loading && error
-        ? (
-            <div
-              className="grid place-items-center gap-3 rounded-xl p-6 text-center text-travel-muted"
-            >
-              <p>{error}</p>
-              <Button onClick={() => load(filters)}>重试</Button>
-            </div>
-          )
-        : null}
-
-      {!loading && !error && items.length === 0
-        ? (
-            <div className="grid place-items-center gap-3 rounded-xl p-6 text-center text-travel-muted">
-              <div className="py-8 text-center text-muted-foreground">
-                <p>还没有符合条件的旅行分享</p>
+                <div className="flex items-center gap-3 text-stone-500">
+                  <span>
+                    共
+                    {' '}
+                    <strong className="font-serif text-emerald-800 text-sm">{total}</strong>
+                    {' '}
+                    条旅人手账
+                  </span>
+                  {hasActiveFilters && (
+                    <button
+                      className="text-emerald-800 font-bold hover:underline cursor-pointer"
+                      onClick={clearFilters}
+                      type="button"
+                    >
+                      清空筛选
+                    </button>
+                  )}
+                </div>
               </div>
+            </div>
+
+            {/* 骨架屏 */}
+            {loading && (
+              <div className="columns-1 sm:columns-2 gap-4">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  // eslint-disable-next-line react/no-array-index-key
+                  <CommunityPostCardSkeleton key={i} />
+                ))}
+              </div>
+            )}
+
+            {/* 错误提示 */}
+            {!loading && error && (
+              <div className="flex items-center justify-between rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-700 font-bold">
+                <span>{error}</span>
+                <Button className="rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs" onClick={() => load(filters)} size="sm">
+                  重试
+                </Button>
+              </div>
+            )}
+
+            {/* 空状态 */}
+            {!loading && !error && items.length === 0 && (
+              <div className="flex flex-col items-center gap-3 rounded-3xl border border-stone-200/90 bg-[#FDFBF7] p-10 text-center">
+                <Compass className="h-10 w-10 text-stone-300 mx-auto mb-1" />
+                <p className="font-bold text-base text-stone-800">暂无符合条件的旅行手账</p>
+                <p className="text-xs text-stone-400 max-w-sm">成为第一个分享该目的地风景与路线的旅人吧</p>
+                <Button
+                  className="rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold mt-2 cursor-pointer"
+                  disabled={!hasHydrated}
+                  onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  <span>发布第一条手账分享</span>
+                </Button>
+              </div>
+            )}
+
+            {/* 动态瀑布流 */}
+            {!loading && !error && items.length > 0 && (
+              <>
+                <div className="columns-1 sm:columns-2 gap-4 break-inside-avoid">
+                  {items.map(post => (
+                    <div className="mb-4 break-inside-avoid" key={post.id}>
+                      <CommunityPostCard
+                        currentUserId={user?.id}
+                        likePending={likePendingIds.has(post.id)}
+                        onComment={item => router.push(`/community/${item.id}`)}
+                        onLike={handleLike}
+                        onRepost={openRepost}
+                        post={post}
+                        repostPending={repostPendingIds.has(post.id)}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                <Pagination
+                  className="flex justify-center py-4 pb-8"
+                  onPageChange={page => updateFilters({ page })}
+                  page={filters.page || 1}
+                  pageSize={PAGE_SIZE}
+                  total={total}
+                />
+              </>
+            )}
+          </div>
+
+          {/* ======================================================== */}
+          {/* 右侧社区数据与灵感看板 (4 列，桌面端常驻充实布局)         */}
+          {/* ======================================================== */}
+          <aside className="lg:col-span-4 space-y-5 lg:sticky lg:top-20">
+            {/* 模块 1: 发布手账快捷引导卡片 */}
+            <div className="rounded-3xl border border-emerald-700/20 bg-gradient-to-br from-emerald-900 to-emerald-950 text-white p-5 shadow-md space-y-3">
+              <div className="flex items-center gap-2 text-xs font-bold text-amber-300">
+                <Sparkles className="w-4 h-4" />
+                <span>记录行者足迹</span>
+              </div>
+              <h3 className="font-serif text-lg font-bold">分享你的独家路书</h3>
+              <p className="text-xs text-emerald-100/80 leading-relaxed">
+                将你在旅途中的实拍美景、地道风味小吃与避坑心得以手账长图或路线形式分享，获得旅友点赞与转发。
+              </p>
               <Button
+                className="w-full rounded-2xl bg-amber-400 hover:bg-amber-300 text-stone-950 font-black text-xs h-10 shadow-sm cursor-pointer"
                 disabled={!hasHydrated}
                 onClick={() => (requireLogin('发布分享') ? router.push('/community/new') : undefined)}
               >
-                {!hasHydrated ? '加载中...' : '发布第一条分享'}
+                <Plus className="h-4 w-4 mr-1" />
+                <span>立即发布我的手账</span>
               </Button>
             </div>
-          )
-        : null}
 
-      {!loading && !error && items.length > 0
-        ? (
-            <>
-              <section
-                className="columns-1 sm:columns-2 gap-4 break-inside-avoid"
-              >
-                {items.map(post => (
-                  <CommunityPostCard
-                    currentUserId={user?.id}
-                    key={post.id}
-                    likePending={likePendingIds.has(post.id)}
-                    onComment={item => router.push(`/community/${item.id}`)}
-                    onLike={handleLike}
-                    onRepost={openRepost}
-                    post={post}
-                    repostPending={repostPendingIds.has(post.id)}
-                  />
+            {/* 模块 2: 社区动态实时数据 */}
+            <div className="rounded-3xl border border-stone-200/90 bg-[#FDFBF7] p-5 shadow-sm space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="font-serif text-xs font-bold text-stone-900 flex items-center gap-1.5">
+                  <TrendingUp className="w-3.5 h-3.5 text-emerald-700" />
+                  <span>广场动态实时简报</span>
+                </span>
+                <span className="text-[10px] text-stone-400">实时统计</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2.5">
+                {getStats(total).map(stat => (
+                  <div className="p-3 rounded-2xl bg-white border border-stone-200/80 shadow-2xs" key={stat.label}>
+                    <div className="flex items-center gap-2 mb-1 text-emerald-800">
+                      {stat.icon}
+                      <span className="text-[10px] text-stone-400 font-medium">{stat.label}</span>
+                    </div>
+                    <p className="font-serif text-base font-black text-stone-900">
+                      {loading ? '-' : stat.value.toLocaleString()}
+                    </p>
+                  </div>
                 ))}
-              </section>
-              <Pagination
-                className="flex justify-center py-2 pb-6"
-                onPageChange={page => updateFilters({ page })}
-                page={filters.page || 1}
-                pageSize={PAGE_SIZE}
-                total={total}
-              />
-            </>
-          )
-        : null}
+              </div>
+            </div>
+
+            {/* 模块 3: 热门灵感话题榜 */}
+            <div className="rounded-3xl border border-stone-200/90 bg-[#FDFBF7] p-5 shadow-sm space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="font-serif text-xs font-bold text-stone-900 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                  <span>热门灵感话题</span>
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {TRENDING_TAGS.map(tag => (
+                  <button
+                    className="px-3 py-1.5 rounded-full border border-stone-200/80 bg-white hover:border-emerald-600 hover:bg-emerald-50 text-xs font-bold text-stone-700 hover:text-emerald-900 transition-all cursor-pointer shadow-2xs"
+                    key={tag.label}
+                    onClick={() => {
+                      setCityInput('')
+                      updateFilters({ city: '' })
+                    }}
+                    type="button"
+                  >
+                    #
+                    {' '}
+                    {tag.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 模块 4: 本周探索焦点城市 */}
+            <div className="rounded-3xl border border-stone-200/90 bg-[#FDFBF7] p-5 shadow-sm space-y-3">
+              <div className="flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-emerald-800" />
+                <span className="font-serif text-xs font-bold text-stone-900">本周探索焦点</span>
+              </div>
+              <div className="p-3.5 rounded-2xl bg-white border border-stone-200/80 space-y-2">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-emerald-700 text-white shadow-2xs">
+                    <MapPinned className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-serif text-sm font-bold text-stone-900">成都 · 慢游川西</h4>
+                    <p className="text-[11px] text-stone-400">大熊猫繁育基地 · 奎星楼街寻味</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-1 pt-1">
+                  {CITY_FOCUS_TAGS.map(tag => (
+                    <Badge className="bg-emerald-50 border border-emerald-200 text-[10px] font-bold text-emerald-900 rounded-md px-2 py-0.2" key={tag} variant="outline">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* 模块 5: 每日手账随笔 */}
+            <Card className="rounded-3xl border-stone-200/90 bg-white p-5 shadow-sm space-y-2">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-700">
+                <Quote className="w-3.5 h-3.5" />
+                <span>每日旅行随笔</span>
+              </div>
+              <blockquote className="font-serif text-xs leading-relaxed text-stone-700 italic">
+                {TRAVEL_QUOTES[new Date().getDay() % 4]}
+              </blockquote>
+              <p className="text-[10px] text-stone-400 pt-1">— 远方手账 · 愿旅途处处有诗意</p>
+            </Card>
+          </aside>
+        </div>
+      </div>
 
       <RepostModal
         onClose={() => setRepostTarget(null)}

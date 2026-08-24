@@ -5,20 +5,14 @@ import {
   Bot,
   Calendar,
   CheckCircle2,
-  ChevronRight,
   CloudSun,
   Compass,
   DollarSign,
-  Eye,
   Heart,
-  Layers,
   MapPin,
   Palette,
-  Send,
-  Sliders,
   Sparkles,
   Star,
-  TrendingUp,
 } from 'lucide-react'
 import React, { useState } from 'react'
 
@@ -50,6 +44,7 @@ export default function DesignPreviewPage() {
           {/* 方案切换 Tabs */}
           <div className="flex items-center p-1 rounded-2xl border shadow-inner max-w-full overflow-x-auto" style={getThemeTabContainerStyle(activeTheme)}>
             <button
+              type="button"
               onClick={() => setActiveTheme('resort')}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all duration-200 cursor-pointer ${
                 activeTheme === 'resort'
@@ -61,6 +56,7 @@ export default function DesignPreviewPage() {
               <span>方案一：现代极简度假</span>
             </button>
             <button
+              type="button"
               onClick={() => setActiveTheme('tech')}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all duration-200 cursor-pointer ${
                 activeTheme === 'tech'
@@ -72,6 +68,7 @@ export default function DesignPreviewPage() {
               <span>方案二：AI 智能科技</span>
             </button>
             <button
+              type="button"
               onClick={() => setActiveTheme('nature')}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all duration-200 cursor-pointer ${
                 activeTheme === 'nature'
@@ -254,15 +251,15 @@ function MockNavigation({ theme }: { theme: ThemeKey }) {
         </div>
 
         <div className="hidden md:flex items-center gap-1 bg-slate-100/80 p-1 rounded-full border border-slate-200/50">
-          <button className="px-4 py-1.5 rounded-full text-xs font-bold bg-white text-sky-600 shadow-sm">首页</button>
-          <button className="px-4 py-1.5 rounded-full text-xs font-medium text-slate-600 hover:text-slate-900">AI 行程规划</button>
-          <button className="px-4 py-1.5 rounded-full text-xs font-medium text-slate-600 hover:text-slate-900">景点探索</button>
-          <button className="px-4 py-1.5 rounded-full text-xs font-medium text-slate-600 hover:text-slate-900">旅友社区</button>
-          <button className="px-4 py-1.5 rounded-full text-xs font-medium text-slate-600 hover:text-slate-900">实时天气</button>
+          <button type="button" className="px-4 py-1.5 rounded-full text-xs font-bold bg-white text-sky-600 shadow-sm">首页</button>
+          <button type="button" className="px-4 py-1.5 rounded-full text-xs font-medium text-slate-600 hover:text-slate-900">AI 行程规划</button>
+          <button type="button" className="px-4 py-1.5 rounded-full text-xs font-medium text-slate-600 hover:text-slate-900">景点探索</button>
+          <button type="button" className="px-4 py-1.5 rounded-full text-xs font-medium text-slate-600 hover:text-slate-900">旅友社区</button>
+          <button type="button" className="px-4 py-1.5 rounded-full text-xs font-medium text-slate-600 hover:text-slate-900">实时天气</button>
         </div>
 
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-gradient-to-r from-sky-600 to-blue-600 text-white shadow-md shadow-sky-600/20 hover:opacity-95">
+          <button type="button" className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-gradient-to-r from-sky-600 to-blue-600 text-white shadow-md shadow-sky-600/20 hover:opacity-95">
             <Sparkles className="w-3.5 h-3.5" />
             <span>智能规划</span>
           </button>
@@ -288,15 +285,15 @@ function MockNavigation({ theme }: { theme: ThemeKey }) {
         </div>
 
         <div className="hidden md:flex items-center gap-2">
-          <button className="px-3 py-1.5 rounded-lg text-xs font-mono text-cyan-300 bg-cyan-950/60 border border-cyan-500/40">~/home</button>
-          <button className="px-3 py-1.5 rounded-lg text-xs font-mono text-slate-400 hover:text-slate-200">~/itinerary</button>
-          <button className="px-3 py-1.5 rounded-lg text-xs font-mono text-slate-400 hover:text-slate-200">~/attractions</button>
-          <button className="px-3 py-1.5 rounded-lg text-xs font-mono text-slate-400 hover:text-slate-200">~/community</button>
-          <button className="px-3 py-1.5 rounded-lg text-xs font-mono text-slate-400 hover:text-slate-200">~/weather</button>
+          <button type="button" className="px-3 py-1.5 rounded-lg text-xs font-mono text-cyan-300 bg-cyan-950/60 border border-cyan-500/40">~/home</button>
+          <button type="button" className="px-3 py-1.5 rounded-lg text-xs font-mono text-slate-400 hover:text-slate-200">~/itinerary</button>
+          <button type="button" className="px-3 py-1.5 rounded-lg text-xs font-mono text-slate-400 hover:text-slate-200">~/attractions</button>
+          <button type="button" className="px-3 py-1.5 rounded-lg text-xs font-mono text-slate-400 hover:text-slate-200">~/community</button>
+          <button type="button" className="px-3 py-1.5 rounded-lg text-xs font-mono text-slate-400 hover:text-slate-200">~/weather</button>
         </div>
 
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold bg-cyan-400 text-slate-950 shadow-md shadow-cyan-400/20 hover:bg-cyan-300">
+          <button type="button" className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold bg-cyan-400 text-slate-950 shadow-md shadow-cyan-400/20 hover:bg-cyan-300">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>AI CORE 3.7</span>
           </button>
@@ -319,15 +316,15 @@ function MockNavigation({ theme }: { theme: ThemeKey }) {
       </div>
 
       <div className="hidden md:flex items-center gap-6">
-        <button className="text-sm font-bold text-emerald-800 border-b-2 border-emerald-700 pb-0.5">探索首页</button>
-        <button className="text-sm font-medium text-stone-600 hover:text-stone-900">旅行手账</button>
-        <button className="text-sm font-medium text-stone-600 hover:text-stone-900">宝藏景点</button>
-        <button className="text-sm font-medium text-stone-600 hover:text-stone-900">旅人日志</button>
-        <button className="text-sm font-medium text-stone-600 hover:text-stone-900">出行天气</button>
+        <button type="button" className="text-sm font-bold text-emerald-800 border-b-2 border-emerald-700 pb-0.5">探索首页</button>
+        <button type="button" className="text-sm font-medium text-stone-600 hover:text-stone-900">旅行手账</button>
+        <button type="button" className="text-sm font-medium text-stone-600 hover:text-stone-900">宝藏景点</button>
+        <button type="button" className="text-sm font-medium text-stone-600 hover:text-stone-900">旅人日志</button>
+        <button type="button" className="text-sm font-medium text-stone-600 hover:text-stone-900">出行天气</button>
       </div>
 
       <div className="flex items-center gap-3">
-        <button className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-emerald-700 text-white shadow hover:bg-emerald-800">
+        <button type="button" className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-emerald-700 text-white shadow hover:bg-emerald-800">
           <span>定制我的旅程</span>
           <ArrowRight className="w-3.5 h-3.5" />
         </button>
@@ -385,7 +382,7 @@ function MockHeroSearch({ theme }: { theme: ThemeKey }) {
 
           {/* 搜索按钮 */}
           <div className="p-1 w-full md:w-auto">
-            <button className="w-full md:w-auto px-6 py-3 rounded-full bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-600 text-white font-bold text-sm shadow-lg shadow-sky-600/30 flex items-center justify-center gap-2 hover:shadow-xl transition-all cursor-pointer">
+            <button type="button" className="w-full md:w-auto px-6 py-3 rounded-full bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-600 text-white font-bold text-sm shadow-lg shadow-sky-600/30 flex items-center justify-center gap-2 hover:shadow-xl transition-all cursor-pointer">
               <Sparkles className="w-4 h-4" />
               <span>AI 生成行程</span>
             </button>
@@ -437,7 +434,7 @@ function MockHeroSearch({ theme }: { theme: ThemeKey }) {
               className="bg-transparent border-none outline-none text-sm text-slate-200 w-full font-sans"
             />
           </div>
-          <button className="w-full md:w-auto px-6 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-cyan-400/20 cursor-pointer">
+          <button type="button" className="w-full md:w-auto px-6 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-cyan-400/20 cursor-pointer">
             <Sparkles className="w-4 h-4" />
             <span>EXECUTE AGENT</span>
           </button>
@@ -467,7 +464,7 @@ function MockHeroSearch({ theme }: { theme: ThemeKey }) {
           <div className="text-xs font-bold text-stone-500">出行安排</div>
           <div className="text-sm font-bold text-stone-800 mt-0.5">5天4晚 · 深度慢游</div>
         </div>
-        <button className="w-full md:w-auto px-6 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm shadow cursor-pointer">
+        <button type="button" className="w-full md:w-auto px-6 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm shadow cursor-pointer">
           开启手账生成
         </button>
       </div>
@@ -607,8 +604,8 @@ function MockDestinationGrid({ theme }: { theme: ThemeKey }) {
   if (theme === 'resort') {
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {cards.map((c, i) => (
-          <div key={i} className="group rounded-3xl bg-white border border-slate-200/80 p-4 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+        {cards.map(c => (
+          <div key={c.title} className="group rounded-3xl bg-white border border-slate-200/80 p-4 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer">
             <div className={`h-44 rounded-2xl bg-gradient-to-tr ${c.color} p-4 flex flex-col justify-between text-white relative overflow-hidden`}>
               <div className="flex items-center justify-between z-1">
                 <span className="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-bold">{c.tag}</span>
@@ -639,7 +636,7 @@ function MockDestinationGrid({ theme }: { theme: ThemeKey }) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {cards.map((c, i) => (
-          <div key={i} className="rounded-2xl bg-slate-900 border border-cyan-500/30 p-4 hover:border-cyan-400 transition-all duration-300 cursor-pointer">
+          <div key={c.title} className="rounded-2xl bg-slate-900 border border-cyan-500/30 p-4 hover:border-cyan-400 transition-all duration-300 cursor-pointer">
             <div className="h-40 rounded-xl bg-slate-950 border border-slate-800 p-4 flex flex-col justify-between text-cyan-300 font-mono">
               <div className="flex justify-between items-center text-xs">
                 <span className="px-2 py-0.5 rounded bg-cyan-950 border border-cyan-500/30 font-bold">{c.tag}</span>
@@ -668,8 +665,8 @@ function MockDestinationGrid({ theme }: { theme: ThemeKey }) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {cards.map((c, i) => (
-        <div key={i} className="rounded-2xl bg-[#fdfbf7] border-2 border-stone-300 p-4 shadow-sm hover:border-emerald-700 transition-colors cursor-pointer">
+      {cards.map(c => (
+        <div key={c.title} className="rounded-2xl bg-[#fdfbf7] border-2 border-stone-300 p-4 shadow-sm hover:border-emerald-700 transition-colors cursor-pointer">
           <div className="h-40 rounded-xl bg-stone-200 p-4 flex flex-col justify-between text-stone-900 border border-stone-300">
             <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-900 text-xs font-serif font-bold w-max">{c.tag}</span>
             <div className="font-serif font-bold text-lg">{c.title}</div>
@@ -701,7 +698,7 @@ function MockItineraryDetail({ theme }: { theme: ThemeKey }) {
           </div>
           <div className="flex items-center gap-2">
             <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">预算充足</span>
-            <button className="px-4 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 cursor-pointer">导出 PDF</button>
+            <button type="button" className="px-4 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 cursor-pointer">导出 PDF</button>
           </div>
         </div>
 

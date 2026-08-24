@@ -230,57 +230,61 @@ export default function Detail() {
   const sentRequestKey = useRef<string | null>(null)
 
   useEffect(() => {
-    if (!hasValidParams) {
-      sentRequestKey.current = null
-      setShowLoading(false)
-      setErrorMessage('缺少目的地或预算信息，请返回首页重新规划。')
-      return
-    }
+    queueMicrotask(() => {
+      if (!hasValidParams) {
+        sentRequestKey.current = null
+        setShowLoading(false)
+        setErrorMessage('缺少目的地或预算信息，请返回首页重新规划。')
+        return
+      }
 
-    setShowLoading(true)
-    setErrorMessage('')
+      setShowLoading(true)
+      setErrorMessage('')
 
-    const requestKey = `${city}:${budget}:${days}`
+      const requestKey = `${city}:${budget}:${days}`
 
-    const cached = loadItineraryCache(city, budget, days)
-    if (cached) {
-      useItineraryStore.setState({ agentSteps: [], currentAgentStep: 0 })
-      const cachedItinerary = cached.itinerary || []
-      setItinerary(cachedItinerary)
-      setBudgetBreakdown(cached.budgetBreakdown || null)
-      setTips(cached.tips || [])
-      setWeather(cached.weather || null)
-      setAccommodation(cached.accommodation || [])
-      setNightlife(cached.nightlife || [])
-      setAttractionRefs(cached.attractionRefs || [])
-      setActiveKeys(cachedItinerary[0]?.day ? [String(cachedItinerary[0].day)] : [])
-      setShowLoading(false)
+      const cached = loadItineraryCache(city, budget, days)
+      if (cached) {
+        useItineraryStore.setState({ agentSteps: [], currentAgentStep: 0 })
+        const cachedItinerary = cached.itinerary || []
+        setItinerary(cachedItinerary)
+        setBudgetBreakdown(cached.budgetBreakdown || null)
+        setTips(cached.tips || [])
+        setWeather(cached.weather || null)
+        setAccommodation(cached.accommodation || [])
+        setNightlife(cached.nightlife || [])
+        setAttractionRefs(cached.attractionRefs || [])
+        setActiveKeys(cachedItinerary[0]?.day ? [String(cachedItinerary[0].day)] : [])
+        setShowLoading(false)
+        sentRequestKey.current = requestKey
+        return
+      }
+
+      // 防止重复发送消息
+      if (sentRequestKey.current === requestKey) {
+        return
+      }
       sentRequestKey.current = requestKey
-      return
-    }
 
-    // 防止重复发送消息
-    if (sentRequestKey.current === requestKey) {
-      return
-    }
-    sentRequestKey.current = requestKey
-
-    useItineraryStore.setState({ agentSteps: [], currentAgentStep: 0 })
-    sendMessage({ text: `请为我规划 ${city} ${days} 天旅行，预算 ${budget} 元` })
+      useItineraryStore.setState({ agentSteps: [], currentAgentStep: 0 })
+      sendMessage({ text: `请为我规划 ${city} ${days} 天旅行，预算 ${budget} 元` })
+    })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [city, budget, days, hasValidParams])
 
   /* ---------- 监听消息状态，更新 loading ---------- */
 
   useEffect(() => {
-    // 当有消息且状态为 ready（完成）时，隐藏 loading
-    if (messages.length > 0 && status === 'ready') {
-      setShowLoading(false)
-    }
-    // 当有消息且正在流式传输时，也隐藏 loading（显示消息卡片）
-    if (messages.length > 0 && (status === 'streaming' || status === 'submitted')) {
-      setShowLoading(false)
-    }
+    queueMicrotask(() => {
+      // 当有消息且状态为 ready（完成）时，隐藏 loading
+      if (messages.length > 0 && status === 'ready') {
+        setShowLoading(false)
+      }
+      // 当有消息且正在流式传输时，也隐藏 loading（显示消息卡片）
+      if (messages.length > 0 && (status === 'streaming' || status === 'submitted')) {
+        setShowLoading(false)
+      }
+    })
   }, [messages, status])
 
   /* ========== 渲染 ========== */

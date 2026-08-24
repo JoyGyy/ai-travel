@@ -87,7 +87,7 @@ export default function HomePage() {
   }
 
   return (
-    <main className="home-editorial min-h-dvh overflow-x-hidden bg-[#FAF7F0] text-stone-900">
+    <div className="home-editorial min-h-[calc(100dvh-4rem)] bg-[#FAF7F0] text-stone-900">
       {/* Hero 搜索区 */}
       <HeroSearch />
 
@@ -290,6 +290,6 @@ export default function HomePage() {
         </div>
       </section>
       <ComplianceFooter />
-    </main>
+    </div>
   )
 }

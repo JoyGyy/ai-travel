@@ -159,10 +159,10 @@ export default function Attractions() {
   )
 
   return (
-    <main className="flex-1 overflow-x-hidden overflow-y-auto bg-[#FAF7F0] min-h-dvh pb-16">
+    <div className="min-h-[calc(100dvh-4rem)] bg-[#FAF7F0] pb-16">
       {/* 顶部 Hero 区域 */}
-      <div className="border-b border-stone-200/80 bg-[#FAF7F0] px-4 sm:px-8 lg:px-12 pb-12 pt-8 sm:pt-10">
-        <div className="mx-auto max-w-[1360px]">
+      <div className="border-b border-stone-200/80 bg-[#FAF7F0] py-8 sm:py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100/80 border border-emerald-300/60 px-3 py-0.5 text-xs font-bold text-emerald-800 tracking-wider uppercase mb-2">
             <Compass className="w-3.5 h-3.5 text-emerald-700" />
             <span>DESTINATIONS & ATTRACTIONS · 景点漫游志</span>
@@ -180,7 +180,7 @@ export default function Attractions() {
       </div>
 
       {/* 主体工作台：双栏协同布局 */}
-      <div className="mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-12 mt-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 items-start">
           {/* ======================================================== */}
           {/* 左侧主画廊区 (8 列)                                      */}
@@ -354,7 +354,7 @@ export default function Attractions() {
           {/* ======================================================== */}
           {/* 右侧筛选与灵感看板 (4 列，桌面端常驻充实布局)             */}
           {/* ======================================================== */}
-          <aside className="lg:col-span-4 space-y-5 lg:sticky lg:top-20">
+          <aside className="lg:col-span-4 space-y-5 lg:sticky lg:top-24">
             {/* 模块 1: AI 路线编排与定制入口 */}
             <div className="rounded-3xl border border-emerald-700/20 bg-gradient-to-br from-emerald-900 to-emerald-950 text-white p-5 shadow-md space-y-3">
               <div className="flex items-center gap-2 text-xs font-bold text-amber-300">
@@ -492,6 +492,6 @@ export default function Attractions() {
           </aside>
         </div>
       </div>
-    </main>
+    </div>
   )
 }

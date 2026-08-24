@@ -169,10 +169,10 @@ export default function Community() {
   )
 
   return (
-    <main className="flex-1 overflow-x-hidden overflow-y-auto bg-[#FAF7F0] min-h-dvh pb-16">
+    <div className="min-h-[calc(100dvh-4rem)] bg-[#FAF7F0] pb-16">
       {/* 顶部 Hero 区域 */}
-      <div className="border-b border-stone-200/80 bg-[#FAF7F0] px-4 sm:px-8 lg:px-12 pb-12 pt-8 sm:pt-10">
-        <div className="mx-auto max-w-[1360px] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+      <div className="border-b border-stone-200/80 bg-[#FAF7F0] py-8 sm:py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
           <div>
             <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100/80 border border-emerald-300/60 px-3 py-0.5 text-xs font-bold text-emerald-800 tracking-wider uppercase mb-2">
               <Users className="w-3.5 h-3.5 text-emerald-700" />
@@ -201,7 +201,7 @@ export default function Community() {
       </div>
 
       {/* 主体工作台：双栏协同布局 */}
-      <div className="mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-12 mt-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 items-start">
           {/* ======================================================== */}
           {/* 左侧主动态流 (8 列)                                      */}
@@ -327,7 +327,7 @@ export default function Community() {
           {/* ======================================================== */}
           {/* 右侧社区数据与灵感看板 (4 列，桌面端常驻充实布局)         */}
           {/* ======================================================== */}
-          <aside className="lg:col-span-4 space-y-5 lg:sticky lg:top-20">
+          <aside className="lg:col-span-4 space-y-5 lg:sticky lg:top-24">
             {/* 模块 1: 发布手账快捷引导卡片 */}
             <div className="rounded-3xl border border-emerald-700/20 bg-gradient-to-br from-emerald-900 to-emerald-950 text-white p-5 shadow-md space-y-3">
               <div className="flex items-center gap-2 text-xs font-bold text-amber-300">
@@ -449,6 +449,6 @@ export default function Community() {
           repostTarget?.title || repostTarget?.content || `${repostTarget?.city || '旅行'}分享`
         }
       />
-    </main>
+    </div>
   )
 }

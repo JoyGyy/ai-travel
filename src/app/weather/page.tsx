@@ -161,13 +161,13 @@ function WeatherContent() {
   const currentDisplayCity = weather?.city || city || '目的地'
 
   return (
-    <main
-      className="flex-1 overflow-x-hidden overflow-y-auto bg-[#FAF7F0] min-h-dvh pb-16"
+    <div
+      className="min-h-[calc(100dvh-4rem)] bg-[#FAF7F0] pb-16"
       onClick={() => showDropdown && setShowDropdown(false)}
     >
       {/* 顶部 Hero 区域 */}
-      <div className="border-b border-stone-200/80 bg-[#FAF7F0] px-4 sm:px-8 lg:px-12 pb-12 pt-8 sm:pt-10">
-        <div className="mx-auto max-w-[1360px]">
+      <div className="border-b border-stone-200/80 bg-[#FAF7F0] py-8 sm:py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100/80 border border-emerald-300/60 px-3 py-0.5 text-xs font-bold text-emerald-800 tracking-wider uppercase mb-2">
             <SunMedium className="w-3.5 h-3.5 text-amber-600" />
             <span>WEATHER INTELLIGENCE · 旅人气象站</span>
@@ -185,7 +185,7 @@ function WeatherContent() {
       </div>
 
       {/* 主体工作台：双栏协同布局 */}
-      <div className="mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-12 mt-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 items-start">
           {/* ======================================================== */}
           {/* 左侧主内容区 (8 列)                                       */}
@@ -478,7 +478,7 @@ function WeatherContent() {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   )
 }
 

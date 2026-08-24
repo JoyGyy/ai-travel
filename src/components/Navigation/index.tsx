@@ -54,7 +54,7 @@ function TopNav() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-stone-200/80 bg-[#FAF7F0]/92 backdrop-blur-md shadow-[0_2px_12px_rgba(28,25,23,0.04)]">
-      <div className="max-w-[1240px] h-16 mx-auto px-4 sm:px-6 flex items-center justify-between gap-3">
+      <div className="max-w-7xl h-16 mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3">
         {/* Brand Logo */}
         <Link
           className="inline-flex shrink-0 items-center gap-2.5 rounded-xl no-underline text-stone-900 group"

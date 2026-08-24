@@ -220,10 +220,10 @@ export default function Profile() {
   }
 
   return (
-    <main className="flex-1 overflow-x-hidden overflow-y-auto bg-[#FAF7F0] min-h-dvh pb-16">
+    <div className="min-h-[calc(100dvh-4rem)] bg-[#FAF7F0] pb-16">
       {/* 顶部 Hero 区域 */}
-      <div className="border-b border-stone-200/80 bg-[#FAF7F0] px-4 sm:px-8 lg:px-12 pb-10 pt-8 sm:pt-10">
-        <div className="mx-auto max-w-[1360px] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+      <div className="border-b border-stone-200/80 bg-[#FAF7F0] py-8 sm:py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
           <div>
             <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100/80 border border-emerald-300/60 px-3 py-0.5 text-xs font-bold text-emerald-800 tracking-wider uppercase mb-2">
               <User className="w-3.5 h-3.5 text-emerald-700" />
@@ -249,7 +249,7 @@ export default function Profile() {
       </div>
 
       {/* 主体工作台：双栏结构 */}
-      <div className="mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-12 mt-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         {loadError && (
           <div className="mb-6 flex items-center justify-between rounded-2xl border border-red-200 bg-red-50 p-4 text-xs font-bold text-red-700">
             <span>{loadError}</span>
@@ -261,7 +261,7 @@ export default function Profile() {
           {/* ======================================================== */}
           {/* 左侧：旅人名片、足迹数据概览与快捷导航 (4 列)              */}
           {/* ======================================================== */}
-          <aside className="lg:col-span-4 space-y-5 lg:sticky lg:top-20">
+          <aside className="lg:col-span-4 space-y-5 lg:sticky lg:top-24">
             {/* 模块 1: 用户名片卡 */}
             <div className="overflow-hidden rounded-3xl border border-stone-200/90 bg-[#FDFBF7] shadow-sm">
               <div className="bg-gradient-to-br from-emerald-800 to-emerald-950 p-6 text-white">
@@ -791,6 +791,6 @@ export default function Profile() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </main>
+    </div>
   )
 }

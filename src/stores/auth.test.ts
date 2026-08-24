@@ -1,5 +1,5 @@
 import type { AuthUser } from '@/types/api'
-import { getMeApi, loginApi, registerApi } from '@/api/auth'
+import { getMeApi, loginApi, logoutApi, registerApi } from '@/api/auth'
 
 import { useAuthStore } from './auth'
 
@@ -8,6 +8,7 @@ import { useAuthStore } from './auth'
 vi.mock('@/api/auth', () => ({
   getMeApi: vi.fn(),
   loginApi: vi.fn(),
+  logoutApi: vi.fn(),
   registerApi: vi.fn(),
 }))
 
@@ -90,11 +91,13 @@ describe('useAuthStore', () => {
   })
 
   describe('logout', () => {
-    it('应该清空 user', () => {
+    it('应该调用 logoutApi 并清空 user', async () => {
       useAuthStore.setState({ user: mockUser })
+      vi.mocked(logoutApi).mockResolvedValue({ message: '已退出登录', success: true })
 
-      useAuthStore.getState().logout()
+      await useAuthStore.getState().logout()
 
+      expect(logoutApi).toHaveBeenCalled()
       expect(useAuthStore.getState().user).toBeNull()
     })
   })

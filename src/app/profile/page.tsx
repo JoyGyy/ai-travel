@@ -151,9 +151,9 @@ export default function Profile() {
     setShowLogoutDialog(true)
   }
 
-  function confirmLogout() {
+  async function confirmLogout() {
     setShowLogoutDialog(false)
-    logout()
+    await logout()
     router.replace('/')
   }
 

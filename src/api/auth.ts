@@ -30,6 +30,11 @@ export async function loginApi(username: string, password: string): Promise<Auth
   return post('/api/auth/login', { password, username })
 }
 
+/** 用户退出登录（清除服务端 Cookie） */
+export async function logoutApi(): Promise<{ message: string, success: true }> {
+  return post('/api/auth/logout')
+}
+
 /** 用户注册 */
 export async function registerApi(username: string, password: string): Promise<AuthResponse> {
   return post('/api/auth/register', { password, username })

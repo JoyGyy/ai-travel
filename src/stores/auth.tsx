@@ -7,7 +7,7 @@
  * 功能：
  * - 用户登录/注册（调用后端 API）
  * - 检查当前会话有效性（与服务端 Cookie 对齐）
- * - 登出（清除本地状态）
+ * - 退出登录（调用后端 API 清除 httpOnly Cookie 并重置本地状态）
  * - 水合状态检测（防止 hydration mismatch）
  */
 import type { AuthUser } from '@/types/api'
@@ -15,7 +15,7 @@ import { create } from 'zustand'
 
 import { devtools, persist } from 'zustand/middleware'
 
-import { getMeApi, loginApi, registerApi } from '@/api/auth'
+import { getMeApi, loginApi, logoutApi, registerApi } from '@/api/auth'
 
 // --- 类型定义 ---
 
@@ -23,7 +23,7 @@ interface AuthState {
   _hasHydrated: boolean
   checkAuth: () => Promise<void>
   login: (username: string, password: string) => Promise<void>
-  logout: () => void
+  logout: () => Promise<void>
   register: (username: string, password: string) => Promise<void>
   setHasHydrated: (v: boolean) => void
   user: AuthUser | null
@@ -62,8 +62,17 @@ export const useAuthStore = create<AuthState>()(
           }
         },
 
-        logout() {
-          set({ user: null })
+        /** 退出登录：同时通知后端清除 Cookie 与重置本地状态 */
+        async logout() {
+          try {
+            await logoutApi()
+          }
+          catch {
+            // 忽略网络错误，确保本地状态清空
+          }
+          finally {
+            set({ user: null })
+          }
         },
 
         async register(username, password) {

@@ -88,7 +88,7 @@ export function TravelRouteCardModal({
     setSavingImage(true)
     try {
       await exportElementToPng(cardRef.current, {
-        fileName: `山海行记-${city}手账路线-${new Date().toISOString().slice(0, 10)}.png`,
+        fileName: `远方-${city}手账路线-${new Date().toISOString().slice(0, 10)}.png`,
         pixelRatio: 2,
       })
       toast.success('✨ 手账卡片已成功保存至本地相册/下载！')
@@ -174,7 +174,7 @@ export function TravelRouteCardModal({
 
   // 3. 复制文本路线
   function handleCopyText() {
-    const text = `📮【山海行记 · ${city}旅行手账路书】\n\n🗺️ 规划路线：\n${routeString}\n\n🌟 行程建议：\n${summary}\n\n🍜 美食打卡：\n${food.join('、') || '暂无'}\n\n💡 出行指南：\n${tips.join('\n') || '祝旅途愉快'}`
+    const text = `📮【远方 · ${city}旅行手账路书】\n\n🗺️ 规划路线：\n${routeString}\n\n🌟 行程建议：\n${summary}\n\n🍜 美食打卡：\n${food.join('、') || '暂无'}\n\n💡 出行指南：\n${tips.join('\n') || '祝旅途愉快'}`
     navigator.clipboard.writeText(text)
     setCopied(true)
     toast.success('已复制手账路书文字内容！')
@@ -184,7 +184,7 @@ export function TravelRouteCardModal({
   return (
     <Dialog onOpenChange={open => !open && onClose()} open={isOpen}>
       <DialogContent className="max-w-3xl lg:max-w-4xl max-h-[94vh] overflow-y-auto border-none bg-stone-950/50 p-4 sm:p-6 backdrop-blur-md">
-        <DialogTitle className="sr-only">山海行记 · 路线卡片生成</DialogTitle>
+        <DialogTitle className="sr-only">远方 · 路线卡片生成</DialogTitle>
 
         <div className="flex flex-col gap-5">
           {/* 卡片实体（待导出为图片的主体） */}
@@ -206,7 +206,7 @@ export function TravelRouteCardModal({
               <div>
                 <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-800 px-3.5 py-1 text-xs font-bold text-white shadow-2xs tracking-wider uppercase">
                   <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                  <span>山海行记 · 旅人手账路书</span>
+                  <span>远方 · 旅人手账路书</span>
                 </div>
                 <h3 className="font-serif text-3xl sm:text-4xl font-extrabold text-stone-900 tracking-tight mt-2.5">
                   {city}
@@ -332,7 +332,7 @@ export function TravelRouteCardModal({
             <div className="relative z-1 flex items-center justify-between border-t border-stone-200 pt-5 mt-4 text-xs text-stone-400 font-medium">
               <div className="flex items-center gap-1.5 text-stone-600">
                 <Compass className="w-4 h-4 text-emerald-700" />
-                <span className="text-xs sm:text-sm">山海行记 · 让每次出发都如手账般值得珍藏</span>
+                <span className="text-xs sm:text-sm">远方 · 让每次出发都如手账般值得珍藏</span>
               </div>
               <span className="font-mono text-xs text-stone-400">joygytrip.cn</span>
             </div>

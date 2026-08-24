@@ -14,7 +14,7 @@ export async function exportElementToPng(
   options: ExportImageOptions = {},
 ): Promise<string> {
   const {
-    fileName = `山海行记-旅行手账路书-${new Date().toISOString().slice(0, 10)}.png`,
+    fileName = `远方-旅行手账路书-${new Date().toISOString().slice(0, 10)}.png`,
     pixelRatio = 2,
   } = options
 

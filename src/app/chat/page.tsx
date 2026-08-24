@@ -427,15 +427,15 @@ function ChatContent() {
           ${showLeftSidebar ? 'lg:w-[270px] xl:w-[290px]' : 'lg:w-0 lg:border-r-0 lg:overflow-hidden'}
         `}
       >
-        {/* 左侧顶栏 */}
+        {/* 左侧顶栏：手账历史导航 */}
         <div className="flex items-center justify-between p-3.5 px-4 border-b border-stone-200/80 bg-white/70">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-800 text-white font-bold shadow-2xs">
-              <Compass className="h-4 w-4" />
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100 text-emerald-800 font-bold">
+              <History className="h-4 w-4" />
             </div>
             <div>
-              <h2 className="font-serif text-sm font-bold text-stone-900 leading-tight">山海行记</h2>
-              <p className="text-[10px] text-stone-400 font-medium">AI 旅人手账顾问</p>
+              <h2 className="font-serif text-sm font-bold text-stone-900 leading-tight">手账历史</h2>
+              <p className="text-[10px] text-stone-400 font-medium">AI 行程规划记录</p>
             </div>
           </div>
           {/* 移动端关闭按钮 */}
@@ -779,7 +779,7 @@ function ChatContent() {
                           <div className="flex flex-wrap items-center justify-between border-b border-stone-200/80 pb-3 mb-4 text-xs text-stone-500 gap-2">
                             <div className="flex items-center gap-1.5 font-bold text-emerald-800">
                               <Sparkles className="w-3.5 h-3.5 text-emerald-700" />
-                              <span>山海行记 · 视觉手账建议</span>
+                              <span>远方 AI · 行程手账建议</span>
                             </div>
 
                             <div className="flex items-center gap-2">

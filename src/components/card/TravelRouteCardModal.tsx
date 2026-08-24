@@ -183,13 +183,13 @@ export function TravelRouteCardModal({
 
   return (
     <Dialog onOpenChange={open => !open && onClose()} open={isOpen}>
-      <DialogContent className="max-w-[660px] max-h-[92vh] overflow-y-auto border-none bg-stone-950/40 p-3 sm:p-5 backdrop-blur-md">
+      <DialogContent className="max-w-3xl lg:max-w-4xl max-h-[94vh] overflow-y-auto border-none bg-stone-950/50 p-4 sm:p-6 backdrop-blur-md">
         <DialogTitle className="sr-only">山海行记 · 路线卡片生成</DialogTitle>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-5">
           {/* 卡片实体（待导出为图片的主体） */}
           <div
-            className="relative overflow-hidden rounded-[28px] border-2 border-stone-200/90 bg-[#FAF7F0] p-6 sm:p-7 text-stone-900 shadow-2xl"
+            className="relative overflow-hidden rounded-[32px] border-2 border-stone-200/90 bg-[#FAF7F0] p-7 sm:p-10 text-stone-900 shadow-2xl"
             ref={cardRef}
           >
             {/* 信纸微点底纹 */}
@@ -197,35 +197,35 @@ export function TravelRouteCardModal({
               className="absolute inset-0 opacity-[0.45] pointer-events-none"
               style={{
                 backgroundImage: `radial-gradient(#d6d3d1 1px, transparent 1px)`,
-                backgroundSize: '18px 18px',
+                backgroundSize: '20px 20px',
               }}
             />
 
             {/* 卡片顶栏：品牌与复古印章 */}
-            <div className="relative z-1 flex items-start justify-between border-b-2 border-dashed border-stone-300/80 pb-4 mb-5">
+            <div className="relative z-1 flex items-start justify-between border-b-2 border-dashed border-stone-300/80 pb-5 mb-6">
               <div>
-                <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-800 px-3 py-0.5 text-[11px] font-bold text-white shadow-2xs tracking-wider uppercase">
-                  <Sparkles className="w-3 h-3 text-amber-300" />
+                <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-800 px-3.5 py-1 text-xs font-bold text-white shadow-2xs tracking-wider uppercase">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-300" />
                   <span>山海行记 · 旅人手账路书</span>
                 </div>
-                <h3 className="font-serif text-2xl sm:text-3xl font-extrabold text-stone-900 tracking-tight mt-1.5">
+                <h3 className="font-serif text-3xl sm:text-4xl font-extrabold text-stone-900 tracking-tight mt-2.5">
                   {city}
                   {' '}
                   · 漫游路线指南
                 </h3>
-                <p className="text-xs text-stone-500 font-medium mt-0.5">
+                <p className="text-sm text-stone-500 font-medium mt-1">
                   生成于
                   {' '}
                   {todayStr}
                   {' '}
-                  · 专属定制
+                  · 专属定制旅行路书
                 </p>
               </div>
 
               {/* 复古旅行邮票 */}
-              <div className="flex-shrink-0 rotate-3 rounded-xl border-2 border-dashed border-emerald-700 bg-emerald-50 p-2 text-center shadow-xs">
-                <span className="block text-[9px] font-extrabold text-emerald-800 tracking-widest uppercase">PASSPORT</span>
-                <span className="font-serif text-sm font-black text-emerald-950">
+              <div className="flex-shrink-0 rotate-3 rounded-2xl border-2 border-dashed border-emerald-700 bg-emerald-50 px-3.5 py-2 text-center shadow-xs">
+                <span className="block text-[10px] font-extrabold text-emerald-800 tracking-widest uppercase">PASSPORT</span>
+                <span className="font-serif text-base sm:text-lg font-black text-emerald-950">
                   {city}
                 </span>
               </div>
@@ -233,18 +233,18 @@ export function TravelRouteCardModal({
 
             {/* 路线拓扑链路图 */}
             {spots.length > 0 && (
-              <div className="relative z-1 mb-5 rounded-2xl border border-stone-200/90 bg-white/90 p-4 shadow-2xs">
-                <div className="flex items-center justify-between mb-3 text-xs font-bold text-emerald-900">
-                  <span className="flex items-center gap-1.5">
-                    <Navigation className="w-3.5 h-3.5 text-emerald-700" />
+              <div className="relative z-1 mb-6 rounded-2xl border border-stone-200/90 bg-white/95 p-5 shadow-2xs">
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-3.5 text-sm font-bold text-emerald-900">
+                  <span className="flex items-center gap-1.5 text-sm">
+                    <Navigation className="w-4 h-4 text-emerald-700" />
                     <span>
                       游览打卡链路 (
                       {spots.length}
                       {' '}
-                      站)
+                      站精选路线)
                     </span>
                   </span>
-                  <Badge className="bg-emerald-100 text-emerald-800 border-none text-[10px] font-bold" variant="secondary">
+                  <Badge className="bg-emerald-100 text-emerald-800 border-none text-xs font-bold px-3 py-1" variant="secondary">
                     {transportMode === 'driving' ? '🚗 自驾' : transportMode === 'transit' ? '🚌 公交' : '🚶 慢步'}
                     {' '}
                     ~
@@ -257,19 +257,19 @@ export function TravelRouteCardModal({
                 </div>
 
                 {/* 水平路线链 */}
-                <div className="flex items-center gap-2 overflow-x-auto py-1 no-scrollbar">
+                <div className="flex items-center gap-2.5 overflow-x-auto py-2 no-scrollbar">
                   {spots.map((spot, idx) => (
                     <div className="flex items-center flex-shrink-0" key={spot.name}>
-                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-50 border border-stone-200/80 shadow-2xs">
-                        <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-emerald-700 text-[11px] font-black text-white">
+                      <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-stone-50 border border-stone-200/80 shadow-2xs">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-700 text-xs font-black text-white">
                           {idx + 1}
                         </span>
-                        <span className="text-xs font-bold text-stone-800 whitespace-nowrap">
+                        <span className="text-sm font-bold text-stone-800 whitespace-nowrap">
                           {spot.name}
                         </span>
                       </div>
                       {idx < spots.length - 1 && (
-                        <ChevronRight className="w-4 h-4 text-emerald-700 mx-1 shrink-0" />
+                        <ChevronRight className="w-4 h-4 text-emerald-700 mx-1.5 shrink-0" />
                       )}
                     </div>
                   ))}
@@ -279,26 +279,26 @@ export function TravelRouteCardModal({
 
             {/* 核心建议 / 摘要 */}
             {summary && (
-              <div className="relative z-1 mb-4 rounded-2xl bg-amber-50/90 border border-amber-200/70 p-4 text-xs leading-relaxed text-stone-800">
-                <div className="flex items-center gap-1.5 font-bold text-amber-950 mb-1">
-                  <Compass className="w-4 h-4 text-amber-700" />
+              <div className="relative z-1 mb-5 rounded-2xl bg-amber-50/90 border border-amber-200/70 p-5 text-sm leading-relaxed text-stone-800">
+                <div className="flex items-center gap-2 font-bold text-amber-950 mb-1.5 text-base">
+                  <Compass className="w-4.5 h-4.5 text-amber-700" />
                   <span>核心亮点与行程建议</span>
                 </div>
-                <p className="text-stone-700">{summary}</p>
+                <p className="text-stone-700 text-sm sm:text-base leading-relaxed">{summary}</p>
               </div>
             )}
 
             {/* 美食推荐 */}
             {food.length > 0 && (
-              <div className="relative z-1 mb-4 rounded-2xl bg-white/90 border border-stone-200/90 p-4 text-xs">
-                <div className="flex items-center gap-1.5 font-bold text-stone-900 mb-2">
-                  <Utensils className="w-3.5 h-3.5 text-amber-600" />
+              <div className="relative z-1 mb-5 rounded-2xl bg-white/90 border border-stone-200/90 p-5 text-sm">
+                <div className="flex items-center gap-2 font-bold text-stone-900 mb-2.5 text-base">
+                  <Utensils className="w-4 h-4 text-amber-600" />
                   <span>地道特色美食推荐</span>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2.5">
                   {food.map(f => (
                     <span
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-50 border border-amber-200/80 text-[11px] font-bold text-amber-900"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200/80 text-xs sm:text-sm font-bold text-amber-900"
                       key={f}
                     >
                       🍜
@@ -312,14 +312,14 @@ export function TravelRouteCardModal({
 
             {/* 避坑贴士 */}
             {tips.length > 0 && (
-              <div className="relative z-1 mb-4 rounded-2xl bg-white/90 border border-stone-200/90 p-4 text-xs">
-                <div className="flex items-center gap-1.5 font-bold text-stone-900 mb-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-emerald-700" />
+              <div className="relative z-1 mb-5 rounded-2xl bg-white/90 border border-stone-200/90 p-5 text-sm">
+                <div className="flex items-center gap-2 font-bold text-stone-900 mb-2 text-base">
+                  <Sparkles className="w-4 h-4 text-emerald-700" />
                   <span>出行贴士 & 避坑指南</span>
                 </div>
-                <ul className="space-y-1 text-stone-600">
+                <ul className="space-y-1.5 text-stone-600 text-sm sm:text-base">
                   {tips.map(tip => (
-                    <li className="flex items-start gap-1.5" key={tip}>
+                    <li className="flex items-start gap-2" key={tip}>
                       <span className="text-emerald-700 font-bold">•</span>
                       <span>{tip}</span>
                     </li>
@@ -329,12 +329,12 @@ export function TravelRouteCardModal({
             )}
 
             {/* 卡片底栏：水印与认证印章 */}
-            <div className="relative z-1 flex items-center justify-between border-t border-stone-200 pt-4 mt-2 text-[11px] text-stone-400 font-medium">
+            <div className="relative z-1 flex items-center justify-between border-t border-stone-200 pt-5 mt-4 text-xs text-stone-400 font-medium">
               <div className="flex items-center gap-1.5 text-stone-600">
-                <Compass className="w-3.5 h-3.5 text-emerald-700" />
-                <span>山海行记 · 让每次出发都如手账般值得珍藏</span>
+                <Compass className="w-4 h-4 text-emerald-700" />
+                <span className="text-xs sm:text-sm">山海行记 · 让每次出发都如手账般值得珍藏</span>
               </div>
-              <span className="font-mono text-[10px] text-stone-400">joygytrip.cn</span>
+              <span className="font-mono text-xs text-stone-400">joygytrip.cn</span>
             </div>
           </div>
 

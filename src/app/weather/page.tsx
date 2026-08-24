@@ -10,7 +10,8 @@ import type { LucideIcon } from 'lucide-react'
 import type { ChangeEvent, KeyboardEvent } from 'react'
 
 import { CalendarDays, Clock, Cloud, Droplets, Leaf, Lightbulb, MapPin, Search, Shirt, Star, SunMedium, Thermometer, Umbrella } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { Suspense, useEffect, useMemo, useState } from 'react'
 
 import { HomeWeather } from '@/components/HomeWeather'
 import { Badge } from '@/components/ui/badge'
@@ -43,8 +44,11 @@ const KNOWLEDGE_ICONS: Record<string, LucideIcon> = {
   紫外线防护: SunMedium,
 }
 
-export default function Weather() {
-  const [city, setCity] = useState('')
+function WeatherContent() {
+  const searchParams = useSearchParams()
+  const queryCity = searchParams.get('city') || searchParams.get('keyword') || ''
+
+  const [city, setCity] = useState(queryCity)
   const [showDropdown, setShowDropdown] = useState(false)
   const [activeCityIndex, setActiveCityIndex] = useState(0)
   const [recentCities, setRecentCities] = useState<string[]>(() => {
@@ -56,6 +60,17 @@ export default function Weather() {
     }
   })
   const { error, fetchWeather, loading, weather } = useWeather()
+
+  // ---- 页面初始化：若 URL 携带 city 参数则自动搜索对应城市 ----
+  useEffect(() => {
+    if (queryCity) {
+      const clean = queryCity.trim()
+      setCity(clean)
+      fetchWeather(clean)
+      saveRecentCity(clean)
+      setRecentCities(getRecentCities())
+    }
+  }, [queryCity, fetchWeather])
 
   // ---- 城市搜索过滤 ----
   const filteredCities = useMemo(() => {
@@ -397,5 +412,20 @@ export default function Weather() {
         )}
       </div>
     </main>
+  )
+}
+
+export default function Weather() {
+  return (
+    <Suspense fallback={(
+      <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center">
+        <div className="text-emerald-800 text-sm font-bold animate-pulse flex items-center gap-2">
+          <span>🌤️ 正在加载气象台数据...</span>
+        </div>
+      </div>
+    )}
+    >
+      <WeatherContent />
+    </Suspense>
   )
 }

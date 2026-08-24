@@ -13,16 +13,10 @@ import {
   Maximize2,
   Minimize2,
   Navigation as NavigationIcon,
-  Pause,
-  Play,
-  RotateCcw,
-  Sparkles,
   Zap,
 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import {
   calculateBearing,
   calculateDistanceKm,
@@ -58,24 +52,12 @@ export function TravelMapView({
   const [tileType, setTileType] = useState<TileLayerType>('amap-street')
   const [activeSpotIndex, setActiveSpotIndex] = useState<number>(0)
   const [isExpanded, setIsExpanded] = useState(false)
-  const [isCameraFollow, setIsCameraFollow] = useState(true)
-
-  // 模拟导航演播状态
-  const [isSimulating, setIsSimulating] = useState(false)
-  const [simProgress, setSimProgress] = useState(0) // 0 - 100
-  const [simSpeed, setSimSpeed] = useState<number>(1) // 1x, 2x, 4x
-  const [simLegIndex, setSimLegIndex] = useState(0)
-  const [arrivedSpotNotification, setArrivedSpotNotification] = useState<string | null>(null)
 
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<LeafletMap | null>(null)
   const markersRef = useRef<LeafletMarker[]>([])
   const bgPolylineRef = useRef<LeafletPolyline | null>(null)
   const fullPolylineRef = useRef<LeafletPolyline | null>(null)
-  const passedPolylineRef = useRef<LeafletPolyline | null>(null)
-  const simVehicleMarkerRef = useRef<LeafletMarker | null>(null)
-  const animFrameRef = useRef<number | null>(null)
-  const notifTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const tileLayerRef = useRef<unknown>(null)
   const overlayLayerRef = useRef<unknown>(null)
 
@@ -201,9 +183,6 @@ export function TravelMapView({
 
     return () => {
       isMounted = false
-      if (animFrameRef.current) {
-        cancelAnimationFrame(animFrameRef.current)
-      }
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove()
         mapInstanceRef.current = null
@@ -234,7 +213,7 @@ export function TravelMapView({
 
       const tileUrls = {
         'amap-satellite': 'https://wprd0{s}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=6',
-        'amap-street': 'https://wprd0{s}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=7',
+        'amap-street': 'https://wprd0{s}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&style=7',
         'cartodb': 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
       }
 
@@ -278,10 +257,6 @@ export function TravelMapView({
       if (fullPolylineRef.current) {
         map.removeLayer(fullPolylineRef.current)
         fullPolylineRef.current = null
-      }
-      if (passedPolylineRef.current) {
-        map.removeLayer(passedPolylineRef.current)
-        passedPolylineRef.current = null
       }
 
       const latlngs: [number, number][] = []
@@ -361,175 +336,10 @@ export function TravelMapView({
           weight: 4.5,
         }).addTo(map)
 
-        passedPolylineRef.current = L.polyline([], {
-          color: '#10b981',
-          opacity: 0.95,
-          weight: 5,
-        }).addTo(map)
-
         map.fitBounds(L.latLngBounds(latlngs), { padding: [36, 36] })
       }
     })
   }, [routePoints, mode, city])
-
-  // 5. 模拟导航演播动画控制器 (Dynamic Route Simulation with Camera Follow & Heading)
-  useEffect(() => {
-    if (!isSimulating || routePoints.length < 2 || !mapInstanceRef.current)
-      return
-
-    import('leaflet').then((L) => {
-      const map = mapInstanceRef.current
-      if (!map)
-        return
-
-      let currentLeg = simLegIndex
-      let progressInLeg = (simProgress % (100 / Math.max(routeLegs.length, 1))) * routeLegs.length
-      const iconSymbol = mode === 'driving' ? '🚗' : mode === 'transit' ? '🚌' : '🚶'
-
-      // 创建移动漫游载具 Marker（包含车辆/小人与朝向指示）
-      const updateVehicleMarker = (lat: number, lng: number, heading: number) => {
-        const vehicleHtml = `
-          <div class="relative flex items-center justify-center w-9 h-9 rounded-full bg-emerald-800 text-white font-bold text-base shadow-2xl ring-4 ring-emerald-300 transition-transform duration-75" style="transform: rotate(${heading}deg);">
-            <span>${iconSymbol}</span>
-            <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-b-[6px] border-b-amber-300"></div>
-          </div>
-        `
-        const vehicleIcon = L.divIcon({
-          className: 'sim-vehicle-pin',
-          html: vehicleHtml,
-          iconAnchor: [18, 18],
-          iconSize: [36, 36],
-        })
-
-        if (!simVehicleMarkerRef.current) {
-          simVehicleMarkerRef.current = L.marker([lat, lng], {
-            icon: vehicleIcon,
-            zIndexOffset: 1000,
-          }).addTo(map)
-        }
-        else {
-          simVehicleMarkerRef.current.setIcon(vehicleIcon)
-          simVehicleMarkerRef.current.setLatLng([lat, lng])
-        }
-      }
-
-      const step = () => {
-        if (!isSimulating)
-          return
-
-        // 根据倍速步进
-        progressInLeg += 0.35 * simSpeed
-        if (progressInLeg >= 100) {
-          progressInLeg = 0
-          currentLeg += 1
-
-          if (currentLeg < routePoints.length) {
-            const arrivedSpot = routePoints[currentLeg]?.name
-            if (arrivedSpot) {
-              setArrivedSpotNotification(`🎉 已顺利抵达【${arrivedSpot}】！`)
-              if (notifTimeoutRef.current) {
-                clearTimeout(notifTimeoutRef.current)
-              }
-              notifTimeoutRef.current = setTimeout(() => {
-                setArrivedSpotNotification(null)
-                notifTimeoutRef.current = null
-              }, 3000)
-            }
-          }
-
-          if (currentLeg >= routeLegs.length) {
-            // 模拟演播完成
-            setIsSimulating(false)
-            setSimProgress(100)
-            setSimLegIndex(0)
-            setArrivedSpotNotification(`🏁 全程模拟导航完成，已抵达终点【${routePoints[routePoints.length - 1]?.name}】！`)
-            if (simVehicleMarkerRef.current) {
-              map.removeLayer(simVehicleMarkerRef.current)
-              simVehicleMarkerRef.current = null
-            }
-            return
-          }
-          setSimLegIndex(currentLeg)
-          setActiveSpotIndex(currentLeg)
-        }
-
-        const fromPt = routePoints[currentLeg]
-        const toPt = routePoints[currentLeg + 1]
-
-        if (fromPt && toPt) {
-          const ratio = progressInLeg / 100
-          const curLat = fromPt.lat + (toPt.lat - fromPt.lat) * ratio
-          const curLng = fromPt.lng + (toPt.lng - fromPt.lng) * ratio
-
-          const currentBearing = calculateBearing(fromPt.lat, fromPt.lng, toPt.lat, toPt.lng)
-          updateVehicleMarker(curLat, curLng, currentBearing)
-
-          // 镜头平滑跟随
-          if (isCameraFollow) {
-            map.panTo([curLat, curLng], { animate: true, duration: 0.1 })
-          }
-
-          // 动态更新已行进轨迹 Polyline
-          if (passedPolylineRef.current) {
-            const passedPoints: [number, number][] = []
-            for (let i = 0; i <= currentLeg; i++) {
-              passedPoints.push([routePoints[i].lat, routePoints[i].lng])
-            }
-            passedPoints.push([curLat, curLng])
-            passedPolylineRef.current.setLatLngs(passedPoints)
-          }
-
-          const overallProgress = Math.round(
-            ((currentLeg + ratio) / Math.max(routeLegs.length, 1)) * 100,
-          )
-          setSimProgress(overallProgress)
-        }
-
-        animFrameRef.current = requestAnimationFrame(step)
-      }
-
-      animFrameRef.current = requestAnimationFrame(step)
-    })
-
-    return () => {
-      if (animFrameRef.current) {
-        cancelAnimationFrame(animFrameRef.current)
-      }
-      if (notifTimeoutRef.current) {
-        clearTimeout(notifTimeoutRef.current)
-        notifTimeoutRef.current = null
-      }
-    }
-  }, [isSimulating, simSpeed, simLegIndex, simProgress, isCameraFollow, routePoints, routeLegs, mode])
-
-  // 重设演播
-  function handleResetSim() {
-    setIsSimulating(false)
-    setSimProgress(0)
-    setSimLegIndex(0)
-    setActiveSpotIndex(0)
-    setArrivedSpotNotification(null)
-    if (notifTimeoutRef.current) {
-      clearTimeout(notifTimeoutRef.current)
-      notifTimeoutRef.current = null
-    }
-
-    if (simVehicleMarkerRef.current && mapInstanceRef.current) {
-      mapInstanceRef.current.removeLayer(simVehicleMarkerRef.current)
-      simVehicleMarkerRef.current = null
-    }
-
-    if (passedPolylineRef.current) {
-      passedPolylineRef.current.setLatLngs([])
-    }
-
-    if (mapInstanceRef.current && routePoints.length > 0) {
-      const latlngs = routePoints.map(p => [p.lat, p.lng] as [number, number])
-      import('leaflet').then((L) => {
-        mapInstanceRef.current?.fitBounds(L.latLngBounds(latlngs), { padding: [36, 36] })
-      })
-    }
-  }
 
   // 聚焦具体景点
   function handleFocusSpot(index: number) {
@@ -565,31 +375,34 @@ export function TravelMapView({
 
   const startSpot = routePoints[0] || { name: `${city}起点` }
   const endSpot = routePoints[routePoints.length - 1] || { name: `${city}终点` }
+  const viaPoints = routePoints.length > 2 ? routePoints.slice(1, -1) : []
 
+  // 全程导航：传入全部途经点，确保展示完整路线
   const amapOverallUrl = generateAmapRouteUrl(
     startSpot,
     endSpot,
     city,
     mode === 'driving' ? 'car' : mode === 'transit' ? 'bus' : 'walk',
+    viaPoints,
   )
   const baiduOverallUrl = generateBaiduRouteUrl(
     startSpot,
     endSpot,
     city,
     mode === 'driving' ? 'driving' : mode === 'transit' ? 'transit' : 'walking',
+    viaPoints,
   )
   const tencentOverallUrl = generateTencentRouteUrl(
     startSpot,
     endSpot,
     city,
     mode === 'driving' ? 'drive' : mode === 'transit' ? 'bus' : 'walk',
+    viaPoints,
   )
-
-  const activeLeg = routeLegs[simLegIndex]
 
   return (
     <div className={`overflow-hidden rounded-3xl border border-stone-200/90 bg-[#FDFBF7] shadow-sm transition-all ${className}`}>
-      {/* 顶栏：城市总览、交通模式切换与携程风格 Tab */}
+      {/* 顶栏：城市总览、交通模式切换、底图切换与全屏视野 */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200/80 bg-white/95 px-4 py-3 sm:px-5">
         <div className="flex items-center gap-2.5">
           <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-700 text-white font-bold shadow-sm shadow-emerald-800/20">
@@ -622,8 +435,8 @@ export function TravelMapView({
           </div>
         </div>
 
-        {/* 视图 Tab 与交通方式胶囊 */}
-        <div className="flex items-center gap-2">
+        {/* 控制区：Tab 切换、交通方式胶囊、底图切换与展开 */}
+        <div className="flex flex-wrap items-center gap-2">
           {/* Tab 切换：地图 / 分段路书 */}
           <div className="flex items-center rounded-xl bg-stone-100 p-0.5 border border-stone-200/70 text-xs font-bold">
             <button
@@ -649,7 +462,7 @@ export function TravelMapView({
           </div>
 
           {/* 交通工具切换 */}
-          <div className="hidden sm:flex items-center gap-0.5 rounded-xl bg-stone-100 p-0.5 border border-stone-200/70">
+          <div className="flex items-center gap-0.5 rounded-xl bg-stone-100 p-0.5 border border-stone-200/70">
             <button
               className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 mode === 'driving' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-stone-500 hover:text-stone-800'
@@ -659,7 +472,7 @@ export function TravelMapView({
               type="button"
             >
               <Car className="h-3 w-3" />
-              <span>驾车</span>
+              <span className="hidden sm:inline">驾车</span>
             </button>
             <button
               className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
@@ -670,7 +483,7 @@ export function TravelMapView({
               type="button"
             >
               <Zap className="h-3 w-3" />
-              <span>公交</span>
+              <span className="hidden sm:inline">公交</span>
             </button>
             <button
               className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
@@ -681,111 +494,26 @@ export function TravelMapView({
               type="button"
             >
               <Footprints className="h-3 w-3" />
-              <span>步行</span>
+              <span className="hidden sm:inline">步行</span>
             </button>
           </div>
-        </div>
-      </div>
 
-      {/* 模拟导航 HUD 控制台 (携程级演播浮层) */}
-      <div className="bg-emerald-900/90 backdrop-blur-md px-4 py-2.5 text-white flex flex-wrap items-center justify-between gap-3 border-b border-emerald-800/80">
-        <div className="flex items-center gap-3 flex-1 min-w-[200px]">
-          {/* 播放/暂停控制 */}
-          <Button
-            className={`rounded-full h-8 w-8 p-0 cursor-pointer font-bold shadow-md ${
-              isSimulating ? 'bg-amber-500 hover:bg-amber-600 text-stone-950' : 'bg-emerald-500 hover:bg-emerald-400 text-white'
-            }`}
-            onClick={() => setIsSimulating(!isSimulating)}
-            size="sm"
-            type="button"
-          >
-            {isSimulating ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 ml-0.5" />}
-          </Button>
-
-          <Button
-            className="rounded-full h-8 w-8 p-0 text-white/80 hover:text-white hover:bg-white/10"
-            onClick={handleResetSim}
-            size="sm"
-            title="重回起点"
-            type="button"
-            variant="ghost"
-          >
-            <RotateCcw className="h-3.5 w-3.5" />
-          </Button>
-
-          {/* 进度条与实时信息 */}
-          <div className="flex-1 max-w-xs">
-            <div className="flex items-center justify-between text-[11px] mb-1">
-              <span className="font-bold flex items-center gap-1">
-                <Sparkles className="h-3 w-3 text-amber-300" />
-                <span>
-                  {isSimulating ? '模拟导航行进中...' : '模拟路线全景导览'}
-                </span>
-              </span>
-              <span className="text-emerald-200 font-mono font-bold">
-                {simProgress}
-                %
-              </span>
-            </div>
-            <div className="w-full bg-emerald-950/80 h-1.5 rounded-full overflow-hidden">
-              <div
-                className="bg-gradient-to-r from-emerald-400 to-amber-300 h-full rounded-full transition-all duration-150"
-                style={{ width: `${simProgress}%` }}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* 演播参数配置：倍速切换、底图切换、自动视口跟随 */}
-        <div className="flex items-center gap-1.5 text-xs">
-          {/* 倍速 */}
-          <div className="flex items-center bg-emerald-950/60 rounded-lg p-0.5 border border-emerald-700/50">
-            {([1, 2, 4] as const).map(speed => (
-              <button
-                className={`px-1.5 py-0.5 rounded text-[10px] font-bold cursor-pointer transition-colors ${
-                  simSpeed === speed ? 'bg-emerald-500 text-stone-950 shadow-xs' : 'text-emerald-300 hover:text-white'
-                }`}
-                key={speed}
-                onClick={() => setSimSpeed(speed)}
-                type="button"
-              >
-                {speed}
-                x
-              </button>
-            ))}
-          </div>
-
-          {/* 镜头自动跟随开关 */}
-          <button
-            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-bold cursor-pointer transition-colors border ${
-              isCameraFollow
-                ? 'bg-emerald-600/80 border-emerald-400 text-white'
-                : 'bg-emerald-950/50 border-emerald-700/40 text-emerald-300 hover:text-white'
-            }`}
-            onClick={() => setIsCameraFollow(!isCameraFollow)}
-            title="模拟时视角跟随载具"
-            type="button"
-          >
-            <LocateFixed className="h-3 w-3" />
-            <span className="hidden sm:inline">镜头跟随</span>
-          </button>
-
-          {/* 底图切换 */}
+          {/* 底图样式切换 */}
           <select
             aria-label="选择地图样式图层"
-            className="bg-emerald-950/80 border border-emerald-700/60 text-emerald-100 text-[11px] font-medium rounded-lg px-2 py-1 outline-hidden cursor-pointer"
+            className="bg-stone-100 border border-stone-200 text-stone-700 text-xs font-medium rounded-xl px-2 py-1 outline-hidden cursor-pointer"
             onChange={e => setTileType(e.target.value as TileLayerType)}
             value={tileType}
           >
-            <option value="amap-street">高德标准街道</option>
-            <option value="amap-satellite">高德实景遥感</option>
-            <option value="cartodb">Carto 手账艺术</option>
+            <option value="amap-street">高德街道</option>
+            <option value="amap-satellite">高德实景</option>
+            <option value="cartodb">Carto艺术</option>
           </select>
 
           {/* 展开全景视野 */}
           <button
             aria-label={isExpanded ? '收起地图视野' : '展开地图全屏视野'}
-            className="p-1 rounded-lg bg-emerald-950/60 border border-emerald-700/50 text-emerald-200 hover:text-white cursor-pointer"
+            className="p-1.5 rounded-xl bg-stone-100 border border-stone-200 text-stone-600 hover:text-stone-900 cursor-pointer"
             onClick={() => setIsExpanded(!isExpanded)}
             title={isExpanded ? '收起地图视野' : '展开地图全屏视野'}
             type="button"
@@ -795,81 +523,20 @@ export function TravelMapView({
         </div>
       </div>
 
-      {/* 到达打卡点即时 HUD 弹窗通知 */}
-      {arrivedSpotNotification && (
-        <div className="bg-amber-500 text-stone-950 text-xs font-black px-4 py-1.5 text-center flex items-center justify-center gap-1.5 shadow-sm transition-all animate-bounce">
-          <span>{arrivedSpotNotification}</span>
-        </div>
-      )}
-
       {/* 主展示区：地图视图 vs 分段路书视图 */}
       {activeTab === 'map' ? (
         <div className="relative">
           {/* Leaflet 地图容器 */}
           <div
             className={`w-full bg-stone-100 transition-all duration-300 ${
-              isExpanded ? 'h-[540px]' : 'h-[360px] sm:h-[400px]'
+              isExpanded ? 'h-[520px]' : 'h-[380px] sm:h-[420px]'
             }`}
             ref={mapContainerRef}
           />
-
-          {/* 当前行进中路段迷你状态气泡 (悬浮于地图左下角) */}
-          {activeLeg && (
-            <div className="absolute bottom-3 left-3 z-[400] max-w-[280px] rounded-2xl bg-white/95 backdrop-blur-md p-3 shadow-lg border border-stone-200/90 text-xs">
-              <div className="flex items-center justify-between gap-2 mb-1.5">
-                <span className="font-black text-emerald-800 flex items-center gap-1">
-                  <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-700 text-white text-[10px]">
-                    {simLegIndex + 1}
-                  </span>
-                  <span>
-                    第
-                    {simLegIndex + 1}
-                    段导航
-                  </span>
-                </span>
-                <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 font-bold text-[10px]" variant="outline">
-                  {activeLeg.durationText}
-                </Badge>
-              </div>
-
-              <div className="text-stone-700 font-medium text-[11px] truncate">
-                <span className="font-bold text-stone-900">{activeLeg.from.name}</span>
-                <span className="text-stone-400 mx-1">➔</span>
-                <span className="font-bold text-stone-900">{activeLeg.to.name}</span>
-              </div>
-
-              <div className="mt-2 flex items-center gap-1.5">
-                <a
-                  className="flex-1 text-center py-1 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-[10px] transition-colors"
-                  href={activeLeg.amapUrl}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  高德导航
-                </a>
-                <a
-                  className="flex-1 text-center py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-[10px] border border-stone-200 transition-colors"
-                  href={activeLeg.baiduUrl}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  百度地图
-                </a>
-                <a
-                  className="flex-1 text-center py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-[10px] border border-stone-200 transition-colors"
-                  href={activeLeg.tencentUrl}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  腾讯地图
-                </a>
-              </div>
-            </div>
-          )}
         </div>
       ) : (
         /* 分段路书列表视图 (Legs) */
-        <div className="divide-y divide-stone-100 max-h-[380px] overflow-y-auto bg-stone-50/50 p-3 sm:p-4">
+        <div className="divide-y divide-stone-100 max-h-[420px] overflow-y-auto bg-stone-50/50 p-3 sm:p-4">
           <div className="text-xs font-bold text-stone-500 mb-3 px-1 flex items-center justify-between">
             <span>分段行程导航与接驳指南</span>
             <span>
@@ -990,10 +657,10 @@ export function TravelMapView({
           ))}
         </div>
 
-        {/* 全程真实导航直达链接 */}
+        {/* 全程真实导航直达链接 (带完整途经点) */}
         <div className="flex items-center gap-2 shrink-0">
           <a
-            className="inline-flex items-center gap-1 rounded-xl bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition-colors shadow-2xs"
+            className="inline-flex items-center gap-1 rounded-xl bg-emerald-700 hover:bg-emerald-800 px-3 py-1.5 text-xs font-bold text-white transition-colors shadow-sm shadow-emerald-800/20"
             href={amapOverallUrl}
             rel="noreferrer"
             target="_blank"
@@ -1002,7 +669,7 @@ export function TravelMapView({
             <ExternalLink className="h-3 w-3" />
           </a>
           <a
-            className="inline-flex items-center gap-1 rounded-xl bg-stone-50 border border-stone-200 px-2.5 py-1 text-xs font-bold text-stone-700 hover:bg-stone-100 transition-colors shadow-2xs"
+            className="inline-flex items-center gap-1 rounded-xl bg-stone-100 hover:bg-stone-200 border border-stone-200 px-2.5 py-1.5 text-xs font-bold text-stone-700 transition-colors shadow-2xs"
             href={baiduOverallUrl}
             rel="noreferrer"
             target="_blank"
@@ -1011,7 +678,7 @@ export function TravelMapView({
             <ExternalLink className="h-3 w-3" />
           </a>
           <a
-            className="inline-flex items-center gap-1 rounded-xl bg-stone-50 border border-stone-200 px-2.5 py-1 text-xs font-bold text-stone-600 hover:bg-stone-100 transition-colors shadow-2xs"
+            className="inline-flex items-center gap-1 rounded-xl bg-stone-100 hover:bg-stone-200 border border-stone-200 px-2.5 py-1.5 text-xs font-bold text-stone-700 transition-colors shadow-2xs"
             href={tencentOverallUrl}
             rel="noreferrer"
             target="_blank"

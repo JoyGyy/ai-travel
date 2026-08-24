@@ -783,13 +783,13 @@ export default function ChatPage() {
                             <Link
                               className="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition-colors"
                               href={`/?city=${encodeURIComponent(detectedCity)}`}
+                              title={`携带【${detectedCity}】前往首页定制多日完整游程表单`}
                             >
                               <Route className="w-3 h-3" />
                               <span>
-                                生成
+                                去首页定制
                                 {detectedCity}
-                                {' '}
-                                专属路书
+                                行程
                               </span>
                             </Link>
                             <Link

@@ -71,24 +71,28 @@ describe('amap 工具与地理计算测试', () => {
   it('生成各平台地图导航路线链接，必须包含真实经纬度与名称', () => {
     const from = { lat: 34.2255, lng: 108.9540, name: '陕西历史博物馆' }
     const to = { lat: 34.2189, lng: 108.9640, name: '大雁塔' }
+    const waypoints = [{ lat: 34.2120, lng: 108.9730, name: '大唐芙蓉园' }]
 
-    // 高德: from=lng,lat,name&to=lng,lat,name
-    const amap = generateAmapRouteUrl(from, to, '西安', 'car')
+    // 高德: from=lng,lat,name&to=lng,lat,name&via=lng,lat,name
+    const amap = generateAmapRouteUrl(from, to, '西安', 'car', waypoints)
     expect(amap).toContain('uri.amap.com/navigation')
     expect(amap).toContain('from=108.954,34.2255')
     expect(amap).toContain('to=108.964,34.2189')
+    expect(amap).toContain('via=108.973,34.212')
 
-    // 百度: origin=latlng:lat,lng|name:xxx&destination=latlng:lat,lng|name:xxx
-    const baidu = generateBaiduRouteUrl(from, to, '西安', 'driving')
+    // 百度: origin=latlng:lat,lng|name:xxx&destination=latlng:lat,lng|name:xxx&waypoints=...
+    const baidu = generateBaiduRouteUrl(from, to, '西安', 'driving', waypoints)
     expect(baidu).toContain('api.map.baidu.com/direction')
     expect(baidu).toContain('origin=latlng:')
     expect(baidu).toContain('destination=latlng:')
+    expect(baidu).toContain('waypoints=latlng:')
 
-    // 腾讯: from=xxx&fromcoord=lat,lng&to=xxx&tocoord=lat,lng
-    const qq = generateTencentRouteUrl(from, to, '西安', 'drive')
+    // 腾讯: from=xxx&fromcoord=lat,lng&to=xxx&tocoord=lat,lng&via=...
+    const qq = generateTencentRouteUrl(from, to, '西安', 'drive', waypoints)
     expect(qq).toContain('apis.map.qq.com/uri/v1/routeplan')
     expect(qq).toContain('fromcoord=34.2255,108.954')
     expect(qq).toContain('tocoord=34.2189,108.964')
+    expect(qq).toContain('via=34.212,108.973')
   })
 
   it('生成各平台单点标记查看链接', () => {

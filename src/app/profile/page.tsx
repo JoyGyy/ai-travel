@@ -91,7 +91,8 @@ export default function Profile() {
     event.preventDefault()
     setPasswordErrors({})
 
-    const formData = new FormData(event.currentTarget)
+    const form = event.currentTarget
+    const formData = new FormData(form)
     const currentPassword = formData.get('currentPassword') as string
     const newPassword = formData.get('newPassword') as string
     const confirmPassword = formData.get('confirmPassword') as string
@@ -105,7 +106,7 @@ export default function Profile() {
     try {
       await changePasswordApi(currentPassword, newPassword)
       toast.success('密码修改成功，请重新登录')
-      event.currentTarget.reset()
+      form.reset()
       setTimeout(() => {
         logout()
         router.replace('/login')

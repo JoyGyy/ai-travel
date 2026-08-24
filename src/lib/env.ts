@@ -16,7 +16,7 @@ export interface LLMProviderConfig {
 // ========== 默认值常量 ==========
 
 const DEFAULT_SILICONFLOW_BASE_URL = 'https://api.siliconflow.cn/v1'
-const DEFAULT_SILICONFLOW_MODEL = 'Qwen/Qwen2.5-7B-Instruct'
+const DEFAULT_SILICONFLOW_MODEL = 'deepseek-ai/DeepSeek-V3'
 const MIN_JWT_SECRET_LENGTH = 32
 
 // ========== 环境变量读取工具函数 ==========

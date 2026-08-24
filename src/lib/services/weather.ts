@@ -1,7 +1,13 @@
 /**
  * 天气服务
- * 调用 wttr.in 免费 API 获取城市实时天气和预报
+ *
+ * 采用双通道高可用气象引擎：
+ * 1. 优先调用 Open-Meteo 高精度全球/全国地理编码与气象预报 API（完美支持襄阳等全国所有城市/区县）；
+ * 2. 备用通道降级至 wttr.in 气象源；
+ * 3. 内存级 5 分钟缓存加速。
  */
+
+import { getCachedWeather, setCachedWeather } from '@/lib/weather-cache'
 
 export interface WeatherData {
   city: string
@@ -22,10 +28,42 @@ export interface WeatherForecast {
   weatherDesc: string
 }
 
-const WEATHER_TIMEOUT = 15_000
+const WEATHER_TIMEOUT = 5000
+
+/** WMO (世界气象组织) 标准天气代码到中文描述映射 */
+const WMO_CODE_MAP: Record<number, string> = {
+  0: '晴',
+  1: '多云',
+  2: '多云',
+  3: '阴',
+  45: '雾',
+  48: '大雾',
+  51: '毛毛雨',
+  53: '小雨',
+  55: '中雨',
+  56: '冻雨',
+  57: '冻雨',
+  61: '小雨',
+  63: '中雨',
+  65: '大雨',
+  66: '冻雨',
+  67: '强冻雨',
+  71: '小雪',
+  73: '中雪',
+  75: '大雪',
+  77: '冰粒',
+  80: '阵雨',
+  81: '大阵雨',
+  82: '暴雨',
+  85: '阵雪',
+  86: '大阵雪',
+  95: '雷阵雨',
+  96: '雷暴大雨',
+  99: '雷暴大雪',
+}
 
 /** wttr.in 天气代码到中文描述的映射 */
-const WEATHER_CODE_MAP: Record<number, string> = {
+const WTTR_CODE_MAP: Record<number, string> = {
   113: '晴',
   116: '多云',
   119: '阴',
@@ -76,21 +114,152 @@ const WEATHER_CODE_MAP: Record<number, string> = {
   395: '雷暴大雪',
 }
 
-interface WttrInResponse {
-  current_condition?: Array<{
-    FeelsLikeC: string
-    humidity: string
-    lang_zh?: Array<{ value: string }>
-    temp_C: string
-    weatherCode: string
-    windspeedKmph: string
-  }>
-  weather?: Array<{
-    date: string
-    hourly?: Array<{ weatherCode: string }>
-    maxtempC: string
-    mintempC: string
-  }>
+/** 清理城市名称后缀以便精准地理编码搜索 */
+function normalizeCityName(raw: string): string {
+  return raw
+    .trim()
+    .replace(/(?:市|地区|自治州|盟|壮族自治区|回族自治区|维吾尔自治区|特别行政区)$/g, '')
+    .trim() || raw.trim()
+}
+
+/** 通道 1: Open-Meteo 高精度气象引擎 */
+async function fetchFromOpenMeteo(city: string): Promise<null | WeatherData> {
+  const cleanCity = normalizeCityName(city)
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), WEATHER_TIMEOUT)
+
+  try {
+    // 1. 地理编码搜索城市经纬度
+    const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cleanCity)}&count=1&language=zh&format=json`
+    const geoRes = await fetch(geoUrl, { signal: controller.signal })
+    if (!geoRes.ok)
+      return null
+
+    const geoData = await geoRes.json()
+    const spot = geoData.results?.[0]
+    if (!spot)
+      return null
+
+    const { latitude, longitude } = spot
+
+    // 2. 获取实时天气与 3 日预报
+    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=3`
+    const wRes = await fetch(weatherUrl, { signal: controller.signal })
+    if (!wRes.ok)
+      return null
+
+    const wData = await wRes.json()
+    const current = wData.current
+    const daily = wData.daily
+    if (!current || !daily)
+      return null
+
+    const forecast: WeatherForecast[] = (daily.time || []).slice(0, 3).map((date: string, idx: number) => ({
+      date,
+      maxTemp: Math.round(daily.temperature_2m_max?.[idx] ?? current.temperature_2m),
+      minTemp: Math.round(daily.temperature_2m_min?.[idx] ?? current.temperature_2m),
+      weatherCode: Number(daily.weather_code?.[idx] ?? 0),
+      weatherDesc: WMO_CODE_MAP[Number(daily.weather_code?.[idx] ?? 0)] || '多云',
+    }))
+
+    const weatherCode = Number(current.weather_code)
+    return {
+      city,
+      feelsLike: Math.round(current.apparent_temperature),
+      forecast,
+      humidity: Math.round(current.relative_humidity_2m),
+      temperature: Math.round(current.temperature_2m),
+      weatherCode,
+      weatherDesc: WMO_CODE_MAP[weatherCode] || '晴',
+      windSpeed: Math.round(current.wind_speed_10m),
+    }
+  }
+  catch {
+    return null
+  }
+  finally {
+    clearTimeout(timeout)
+  }
+}
+
+/** 通道 2: wttr.in 备用气象源 */
+async function fetchFromWttrIn(city: string): Promise<null | WeatherData> {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), WEATHER_TIMEOUT)
+
+  try {
+    const url = `https://wttr.in/${encodeURIComponent(city)}?format=j1`
+    const res = await fetch(url, {
+      headers: { 'Accept-Language': 'zh-CN' },
+      signal: controller.signal,
+    })
+
+    if (!res.ok)
+      return null
+
+    const data = await res.json()
+    const current = data.current_condition?.[0]
+    if (!current)
+      return null
+
+    const weatherCode = Number(current.weatherCode)
+    const forecast: WeatherForecast[] = (data.weather || []).slice(0, 3).map((day: { date: string, hourly?: Array<{ weatherCode: string }>, maxtempC: string, mintempC: string }) => ({
+      date: day.date,
+      maxTemp: Number(day.maxtempC),
+      minTemp: Number(day.mintempC),
+      weatherCode: Number(day.hourly?.[4]?.weatherCode || day.hourly?.[0]?.weatherCode || 0),
+      weatherDesc:
+        WTTR_CODE_MAP[
+          Number(day.hourly?.[4]?.weatherCode || day.hourly?.[0]?.weatherCode || 0)
+        ] || '未知',
+    }))
+
+    return {
+      city,
+      feelsLike: Number(current.FeelsLikeC),
+      forecast,
+      humidity: Number(current.humidity),
+      temperature: Number(current.temp_C),
+      weatherCode,
+      weatherDesc: WTTR_CODE_MAP[weatherCode] || current.lang_zh?.[0]?.value || '未知',
+      windSpeed: Number(current.windspeedKmph),
+    }
+  }
+  catch {
+    return null
+  }
+  finally {
+    clearTimeout(timeout)
+  }
+}
+
+/** 获取指定城市的实时天气和未来 3 天预报（带多级容灾与缓存） */
+async function getWeather(city: string): Promise<null | WeatherData> {
+  if (!city || !city.trim())
+    return null
+
+  const clean = city.trim()
+
+  // 1. 检查缓存
+  const cached = getCachedWeather(clean)
+  if (cached) {
+    return cached as WeatherData
+  }
+
+  // 2. 优先调用 Open-Meteo 高精度接口（覆盖襄阳、大理等全部中国城市）
+  let weather = await fetchFromOpenMeteo(clean)
+
+  // 3. 失败时尝试备用 wttr.in
+  if (!weather) {
+    weather = await fetchFromWttrIn(clean)
+  }
+
+  // 4. 成功时存入缓存
+  if (weather) {
+    setCachedWeather(clean, weather)
+  }
+
+  return weather
 }
 
 /** 根据温度、天气、湿度生成穿衣和出行建议 */
@@ -117,6 +286,24 @@ function getDressAdvice(weather: null | WeatherData): string[] {
   }
 
   const rainyCodes = [
+    // WMO codes
+    51,
+    53,
+    55,
+    56,
+    57,
+    61,
+    63,
+    65,
+    66,
+    67,
+    80,
+    81,
+    82,
+    95,
+    96,
+    99,
+    // wttr.in codes
     176,
     179,
     200,
@@ -145,67 +332,45 @@ function getDressAdvice(weather: null | WeatherData): string[] {
   return tips
 }
 
-/** 获取指定城市的实时天气和未来 3 天预报 */
-async function getWeather(city: string): Promise<null | WeatherData> {
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), WEATHER_TIMEOUT)
-
-  try {
-    const url = `https://wttr.in/${encodeURIComponent(city)}?format=j1`
-    const res = await fetch(url, {
-      headers: { 'Accept-Language': 'zh-CN' },
-      signal: controller.signal,
-    })
-
-    if (!res.ok)
-      return null
-
-    const data = (await res.json()) as WttrInResponse
-    const current = data.current_condition?.[0]
-    if (!current)
-      return null
-
-    const weatherCode = Number(current.weatherCode)
-    const forecast: WeatherForecast[] = (data.weather || []).slice(0, 3).map(day => ({
-      date: day.date,
-      maxTemp: Number(day.maxtempC),
-      minTemp: Number(day.mintempC),
-      weatherCode: Number(day.hourly?.[4]?.weatherCode || day.hourly?.[0]?.weatherCode || 0),
-      weatherDesc:
-        WEATHER_CODE_MAP[
-          Number(day.hourly?.[4]?.weatherCode || day.hourly?.[0]?.weatherCode || 0)
-        ] || '未知',
-    }))
-
-    return {
-      city,
-      feelsLike: Number(current.FeelsLikeC),
-      forecast,
-      humidity: Number(current.humidity),
-      temperature: Number(current.temp_C),
-      weatherCode,
-      weatherDesc: WEATHER_CODE_MAP[weatherCode] || current.lang_zh?.[0]?.value || '未知',
-      windSpeed: Number(current.windspeedKmph),
-    }
-  }
-  catch {
-    return null
-  }
-  finally {
-    clearTimeout(timeout)
-  }
-}
-
 /** 判断当前天气是否适合户外活动（排除雨天和极端温度） */
 function isGoodForOutdoor(weather: null | WeatherData): boolean {
   if (!weather)
     return true
   const { temperature, weatherCode } = weather
-  if (
-    [176, 179, 200, 263, 266, 293, 296, 299, 302, 305, 308, 353, 356, 359, 386, 389].includes(
-      weatherCode,
-    )
-  ) {
+  const badWeatherCodes = [
+    // WMO
+    55,
+    63,
+    65,
+    66,
+    67,
+    73,
+    75,
+    81,
+    82,
+    86,
+    95,
+    96,
+    99,
+    // wttr.in
+    176,
+    179,
+    200,
+    263,
+    266,
+    293,
+    296,
+    299,
+    302,
+    305,
+    308,
+    353,
+    356,
+    359,
+    386,
+    389,
+  ]
+  if (badWeatherCodes.includes(weatherCode)) {
     return false
   }
   if (temperature > 38 || temperature < -5)

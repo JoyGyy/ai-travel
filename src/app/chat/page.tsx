@@ -452,7 +452,7 @@ export default function ChatPage() {
 
       {/* 消息列表 */}
       <div
-        className="chat-scrollbar relative z-2 mx-auto -mt-4 flex w-full max-w-[920px] flex-1 flex-col gap-4 overflow-x-hidden overflow-y-auto overscroll-contain rounded-t-3xl border border-stone-200/80 bg-[#FAF7F0]/60 p-4 pb-8 shadow-[0_10px_30px_rgba(28,25,23,0.04)]"
+        className="chat-scrollbar relative z-2 mx-auto -mt-4 flex w-full max-w-[920px] flex-1 min-h-0 flex-col gap-4 overflow-x-hidden overflow-y-auto overscroll-contain rounded-t-3xl border border-stone-200/80 bg-[#FAF7F0]/60 p-4 pb-8 shadow-[0_10px_30px_rgba(28,25,23,0.04)]"
         onScroll={handleScroll}
         ref={scrollContainerRef}
       >

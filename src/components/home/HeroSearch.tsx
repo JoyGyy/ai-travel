@@ -318,7 +318,7 @@ export function HeroSearch() {
     toast.success(`✨ 已装填「${dest.city}」灵感盲盒路线，可直接生成！`)
   }, [toast])
 
-  const submitPlanner = useCallback((e: React.FormEvent) => {
+  const submitPlanner = useCallback((e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
     onStart()
   }, [onStart])

@@ -87,7 +87,7 @@ export default function Profile() {
     loadProfile()
   }, [loadProfile])
 
-  async function handlePasswordChange(event: React.FormEvent<HTMLFormElement>) {
+  async function handlePasswordChange(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
     setPasswordErrors({})
 

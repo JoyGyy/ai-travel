@@ -73,7 +73,7 @@ export default function CommunityPostCreate() {
     )
   }
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!canSubmit) {
       toast.info('正文、图片和行程快照至少需要提供一项')

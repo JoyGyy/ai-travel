@@ -89,8 +89,57 @@ describe('weather service', () => {
     })
   })
 
+  describe('getWeather with Domestic Engine', () => {
+    it('能够成功通过国内高可用天气引擎查询天气并解析', async () => {
+      const mockAsilu = {
+        city: '襄阳',
+        date: '8月24日',
+        update_time: '18:00',
+        weather: [
+          {
+            date: '24日（今天）',
+            temp: '30~24℃',
+            weather: '晴转多云',
+            wind: '东北风',
+          },
+          {
+            date: '25日（明天）',
+            temp: '32~25℃',
+            weather: '多云',
+            wind: '东风',
+          },
+          {
+            date: '26日（后天）',
+            temp: '28~22℃',
+            weather: '小雨',
+            wind: '北风',
+          },
+        ],
+      }
+
+      vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+        const url = String(input)
+        if (url.includes('asilu.com')) {
+          return {
+            json: async () => mockAsilu,
+            ok: true,
+          } as Response
+        }
+        return { ok: false } as Response
+      })
+
+      const weather = await getWeather('襄阳')
+      expect(weather).not.toBeNull()
+      expect(weather?.city).toBe('襄阳')
+      expect(weather?.temperature).toBe(30)
+      expect(weather?.forecast).toHaveLength(3)
+      expect(weather?.forecast[0].maxTemp).toBe(30)
+      expect(weather?.forecast[0].minTemp).toBe(24)
+    })
+  })
+
   describe('getWeather with Open-Meteo', () => {
-    it('能够成功通过 Open-Meteo 查询襄阳天气并解析', async () => {
+    it('国内接口失败时能够平滑降级至 Open-Meteo 查询', async () => {
       const mockGeo = {
         results: [
           {
@@ -118,15 +167,25 @@ describe('weather service', () => {
         },
       }
 
-      vi.spyOn(globalThis, 'fetch')
-        .mockResolvedValueOnce({
-          json: async () => mockGeo,
-          ok: true,
-        } as Response)
-        .mockResolvedValueOnce({
-          json: async () => mockForecast,
-          ok: true,
-        } as Response)
+      vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+        const url = String(input)
+        if (url.includes('asilu.com')) {
+          return { ok: false } as Response
+        }
+        if (url.includes('geocoding-api.open-meteo.com')) {
+          return {
+            json: async () => mockGeo,
+            ok: true,
+          } as Response
+        }
+        if (url.includes('api.open-meteo.com')) {
+          return {
+            json: async () => mockForecast,
+            ok: true,
+          } as Response
+        }
+        return { ok: false } as Response
+      })
 
       const weather = await getWeather('襄阳')
       expect(weather).not.toBeNull()
@@ -137,6 +196,18 @@ describe('weather service', () => {
       expect(weather?.weatherDesc).toBe('雷暴大雨')
       expect(weather?.forecast).toHaveLength(3)
       expect(weather?.forecast[0].date).toBe('2026-08-24')
+    })
+  })
+
+  describe('getWeather offline fallback', () => {
+    it('所有外部接口均失败或超时时能够触发智能气候模拟兜底', async () => {
+      vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('Network offline'))
+
+      const weather = await getWeather('襄阳')
+      expect(weather).not.toBeNull()
+      expect(weather?.city).toBe('襄阳')
+      expect(weather?.forecast).toHaveLength(3)
+      expect(weather?.temperature).toBeGreaterThan(0)
     })
   })
 })

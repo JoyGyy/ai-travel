@@ -1,12 +1,13 @@
 /**
  * 景点浏览路由 — 景点列表
  * GET /api/attractions
- * 支持筛选和分页，需要登录
+ * 支持筛选和分页，支持游客浏览与已登录用户收藏标记
  */
 import { NextResponse } from 'next/server'
 
 import { listAttractions } from '@/lib/services/attractions/attractionService'
-import { withAuth } from '@/lib/utils/http'
+import { getAuthFromHeaders } from '@/lib/services/auth'
+import { errorResponse } from '@/lib/utils/http'
 import { readPositiveInteger } from '@/lib/utils/validation'
 
 function readFilters(query: URLSearchParams): Record<string, unknown> {
@@ -22,9 +23,15 @@ function readFilters(query: URLSearchParams): Record<string, unknown> {
   }
 }
 
-export const GET = withAuth(async (req, { user }) => {
-  const { searchParams } = new URL(req.url)
-  const data = await listAttractions(readFilters(searchParams), user.id)
+export async function GET(req: Request) {
+  try {
+    const user = await getAuthFromHeaders(req.headers)
+    const { searchParams } = new URL(req.url)
+    const data = await listAttractions(readFilters(searchParams), user?.id)
 
-  return NextResponse.json({ data, message: 'ok', success: true })
-})
+    return NextResponse.json({ data, message: 'ok', success: true })
+  }
+  catch (err) {
+    return errorResponse(err)
+  }
+}

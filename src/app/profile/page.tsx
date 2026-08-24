@@ -20,7 +20,6 @@ import {
   Heart,
   Key,
   LogOut,
-  MapPin,
   MessageSquare,
   Plus,
   ShieldCheck,

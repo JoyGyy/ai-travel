@@ -298,42 +298,49 @@ export default function Attractions() {
                                 size={16}
                               />
                             </button>
-                            <Badge className="absolute left-3 top-3 bg-white/95 text-xs font-bold text-emerald-800 shadow-sm backdrop-blur-md rounded-full border border-stone-200">
-                              📍
-                              {' '}
-                              {item.city}
-                            </Badge>
+                            <div className="absolute left-3 top-3 flex flex-wrap items-center gap-1.5 z-1">
+                              <Badge className="bg-white/95 text-xs font-bold text-emerald-800 shadow-sm backdrop-blur-md rounded-full border border-stone-200">
+                                📍
+                                {' '}
+                                {item.city}
+                              </Badge>
+                              <Badge
+                                className={`rounded-full text-[11px] font-bold shadow-sm backdrop-blur-md ${
+                                  item.ticketType === 'free'
+                                    ? 'bg-emerald-700/90 text-white border-0'
+                                    : 'bg-stone-900/80 text-amber-300 border-0'
+                                }`}
+                              >
+                                {item.ticketType === 'free' ? '免费' : item.priceText || '收费'}
+                              </Badge>
+                            </div>
                           </div>
                           <div className="p-4 sm:p-5 flex flex-col flex-1 justify-between">
                             <div>
-                              <div className="mb-2 flex items-start justify-between gap-2 min-h-[2.5rem]">
+                              <div className="mb-2 min-h-[2.75rem] flex items-start">
                                 <h3
-                                  className="font-serif text-sm sm:text-base font-bold text-stone-900 group-hover:text-emerald-800 transition-colors line-clamp-2 leading-snug flex-1 min-w-0"
+                                  className="font-serif text-sm sm:text-[15px] font-bold text-stone-900 group-hover:text-emerald-800 transition-colors leading-snug break-words w-full"
                                   title={item.name}
                                 >
                                   {item.name}
                                 </h3>
-                                <Badge
-                                  className={`rounded-full text-[10px] font-bold shrink-0 whitespace-nowrap mt-0.5 ${
-                                    item.ticketType === 'free'
-                                      ? 'bg-emerald-100 text-emerald-900 border border-emerald-200'
-                                      : 'bg-amber-100 text-amber-900 border border-amber-300'
-                                  }`}
-                                >
-                                  {item.ticketType === 'free' ? '免费' : item.priceText || '收费'}
-                                </Badge>
                               </div>
                               <p className="mb-3 text-xs leading-relaxed text-stone-500 line-clamp-2">
                                 {item.summary}
                               </p>
                             </div>
-                            <div className="flex flex-wrap gap-1 pt-2.5 border-t border-stone-200/70">
-                              {item.tags.slice(0, 3).map(tag => (
-                                <span className="bg-stone-100/80 text-stone-600 text-[10px] font-medium rounded-md px-2 py-0.5" key={tag}>
-                                  #
-                                  {tag}
-                                </span>
-                              ))}
+                            <div className="flex flex-wrap items-center justify-between gap-1 pt-2.5 border-t border-stone-200/70">
+                              <div className="flex flex-wrap gap-1">
+                                {item.tags.slice(0, 3).map(tag => (
+                                  <span className="bg-stone-100/80 text-stone-600 text-[10px] font-medium rounded-md px-2 py-0.5" key={tag}>
+                                    #
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                              <span className="text-[11px] text-emerald-700 font-bold group-hover:translate-x-0.5 transition-transform inline-flex items-center gap-0.5">
+                                查看手账 →
+                              </span>
                             </div>
                           </div>
                         </article>

@@ -300,6 +300,33 @@ button {
   background: rgba(var(--travel-ocean-rgb), 0.3);
 }
 
+/* AI 对话消息专属高级手账质感滚动条 */
+.chat-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(5, 150, 105, 0.4) rgba(245, 240, 230, 0.6);
+}
+
+.chat-scrollbar::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+.chat-scrollbar::-webkit-scrollbar-track {
+  background: rgba(245, 240, 230, 0.5);
+  border-radius: 9999px;
+  margin: 8px 0;
+}
+
+.chat-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(5, 150, 105, 0.35);
+  border-radius: 9999px;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.chat-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(5, 150, 105, 0.75);
+}
+
 ::selection {
   background: rgba(var(--travel-primary-rgb), 0.12);
   color: var(--travel-ocean);

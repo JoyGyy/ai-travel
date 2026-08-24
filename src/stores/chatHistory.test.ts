@@ -57,4 +57,27 @@ describe('chatHistoryStore', () => {
     const afterOrder = useChatHistoryStore.getState().sessions.map(s => s.id)
     expect(afterOrder).toEqual([id3, id2, id1])
   })
+
+  it('流式生成过程中文本内容增长时，应能正确更新会话持久化消息', () => {
+    const store = useChatHistoryStore.getState()
+    const id = store.createSession('流式测试')
+
+    // 初始短消息
+    store.saveMessages(id, [
+      { id: 'user-1', parts: [{ text: '去西安', type: 'text' }], role: 'user' },
+      { id: 'ai-1', parts: [{ text: '正在', type: 'text' }], role: 'assistant' },
+    ], '西安')
+
+    const session1 = useChatHistoryStore.getState().sessions.find(s => s.id === id)
+    expect((session1?.messages[1].parts[0] as { text: string }).text).toBe('正在')
+
+    // 流式增长为完整消息
+    store.saveMessages(id, [
+      { id: 'user-1', parts: [{ text: '去西安', type: 'text' }], role: 'user' },
+      { id: 'ai-1', parts: [{ text: '正在为您规划完整的西安4日盛唐路线：兵马俑 ➔ 华清宫 ➔ 大雁塔', type: 'text' }], role: 'assistant' },
+    ], '西安')
+
+    const session2 = useChatHistoryStore.getState().sessions.find(s => s.id === id)
+    expect((session2?.messages[1].parts[0] as { text: string }).text).toContain('兵马俑 ➔ 华清宫')
+  })
 })

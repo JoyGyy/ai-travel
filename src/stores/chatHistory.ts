@@ -41,6 +41,30 @@ function deriveTitle(messages: UIMessage[], fallback = '新的手账对话'): st
   return rawText.length > 22 ? `${rawText.slice(0, 20)}...` : rawText
 }
 
+function areMessagesEqual(a: UIMessage[], b: UIMessage[]): boolean {
+  if (a === b)
+    return true
+  if (!a || !b || a.length !== b.length)
+    return false
+  for (let i = 0; i < a.length; i++) {
+    const ma = a[i]
+    const mb = b[i]
+    if (ma.id !== mb.id || ma.role !== mb.role)
+      return false
+    if (ma.parts?.length !== mb.parts?.length)
+      return false
+    if (ma.parts && mb.parts) {
+      for (let j = 0; j < ma.parts.length; j++) {
+        const pa = ma.parts[j] as { text?: string, type: string }
+        const pb = mb.parts[j] as { text?: string, type: string }
+        if (pa.type !== pb.type || pa.text !== pb.text)
+          return false
+      }
+    }
+  }
+  return true
+}
+
 export const useChatHistoryStore = create<ChatHistoryState>()(
   devtools(
     persist(
@@ -122,10 +146,7 @@ export const useChatHistoryStore = create<ChatHistoryState>()(
             }
 
             // 检查消息内容是否完全相同，避免无意义的重绘和位置跳动
-            const isSameMessages = existing.messages === messages || (
-              existing.messages.length === messages.length
-              && (messages.length === 0 || existing.messages[existing.messages.length - 1]?.id === messages[messages.length - 1]?.id)
-            )
+            const isSameMessages = areMessagesEqual(existing.messages, messages)
 
             if (isSameMessages && (!detectedCity || existing.city === detectedCity)) {
               return state

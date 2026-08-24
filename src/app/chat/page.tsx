@@ -232,6 +232,9 @@ function ChatContent() {
         setActiveSessionId(newId)
         setMessages([])
         sendMessage({ text: initialPrompt })
+        if (typeof window !== 'undefined') {
+          window.history.replaceState({}, '', '/chat')
+        }
         return
       }
       if (initialCity && messages.length === 0) {
@@ -240,6 +243,9 @@ function ChatContent() {
         setActiveSessionId(newId)
         setMessages([])
         sendMessage({ text: `请帮我规划一份前往【${initialCity}】的经典旅行手账路线，包含必去景点打卡、地道美食推荐与出行避坑贴士。` })
+        if (typeof window !== 'undefined') {
+          window.history.replaceState({}, '', '/chat')
+        }
         return
       }
     }
@@ -264,7 +270,16 @@ function ChatContent() {
     }
   }, [_hasHydrated, initialPrompt, initialCity, activeSessionId, createSession, messages.length, sessions, setActiveSessionId, setMessages, sendMessage, scrollToBottom])
 
-  // 2. 消息变动时自动持久化到当前会话
+  // 离开页面或卸载组件时终止进行中的流式请求
+  useEffect(() => {
+    return () => {
+      if (status === 'streaming' || status === 'submitted') {
+        stop()
+      }
+    }
+  }, [status, stop])
+
+  // 2. 消息变动或生成状态变化时自动持久化到当前会话
   useEffect(() => {
     if (!_hasHydrated || !activeSessionId || messages.length === 0)
       return
@@ -277,7 +292,7 @@ function ChatContent() {
     const detectedCity = extractCity(assistantText) || undefined
 
     saveMessages(activeSessionId, messages, detectedCity)
-  }, [messages, activeSessionId, _hasHydrated, saveMessages])
+  }, [messages, activeSessionId, _hasHydrated, saveMessages, status])
 
   // 3. AI 输出流式内容或消息更新时，视窗跟随移动
   useEffect(() => {

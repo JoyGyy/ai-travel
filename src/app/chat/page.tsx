@@ -560,9 +560,20 @@ export default function ChatPage() {
                   <>
                     {/* 工具调用加载提示 */}
                     {isToolExecuting && !cleanedText && (
-                      <div className="my-2 inline-flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-900 shadow-2xs animate-pulse">
+                      <div className="my-2 inline-flex flex-wrap items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-amber-50 border border-amber-200 text-xs font-medium text-amber-900 shadow-2xs">
                         <span className="h-2 w-2 rounded-full bg-amber-500 animate-ping" />
                         <span>正在检索当地气象与特色景点知识库...</span>
+                        {isGenerating && (
+                          <button
+                            className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white border border-amber-300 text-[11px] font-bold text-red-600 hover:bg-red-50 hover:border-red-400 hover:text-red-700 transition-all cursor-pointer shadow-2xs ml-1"
+                            onClick={() => stop()}
+                            title="停止当前知识库检索与生成"
+                            type="button"
+                          >
+                            <Square className="h-2.5 w-2.5 fill-red-600" />
+                            <span>停止生成</span>
+                          </button>
+                        )}
                       </div>
                     )}
 
@@ -805,17 +816,27 @@ export default function ChatPage() {
         })}
 
         {status === 'submitted' && (
-          <div className="mx-2 mb-3 flex items-start gap-2.5">
-            <Avatar className="h-8 w-8 flex-shrink-0 rounded-xl">
+          <div className="mx-2 mb-3 inline-flex items-center gap-3 rounded-2xl border border-stone-200/90 bg-[#FDFBF7] p-2.5 px-4 shadow-sm animate-fade-in-up">
+            <Avatar className="h-7 w-7 flex-shrink-0 rounded-xl">
               <AvatarFallback className="rounded-xl border border-emerald-200 bg-emerald-100 text-emerald-800">
-                <Bot className="h-4 w-4" />
+                <Bot className="h-3.5 w-3.5" />
               </AvatarFallback>
             </Avatar>
-            <div className="flex gap-1.5 rounded-2xl rounded-tl-xs border border-stone-200/90 bg-[#FDFBF7] p-3 px-4 shadow-sm">
+            <div className="flex items-center gap-1.5">
               <span className="h-1.5 w-1.5 animate-[dotBounce_1.2s_infinite] rounded-full bg-emerald-700" />
               <span className="h-1.5 w-1.5 animate-[dotBounce_1.2s_infinite_0.15s] rounded-full bg-emerald-700" />
               <span className="h-1.5 w-1.5 animate-[dotBounce_1.2s_infinite_0.3s] rounded-full bg-emerald-700" />
+              <span className="text-xs text-stone-500 font-medium ml-1.5">正在连接 AI 规划师...</span>
             </div>
+            <button
+              className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white border border-stone-300 text-[11px] font-bold text-red-600 hover:bg-red-50 hover:border-red-400 transition-all cursor-pointer shadow-2xs ml-2"
+              onClick={() => stop()}
+              title="停止生成"
+              type="button"
+            >
+              <Square className="h-2.5 w-2.5 fill-red-600" />
+              <span>停止</span>
+            </button>
           </div>
         )}
 

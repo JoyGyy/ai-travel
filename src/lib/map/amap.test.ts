@@ -4,9 +4,13 @@ import {
   calculateDistanceKm,
   estimateDurationMinutes,
   formatMinutesText,
+  gcj02ToBd09,
   generateAmapRouteUrl,
+  generateAmapSpotUrl,
   generateBaiduRouteUrl,
+  generateBaiduSpotUrl,
   generateTencentRouteUrl,
+  generateTencentSpotUrl,
   getSpotCoordinates,
 } from './amap'
 
@@ -26,6 +30,12 @@ describe('amap 工具与地理计算测试', () => {
     // 正东方向 (90)
     const eastBearing = calculateBearing(30.0, 100.0, 30.0, 101.0)
     expect(Math.round(eastBearing)).toBe(90)
+  })
+
+  it('gcj02ToBd09 坐标转换正确', () => {
+    const bd = gcj02ToBd09(34.2189, 108.9640)
+    expect(bd.lat).toBeGreaterThan(34)
+    expect(bd.lng).toBeGreaterThan(108)
   })
 
   it('estimateDurationMinutes 针对不同交通模式给出符合常理的估算', () => {
@@ -58,15 +68,39 @@ describe('amap 工具与地理计算测试', () => {
     expect(unknown.lng).toBeGreaterThan(103)
   })
 
-  it('生成各平台地图导航链接', () => {
-    const amap = generateAmapRouteUrl('大雁塔', '大唐不夜城', '西安', 'car')
+  it('生成各平台地图导航路线链接，必须包含真实经纬度与名称', () => {
+    const from = { lat: 34.2255, lng: 108.9540, name: '陕西历史博物馆' }
+    const to = { lat: 34.2189, lng: 108.9640, name: '大雁塔' }
+
+    // 高德: from=lng,lat,name&to=lng,lat,name
+    const amap = generateAmapRouteUrl(from, to, '西安', 'car')
     expect(amap).toContain('uri.amap.com/navigation')
-    expect(amap).toContain('from=')
+    expect(amap).toContain('from=108.954,34.2255')
+    expect(amap).toContain('to=108.964,34.2189')
 
-    const baidu = generateBaiduRouteUrl('大雁塔', '大唐不夜城', '西安', 'driving')
+    // 百度: origin=latlng:lat,lng|name:xxx&destination=latlng:lat,lng|name:xxx
+    const baidu = generateBaiduRouteUrl(from, to, '西安', 'driving')
     expect(baidu).toContain('api.map.baidu.com/direction')
+    expect(baidu).toContain('origin=latlng:')
+    expect(baidu).toContain('destination=latlng:')
 
-    const qq = generateTencentRouteUrl('大雁塔', '大唐不夜城', '西安', 'drive')
+    // 腾讯: from=xxx&fromcoord=lat,lng&to=xxx&tocoord=lat,lng
+    const qq = generateTencentRouteUrl(from, to, '西安', 'drive')
     expect(qq).toContain('apis.map.qq.com/uri/v1/routeplan')
+    expect(qq).toContain('fromcoord=34.2255,108.954')
+    expect(qq).toContain('tocoord=34.2189,108.964')
+  })
+
+  it('生成各平台单点标记查看链接', () => {
+    const spot = { lat: 34.3841, lng: 109.2785, name: '兵马俑' }
+
+    const amap = generateAmapSpotUrl(spot, '西安')
+    expect(amap).toContain('uri.amap.com/marker?position=109.2785,34.3841')
+
+    const baidu = generateBaiduSpotUrl(spot, '西安')
+    expect(baidu).toContain('api.map.baidu.com/marker?location=')
+
+    const qq = generateTencentSpotUrl(spot, '西安')
+    expect(qq).toContain('apis.map.qq.com/uri/v1/marker?marker=coord:34.3841,109.2785')
   })
 })

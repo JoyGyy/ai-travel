@@ -9,6 +9,12 @@ export interface GeoPoint {
   name: string
 }
 
+export interface RouteEndpoint {
+  lat?: number
+  lng?: number
+  name: string
+}
+
 // 常见城市预置中心点坐标
 export const CITY_COORDINATES: Record<string, { lat: number, lng: number }> = {
   三亚: { lat: 18.2528, lng: 109.5119 },
@@ -243,6 +249,18 @@ export const SPOT_COORDINATES: Record<string, { lat: number, lng: number }> = {
 }
 
 /**
+ * GCJ-02 (高德/腾讯坐标系) 转 BD-09 (百度坐标系)
+ */
+export function gcj02ToBd09(lat: number, lng: number): { lat: number, lng: number } {
+  const xPi = (Math.PI * 3000.0) / 180.0
+  const z = Math.sqrt(lng * lng + lat * lat) + 0.00002 * Math.sin(lat * xPi)
+  const theta = Math.atan2(lat, lng) + 0.000003 * Math.cos(lng * xPi)
+  const bdLng = z * Math.cos(theta) + 0.0065
+  const bdLat = z * Math.sin(theta) + 0.006
+  return { lat: Number(bdLat.toFixed(6)), lng: Number(bdLng.toFixed(6)) }
+}
+
+/**
  * 计算两点间的球面真实距离 (公里)
  */
 export function calculateDistanceKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
@@ -328,46 +346,127 @@ export function getSpotCoordinates(spotName: string, cityName: string, index = 0
 }
 
 /**
- * 生成高德地图 Web / 移动端路线导航直达链接
+ * 生成高德地图 Web / 移动端路线导航直达链接 (带真实经纬度与名称)
  */
 export function generateAmapRouteUrl(
-  startName: string,
-  destName: string,
+  start: string | RouteEndpoint,
+  dest: string | RouteEndpoint,
   city: string,
   mode: 'bus' | 'car' | 'ride' | 'walk' = 'car',
 ): string {
+  const startName = (typeof start === 'string' ? start : start.name).replace(/[,，]/g, ' ').trim()
+  const destName = (typeof dest === 'string' ? dest : dest.name).replace(/[,，]/g, ' ').trim()
+
+  const startCoord = typeof start === 'object' && start.lat && start.lng
+    ? { lat: start.lat, lng: start.lng }
+    : getSpotCoordinates(startName, city)
+
+  const destCoord = typeof dest === 'object' && dest.lat && dest.lng
+    ? { lat: dest.lat, lng: dest.lng }
+    : getSpotCoordinates(destName, city)
+
   const encodedFrom = encodeURIComponent(startName)
   const encodedTo = encodeURIComponent(destName)
   const encodedCity = encodeURIComponent(city)
-  return `https://uri.amap.com/navigation?from=${encodedFrom}&to=${encodedTo}&mode=${mode}&policy=1&src=mypage&coordinate=gaode&callnative=0&city=${encodedCity}`
+
+  // 高德导航 URI 规范: from=lng,lat,name&to=lng,lat,name (经度在前，纬度在后)
+  return `https://uri.amap.com/navigation?from=${startCoord.lng},${startCoord.lat},${encodedFrom}&to=${destCoord.lng},${destCoord.lat},${encodedTo}&mode=${mode}&policy=1&src=mypage&coordinate=gaode&callnative=0&city=${encodedCity}`
 }
 
 /**
- * 生成百度地图路线规划直达链接
+ * 生成百度地图路线规划直达链接 (带真实经纬度 BD-09 与名称)
  */
 export function generateBaiduRouteUrl(
-  startName: string,
-  destName: string,
+  start: string | RouteEndpoint,
+  dest: string | RouteEndpoint,
   city: string,
   mode: 'driving' | 'transit' | 'walking' = 'driving',
 ): string {
-  const origin = encodeURIComponent(startName)
-  const destination = encodeURIComponent(destName)
-  const region = encodeURIComponent(city)
-  return `https://api.map.baidu.com/direction?origin=${origin}&destination=${destination}&mode=${mode}&region=${region}&output=html&src=webapp.travel`
+  const startName = (typeof start === 'string' ? start : start.name).replace(/\|/g, ' ').trim()
+  const destName = (typeof dest === 'string' ? dest : dest.name).replace(/\|/g, ' ').trim()
+
+  const startCoord = typeof start === 'object' && start.lat && start.lng
+    ? { lat: start.lat, lng: start.lng }
+    : getSpotCoordinates(startName, city)
+
+  const destCoord = typeof dest === 'object' && dest.lat && dest.lng
+    ? { lat: dest.lat, lng: dest.lng }
+    : getSpotCoordinates(destName, city)
+
+  const bdStart = gcj02ToBd09(startCoord.lat, startCoord.lng)
+  const bdDest = gcj02ToBd09(destCoord.lat, destCoord.lng)
+
+  const encodedFrom = encodeURIComponent(startName)
+  const encodedTo = encodeURIComponent(destName)
+  const encodedCity = encodeURIComponent(city)
+
+  // 百度地图 URI 规范: origin=latlng:lat,lng|name:xxx&destination=latlng:lat,lng|name:xxx (纬度在前，经度在后)
+  return `https://api.map.baidu.com/direction?origin=latlng:${bdStart.lat},${bdStart.lng}|name:${encodedFrom}&destination=latlng:${bdDest.lat},${bdDest.lng}|name:${encodedTo}&mode=${mode}&region=${encodedCity}&output=html&src=webapp.travel`
 }
 
 /**
- * 生成腾讯地图路线规划链接
+ * 生成腾讯地图路线规划链接 (带真实经纬度与名称)
  */
 export function generateTencentRouteUrl(
-  startName: string,
-  destName: string,
+  start: string | RouteEndpoint,
+  dest: string | RouteEndpoint,
   city: string,
   mode: 'bus' | 'drive' | 'walk' = 'drive',
 ): string {
-  const from = encodeURIComponent(startName)
-  const to = encodeURIComponent(destName)
-  const region = encodeURIComponent(city)
-  return `https://apis.map.qq.com/uri/v1/routeplan?type=${mode}&from=${from}&to=${to}&city=${region}&referer=travel-ai`
+  const startName = (typeof start === 'string' ? start : start.name).trim()
+  const destName = (typeof dest === 'string' ? dest : dest.name).trim()
+
+  const startCoord = typeof start === 'object' && start.lat && start.lng
+    ? { lat: start.lat, lng: start.lng }
+    : getSpotCoordinates(startName, city)
+
+  const destCoord = typeof dest === 'object' && dest.lat && dest.lng
+    ? { lat: dest.lat, lng: dest.lng }
+    : getSpotCoordinates(destName, city)
+
+  const encodedFrom = encodeURIComponent(startName)
+  const encodedTo = encodeURIComponent(destName)
+  const encodedCity = encodeURIComponent(city)
+
+  // 腾讯地图 URI 规范: type=drive&from=xxx&fromcoord=lat,lng&to=xxx&tocoord=lat,lng (纬度在前，经度在后)
+  return `https://apis.map.qq.com/uri/v1/routeplan?type=${mode}&from=${encodedFrom}&fromcoord=${startCoord.lat},${startCoord.lng}&to=${encodedTo}&tocoord=${destCoord.lat},${destCoord.lng}&policy=1&referer=travel-ai&city=${encodedCity}`
+}
+
+/**
+ * 生成单点标记查看链接 (高德地图)
+ */
+export function generateAmapSpotUrl(spot: string | RouteEndpoint, city: string): string {
+  const name = (typeof spot === 'string' ? spot : spot.name).replace(/[,，]/g, ' ').trim()
+  const coord = typeof spot === 'object' && spot.lat && spot.lng
+    ? { lat: spot.lat, lng: spot.lng }
+    : getSpotCoordinates(name, city)
+  const encodedName = encodeURIComponent(name)
+  return `https://uri.amap.com/marker?position=${coord.lng},${coord.lat}&name=${encodedName}&src=mypage&coordinate=gaode&callnative=0`
+}
+
+/**
+ * 生成单点标记查看链接 (百度地图)
+ */
+export function generateBaiduSpotUrl(spot: string | RouteEndpoint, city: string): string {
+  const name = (typeof spot === 'string' ? spot : spot.name).trim()
+  const coord = typeof spot === 'object' && spot.lat && spot.lng
+    ? { lat: spot.lat, lng: spot.lng }
+    : getSpotCoordinates(name, city)
+  const bd = gcj02ToBd09(coord.lat, coord.lng)
+  const encodedName = encodeURIComponent(name)
+  const encodedCity = encodeURIComponent(city)
+  return `https://api.map.baidu.com/marker?location=${bd.lat},${bd.lng}&title=${encodedName}&content=${encodedCity}&output=html&src=webapp.travel`
+}
+
+/**
+ * 生成单点标记查看链接 (腾讯地图)
+ */
+export function generateTencentSpotUrl(spot: string | RouteEndpoint, city: string): string {
+  const name = (typeof spot === 'string' ? spot : spot.name).trim()
+  const coord = typeof spot === 'object' && spot.lat && spot.lng
+    ? { lat: spot.lat, lng: spot.lng }
+    : getSpotCoordinates(name, city)
+  const encodedName = encodeURIComponent(name)
+  const encodedCity = encodeURIComponent(city)
+  return `https://apis.map.qq.com/uri/v1/marker?marker=coord:${coord.lat},${coord.lng};title:${encodedName};addr=${encodedCity}&referer=travel-ai`
 }

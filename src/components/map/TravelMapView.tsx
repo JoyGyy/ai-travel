@@ -28,8 +28,11 @@ import {
   estimateDurationMinutes,
   formatMinutesText,
   generateAmapRouteUrl,
+  generateAmapSpotUrl,
   generateBaiduRouteUrl,
+  generateBaiduSpotUrl,
   generateTencentRouteUrl,
+  generateTencentSpotUrl,
   getSpotCoordinates,
 } from '@/lib/map/amap'
 import 'leaflet/dist/leaflet.css'
@@ -99,14 +102,14 @@ export function TravelMapView({
 
       legs.push({
         amapUrl: generateAmapRouteUrl(
-          from.name,
-          to.name,
+          from,
+          to,
           city,
           mode === 'driving' ? 'car' : mode === 'transit' ? 'bus' : 'walk',
         ),
         baiduUrl: generateBaiduRouteUrl(
-          from.name,
-          to.name,
+          from,
+          to,
           city,
           mode === 'driving' ? 'driving' : mode === 'transit' ? 'transit' : 'walking',
         ),
@@ -117,8 +120,8 @@ export function TravelMapView({
         from,
         index: i + 1,
         tencentUrl: generateTencentRouteUrl(
-          from.name,
-          to.name,
+          from,
+          to,
           city,
           mode === 'driving' ? 'drive' : mode === 'transit' ? 'bus' : 'walk',
         ),
@@ -235,12 +238,15 @@ export function TravelMapView({
             <div style="color: #6b7280; font-size: 11px; margin-bottom: 8px;">
               📍 所属城市：${city}
             </div>
-            <div style="display: flex; gap: 6px;">
-              <a href="${generateAmapRouteUrl(pt.name, pt.name, city)}" target="_blank" style="flex: 1; text-align: center; padding: 4px 8px; border-radius: 8px; background: #047857; color: #fff; font-size: 11px; font-weight: bold; text-decoration: none; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
-                高德导航
+            <div style="display: flex; gap: 4px; margin-top: 4px;">
+              <a href="${generateAmapSpotUrl(pt, city)}" target="_blank" style="flex: 1; text-align: center; padding: 4px 6px; border-radius: 8px; background: #047857; color: #fff; font-size: 11px; font-weight: bold; text-decoration: none; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
+                高德
               </a>
-              <a href="${generateBaiduRouteUrl(pt.name, pt.name, city)}" target="_blank" style="flex: 1; text-align: center; padding: 4px 8px; border-radius: 8px; background: #f3f4f6; color: #374151; font-size: 11px; font-weight: bold; text-decoration: none; border: 1px solid #e5e7eb;">
-                百度地图
+              <a href="${generateBaiduSpotUrl(pt, city)}" target="_blank" style="flex: 1; text-align: center; padding: 4px 6px; border-radius: 8px; background: #f3f4f6; color: #374151; font-size: 11px; font-weight: bold; text-decoration: none; border: 1px solid #e5e7eb;">
+                百度
+              </a>
+              <a href="${generateTencentSpotUrl(pt, city)}" target="_blank" style="flex: 1; text-align: center; padding: 4px 6px; border-radius: 8px; background: #f3f4f6; color: #374151; font-size: 11px; font-weight: bold; text-decoration: none; border: 1px solid #e5e7eb;">
+                腾讯
               </a>
             </div>
           </div>
@@ -487,8 +493,8 @@ export function TravelMapView({
     return null
   }
 
-  const startSpot = routePoints[0]?.name || `${city}起点`
-  const endSpot = routePoints[routePoints.length - 1]?.name || `${city}终点`
+  const startSpot = routePoints[0] || { name: `${city}起点` }
+  const endSpot = routePoints[routePoints.length - 1] || { name: `${city}终点` }
 
   const amapOverallUrl = generateAmapRouteUrl(
     startSpot,

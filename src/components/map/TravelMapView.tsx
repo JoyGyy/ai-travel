@@ -1,6 +1,7 @@
 'use client'
 
 import type { Map as LeafletMap, Marker as LeafletMarker, Polyline as LeafletPolyline } from 'leaflet'
+import type React from 'react'
 import type { ParsedRouteSpot } from '@/lib/map/route-parser'
 import {
   Car,
@@ -37,7 +38,7 @@ import {
 } from '@/lib/map/amap'
 import 'leaflet/dist/leaflet.css'
 
-interface TravelMapViewProps {
+export interface TravelMapViewProps {
   className?: string
   city: string
   initialMode?: 'driving' | 'transit' | 'walking'
@@ -51,7 +52,7 @@ export function TravelMapView({
   className = '',
   initialMode = 'driving',
   spots,
-}: TravelMapViewProps) {
+}: TravelMapViewProps): React.JSX.Element | null {
   const [mode, setMode] = useState<'driving' | 'transit' | 'walking'>(initialMode)
   const [activeTab, setActiveTab] = useState<'map' | 'legs'>('map')
   const [tileType, setTileType] = useState<TileLayerType>('amap-street')
@@ -383,10 +384,10 @@ export function TravelMapView({
 
       let currentLeg = simLegIndex
       let progressInLeg = (simProgress % (100 / Math.max(routeLegs.length, 1))) * routeLegs.length
+      const iconSymbol = mode === 'driving' ? '🚗' : mode === 'transit' ? '🚌' : '🚶'
 
       // 创建移动漫游载具 Marker（包含车辆/小人与朝向指示）
       const updateVehicleMarker = (lat: number, lng: number, heading: number) => {
-        const iconSymbol = mode === 'driving' ? '🚗' : mode === 'transit' ? '🚌' : '🚶'
         const vehicleHtml = `
           <div class="relative flex items-center justify-center w-9 h-9 rounded-full bg-emerald-800 text-white font-bold text-base shadow-2xl ring-4 ring-emerald-300 transition-transform duration-75" style="transform: rotate(${heading}deg);">
             <span>${iconSymbol}</span>
@@ -657,18 +658,18 @@ export function TravelMapView({
               title="自驾驾车"
               type="button"
             >
-              <Car className="h-3.5 w-3.5" />
-              <span>自驾</span>
+              <Car className="h-3 w-3" />
+              <span>驾车</span>
             </button>
             <button
               className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 mode === 'transit' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-stone-500 hover:text-stone-800'
               }`}
               onClick={() => setMode('transit')}
-              title="公共交通"
+              title="公共交通/地铁"
               type="button"
             >
-              <NavigationIcon className="h-3.5 w-3.5" />
+              <Zap className="h-3 w-3" />
               <span>公交</span>
             </button>
             <button
@@ -676,230 +677,224 @@ export function TravelMapView({
                 mode === 'walking' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-stone-500 hover:text-stone-800'
               }`}
               onClick={() => setMode('walking')}
-              title="徒步漫步"
+              title="步行漫游"
               type="button"
             >
-              <Footprints className="h-3.5 w-3.5" />
-              <span>慢步</span>
+              <Footprints className="h-3 w-3" />
+              <span>步行</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* 模式一：真实地理交互地图 + 高德级模拟导航 HUD */}
-      {activeTab === 'map' && (
-        <div className="relative w-full overflow-hidden bg-[#E5E3DF]">
-          {/* 地图渲染容器 */}
-          <div
-            className={`w-full transition-all duration-300 ${isExpanded ? 'h-[460px] sm:h-[540px]' : 'h-[300px] sm:h-[350px]'}`}
-            ref={mapContainerRef}
-          />
+      {/* 模拟导航 HUD 控制台 (携程级演播浮层) */}
+      <div className="bg-emerald-900/90 backdrop-blur-md px-4 py-2.5 text-white flex flex-wrap items-center justify-between gap-3 border-b border-emerald-800/80">
+        <div className="flex items-center gap-3 flex-1 min-w-[200px]">
+          {/* 播放/暂停控制 */}
+          <Button
+            className={`rounded-full h-8 w-8 p-0 cursor-pointer font-bold shadow-md ${
+              isSimulating ? 'bg-amber-500 hover:bg-amber-600 text-stone-950' : 'bg-emerald-500 hover:bg-emerald-400 text-white'
+            }`}
+            onClick={() => setIsSimulating(!isSimulating)}
+            size="sm"
+            type="button"
+          >
+            {isSimulating ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 ml-0.5" />}
+          </Button>
 
-          {/* 悬浮模拟导航 HUD 状态栏 (高德/携程沉浸导航风格) */}
-          <div className="absolute top-2.5 left-2.5 right-2.5 z-[1000] flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-white/95 p-2 px-3.5 shadow-md border border-stone-200/90 backdrop-blur-md">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className={`flex h-8 w-8 items-center justify-center rounded-xl font-bold text-xs shrink-0 ${isSimulating ? 'bg-emerald-700 text-white animate-pulse' : 'bg-emerald-100 text-emerald-800'}`}>
-                {isSimulating ? <Zap className="h-4 w-4" /> : <NavigationIcon className="h-4 w-4" />}
-              </div>
-              <div className="text-xs min-w-0">
-                {isSimulating ? (
-                  <div className="flex flex-col">
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-bold text-emerald-900">
-                        正在前往
-                        {' '}
-                        {activeLeg?.to.name}
-                      </span>
-                      <span className="text-[10px] text-stone-500">
-                        (~
-                        {activeLeg?.distanceKm}
-                        km)
-                      </span>
-                    </div>
-                    <span className="text-[10px] text-stone-500 truncate mt-0.5">
-                      从【
-                      {activeLeg?.from.name}
-                      】出发 · 第
-                      {' '}
-                      {simLegIndex + 1}
-                      /
-                      {routeLegs.length}
-                      {' '}
-                      段
-                    </span>
-                  </div>
-                ) : (
-                  <div className="flex flex-col">
-                    <span className="text-stone-800 font-bold truncate">
-                      {simProgress === 100 ? '🎉 模拟导航已顺利抵达终点' : '高德真实路网 · 模拟导航漫游'}
-                    </span>
-                    <span className="text-[10px] text-stone-500">
-                      支持倍速演播、镜头跟随与卫星实景切换
-                    </span>
-                  </div>
-                )}
-              </div>
+          <Button
+            className="rounded-full h-8 w-8 p-0 text-white/80 hover:text-white hover:bg-white/10"
+            onClick={handleResetSim}
+            size="sm"
+            title="重回起点"
+            type="button"
+            variant="ghost"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+          </Button>
+
+          {/* 进度条与实时信息 */}
+          <div className="flex-1 max-w-xs">
+            <div className="flex items-center justify-between text-[11px] mb-1">
+              <span className="font-bold flex items-center gap-1">
+                <Sparkles className="h-3 w-3 text-amber-300" />
+                <span>
+                  {isSimulating ? '模拟导航行进中...' : '模拟路线全景导览'}
+                </span>
+              </span>
+              <span className="text-emerald-200 font-mono font-bold">
+                {simProgress}
+                %
+              </span>
             </div>
-
-            {/* 演播控制按钮群 */}
-            <div className="flex items-center gap-1.5 shrink-0">
-              {!isSimulating ? (
-                <Button
-                  className="h-8 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-xs gap-1 cursor-pointer"
-                  onClick={() => setIsSimulating(true)}
-                  size="sm"
-                  type="button"
-                >
-                  <Play className="h-3.5 w-3.5 fill-white" />
-                  <span>{simProgress > 0 && simProgress < 100 ? '继续导航' : '模拟导航'}</span>
-                </Button>
-              ) : (
-                <Button
-                  className="h-8 px-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-xs gap-1 cursor-pointer"
-                  onClick={() => setIsSimulating(false)}
-                  size="sm"
-                  type="button"
-                >
-                  <Pause className="h-3.5 w-3.5 fill-white" />
-                  <span>暂停</span>
-                </Button>
-              )}
-
-              {simProgress > 0 && (
-                <button
-                  className="p-1.5 rounded-xl text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors cursor-pointer"
-                  onClick={handleResetSim}
-                  title="重设回到起点"
-                  type="button"
-                >
-                  <RotateCcw className="h-4 w-4" />
-                </button>
-              )}
-
-              {/* 镜头跟随开关 */}
-              <button
-                className={`p-1.5 rounded-xl border text-xs transition-colors cursor-pointer ${
-                  isCameraFollow ? 'bg-emerald-50 border-emerald-300 text-emerald-800' : 'bg-stone-100 border-stone-200 text-stone-400'
-                }`}
-                onClick={() => setIsCameraFollow(prev => !prev)}
-                title={isCameraFollow ? '镜头跟随开启' : '镜头跟随已关闭（可自由拖拽地图）'}
-                type="button"
-              >
-                <LocateFixed className="h-3.5 w-3.5" />
-              </button>
-
-              {/* 倍速切换 */}
-              <button
-                className="px-2 py-1 rounded-lg bg-stone-100 border border-stone-200 text-[10px] font-black text-stone-700 hover:bg-stone-200 transition-colors cursor-pointer"
-                onClick={() => setSimSpeed(s => (s === 1 ? 2 : s === 2 ? 4 : 1))}
-                title="切换演播倍速"
-                type="button"
-              >
-                {simSpeed}
-                x
-              </button>
-            </div>
-          </div>
-
-          {/* 实时到达打卡气泡弹窗 */}
-          {arrivedSpotNotification && (
-            <div className="absolute top-[68px] left-1/2 -translate-x-1/2 z-[1000] inline-flex items-center gap-1.5 rounded-full bg-emerald-900/90 text-white px-4 py-1.5 text-xs font-bold shadow-xl border border-emerald-500/50 backdrop-blur-md animate-fade-in-up">
-              <Sparkles className="h-3.5 w-3.5 text-amber-300" />
-              <span>{arrivedSpotNotification}</span>
-            </div>
-          )}
-
-          {/* 导航进度条 */}
-          {isSimulating && (
-            <div className="absolute top-[56px] left-3 right-3 z-[1000] h-1.5 rounded-full bg-stone-200/90 overflow-hidden shadow-xs">
+            <div className="w-full bg-emerald-950/80 h-1.5 rounded-full overflow-hidden">
               <div
-                className="h-full bg-emerald-600 transition-all duration-150 rounded-full"
+                className="bg-gradient-to-r from-emerald-400 to-amber-300 h-full rounded-full transition-all duration-150"
                 style={{ width: `${simProgress}%` }}
               />
             </div>
-          )}
-
-          {/* 地图右下角图层与展开视窗控制工具栏 */}
-          <div className="absolute bottom-3 right-3 z-[1000] flex flex-col gap-2">
-            {/* 图层切换 */}
-            <div className="flex items-center rounded-xl bg-white/95 p-1 shadow-md border border-stone-200 text-[11px] font-bold">
-              <button
-                className={`px-2 py-1 rounded-lg transition-colors cursor-pointer ${
-                  tileType === 'amap-street' ? 'bg-emerald-700 text-white' : 'text-stone-600 hover:bg-stone-100'
-                }`}
-                onClick={() => setTileType('amap-street')}
-                title="高德标准街道地图"
-                type="button"
-              >
-                街道
-              </button>
-              <button
-                className={`px-2 py-1 rounded-lg transition-colors cursor-pointer ${
-                  tileType === 'amap-satellite' ? 'bg-emerald-700 text-white' : 'text-stone-600 hover:bg-stone-100'
-                }`}
-                onClick={() => setTileType('amap-satellite')}
-                title="真实高德遥感卫星实景"
-                type="button"
-              >
-                卫星
-              </button>
-              <button
-                className={`px-2 py-1 rounded-lg transition-colors cursor-pointer ${
-                  tileType === 'cartodb' ? 'bg-emerald-700 text-white' : 'text-stone-600 hover:bg-stone-100'
-                }`}
-                onClick={() => setTileType('cartodb')}
-                title="手账清新艺术地图"
-                type="button"
-              >
-                手账
-              </button>
-            </div>
-
-            {/* 展开/全屏视窗切换 */}
-            <button
-              className="flex items-center justify-center w-8 h-8 rounded-xl bg-white/95 shadow-md border border-stone-200 text-stone-700 hover:bg-stone-100 transition-colors self-end cursor-pointer"
-              onClick={() => setIsExpanded(prev => !prev)}
-              title={isExpanded ? '收起地图高度' : '展开大图视野'}
-              type="button"
-            >
-              {isExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-            </button>
           </div>
+        </div>
+
+        {/* 演播参数配置：倍速切换、底图切换、自动视口跟随 */}
+        <div className="flex items-center gap-1.5 text-xs">
+          {/* 倍速 */}
+          <div className="flex items-center bg-emerald-950/60 rounded-lg p-0.5 border border-emerald-700/50">
+            {([1, 2, 4] as const).map(speed => (
+              <button
+                className={`px-1.5 py-0.5 rounded text-[10px] font-bold cursor-pointer transition-colors ${
+                  simSpeed === speed ? 'bg-emerald-500 text-stone-950 shadow-xs' : 'text-emerald-300 hover:text-white'
+                }`}
+                key={speed}
+                onClick={() => setSimSpeed(speed)}
+                type="button"
+              >
+                {speed}
+                x
+              </button>
+            ))}
+          </div>
+
+          {/* 镜头自动跟随开关 */}
+          <button
+            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-bold cursor-pointer transition-colors border ${
+              isCameraFollow
+                ? 'bg-emerald-600/80 border-emerald-400 text-white'
+                : 'bg-emerald-950/50 border-emerald-700/40 text-emerald-300 hover:text-white'
+            }`}
+            onClick={() => setIsCameraFollow(!isCameraFollow)}
+            title="模拟时视角跟随载具"
+            type="button"
+          >
+            <LocateFixed className="h-3 w-3" />
+            <span className="hidden sm:inline">镜头跟随</span>
+          </button>
+
+          {/* 底图切换 */}
+          <select
+            aria-label="选择地图样式图层"
+            className="bg-emerald-950/80 border border-emerald-700/60 text-emerald-100 text-[11px] font-medium rounded-lg px-2 py-1 outline-hidden cursor-pointer"
+            onChange={e => setTileType(e.target.value as TileLayerType)}
+            value={tileType}
+          >
+            <option value="amap-street">高德标准街道</option>
+            <option value="amap-satellite">高德实景遥感</option>
+            <option value="cartodb">Carto 手账艺术</option>
+          </select>
+
+          {/* 展开全景视野 */}
+          <button
+            aria-label={isExpanded ? '收起地图视野' : '展开地图全屏视野'}
+            className="p-1 rounded-lg bg-emerald-950/60 border border-emerald-700/50 text-emerald-200 hover:text-white cursor-pointer"
+            onClick={() => setIsExpanded(!isExpanded)}
+            title={isExpanded ? '收起地图视野' : '展开地图全屏视野'}
+            type="button"
+          >
+            {isExpanded ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
+          </button>
+        </div>
+      </div>
+
+      {/* 到达打卡点即时 HUD 弹窗通知 */}
+      {arrivedSpotNotification && (
+        <div className="bg-amber-500 text-stone-950 text-xs font-black px-4 py-1.5 text-center flex items-center justify-center gap-1.5 shadow-sm transition-all animate-bounce">
+          <span>{arrivedSpotNotification}</span>
         </div>
       )}
 
-      {/* 模式二：携程风格分段路书导航列表 (Legs List) */}
-      {activeTab === 'legs' && (
-        <div className="p-4 sm:p-5 space-y-3 bg-[#FAF7F0] max-h-[380px] overflow-y-auto chat-scrollbar">
-          <div className="flex items-center justify-between text-xs text-stone-500 font-medium px-1 mb-1">
+      {/* 主展示区：地图视图 vs 分段路书视图 */}
+      {activeTab === 'map' ? (
+        <div className="relative">
+          {/* Leaflet 地图容器 */}
+          <div
+            className={`w-full bg-stone-100 transition-all duration-300 ${
+              isExpanded ? 'h-[540px]' : 'h-[360px] sm:h-[400px]'
+            }`}
+            ref={mapContainerRef}
+          />
+
+          {/* 当前行进中路段迷你状态气泡 (悬浮于地图左下角) */}
+          {activeLeg && (
+            <div className="absolute bottom-3 left-3 z-[400] max-w-[280px] rounded-2xl bg-white/95 backdrop-blur-md p-3 shadow-lg border border-stone-200/90 text-xs">
+              <div className="flex items-center justify-between gap-2 mb-1.5">
+                <span className="font-black text-emerald-800 flex items-center gap-1">
+                  <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-700 text-white text-[10px]">
+                    {simLegIndex + 1}
+                  </span>
+                  <span>
+                    第
+                    {simLegIndex + 1}
+                    段导航
+                  </span>
+                </span>
+                <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 font-bold text-[10px]" variant="outline">
+                  {activeLeg.durationText}
+                </Badge>
+              </div>
+
+              <div className="text-stone-700 font-medium text-[11px] truncate">
+                <span className="font-bold text-stone-900">{activeLeg.from.name}</span>
+                <span className="text-stone-400 mx-1">➔</span>
+                <span className="font-bold text-stone-900">{activeLeg.to.name}</span>
+              </div>
+
+              <div className="mt-2 flex items-center gap-1.5">
+                <a
+                  className="flex-1 text-center py-1 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-[10px] transition-colors"
+                  href={activeLeg.amapUrl}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  高德导航
+                </a>
+                <a
+                  className="flex-1 text-center py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-[10px] border border-stone-200 transition-colors"
+                  href={activeLeg.baiduUrl}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  百度地图
+                </a>
+                <a
+                  className="flex-1 text-center py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-[10px] border border-stone-200 transition-colors"
+                  href={activeLeg.tencentUrl}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  腾讯地图
+                </a>
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        /* 分段路书列表视图 (Legs) */
+        <div className="divide-y divide-stone-100 max-h-[380px] overflow-y-auto bg-stone-50/50 p-3 sm:p-4">
+          <div className="text-xs font-bold text-stone-500 mb-3 px-1 flex items-center justify-between">
+            <span>分段行程导航与接驳指南</span>
             <span>
               共
-              {' '}
-              <b className="text-emerald-800 font-bold">{routeLegs.length}</b>
-              {' '}
-              段途经行程 · 点击可直接跳转第三方地图导航
+              {routeLegs.length}
+              段路书
             </span>
-            <span className="text-stone-400">携程级导航指引</span>
           </div>
 
-          {routeLegs.map((leg, idx) => {
-            return (
+          <div className="space-y-2.5">
+            {routeLegs.map((leg, i) => (
               <div
-                className="group relative rounded-2xl border border-stone-200/90 bg-white p-3.5 shadow-2xs hover:border-emerald-500/80 transition-all"
-                key={leg.from.name + leg.to.name}
+                className={`rounded-2xl border p-3.5 transition-all bg-white ${
+                  activeSpotIndex === i
+                    ? 'border-emerald-500 shadow-md ring-2 ring-emerald-100'
+                    : 'border-stone-200/80 hover:border-stone-300'
+                }`}
+                key={leg.index}
               >
-                {/* 路段顶栏 */}
-                <div className="flex items-center justify-between gap-2 mb-2.5">
-                  <div className="flex items-center gap-1.5">
-                    <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-emerald-700 text-white text-[11px] font-black shadow-2xs">
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-700 text-white text-xs font-black">
                       {leg.index}
                     </span>
-                    <span className="font-bold text-xs text-stone-900">
-                      第
-                      {' '}
-                      {leg.index}
-                      {' '}
-                      段：
+                    <span className="text-xs font-bold text-stone-900">
                       {leg.from.name}
                       {' '}
                       ➔
@@ -907,103 +902,79 @@ export function TravelMapView({
                       {leg.to.name}
                     </span>
                   </div>
-
-                  <Badge className="bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold" variant="outline">
-                    {mode === 'driving' ? '🚗 自驾' : mode === 'transit' ? '🚌 公交' : '🚶 慢步'}
-                    {' '}
-                    ~
-                    {leg.distanceKm}
-                    {' '}
-                    km ·
-                    {' '}
-                    {leg.durationText}
-                  </Badge>
+                  <div className="flex items-center gap-1.5 text-xs">
+                    <span className="font-bold text-emerald-800">
+                      ~
+                      {leg.distanceKm}
+                      km
+                    </span>
+                    <span className="text-stone-300">|</span>
+                    <span className="font-semibold text-amber-700">{leg.durationText}</span>
+                  </div>
                 </div>
 
-                {/* 途径地点卡片 */}
-                <div className="flex items-center gap-2 text-xs text-stone-600 bg-stone-50 p-2.5 rounded-xl border border-stone-200/60 mb-2.5">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1 text-stone-800 font-bold">
-                      <span className="h-2 w-2 rounded-full bg-emerald-600 shrink-0" />
-                      <span className="truncate">
-                        起点：
-                        {leg.from.name}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1 text-stone-800 font-bold mt-1">
-                      <span className="h-2 w-2 rounded-full bg-amber-600 shrink-0" />
-                      <span className="truncate">
-                        终点：
-                        {leg.to.name}
-                      </span>
-                    </div>
-                  </div>
-
+                <div className="flex items-center justify-between pt-2 border-t border-stone-100 mt-2 text-xs">
                   <button
-                    className="px-2.5 py-1 rounded-lg bg-white border border-stone-200 text-[11px] font-bold text-stone-700 hover:bg-stone-100 hover:text-emerald-800 transition-colors shrink-0 cursor-pointer shadow-2xs"
+                    className="text-emerald-700 font-bold hover:underline cursor-pointer flex items-center gap-1"
                     onClick={() => {
                       setActiveTab('map')
-                      setTimeout(() => handleFocusLeg(idx), 100)
+                      handleFocusLeg(i)
                     }}
                     type="button"
                   >
-                    在地图中聚焦
+                    <LocateFixed className="h-3.5 w-3.5" />
+                    <span>在地图中聚焦</span>
                   </button>
-                </div>
 
-                {/* 单段真实外部导航直达 */}
-                <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-[11px]">
-                  <span className="text-stone-400 font-medium">第三方导航直达：</span>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
                     <a
-                      className="inline-flex items-center gap-1 text-emerald-800 font-bold hover:underline"
+                      className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[11px] font-bold text-emerald-800 hover:bg-emerald-100 transition-colors"
                       href={leg.amapUrl}
                       rel="noreferrer"
                       target="_blank"
                     >
-                      <span>高德导航</span>
-                      <ExternalLink className="h-3 w-3" />
+                      <span>高德</span>
+                      <ExternalLink className="h-2.5 w-2.5" />
                     </a>
-                    <span className="text-stone-300">|</span>
                     <a
-                      className="inline-flex items-center gap-1 text-stone-600 font-bold hover:underline"
+                      className="inline-flex items-center gap-1 rounded-lg bg-stone-100 border border-stone-200 px-2 py-0.5 text-[11px] font-bold text-stone-700 hover:bg-stone-200 transition-colors"
                       href={leg.baiduUrl}
                       rel="noreferrer"
                       target="_blank"
                     >
-                      <span>百度地图</span>
-                      <ExternalLink className="h-3 w-3" />
+                      <span>百度</span>
+                      <ExternalLink className="h-2.5 w-2.5" />
                     </a>
-                    <span className="text-stone-300">|</span>
                     <a
-                      className="inline-flex items-center gap-1 text-stone-500 hover:underline"
+                      className="inline-flex items-center gap-1 rounded-lg bg-stone-100 border border-stone-200 px-2 py-0.5 text-[11px] font-bold text-stone-700 hover:bg-stone-200 transition-colors"
                       href={leg.tencentUrl}
                       rel="noreferrer"
                       target="_blank"
                     >
-                      <span>腾讯地图</span>
-                      <ExternalLink className="h-3 w-3" />
+                      <span>腾讯</span>
+                      <ExternalLink className="h-2.5 w-2.5" />
                     </a>
                   </div>
                 </div>
               </div>
-            )
-          })}
+            ))}
+          </div>
         </div>
       )}
 
-      {/* 底部：打卡点快速水平导航条 + 全程导航快捷入口 */}
-      <div className="flex flex-wrap items-center justify-between gap-2.5 border-t border-stone-200/80 bg-white p-3 px-4 sm:px-5">
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar flex-1 min-w-0">
-          <span className="text-xs font-bold text-stone-400 shrink-0">打卡点:</span>
+      {/* 底栏：打卡点快速定位胶囊 & 第三方直达 */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-stone-200/80 bg-white/95 px-4 py-2.5 sm:px-5">
+        {/* 打卡点快速切换 */}
+        <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 max-w-full sm:max-w-md no-scrollbar">
+          <span className="text-[11px] font-bold text-stone-400 shrink-0">打卡点:</span>
           {routePoints.map((spot, i) => (
             <button
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-medium shrink-0 transition-all cursor-pointer ${
+              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold transition-all shrink-0 cursor-pointer ${
                 activeSpotIndex === i
-                  ? 'bg-emerald-700 text-white font-bold shadow-2xs'
+                  ? 'bg-emerald-700 text-white shadow-xs'
                   : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
               }`}
-              key={spot.name}
+              key={spot.name + i}
               onClick={() => {
                 setActiveTab('map')
                 handleFocusSpot(i)

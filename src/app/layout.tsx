@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
+import Script from 'next/script'
 
 import { MainWrapper } from '@/components/MainWrapper'
 import { Navigation } from '@/components/Navigation'
@@ -18,6 +19,15 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="zh-CN">
+      <head>
+        {/* Umami 访客量与停留时长统计分析 */}
+        <Script
+          defer
+          src="https://cloud.umami.is/script.js"
+          data-website-id="147a6007-9dae-4843-a7c7-8bdb360b8570"
+          strategy="afterInteractive"
+        />
+      </head>
       <body>
         <CursorTrail />
         <Navigation />

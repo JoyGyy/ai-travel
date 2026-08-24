@@ -530,6 +530,8 @@ export default function ChatPage() {
             : null
           const hasSpots = Boolean(parsedRoute && parsedRoute.spots.length >= 2)
           const isMapExpanded = expandedMapMsgIds[message.id] ?? true
+          const isLastAssistant = message.id === messages[messages.length - 1]?.id && message.role === 'assistant'
+          const isStillGenerating = isGenerating && isLastAssistant
 
           return (
             <div
@@ -719,21 +721,50 @@ export default function ChatPage() {
                                 <Route className="w-3.5 h-3.5 text-emerald-700" />
                                 <span>真实地图路线规划与模拟导航</span>
                               </span>
-                              <button
-                                className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 transition-colors cursor-pointer"
-                                onClick={() => toggleMap(message.id)}
-                                type="button"
-                              >
-                                {isMapExpanded ? '折叠地图 ▲' : '展开地图 ▼'}
-                              </button>
+                              {!isStillGenerating && (
+                                <button
+                                  className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 transition-colors cursor-pointer"
+                                  onClick={() => toggleMap(message.id)}
+                                  type="button"
+                                >
+                                  {isMapExpanded ? '折叠地图 ▲' : '展开地图 ▼'}
+                                </button>
+                              )}
                             </div>
 
-                            {isMapExpanded && (
-                              <TravelMapView
-                                city={parsedRoute.city}
-                                initialMode={parsedRoute.transportMode}
-                                spots={parsedRoute.spots}
-                              />
+                            {isStillGenerating ? (
+                              <div className="flex items-center gap-3 rounded-2xl border border-dashed border-emerald-300 bg-emerald-50/60 p-3.5 text-xs text-emerald-900 shadow-2xs">
+                                <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-700 text-white font-bold shrink-0 animate-pulse">
+                                  <Route className="h-3.5 w-3.5" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="font-bold flex items-center gap-1.5">
+                                    <span>
+                                      🗺️ AI 正在规划【
+                                      {parsedRoute.city}
+                                      】路线拓扑...
+                                    </span>
+                                    <span className="text-[10px] text-emerald-800 font-semibold bg-emerald-100 px-2 py-0.5 rounded-full">
+                                      已识别
+                                      {' '}
+                                      {parsedRoute.spots.length}
+                                      {' '}
+                                      处打卡点
+                                    </span>
+                                  </div>
+                                  <p className="text-emerald-700/80 text-[11px] mt-0.5 truncate">
+                                    规划生成完毕后将自动呈现高德交互全景地图与模拟导航
+                                  </p>
+                                </div>
+                              </div>
+                            ) : (
+                              isMapExpanded && (
+                                <TravelMapView
+                                  city={parsedRoute.city}
+                                  initialMode={parsedRoute.transportMode}
+                                  spots={parsedRoute.spots}
+                                />
+                              )
                             )}
                           </div>
                         )}

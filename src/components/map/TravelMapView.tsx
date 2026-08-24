@@ -69,11 +69,14 @@ export function TravelMapView({
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<LeafletMap | null>(null)
   const markersRef = useRef<LeafletMarker[]>([])
+  const bgPolylineRef = useRef<LeafletPolyline | null>(null)
   const fullPolylineRef = useRef<LeafletPolyline | null>(null)
   const passedPolylineRef = useRef<LeafletPolyline | null>(null)
   const simVehicleMarkerRef = useRef<LeafletMarker | null>(null)
   const animFrameRef = useRef<number | null>(null)
   const notifTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const tileLayerRef = useRef<unknown>(null)
+  const overlayLayerRef = useRef<unknown>(null)
 
   // 1. 计算所有打卡点真实地理坐标
   const routePoints = useMemo(() => {
@@ -145,37 +148,89 @@ export function TravelMapView({
     }
   }, [routeLegs])
 
-  // 4. 初始化与渲染 Leaflet 真实地理地图
+  // 4.1 初始化 Leaflet 实例与底图 (挂载时仅执行一次)
   useEffect(() => {
-    if (!mapContainerRef.current || routePoints.length === 0)
+    if (!mapContainerRef.current)
       return
 
     let isMounted = true
 
-    // 动态引入 Leaflet 避免 SSR 错误
     import('leaflet').then((L) => {
       if (!isMounted || !mapContainerRef.current)
         return
 
-      // 清理旧实例
+      if (!mapInstanceRef.current) {
+        const centerPos: [number, number] = routePoints.length > 0
+          ? [routePoints[0].lat, routePoints[0].lng]
+          : [34.3416, 108.9398]
+
+        const map = L.map(mapContainerRef.current, {
+          attributionControl: false,
+          center: centerPos,
+          zoom: 12,
+          zoomControl: false,
+        })
+        mapInstanceRef.current = map
+
+        L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(map)
+
+        const tileUrls = {
+          'amap-satellite': 'https://wprd0{s}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=6',
+          'amap-street': 'https://wprd0{s}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=7',
+          'cartodb': 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
+        }
+
+        const subdomains = tileType.startsWith('amap') ? ['1', '2', '3', '4'] : ['a', 'b', 'c', 'd']
+        const baseLayer = L.tileLayer(tileUrls[tileType], {
+          maxZoom: 18,
+          minZoom: 3,
+          subdomains,
+        }).addTo(map)
+        tileLayerRef.current = baseLayer
+
+        if (tileType === 'amap-satellite') {
+          const overlay = L.tileLayer('https://wprd0{s}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=8', {
+            maxZoom: 18,
+            subdomains: ['1', '2', '3', '4'],
+          }).addTo(map)
+          overlayLayerRef.current = overlay
+        }
+      }
+    })
+
+    return () => {
+      isMounted = false
+      if (animFrameRef.current) {
+        cancelAnimationFrame(animFrameRef.current)
+      }
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove()
         mapInstanceRef.current = null
       }
+    }
+    // 地图容器仅在挂载时创建一次，后续底图与路线变化由下方独立 effect 响应式增量更新
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-      const firstPoint = routePoints[0]
-      const map = L.map(mapContainerRef.current, {
-        attributionControl: false,
-        center: [firstPoint.lat, firstPoint.lng],
-        zoom: 12,
-        zoomControl: false,
-      })
-      mapInstanceRef.current = map
+  // 4.2 底图类型切换 (平滑更换图层，不销毁地图容器)
+  useEffect(() => {
+    if (!mapInstanceRef.current)
+      return
 
-      // 添加比例尺
-      L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(map)
+    import('leaflet').then((L) => {
+      const map = mapInstanceRef.current
+      if (!map)
+        return
 
-      // 底图瓦片服务
+      if (tileLayerRef.current) {
+        map.removeLayer(tileLayerRef.current as never)
+        tileLayerRef.current = null
+      }
+      if (overlayLayerRef.current) {
+        map.removeLayer(overlayLayerRef.current as never)
+        overlayLayerRef.current = null
+      }
+
       const tileUrls = {
         'amap-satellite': 'https://wprd0{s}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=6',
         'amap-street': 'https://wprd0{s}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=7',
@@ -183,21 +238,51 @@ export function TravelMapView({
       }
 
       const subdomains = tileType.startsWith('amap') ? ['1', '2', '3', '4'] : ['a', 'b', 'c', 'd']
-      L.tileLayer(tileUrls[tileType], {
+      const baseLayer = L.tileLayer(tileUrls[tileType], {
         maxZoom: 18,
         minZoom: 3,
         subdomains,
       }).addTo(map)
+      tileLayerRef.current = baseLayer
 
-      // 若为高德卫星图，叠加路网标签
       if (tileType === 'amap-satellite') {
-        L.tileLayer('https://wprd0{s}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=8', {
+        const overlay = L.tileLayer('https://wprd0{s}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=8', {
           maxZoom: 18,
           subdomains: ['1', '2', '3', '4'],
         }).addTo(map)
+        overlayLayerRef.current = overlay
+      }
+    })
+  }, [tileType])
+
+  // 4.3 景点标点与路线更新 (纯增量图层更新，杜绝白屏与闪烁)
+  useEffect(() => {
+    if (routePoints.length === 0)
+      return
+
+    import('leaflet').then((L) => {
+      const map = mapInstanceRef.current
+      if (!map)
+        return
+
+      // 清理旧标点
+      markersRef.current.forEach(m => map.removeLayer(m))
+      markersRef.current = []
+
+      // 清理旧路线
+      if (bgPolylineRef.current) {
+        map.removeLayer(bgPolylineRef.current)
+        bgPolylineRef.current = null
+      }
+      if (fullPolylineRef.current) {
+        map.removeLayer(fullPolylineRef.current)
+        fullPolylineRef.current = null
+      }
+      if (passedPolylineRef.current) {
+        map.removeLayer(passedPolylineRef.current)
+        passedPolylineRef.current = null
       }
 
-      // 添加景点标点 Marker (精美手账数字气泡与交互)
       const latlngs: [number, number][] = []
       const markers: LeafletMarker[] = []
 
@@ -262,45 +347,29 @@ export function TravelMapView({
 
       // 绘制真实折线路径 Polyline
       if (latlngs.length > 1) {
-        // 1. 底层发光白边
-        L.polyline(latlngs, {
+        bgPolylineRef.current = L.polyline(latlngs, {
           color: '#ffffff',
           opacity: 0.95,
           weight: 8,
         }).addTo(map)
 
-        // 2. 主体翡翠规划线
-        const fullPolyline = L.polyline(latlngs, {
+        fullPolylineRef.current = L.polyline(latlngs, {
           color: '#047857',
           dashArray: mode === 'walking' ? '6, 8' : undefined,
           opacity: 0.85,
           weight: 4.5,
         }).addTo(map)
-        fullPolylineRef.current = fullPolyline
 
-        // 3. 已通过路径发光高亮线
-        const passedPolyline = L.polyline([], {
+        passedPolylineRef.current = L.polyline([], {
           color: '#10b981',
           opacity: 0.95,
           weight: 5,
         }).addTo(map)
-        passedPolylineRef.current = passedPolyline
 
         map.fitBounds(L.latLngBounds(latlngs), { padding: [36, 36] })
       }
     })
-
-    return () => {
-      isMounted = false
-      if (animFrameRef.current) {
-        cancelAnimationFrame(animFrameRef.current)
-      }
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove()
-        mapInstanceRef.current = null
-      }
-    }
-  }, [routePoints, tileType, mode, city])
+  }, [routePoints, mode, city])
 
   // 5. 模拟导航演播动画控制器 (Dynamic Route Simulation with Camera Follow & Heading)
   useEffect(() => {

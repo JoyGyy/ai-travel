@@ -144,6 +144,17 @@ function ChatContent() {
   const { error, messages, sendMessage, setMessages, status, stop } = useTravelChat()
   const isGenerating = status === 'submitted' || status === 'streaming'
 
+  // 用 ref 持有最新 status 与 stop，供卸载清理函数读取，
+  // 确保清理只在真正卸载时执行，避免 status 变化触发清理而误中止流式响应。
+  const statusRef = useRef(status)
+  useEffect(() => {
+    statusRef.current = status
+  }, [status])
+  const stopRef = useRef(stop)
+  useEffect(() => {
+    stopRef.current = stop
+  }, [stop])
+
   // 会话历史 Store
   const sessions = useChatHistoryStore(state => state.sessions)
   const activeSessionId = useChatHistoryStore(state => state.activeSessionId)
@@ -305,13 +316,15 @@ function ChatContent() {
   }, [_hasHydrated, initialPrompt, initialCity, activeSessionId, createSession, messages.length, sessions, setActiveSessionId, setMessages, sendMessage, scrollToBottom])
 
   // 离开页面或卸载组件时终止进行中的流式请求
+  // 注意：依赖数组必须为空，清理函数只在真正卸载时执行一次；status 通过 ref 读取最新值，
+  // 否则 status 变化时清理函数会反复执行，导致流式请求刚生成首个 token 就被 stop() 中止。
   useEffect(() => {
     return () => {
-      if (status === 'streaming' || status === 'submitted') {
-        stop()
+      if (statusRef.current === 'streaming' || statusRef.current === 'submitted') {
+        stopRef.current()
       }
     }
-  }, [status, stop])
+  }, [])
 
   // 2. 消息变动或生成状态变化时自动持久化到当前会话
   useEffect(() => {

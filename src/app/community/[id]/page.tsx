@@ -316,7 +316,7 @@ export default function CommunityPostDetail() {
           <p className="whitespace-pre-wrap leading-relaxed text-travel-ink">{post.content}</p>
         )}
 
-        <CommunityImageGrid images={post.images} />
+        <CommunityImageGrid images={post.images || []} />
 
         {post.itinerarySnapshot && (
           <CommunityItineraryPreview mode="detail" snapshot={post.itinerarySnapshot} />

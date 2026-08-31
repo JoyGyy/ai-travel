@@ -10,8 +10,10 @@ interface CommunityImageGridProps {
   images?: CommunityImage[]
 }
 
-export function CommunityImageGrid({ compact = false, images = [] }: CommunityImageGridProps) {
-  const safeImages = Array.isArray(images) ? images : []
+const EMPTY_IMAGES: CommunityImage[] = []
+
+export function CommunityImageGrid({ compact = false, images = EMPTY_IMAGES }: CommunityImageGridProps) {
+  const safeImages = Array.isArray(images) ? images : EMPTY_IMAGES
   const [previewIndex, setPreviewIndex] = useState<null | number>(null)
   const dialogRef = useRef<HTMLDivElement>(null)
 

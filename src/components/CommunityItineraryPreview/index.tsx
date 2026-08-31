@@ -258,7 +258,7 @@ function renderDaySpots(day: ItineraryDay, refs: AttractionRef[]) {
 
   if (Array.isArray(day.spots)) {
     return day.spots.map((spot, index) => {
-      const name = typeof spot === 'string' ? spot : spot?.name || `景点 ${index + 1}`
+      const name = typeof spot === 'string' ? spot : spot?.name || `景点`
       const description = typeof spot === 'string' ? '' : spot?.description || ''
       const duration = typeof spot === 'string' ? '' : spot?.duration || ''
 
@@ -266,7 +266,7 @@ function renderDaySpots(day: ItineraryDay, refs: AttractionRef[]) {
         <SpotItem
           attractionRef={findAttractionRef(refs, name)}
           data={{ description, duration, spot: name }}
-          key={`${day.day || 1}-${name}-${index}`}
+          key={`${day.day || 1}-${name}`}
           period={index === 0 ? '上午' : index === 1 ? '下午' : '晚上'}
         />
       )

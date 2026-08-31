@@ -53,24 +53,34 @@ function validateItinerarySnapshot(value: unknown): undefined | unknown {
   if (value === undefined || value === null)
     return undefined
 
-  const size = Buffer.byteLength(JSON.stringify(value), 'utf8')
+  let snapshot = value
+  if (typeof snapshot === 'string') {
+    try {
+      snapshot = JSON.parse(snapshot)
+    }
+    catch {
+      throw httpError(400, '行程快照格式无效')
+    }
+  }
+
+  const size = Buffer.byteLength(JSON.stringify(snapshot), 'utf8')
   if (size > MAX_ITINERARY_SNAPSHOT_SIZE)
     throw httpError(400, '行程快照不能超过 100KB')
 
-  if (typeof value !== 'object')
+  if (!snapshot || typeof snapshot !== 'object' || Array.isArray(snapshot))
     throw httpError(400, '行程快照格式无效')
 
-  const snapshot = value as Record<string, unknown>
-  if (snapshot.city !== undefined)
-    readOptionalString(snapshot.city, '行程城市', MAX_CITY_LENGTH)
-  if (snapshot.days !== undefined)
-    readPositiveInteger(snapshot.days, '行程天数', { max: 30, min: 1 })
-  if (snapshot.itinerary !== undefined && !Array.isArray(snapshot.itinerary))
+  const s = snapshot as Record<string, unknown>
+  if (s.city !== undefined)
+    readOptionalString(s.city, '行程城市', MAX_CITY_LENGTH)
+  if (s.days !== undefined)
+    readPositiveInteger(s.days, '行程天数', { max: 30, min: 1 })
+  if (s.itinerary !== undefined && !Array.isArray(s.itinerary))
     throw httpError(400, '行程安排必须是数组')
-  if (Array.isArray(snapshot.itinerary) && snapshot.itinerary.length > 30)
+  if (Array.isArray(s.itinerary) && s.itinerary.length > 30)
     throw httpError(400, '行程安排最多支持 30 天')
 
-  return value
+  return snapshot
 }
 
 function validatePostPayload(payload: unknown): CreateCommunityPostInput {

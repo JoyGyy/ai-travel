@@ -594,7 +594,9 @@ async function insertPost(
   const itinerarySnapshot
     = input.itinerarySnapshot === undefined || input.itinerarySnapshot === null
       ? null
-      : JSON.stringify(input.itinerarySnapshot)
+      : typeof input.itinerarySnapshot === 'string'
+        ? input.itinerarySnapshot
+        : JSON.stringify(input.itinerarySnapshot)
 
   await client.query(
     `INSERT INTO community_posts (id, author_id, city, content, itinerary_snapshot, original_post_id, post_type, title)
@@ -660,6 +662,21 @@ function mapPost(
 }
 
 function mapPostSummary(row: CommunityPostRow, images: CommunityImage[]): CommunityPostSummary {
+  let itinerarySnapshot: null | unknown = null
+  if (row.itinerary_snapshot) {
+    if (typeof row.itinerary_snapshot === 'string') {
+      try {
+        itinerarySnapshot = JSON.parse(row.itinerary_snapshot)
+      }
+      catch {
+        itinerarySnapshot = null
+      }
+    }
+    else {
+      itinerarySnapshot = row.itinerary_snapshot
+    }
+  }
+
   return {
     author: {
       id: row.author_id,
@@ -670,8 +687,8 @@ function mapPostSummary(row: CommunityPostRow, images: CommunityImage[]): Commun
     content: row.content,
     createdAt: toIsoString(row.created_at),
     id: row.id,
-    images,
-    itinerarySnapshot: row.itinerary_snapshot ?? null,
+    images: Array.isArray(images) ? images : [],
+    itinerarySnapshot,
     likeCount: toCount(row.like_count),
     likedByMe: Boolean(row.liked_by_me),
     postType: row.post_type,

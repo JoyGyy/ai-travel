@@ -116,6 +116,10 @@ async function runMigrations(pool: pg.Pool) {
 
     console.log(`▶ 执行: ${file}`)
     await pool.query(sql)
+    await pool.query(
+      'INSERT INTO _migrations (name) VALUES ($1) ON CONFLICT (name) DO NOTHING',
+      [file],
+    )
     console.log(`✅ 完成: ${file}\n`)
   }
 

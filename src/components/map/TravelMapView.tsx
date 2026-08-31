@@ -446,8 +446,8 @@ export function TravelMapView({
     <div
       className={
         isExpanded
-          ? `fixed inset-0 z-50 flex flex-col bg-[#FAF7F0] shadow-2xl h-dvh w-screen overflow-hidden ${className}`
-          : `overflow-hidden rounded-3xl border border-stone-200/90 bg-[#FDFBF7] shadow-sm transition-all ${className}`
+          ? `fixed inset-0 z-40 isolate flex flex-col bg-[#FAF7F0] shadow-2xl h-dvh w-screen overflow-hidden ${className}`
+          : `relative z-0 isolate overflow-hidden rounded-3xl border border-stone-200/90 bg-[#FDFBF7] shadow-sm transition-all ${className}`
       }
     >
       {/* 顶栏：城市总览、交通模式切换、底图切换与全屏视野 */}
@@ -587,7 +587,7 @@ export function TravelMapView({
 
       {/* 主展示区：地图视图 vs 分段路书视图 */}
       {activeTab === 'map' ? (
-        <div className={`relative ${isExpanded ? 'flex-1 min-h-0 w-full' : ''}`}>
+        <div className={`relative z-0 isolate ${isExpanded ? 'flex-1 min-h-0 w-full' : ''}`}>
           {/* Leaflet 地图容器 */}
           <div
             className={`w-full bg-stone-100 transition-all duration-300 ${

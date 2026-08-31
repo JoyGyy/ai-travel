@@ -95,6 +95,7 @@ export default function Profile() {
       const [profileResult, favResult] = await Promise.all([
         getProfileApi(),
         fetchFavoriteAttractions(),
+        useChatHistoryStore.getState().syncWithServer().catch(() => {}),
       ])
       setProfile(profileResult.profile)
       setFavorites(favResult.items)

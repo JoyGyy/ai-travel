@@ -60,6 +60,7 @@ import { useWeather } from '@/hooks/useWeather'
 import { extractRagSources } from '@/lib/ai/sources'
 import { generateAmapRouteUrl } from '@/lib/map/amap'
 import { parseItineraryFromMarkdown } from '@/lib/map/route-parser'
+import { useAuthStore } from '@/stores/auth'
 import { useChatHistoryStore } from '@/stores/chatHistory'
 
 const KNOWN_CITIES = [
@@ -154,6 +155,16 @@ function ChatContent() {
   useEffect(() => {
     stopRef.current = stop
   }, [stop])
+
+  // 认证状态与用户感知
+  const user = useAuthStore(state => state.user)
+  const authHydrated = useAuthStore(state => state._hasHydrated)
+
+  useEffect(() => {
+    if (authHydrated) {
+      useChatHistoryStore.getState().initForUser(user?.id || null).catch(() => {})
+    }
+  }, [authHydrated, user?.id])
 
   // 会话历史 Store
   const sessions = useChatHistoryStore(state => state.sessions)
@@ -964,11 +975,13 @@ function ChatContent() {
                                 </div>
                               ) : (
                                 isMapExpanded && (
-                                  <TravelMapView
-                                    city={parsedRoute.city}
-                                    initialMode={parsedRoute.transportMode}
-                                    spots={parsedRoute.spots}
-                                  />
+                                  <div className="relative z-0 isolate">
+                                    <TravelMapView
+                                      city={parsedRoute.city}
+                                      initialMode={parsedRoute.transportMode}
+                                      spots={parsedRoute.spots}
+                                    />
+                                  </div>
                                 )
                               )}
                             </div>

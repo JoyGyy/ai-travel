@@ -53,7 +53,15 @@ export function TravelRouteCardModal({
   const [sharingCommunity, setSharingCommunity] = useState(false)
   const [copied, setCopied] = useState(false)
 
-  const { city, food, routeString, spots, summary, tips, transportMode } = routeData
+  const {
+    city = '旅行目的地',
+    food = [],
+    routeString = '',
+    spots = [],
+    summary = '',
+    tips = [],
+    transportMode = 'driving',
+  } = routeData || {}
 
   const todayStr = new Date().toLocaleDateString('zh-CN', {
     day: 'numeric',
@@ -63,14 +71,15 @@ export function TravelRouteCardModal({
 
   // 计算路线总里程与耗时
   const totalMetrics = useMemo(() => {
-    if (spots.length < 2) {
+    const validSpots = Array.isArray(spots) ? spots : []
+    if (validSpots.length < 2) {
       return { totalKm: 8, totalTimeText: '约 30 分钟' }
     }
     let totalKm = 0
     let totalMins = 0
-    for (let i = 0; i < spots.length - 1; i++) {
-      const p1 = getSpotCoordinates(spots[i].name, city, i)
-      const p2 = getSpotCoordinates(spots[i + 1].name, city, i + 1)
+    for (let i = 0; i < validSpots.length - 1; i++) {
+      const p1 = getSpotCoordinates(validSpots[i].name, city, i)
+      const p2 = getSpotCoordinates(validSpots[i + 1].name, city, i + 1)
       const dist = calculateDistanceKm(p1.lat, p1.lng, p2.lat, p2.lng)
       totalKm += dist
       totalMins += estimateDurationMinutes(dist, transportMode)
@@ -115,6 +124,38 @@ export function TravelRouteCardModal({
 
     setSharingCommunity(true)
     try {
+      const safeSpots = Array.isArray(spots) ? spots : []
+      const safeFood = Array.isArray(food) ? food : []
+      const safeTips = Array.isArray(tips) ? tips : []
+      const safeCity = (city || '旅行目的地').trim()
+      const daysCount = safeSpots.length > 2 ? 2 : 1
+
+      // 构造结构化行程安排
+      const itineraryDays = [
+        {
+          day: 1,
+          spots: safeSpots.slice(0, Math.max(1, Math.ceil(safeSpots.length / 2))).map((s, idx) => ({
+            description: s.description || '特色景点游览与漫步打卡',
+            duration: '2小时',
+            name: s.name || `景点 ${idx + 1}`,
+          })),
+          title: `${safeCity}经典路线打卡`,
+        },
+        ...(safeSpots.length > 2
+          ? [
+              {
+                day: 2,
+                spots: safeSpots.slice(Math.ceil(safeSpots.length / 2)).map((s, idx) => ({
+                  description: s.description || '烟火街巷与特色体验',
+                  duration: '2小时',
+                  name: s.name || `景点 ${Math.ceil(safeSpots.length / 2) + idx + 1}`,
+                })),
+                title: `${safeCity}烟火漫游与美食探索`,
+              },
+            ]
+          : []),
+      ]
+
       // 构造结构化行程快照
       const snapshot: CommunityItinerarySnapshot = {
         budget: 1500,
@@ -125,39 +166,22 @@ export function TravelRouteCardModal({
           total: 1500,
           transport: 200,
         },
-        city,
-        days: 2,
-        itinerary: [
-          {
-            day: 1,
-            spots: spots.slice(0, Math.ceil(spots.length / 2)).map(s => ({
-              description: s.description || '特色景点游览与漫步打卡',
-              duration: '2小时',
-              name: s.name,
-            })),
-            title: `${city}经典路线打卡`,
-          },
-          ...(spots.length > 2
-            ? [
-                {
-                  day: 2,
-                  spots: spots.slice(Math.ceil(spots.length / 2)).map(s => ({
-                    description: s.description || '烟火街巷与特色体验',
-                    duration: '2小时',
-                    name: s.name,
-                  })),
-                  title: `${city}烟火漫游与美食探索`,
-                },
-              ]
-            : []),
-        ],
+        city: safeCity,
+        days: daysCount,
+        itinerary: itineraryDays,
+        tips: safeTips,
       }
 
+      const firstSpotName = safeSpots.length > 0 && safeSpots[0].name ? safeSpots[0].name : safeCity
+      const title = `【${safeCity}旅行手账】${firstSpotName}慢游探索指南`.slice(0, 80)
+      const content = `【${safeCity}专属旅行手账】\n\n${summary || '精心规划的专属旅行路线。'}\n\n🗺️ 路线规划：${routeString || safeCity}\n\n🍜 推荐美食：${safeFood.join('、') || '本地特色小吃'}\n\n💡 避坑建议：${safeTips.join('；') || '提前做好规划与预约'}`.slice(0, 2000)
+
       const post = await createCommunityPost({
-        city,
-        content: `【${city}专属旅行手账】\n\n${summary}\n\n🗺️ 路线规划：${routeString}\n\n🍜 推荐美食：${food.join('、') || '本地特色'}\n\n💡 避坑建议：${tips.join('；') || '提前做好规划'}`,
+        city: safeCity.slice(0, 50),
+        content,
+        images: [],
         itinerarySnapshot: snapshot,
-        title: `【${city}旅行手账】${spots.length > 0 ? spots[0].name : city}慢游探索指南`,
+        title,
       })
 
       toast.success('🎉 已成功发布到社区广场！')
@@ -174,7 +198,9 @@ export function TravelRouteCardModal({
 
   // 3. 复制文本路线
   function handleCopyText() {
-    const text = `📮【远方 · ${city}旅行手账路书】\n\n🗺️ 规划路线：\n${routeString}\n\n🌟 行程建议：\n${summary}\n\n🍜 美食打卡：\n${food.join('、') || '暂无'}\n\n💡 出行指南：\n${tips.join('\n') || '祝旅途愉快'}`
+    const safeFood = Array.isArray(food) ? food : []
+    const safeTips = Array.isArray(tips) ? tips : []
+    const text = `📮【远方 · ${city}旅行手账路书】\n\n🗺️ 规划路线：\n${routeString}\n\n🌟 行程建议：\n${summary}\n\n🍜 美食打卡：\n${safeFood.join('、') || '暂无'}\n\n💡 出行指南：\n${safeTips.join('\n') || '祝旅途愉快'}`
     navigator.clipboard.writeText(text)
     setCopied(true)
     toast.success('已复制手账路书文字内容！')

@@ -1,9 +1,23 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useChatHistoryStore } from './chatHistory'
 
+const mockFetchSessions = vi.fn()
+const mockSaveSession = vi.fn()
+const mockDeleteSession = vi.fn()
+const mockClearAllSessions = vi.fn()
+
+vi.mock('@/api/chat', () => ({
+  clearAllChatSessionsApi: (...args: unknown[]) => mockClearAllSessions(...args),
+  deleteChatSessionApi: (...args: unknown[]) => mockDeleteSession(...args),
+  fetchChatSessionsApi: (...args: unknown[]) => mockFetchSessions(...args),
+  saveChatSessionApi: (...args: unknown[]) => mockSaveSession(...args),
+}))
+
 describe('chatHistoryStore', () => {
-  beforeEach(() => {
-    useChatHistoryStore.getState().clearAllSessions()
+  beforeEach(async () => {
+    vi.clearAllMocks()
+    localStorage.clear()
+    await useChatHistoryStore.getState().initForUser(null)
   })
 
   it('应该能创建并切换会话', () => {
@@ -79,5 +93,58 @@ describe('chatHistoryStore', () => {
 
     const session2 = useChatHistoryStore.getState().sessions.find(s => s.id === id)
     expect((session2?.messages[1].parts[0] as { text: string }).text).toContain('兵马俑 ➔ 华清宫')
+  })
+
+  it('不同账号之间的数据应该严格隔离，登出后重置', async () => {
+    // 1. 用户 A 登录并创建会话
+    mockFetchSessions.mockResolvedValueOnce({ sessions: [], success: true })
+    mockSaveSession.mockResolvedValue({ success: true })
+    await useChatHistoryStore.getState().initForUser('user-a')
+
+    const sessionA = useChatHistoryStore.getState().createSession('用户A的私人手账', '厦门')
+    expect(useChatHistoryStore.getState().sessions).toHaveLength(1)
+    expect(useChatHistoryStore.getState().sessions[0].title).toBe('用户A的私人手账')
+
+    // 验证 localStorage 中写入的是 user-a 独立的 key
+    const userAStored = localStorage.getItem('travel_chat_sessions_user-a')
+    expect(userAStored).toContain('用户A的私人手账')
+
+    // 2. 退出登录
+    await useChatHistoryStore.getState().initForUser(null)
+    expect(useChatHistoryStore.getState().sessions).toHaveLength(0)
+    expect(useChatHistoryStore.getState().activeSessionId).toBeNull()
+
+    // 3. 用户 B 登录
+    mockFetchSessions.mockResolvedValueOnce({ sessions: [], success: true })
+    await useChatHistoryStore.getState().initForUser('user-b')
+    expect(useChatHistoryStore.getState().sessions).toHaveLength(0)
+
+    useChatHistoryStore.getState().createSession('用户B的自驾计划', '桂林')
+    expect(useChatHistoryStore.getState().sessions).toHaveLength(1)
+    expect(useChatHistoryStore.getState().sessions[0].title).toBe('用户B的自驾计划')
+
+    const userBStored = localStorage.getItem('travel_chat_sessions_user-b')
+    expect(userBStored).toContain('用户B的自驾计划')
+    expect(userBStored).not.toContain('用户A的私人手账')
+
+    // 4. 切回用户 A 登录，从本地/云端恢复用户 A 的数据
+    mockFetchSessions.mockResolvedValueOnce({
+      sessions: [
+        {
+          city: '厦门',
+          createdAt: new Date().toISOString(),
+          id: sessionA,
+          messages: [],
+          title: '用户A的私人手账',
+          updatedAt: new Date().toISOString(),
+          userId: 'user-a',
+        },
+      ],
+      success: true,
+    })
+
+    await useChatHistoryStore.getState().initForUser('user-a')
+    expect(useChatHistoryStore.getState().sessions).toHaveLength(1)
+    expect(useChatHistoryStore.getState().sessions[0].title).toBe('用户A的私人手账')
   })
 })

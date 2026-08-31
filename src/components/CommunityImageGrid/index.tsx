@@ -7,10 +7,11 @@ import { useEffect, useRef, useState } from 'react'
 
 interface CommunityImageGridProps {
   compact?: boolean
-  images: CommunityImage[]
+  images?: CommunityImage[]
 }
 
-export function CommunityImageGrid({ compact = false, images }: CommunityImageGridProps) {
+export function CommunityImageGrid({ compact = false, images = [] }: CommunityImageGridProps) {
+  const safeImages = Array.isArray(images) ? images : []
   const [previewIndex, setPreviewIndex] = useState<null | number>(null)
   const dialogRef = useRef<HTMLDivElement>(null)
 
@@ -34,10 +35,10 @@ export function CommunityImageGrid({ compact = false, images }: CommunityImageGr
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [previewIndex])
 
-  if (images.length === 0)
+  if (safeImages.length === 0)
     return null
 
-  const visibleImages = images.slice(0, 9)
+  const visibleImages = safeImages.slice(0, 9)
 
   const handlePreview = (index: number) => {
     setPreviewIndex(index)

@@ -1,7 +1,7 @@
 import type { AttractionRef, BudgetBreakdown, ItineraryDay } from '@/stores/itinerary'
-
 import type { CommunityItinerarySnapshot } from '@/types/community'
 import { Calendar, MapPin, Wallet } from 'lucide-react'
+import { useMemo } from 'react'
 
 import { BudgetTable } from '@/components/BudgetTable'
 import { SpotItem } from '@/components/SpotItem'
@@ -20,7 +20,7 @@ interface CommunityItineraryPreviewProps {
   mode?: 'compact' | 'detail'
   onRemove?: () => void
   removable?: boolean
-  snapshot: CommunityItinerarySnapshot | null
+  snapshot: CommunityItinerarySnapshot | null | string
 }
 
 export function CommunityItineraryPreview({
@@ -29,12 +29,53 @@ export function CommunityItineraryPreview({
   removable = false,
   snapshot,
 }: CommunityItineraryPreviewProps) {
-  if (!snapshot)
+  const safeSnapshot = useMemo<CommunityItinerarySnapshot | null>(() => {
+    if (!snapshot)
+      return null
+
+    let parsed: unknown = snapshot
+    if (typeof snapshot === 'string') {
+      try {
+        parsed = JSON.parse(snapshot)
+      }
+      catch {
+        return null
+      }
+    }
+
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed))
+      return null
+
+    const obj = parsed as Record<string, unknown>
+    const itinerary = Array.isArray(obj.itinerary) ? (obj.itinerary as ItineraryDay[]) : []
+    const days = typeof obj.days === 'number' && obj.days > 0 ? obj.days : Math.max(1, itinerary.length)
+    const budget = typeof obj.budget === 'number' ? obj.budget : 0
+    const city = typeof obj.city === 'string' && obj.city ? obj.city : '行程目的地'
+    const tips = Array.isArray(obj.tips) ? (obj.tips as string[]) : []
+    const attractionRefs = Array.isArray(obj.attractionRefs) ? (obj.attractionRefs as AttractionRef[]) : []
+    const budgetBreakdown = obj.budgetBreakdown && typeof obj.budgetBreakdown === 'object'
+      ? (obj.budgetBreakdown as BudgetBreakdown)
+      : null
+
+    return {
+      attractionRefs,
+      budget,
+      budgetBreakdown,
+      city,
+      days,
+      itinerary,
+      tips,
+      weather: (obj.weather as CommunityItinerarySnapshot['weather']) ?? null,
+    }
+  }, [snapshot])
+
+  if (!safeSnapshot)
     return null
 
   const isDetail = mode === 'detail'
-  const days = isDetail ? snapshot.itinerary : snapshot.itinerary.slice(0, 2)
-  const budget = normalizeBudget(snapshot.budgetBreakdown)
+  const itinerary = safeSnapshot.itinerary || []
+  const days = isDetail ? itinerary : itinerary.slice(0, 2)
+  const budget = normalizeBudget(safeSnapshot.budgetBreakdown)
 
   return (
     <section
@@ -46,7 +87,7 @@ export function CommunityItineraryPreview({
             AI 行程快照
           </p>
           <h3 className="m-0 text-travel-ink text-[clamp(1.25rem,2vw,1.7rem)]">
-            {snapshot.city}
+            {safeSnapshot.city}
           </h3>
         </div>
         {removable
@@ -65,59 +106,61 @@ export function CommunityItineraryPreview({
       <div className="flex flex-wrap gap-2 mb-4">
         <Badge className="travel-tag travel-tag--info" variant="secondary">
           <Calendar className="mr-1" size={12} />
-          {snapshot.days}
+          {safeSnapshot.days}
           天
         </Badge>
         <Badge className="travel-tag travel-tag--success" variant="secondary">
           <Wallet className="mr-1" size={12} />
           ¥
-          {snapshot.budget}
+          {safeSnapshot.budget}
         </Badge>
         <Badge className="travel-tag travel-tag--warning" variant="secondary">
           <MapPin className="mr-1" size={12} />
-          {snapshot.itinerary.length}
+          {itinerary.length}
           段路线
         </Badge>
       </div>
 
-      {snapshot.weather && isDetail ? <WeatherCard weather={snapshot.weather} /> : null}
+      {safeSnapshot.weather && isDetail ? <WeatherCard weather={safeSnapshot.weather} /> : null}
 
-      <div className="grid gap-3">
-        {days.map(day => (
-          <article
-            className="p-3.5 border border-dashed border-accent/26 rounded-[18px] bg-[rgba(255,255,255,0.68)]"
-            key={day.day}
-          >
-            <h4 className="m-0 text-travel-ink text-base mb-1.5">
-              Day
-              {' '}
-              {day.day}
-              {day.title ? ` · ${day.title}` : ''}
-            </h4>
-            {!isDetail
-              ? (
-                  <p className="m-0 text-travel-muted leading-7">
-                    {getDaySummary(day) || '这一天还没有详细路线'}
-                  </p>
-                )
-              : null}
-            {isDetail
-              ? (
-                  <div className="grid gap-3 mt-3">
-                    {renderDaySpots(day, snapshot.attractionRefs || [])}
-                  </div>
-                )
-              : null}
-          </article>
-        ))}
-      </div>
+      {days.length > 0 && (
+        <div className="grid gap-3">
+          {days.map((day, dIdx) => (
+            <article
+              className="p-3.5 border border-dashed border-accent/26 rounded-[18px] bg-[rgba(255,255,255,0.68)]"
+              key={day?.day ?? dIdx + 1}
+            >
+              <h4 className="m-0 text-travel-ink text-base mb-1.5">
+                Day
+                {' '}
+                {day?.day ?? dIdx + 1}
+                {day?.title ? ` · ${day.title}` : ''}
+              </h4>
+              {!isDetail
+                ? (
+                    <p className="m-0 text-travel-muted leading-7">
+                      {getDaySummary(day) || '这一天还没有详细路线'}
+                    </p>
+                  )
+                : null}
+              {isDetail
+                ? (
+                    <div className="grid gap-3 mt-3">
+                      {renderDaySpots(day, safeSnapshot.attractionRefs || [])}
+                    </div>
+                  )
+                : null}
+            </article>
+          ))}
+        </div>
+      )}
 
-      {!isDetail && snapshot.itinerary.length > days.length
+      {!isDetail && itinerary.length > days.length
         ? (
             <p className="m-0 mt-3 text-[0.92rem] text-travel-muted leading-7">
               还有
               {' '}
-              {snapshot.itinerary.length - days.length}
+              {itinerary.length - days.length}
               {' '}
               天路线，进入详情查看完整行程。
             </p>
@@ -133,12 +176,12 @@ export function CommunityItineraryPreview({
           )
         : null}
 
-      {isDetail && snapshot.tips?.length
+      {isDetail && safeSnapshot.tips?.length
         ? (
             <div className="mt-[18px] p-4 rounded-[18px] bg-travel-ocean/8">
               <h4 className="m-0 text-travel-ink text-base mb-1.5">旅行贴士</h4>
               <ul className="m-0 mt-2.5 pl-5 text-travel-muted leading-[1.8]">
-                {snapshot.tips.map(tip => (
+                {safeSnapshot.tips.map(tip => (
                   <li key={tip}>{tip}</li>
                 ))}
               </ul>
@@ -150,33 +193,48 @@ export function CommunityItineraryPreview({
 }
 
 function findAttractionRef(refs: AttractionRef[] = [], spot?: string) {
-  return refs.find(ref => ref.name === spot)
+  if (!spot || !Array.isArray(refs))
+    return undefined
+  return refs.find(ref => ref?.name === spot)
 }
 
-function getDaySummary(day: ItineraryDay): string {
-  if (day.spots?.length)
-    return day.spots.map(spot => spot.name).join(' · ')
+function getDaySummary(day?: ItineraryDay): string {
+  if (!day)
+    return ''
+
+  if (Array.isArray(day.spots) && day.spots.length > 0) {
+    return day.spots
+      .map(spot => (typeof spot === 'string' ? spot : spot?.name || ''))
+      .filter(Boolean)
+      .join(' · ')
+  }
 
   return [day.morning?.spot, day.afternoon?.spot, day.evening?.spot].filter(Boolean).join(' · ')
 }
 
 function normalizeBudget(data?: BudgetBreakdown | null): BudgetTableData | null {
-  if (!data)
+  if (!data || typeof data !== 'object')
     return null
 
+  const accommodation = Number(data.accommodation) || 0
+  const food = Number(data.food) || 0
+  const transport = Number(data.transport) || 0
+  const attractions = Number(data.attractions) || 0
+  const total = Number(data.total) || (accommodation + food + transport + attractions)
+
   return {
-    accommodation: data.accommodation,
-    food: data.food,
-    other: Math.max(
-      0,
-      data.total - data.accommodation - data.food - data.transport - data.attractions,
-    ),
-    tickets: data.attractions,
-    transportation: data.transport,
+    accommodation,
+    food,
+    other: Math.max(0, total - accommodation - food - transport - attractions),
+    tickets: attractions,
+    transportation: transport,
   }
 }
 
 function renderDaySpots(day: ItineraryDay, refs: AttractionRef[]) {
+  if (!day)
+    return null
+
   const periods = [
     { data: day.morning, period: '上午' as const },
     { data: day.afternoon, period: '下午' as const },
@@ -198,12 +256,22 @@ function renderDaySpots(day: ItineraryDay, refs: AttractionRef[]) {
     )
   }
 
-  return day.spots?.map((spot, index) => (
-    <SpotItem
-      attractionRef={findAttractionRef(refs, spot.name)}
-      data={{ description: spot.description, duration: spot.duration, spot: spot.name }}
-      key={`${day.day}-${spot.name}`}
-      period={index === 0 ? '上午' : index === 1 ? '下午' : '晚上'}
-    />
-  ))
+  if (Array.isArray(day.spots)) {
+    return day.spots.map((spot, index) => {
+      const name = typeof spot === 'string' ? spot : spot?.name || `景点 ${index + 1}`
+      const description = typeof spot === 'string' ? '' : spot?.description || ''
+      const duration = typeof spot === 'string' ? '' : spot?.duration || ''
+
+      return (
+        <SpotItem
+          attractionRef={findAttractionRef(refs, name)}
+          data={{ description, duration, spot: name }}
+          key={`${day.day || 1}-${name}-${index}`}
+          period={index === 0 ? '上午' : index === 1 ? '下午' : '晚上'}
+        />
+      )
+    })
+  }
+
+  return null
 }

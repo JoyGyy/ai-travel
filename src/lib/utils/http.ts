@@ -97,6 +97,12 @@ export async function requireAuth(req: Request): Promise<AuthUser> {
  * 无效时抛出 403 HttpError
  */
 export function requireCsrf(req: Request): void {
+  // 原生移动端/API 客户端若携带 Bearer Token，跳过浏览器专属 CSRF Cookie 校验
+  const authHeader = req.headers.get('authorization')
+  if (authHeader?.startsWith('Bearer ')) {
+    return
+  }
+
   const headerToken = req.headers.get('x-csrf-token') || req.headers.get('x-xsrf-token')
   const cookieToken = extractCsrfCookie(req.headers.get('cookie') || undefined)
 

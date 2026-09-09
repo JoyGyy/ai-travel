@@ -207,17 +207,18 @@ describe('auth 服务', () => {
   // ---------- getAuthFromHeaders ----------
 
   describe('getAuthFromHeaders()', () => {
-    it('忽略 Authorization header，仅通过 Cookie 认证用户', async () => {
+    it('优先从 Authorization header (Bearer Token) 认证用户', async () => {
       // arrange
-      mockJwtVerify.mockResolvedValue({ payload: { id: 'user-1', username: 'testuser' } })
+      const payload = { id: 'user-1', username: 'testuser' }
+      mockJwtVerify.mockResolvedValue({ payload })
       const headers = new Headers({ authorization: 'Bearer valid-token' })
 
       // act
       const result = await getAuthFromHeaders(headers)
 
       // assert
-      expect(result).toBeNull()
-      expect(mockJwtVerify).not.toHaveBeenCalled()
+      expect(result).toEqual(payload)
+      expect(mockJwtVerify).toHaveBeenCalledWith('valid-token', expect.anything())
     })
 
     it('从 cookie 提取用户', async () => {

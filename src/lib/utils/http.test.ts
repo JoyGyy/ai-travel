@@ -44,6 +44,20 @@ describe('withProtectedRaw', () => {
     expect(handler).toHaveBeenCalled()
     expect(checkRateLimit).toHaveBeenCalledWith(expect.any(Request), 'test:stream', 1, undefined, 'user-1')
   })
+
+  it('允许携带 Bearer Token 的移动端原生请求免除 CSRF 检查', async () => {
+    const handler = vi.fn(async () => new Response('ok'))
+    const route = withProtectedRaw(handler, {
+      rateLimit: { max: 1, name: 'test:stream' },
+    })
+    const response = await route(new Request('http://localhost/api/test', {
+      headers: { authorization: 'Bearer valid-mobile-token' },
+      method: 'POST',
+    }))
+
+    expect(response.status).toBe(200)
+    expect(handler).toHaveBeenCalled()
+  })
 })
 
 describe('errorResponse', () => {

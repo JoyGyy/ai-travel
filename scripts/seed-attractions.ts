@@ -5,8 +5,8 @@
  *   pnpm db:seed:attractions -- --dry-run   — 仅校验资产与行数，不连接数据库
  *   pnpm db:seed:attractions                — 在单个事务中 UPSERT 60 条景点及标签关系
  *
- * 需要 DATABASE_URL 环境变量。本 worktree 无 .env，可用主 worktree 的环境：
- *   pnpm exec tsx --env-file=/Users/joygy/Documents/react/ai-travel-planner/.env scripts/seed-attractions.ts
+ * 需要 DATABASE_URL 环境变量：
+ *   pnpm exec tsx --env-file=.env scripts/seed-attractions.ts
  */
 import pg from 'pg'
 

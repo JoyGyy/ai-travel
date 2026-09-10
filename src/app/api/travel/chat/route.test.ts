@@ -48,4 +48,26 @@ describe('pOST /api/travel/chat', () => {
     expect(res.status).toBe(200)
     expect(await res.text()).toBe('ok')
   })
+
+  it('支持纯文本 content 格式的消息并自动补全 parts', async () => {
+    const { createTravelChatStream } = await import('@/lib/ai/stream')
+    const req = new Request('http://localhost/api/travel/chat', {
+      body: JSON.stringify({
+        messages: [{ content: '杭州四日游', role: 'user' }],
+      }),
+      method: 'POST',
+    })
+
+    const res = await POST(req)
+    expect(res.status).toBe(200)
+    expect(createTravelChatStream).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({
+          parts: [{ text: '杭州四日游', type: 'text' }],
+          role: 'user',
+        }),
+      ]),
+      expect.any(String),
+    )
+  })
 })

@@ -5,6 +5,7 @@ import {
   estimateDurationMinutes,
   formatMinutesText,
   gcj02ToBd09,
+  generateAmapNativeSchemeUrl,
   generateAmapRouteUrl,
   generateAmapSpotUrl,
   generateBaiduRouteUrl,
@@ -62,6 +63,11 @@ describe('amap 工具与地理计算测试', () => {
     const ggbwy = getSpotCoordinates('北京故宫博物院', '北京')
     expect(ggbwy.lat).toBeCloseTo(39.9163, 2)
 
+    // 杭州著名景点
+    const bd = getSpotCoordinates('白堤', '杭州')
+    expect(bd.lat).toBeCloseTo(30.2575, 2)
+    expect(bd.lng).toBeCloseTo(120.1472, 2)
+
     // 未知景点回退
     const unknown = getSpotCoordinates('某个不知名客栈', '成都', 2)
     expect(unknown.lat).toBeGreaterThan(30)
@@ -106,5 +112,17 @@ describe('amap 工具与地理计算测试', () => {
 
     const qq = generateTencentSpotUrl(spot, '西安')
     expect(qq).toContain('apis.map.qq.com/uri/v1/marker?marker=coord:34.3841,109.2785')
+  })
+
+  it('生成高德地图移动端原生 App 导航 URI Scheme 协议链接', () => {
+    const from = { lat: 30.2589, lng: 120.1489, name: '断桥残雪' }
+    const to = { lat: 30.2415, lng: 120.1009, name: '灵隐寺' }
+
+    const scheme = generateAmapNativeSchemeUrl(from, to, '杭州', 'bus')
+    expect(scheme).toContain('amapuri://route/plan/')
+    expect(scheme).toContain('sourceApplication=TravelAI')
+    expect(scheme).toContain(`sname=${encodeURIComponent('断桥残雪')}`)
+    expect(scheme).toContain(`dname=${encodeURIComponent('灵隐寺')}`)
+    expect(scheme).toContain('t=1') // 公交模式
   })
 })

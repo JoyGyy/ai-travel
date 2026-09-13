@@ -84,17 +84,25 @@ export const SPOT_COORDINATES: Record<string, { lat: number, lng: number }> = {
   // 杭州
   '西湖': { lat: 30.2435, lng: 120.1450 },
   '断桥残雪': { lat: 30.2589, lng: 120.1489 },
+  '白堤': { lat: 30.2575, lng: 120.1472 },
+  '孤山': { lat: 30.2541, lng: 120.1388 },
   '平湖秋月': { lat: 30.2530, lng: 120.1410 },
+  '曲院风荷': { lat: 30.2510, lng: 120.1310 },
   '苏堤春晓': { lat: 30.2390, lng: 120.1320 },
   '花港观鱼': { lat: 30.2310, lng: 120.1340 },
+  '三潭印月': { lat: 30.2388, lng: 120.1420 },
+  '柳浪闻莺': { lat: 30.2420, lng: 120.1580 },
   '雷峰塔': { lat: 30.2312, lng: 120.1480 },
   '灵隐寺': { lat: 30.2415, lng: 120.1009 },
   '飞来峰': { lat: 30.2420, lng: 120.0990 },
   '龙井村': { lat: 30.2189, lng: 120.1089 },
   '九溪十八涧': { lat: 30.1989, lng: 120.1120 },
   '西溪湿地': { lat: 30.2718, lng: 120.0620 },
+  '深潭口': { lat: 30.2662, lng: 120.0610 },
+  '河渚街': { lat: 30.2702, lng: 120.0645 },
   '宋城': { lat: 30.1788, lng: 120.0988 },
   '河坊街': { lat: 30.2390, lng: 120.1680 },
+  '南宋御街': { lat: 30.2435, lng: 120.1700 },
   '拱宸桥': { lat: 30.3180, lng: 120.1420 },
   '良渚古城遗址': { lat: 30.3950, lng: 119.9880 },
 
@@ -541,4 +549,43 @@ export function generateTencentSpotUrl(spot: string | RouteEndpoint, city: strin
   const encodedName = encodeURIComponent(name)
   const encodedCity = encodeURIComponent(city)
   return `https://apis.map.qq.com/uri/v1/marker?marker=coord:${coord.lat},${coord.lng};title:${encodedName};addr=${encodedCity}&referer=travel-ai`
+}
+
+/**
+ * 生成高德地图原生 App 唤起导航协议 (URI Scheme: amapuri://route/plan)
+ * 支持移动端一键唤起真实高德 App 发起导航规划
+ */
+export function generateAmapNativeSchemeUrl(
+  start: string | RouteEndpoint,
+  dest: string | RouteEndpoint,
+  city: string,
+  mode: 'bus' | 'car' | 'ride' | 'walk' = 'car',
+): string {
+  const startName = (typeof start === 'string' ? start : start.name).trim()
+  const destName = (typeof dest === 'string' ? dest : dest.name).trim()
+
+  const startCoord =
+    typeof start === 'object' && start.lat && start.lng
+      ? { lat: start.lat, lng: start.lng }
+      : getSpotCoordinates(startName, city)
+
+  const destCoord =
+    typeof dest === 'object' && dest.lat && dest.lng
+      ? { lat: dest.lat, lng: dest.lng }
+      : getSpotCoordinates(destName, city)
+
+  // 高德 Scheme: t: 0驾车, 1公交, 2步行, 3骑行
+  const modeCodeMap: Record<string, number> = {
+    car: 0,
+    bus: 1,
+    walk: 2,
+    ride: 3,
+  }
+  const t = modeCodeMap[mode] ?? 0
+
+  return `amapuri://route/plan/?sourceApplication=TravelAI&sname=${encodeURIComponent(
+    startName,
+  )}&slat=${startCoord.lat}&slon=${startCoord.lng}&dname=${encodeURIComponent(
+    destName,
+  )}&dlat=${destCoord.lat}&dlon=${destCoord.lng}&dev=0&t=${t}`
 }

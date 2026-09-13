@@ -11,7 +11,7 @@ import type {
   LikeCommunityPostResult,
 } from '@/types/community'
 
-import { del, get, hasAuthToken, post } from './client'
+import { del, get, post } from './client'
 
 interface DataResponse<T> {
   data: T
@@ -55,16 +55,13 @@ export async function fetchCommunityComments(
 ): Promise<CommunityCommentListData> {
   const res = await get<DataResponse<CommunityCommentListData>>(
     `/api/community/posts/${postId}/comments${buildCommentQuery(filters)}`,
-    { auth: hasAuthToken() },
   )
   return res.data
 }
 
 /** 获取社区帖子详情 */
 export async function fetchCommunityPost(id: string): Promise<CommunityPost> {
-  const res = await get<DataResponse<CommunityPost>>(`/api/community/posts/${id}`, {
-    auth: hasAuthToken(),
-  })
+  const res = await get<DataResponse<CommunityPost>>(`/api/community/posts/${id}`)
   return res.data
 }
 
@@ -74,7 +71,6 @@ export async function fetchCommunityPosts(
 ): Promise<CommunityPostListData> {
   const res = await get<DataResponse<CommunityPostListData>>(
     `/api/community/posts${buildPostQuery(filters)}`,
-    { auth: hasAuthToken() },
   )
   return res.data
 }

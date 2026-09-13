@@ -106,4 +106,29 @@ describe('api 请求方法封装', () => {
     expect(init.body).toBeUndefined()
     expect(headers['X-CSRF-Token']).toBe('valid-csrf')
   })
+
+  it('多个并发写请求复用同一次 CSRF token 刷新请求', async () => {
+    let csrfFetchCount = 0
+    vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+      const url = String(input)
+      if (url.includes('/api/auth/csrf-token')) {
+        csrfFetchCount++
+        return new Response(JSON.stringify({ csrfToken: 'single-refreshed-token' }), {
+          headers: { 'Content-Type': 'application/json' },
+          status: 200,
+        })
+      }
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 200,
+      })
+    })
+
+    await Promise.all([
+      post('/api/test-1', {}),
+      post('/api/test-2', {}),
+    ])
+
+    expect(csrfFetchCount).toBe(1)
+  })
 })

@@ -201,23 +201,35 @@ function readCsrfToken(): string {
   return token
 }
 
-/** 强制刷新 CSRF token（清除旧 cookie 后重新获取，并同时写入内存与 cookie） */
-async function refreshCsrfToken(): Promise<string> {
-  cachedCsrfToken = ''
-  if (typeof document !== 'undefined') {
-    document.cookie = 'csrf_token=; max-age=0; path=/'
-  }
-  const res = await fetch('/api/auth/csrf-token', { credentials: 'include' })
-  if (!res.ok)
-    throw new ApiError('CSRF token 获取失败', { status: res.status })
+let refreshPromise: Promise<string> | null = null
 
-  const data = (await res.json().catch(() => ({}))) as { csrfToken?: string }
-  if (data?.csrfToken) {
-    cachedCsrfToken = data.csrfToken
-    if (typeof document !== 'undefined') {
-      document.cookie = `csrf_token=${encodeURIComponent(data.csrfToken)}; path=/; max-age=86400; SameSite=Lax`
-    }
-    return data.csrfToken
+/** 强制刷新 CSRF token（清除旧 cookie 后重新获取，并同时写入内存与 cookie，包含并发请求去重锁） */
+async function refreshCsrfToken(): Promise<string> {
+  if (refreshPromise) {
+    return refreshPromise
   }
-  return ''
+
+  refreshPromise = (async () => {
+    cachedCsrfToken = ''
+    if (typeof document !== 'undefined') {
+      document.cookie = 'csrf_token=; max-age=0; path=/'
+    }
+    const res = await fetch('/api/auth/csrf-token', { credentials: 'include' })
+    if (!res.ok)
+      throw new ApiError('CSRF token 获取失败', { status: res.status })
+
+    const data = (await res.json().catch(() => ({}))) as { csrfToken?: string }
+    if (data?.csrfToken) {
+      cachedCsrfToken = data.csrfToken
+      if (typeof document !== 'undefined') {
+        document.cookie = `csrf_token=${encodeURIComponent(data.csrfToken)}; path=/; max-age=86400; SameSite=Lax`
+      }
+      return data.csrfToken
+    }
+    return ''
+  })().finally(() => {
+    refreshPromise = null
+  })
+
+  return refreshPromise
 }

@@ -23,6 +23,7 @@ import {
   Maximize2,
   Minimize2,
   Navigation as NavigationIcon,
+  PanelRightClose,
   ShoppingBag,
   Train,
   Utensils,
@@ -55,6 +56,7 @@ export interface TravelMapViewProps {
   city?: string;
   className?: string;
   initialMode?: 'driving' | 'transit' | 'walking';
+  onToggleCollapse?: () => void;
   spots?: ParsedRouteSpot[];
 }
 
@@ -76,6 +78,7 @@ export function TravelMapView({
   city: propCity,
   className = '',
   initialMode = 'driving',
+  onToggleCollapse,
   spots: propSpots = [],
 }: TravelMapViewProps): React.JSX.Element | null {
   // 1. 读取工作台状态
@@ -454,7 +457,9 @@ export function TravelMapView({
 
         const markerHtml = `
           <div class="relative flex items-center justify-center w-7 h-7 rounded-full ${bgClass} font-black text-xs shadow-lg border-2 border-white transition-all cursor-pointer ${
-            isSelected ? 'scale-125 ring-4 ring-emerald-400 z-50' : 'hover:scale-115'
+            isSelected
+              ? 'scale-125 ring-4 ring-emerald-400 z-50'
+              : 'hover:scale-115'
           }">
             ${pt.index}
           </div>
@@ -771,6 +776,7 @@ export function TravelMapView({
             aria-label={isExpanded ? '退出全屏' : '全屏地图'}
             className="flex h-7 w-7 items-center justify-center rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-600 transition-colors cursor-pointer shrink-0"
             onClick={() => setIsExpanded(!isExpanded)}
+            title={isExpanded ? '退出全屏' : '全屏模式'}
             type="button"
           >
             {isExpanded ? (
@@ -779,6 +785,19 @@ export function TravelMapView({
               <Maximize2 className="h-3.5 w-3.5" />
             )}
           </button>
+
+          {/* 收起右侧地图 */}
+          {onToggleCollapse && !isExpanded && (
+            <button
+              aria-label="收起地图"
+              className="hidden lg:flex h-7 w-7 items-center justify-center rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-500 hover:text-stone-800 transition-colors cursor-pointer shrink-0"
+              onClick={onToggleCollapse}
+              title="收起地图"
+              type="button"
+            >
+              <PanelRightClose className="h-3.5 w-3.5" />
+            </button>
+          )}
         </div>
       </div>
 

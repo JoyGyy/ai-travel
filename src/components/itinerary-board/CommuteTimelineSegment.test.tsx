@@ -39,11 +39,17 @@ describe('CommuteTimelineSegment', () => {
     // 验证原生唤端 Scheme 链接
     const appSchemeLink = screen.getByRole('link', { name: '高德 App 直达' });
     expect(appSchemeLink).toBeInTheDocument();
-    expect(appSchemeLink).toHaveAttribute('href', expect.stringContaining('amapuri://route/plan/'));
+    expect(appSchemeLink).toHaveAttribute(
+      'href',
+      expect.stringContaining('amapuri://route/plan/'),
+    );
 
     // 验证网页版链接
     const webLink = screen.getByRole('link', { name: '高德网页版' });
     expect(webLink).toBeInTheDocument();
-    expect(webLink).toHaveAttribute('href', expect.stringContaining('uri.amap.com/navigation'));
+    expect(webLink).toHaveAttribute(
+      'href',
+      expect.stringContaining('uri.amap.com/navigation'),
+    );
   });
 });

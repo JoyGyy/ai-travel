@@ -83,6 +83,7 @@ import { parseItineraryFromMarkdown } from '@/lib/map/route-parser';
 import { useAuthStore } from '@/stores/auth';
 import { useChatHistoryStore } from '@/stores/chatHistory';
 import { useItineraryWorkspaceStore } from '@/stores/itineraryWorkspace';
+import { recordTTFT } from '@/lib/telemetry/metrics';
 
 const KNOWN_CITIES = [
   '成都',
@@ -213,6 +214,36 @@ function ChatContent() {
     useTravelChat();
   const isGenerating = status === 'submitted' || status === 'streaming';
 
+  // 会话历史 Store
+  const sessions = useChatHistoryStore((state) => state.sessions);
+  const activeSessionId = useChatHistoryStore((state) => state.activeSessionId);
+  const _hasHydrated = useChatHistoryStore((state) => state._hasHydrated);
+  const createSession = useChatHistoryStore((state) => state.createSession);
+  const saveMessages = useChatHistoryStore((state) => state.saveMessages);
+  const setActiveSessionId = useChatHistoryStore(
+    (state) => state.setActiveSessionId,
+  );
+  const deleteSession = useChatHistoryStore((state) => state.deleteSession);
+  const clearAllSessions = useChatHistoryStore(
+    (state) => state.clearAllSessions,
+  );
+
+  // 测量 AI 流式首字返回延迟 (TTFT)
+  const requestStartTimeRef = useRef<number | null>(null);
+  useEffect(() => {
+    if (status === 'submitted') {
+      requestStartTimeRef.current = Date.now();
+    } else if (status === 'streaming' && requestStartTimeRef.current !== null) {
+      const elapsed = Date.now() - requestStartTimeRef.current;
+      recordTTFT(elapsed, {
+        sessionId: activeSessionId,
+      });
+      requestStartTimeRef.current = null;
+    } else if (status === 'ready' || status === 'error') {
+      requestStartTimeRef.current = null;
+    }
+  }, [status, activeSessionId]);
+
   // 用 ref 持有最新 status 与 stop，供卸载清理函数读取，
   // 确保清理只在真正卸载时执行，避免 status 变化触发清理而误中止流式响应。
   const statusRef = useRef(status);
@@ -236,20 +267,6 @@ function ChatContent() {
         .catch(() => {});
     }
   }, [authHydrated, user?.id]);
-
-  // 会话历史 Store
-  const sessions = useChatHistoryStore((state) => state.sessions);
-  const activeSessionId = useChatHistoryStore((state) => state.activeSessionId);
-  const _hasHydrated = useChatHistoryStore((state) => state._hasHydrated);
-  const createSession = useChatHistoryStore((state) => state.createSession);
-  const saveMessages = useChatHistoryStore((state) => state.saveMessages);
-  const setActiveSessionId = useChatHistoryStore(
-    (state) => state.setActiveSessionId,
-  );
-  const deleteSession = useChatHistoryStore((state) => state.deleteSession);
-  const clearAllSessions = useChatHistoryStore(
-    (state) => state.clearAllSessions,
-  );
 
   // 会话删除弹窗状态
   const [sessionToDelete, setSessionToDelete] = useState<ChatSession | null>(

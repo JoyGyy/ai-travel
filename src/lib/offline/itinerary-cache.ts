@@ -170,7 +170,9 @@ export async function getOfflineItineraryById(
 /**
  * 列出所有已离线缓存的行程概要
  */
-export async function listOfflineItineraries(): Promise<OfflineItinerarySummary[]> {
+export async function listOfflineItineraries(): Promise<
+  OfflineItinerarySummary[]
+> {
   const rawIndex = safeGetItem(INDEX_KEY);
   if (!rawIndex) return [];
 

@@ -5,10 +5,12 @@ import { Car, ChevronDown, ChevronUp, ExternalLink, Footprints, Train } from 'lu
 import { useState } from 'react'
 
 import {
+  generateAmapNativeSchemeUrl,
   generateAmapRouteUrl,
   generateBaiduRouteUrl,
   generateTencentRouteUrl,
 } from '@/lib/map/amap'
+import { estimateLegTransitCost } from '@/lib/booking/budget-calculator'
 import { useItineraryWorkspaceStore } from '@/stores/itineraryWorkspace'
 
 interface CommuteTimelineSegmentProps {
@@ -43,6 +45,12 @@ export function CommuteTimelineSegment({ city, leg }: CommuteTimelineSegmentProp
     city,
     leg.mode === 'driving' ? 'car' : leg.mode === 'transit' ? 'bus' : 'walk',
   )
+  const amapNativeScheme = generateAmapNativeSchemeUrl(
+    leg.fromSpotName,
+    leg.toSpotName,
+    city,
+    leg.mode === 'driving' ? 'car' : leg.mode === 'transit' ? 'bus' : 'walk',
+  )
   const baiduUrl = generateBaiduRouteUrl(
     leg.fromSpotName,
     leg.toSpotName,
@@ -55,6 +63,8 @@ export function CommuteTimelineSegment({ city, leg }: CommuteTimelineSegmentProp
     city,
     leg.mode === 'driving' ? 'drive' : leg.mode === 'transit' ? 'bus' : 'walk',
   )
+
+  const estimatedCost = estimateLegTransitCost(leg.mode, leg.distanceKm)
 
   return (
     <div className="relative my-1 pl-8">
@@ -108,18 +118,38 @@ export function CommuteTimelineSegment({ city, leg }: CommuteTimelineSegmentProp
               </div>
             </div>
 
-            <div className="flex items-center gap-2 pt-1">
+            {/* 路费与通勤耗费估算 */}
+            <div className="flex items-center justify-between text-[11px] text-stone-600 bg-stone-50 rounded-lg px-2 py-1">
+              <span>通勤估算参考:</span>
+              <span className="font-bold text-stone-800">
+                {estimatedCost > 0 ? `约 ¥${estimatedCost}` : '免费'}
+                {' '}
+                <span className="text-[10px] font-normal text-stone-500">
+                  ({leg.mode === 'driving' ? '网约车打车' : leg.mode === 'transit' ? '地铁/公交' : '步行健康出行'})
+                </span>
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-1.5 pt-1">
               <span className="text-[11px] font-bold text-stone-500 flex items-center gap-1">
                 <ExternalLink className="h-3 w-3" />
-                <span>精准导航:</span>
+                <span>实景导航:</span>
               </span>
+              <a
+                className="rounded-lg bg-linear-to-r from-emerald-600 to-teal-700 px-2.5 py-1 text-[11px] font-bold text-white hover:opacity-90 shadow-2xs transition-all"
+                href={amapNativeScheme}
+                rel="noreferrer"
+                title="移动端点击直接唤起高德地图手机 App 发起导航"
+              >
+                高德 App 直达
+              </a>
               <a
                 className="rounded-lg bg-emerald-50 px-2 py-1 text-[11px] font-bold text-emerald-800 hover:bg-emerald-100 transition-colors"
                 href={amapUrl}
                 rel="noreferrer"
                 target="_blank"
               >
-                高德地图
+                高德网页版
               </a>
               <a
                 className="rounded-lg bg-sky-50 px-2 py-1 text-[11px] font-bold text-sky-800 hover:bg-sky-100 transition-colors"
@@ -127,7 +157,7 @@ export function CommuteTimelineSegment({ city, leg }: CommuteTimelineSegmentProp
                 rel="noreferrer"
                 target="_blank"
               >
-                百度地图
+                百度
               </a>
               <a
                 className="rounded-lg bg-stone-100 px-2 py-1 text-[11px] font-bold text-stone-700 hover:bg-stone-200 transition-colors"
@@ -135,7 +165,7 @@ export function CommuteTimelineSegment({ city, leg }: CommuteTimelineSegmentProp
                 rel="noreferrer"
                 target="_blank"
               >
-                腾讯地图
+                腾讯
               </a>
             </div>
           </div>

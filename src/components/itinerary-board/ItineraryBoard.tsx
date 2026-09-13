@@ -101,7 +101,10 @@ export function ItineraryBoard({ className = '' }: ItineraryBoardProps) {
         <div className="flex items-center justify-between gap-2 bg-amber-500/15 border-b border-amber-300 px-3 py-1.5 text-xs text-amber-900 font-medium animate-in fade-in duration-200">
           <div className="flex items-center gap-1.5">
             <WifiOff className="h-3.5 w-3.5 text-amber-700 shrink-0" />
-            <span>🚄 高铁/弱网离线手账已激活 · 当前行程已完整离线保存，无信号亦可顺畅查阅</span>
+            <span>
+              🚄 高铁/弱网离线手账已激活 ·
+              当前行程已完整离线保存，无信号亦可顺畅查阅
+            </span>
           </div>
           <span className="shrink-0 rounded bg-amber-200 px-1.5 py-0.5 text-[10px] font-bold text-amber-900">
             离线可用

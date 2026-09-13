@@ -34,6 +34,7 @@ import {
   calculateBearing,
   calculateDistanceKm,
   calculateMidPoint,
+  calculateNormalOffset,
   CITY_COORDINATES,
   estimateDurationMinutes,
   formatMinutesText,
@@ -41,6 +42,7 @@ import {
   generateAmapSpotUrl,
   generateBaiduRouteUrl,
   generateBaiduSpotUrl,
+  generateSmoothRoutePolyline,
   generateTencentRouteUrl,
   generateTencentSpotUrl,
   getSpotCoordinates,
@@ -109,6 +111,7 @@ export function TravelMapView({
   const markersRef = useRef<LeafletMarker[]>([]);
   const bgPolylineRef = useRef<LeafletPolyline | null>(null);
   const fullPolylineRef = useRef<LeafletPolyline | null>(null);
+  const flowPolylineRef = useRef<LeafletPolyline | null>(null);
   const tileLayerRef = useRef<unknown>(null);
   const overlayLayerRef = useRef<unknown>(null);
 
@@ -411,6 +414,10 @@ export function TravelMapView({
         map.removeLayer(fullPolylineRef.current);
         fullPolylineRef.current = null;
       }
+      if (flowPolylineRef.current) {
+        map.removeLayer(flowPolylineRef.current);
+        flowPolylineRef.current = null;
+      }
 
       // 若当前无打卡点，平滑复位到城市中心
       if (routePoints.length === 0) {
@@ -418,7 +425,10 @@ export function TravelMapView({
           lat: 30.2741,
           lng: 120.1551,
         };
-        map.setView([cityCoord.lat, cityCoord.lng], 11);
+        map.flyTo([cityCoord.lat, cityCoord.lng], 11, {
+          duration: 0.8,
+          easeLinearity: 0.25,
+        });
         return;
       }
 
@@ -431,14 +441,21 @@ export function TravelMapView({
 
         const isFirst = idx === 0;
         const isLast = idx === routePoints.length - 1;
+        const isSelected =
+          activeSpotId === pt.id ||
+          activeSpotId === pt.name ||
+          activeSpotIndex === idx;
+
         const bgClass = isFirst
-          ? 'bg-emerald-700 text-white ring-4 ring-emerald-200/80 shadow-emerald-900/30'
+          ? 'bg-emerald-700 text-white ring-4 ring-emerald-200/90 shadow-emerald-900/30'
           : isLast
-            ? 'bg-amber-600 text-white ring-4 ring-amber-200/80 shadow-amber-900/30'
+            ? 'bg-amber-600 text-white ring-4 ring-amber-200/90 shadow-amber-900/30'
             : 'bg-stone-900 text-white ring-2 ring-white/90 shadow-stone-900/30';
 
         const markerHtml = `
-          <div class="relative flex items-center justify-center w-7 h-7 rounded-full ${bgClass} font-black text-xs shadow-lg border-2 border-white transition-all hover:scale-125 cursor-pointer">
+          <div class="relative flex items-center justify-center w-7 h-7 rounded-full ${bgClass} font-black text-xs shadow-lg border-2 border-white transition-all cursor-pointer ${
+            isSelected ? 'scale-125 ring-4 ring-emerald-400 z-50' : 'hover:scale-115'
+          }">
             ${pt.index}
           </div>
         `;
@@ -450,7 +467,10 @@ export function TravelMapView({
           iconSize: [28, 28],
         });
 
-        const marker = L.marker(pos, { icon: customIcon }).addTo(map);
+        const marker = L.marker(pos, {
+          icon: customIcon,
+          zIndexOffset: isSelected ? 1000 : idx + 10,
+        }).addTo(map);
 
         marker.on('click', () => {
           setActiveSpotIndex(idx);
@@ -464,33 +484,67 @@ export function TravelMapView({
         markers.push(marker);
       });
 
-      // 绘制真实折线路径 Polyline
+      // 绘制平滑贝塞尔曲线路径 Polyline (告别生硬直戳城市的直线)
       if (latlngs.length > 1) {
-        bgPolylineRef.current = L.polyline(latlngs, {
+        const smoothLatLngs = generateSmoothRoutePolyline(routePoints, 0.08);
+
+        // 1. 底层白色轮廓垫底
+        bgPolylineRef.current = L.polyline(smoothLatLngs, {
           color: '#ffffff',
           opacity: 0.95,
-          weight: 8,
+          weight: 7,
         }).addTo(map);
 
-        fullPolylineRef.current = L.polyline(latlngs, {
-          color: '#047857',
-          dashArray: mode === 'walking' ? '6, 8' : undefined,
+        // 2. 核心主色调路线
+        const routeColor =
+          mode === 'walking'
+            ? '#059669'
+            : mode === 'transit'
+              ? '#0284c7'
+              : '#047857';
+
+        fullPolylineRef.current = L.polyline(smoothLatLngs, {
+          color: routeColor,
           opacity: 0.85,
           weight: 4.5,
         }).addTo(map);
 
-        // 绘制折线中点通勤耗时标牌气泡 (对标携程路况标牌)
+        // 3. 流动蚂蚁线光效 (带沿线行进生命力动效)
+        flowPolylineRef.current = L.polyline(smoothLatLngs, {
+          className: 'flowing-route-dash',
+          color: '#a7f3d0',
+          dashArray: '8, 12',
+          opacity: 0.95,
+          weight: 2.5,
+        }).addTo(map);
+
+        // 绘制折线中点通勤耗时标牌气泡 (垂直法线避让 + 智能抽稀，彻底杜绝重合黑块)
         for (let i = 0; i < routePoints.length - 1; i++) {
           const p1 = routePoints[i];
           const p2 = routePoints[i + 1];
-          const mid = calculateMidPoint(p1.lat, p1.lng, p2.lat, p2.lng);
           const dist = calculateDistanceKm(p1.lat, p1.lng, p2.lat, p2.lng);
           const duration = estimateDurationMinutes(dist, mode);
 
+          // 智能抽稀避让：当景点较多 (>=4) 且两点直线距离非常近 (<1.2km) 时，默认隐藏常驻气泡，防止与标点踩踏
+          const isLegActive = activeSpotIndex === i;
+          if (routePoints.length >= 4 && dist < 1.2 && !isLegActive) {
+            continue;
+          }
+
+          // 垂直法线偏移：将气泡从路线上垂直外移，彻底避开折线本身与端点标记
+          const offsetPos = calculateNormalOffset(
+            p1.lat,
+            p1.lng,
+            p2.lat,
+            p2.lng,
+            0.08,
+          );
+
           const badgeHtml = `
-            <div class="px-2 py-0.5 rounded-full bg-white/95 border border-stone-300/80 shadow-xs text-[10px] font-bold text-stone-700 flex items-center gap-1 whitespace-nowrap -translate-x-1/2 -translate-y-1/2 hover:scale-110 transition-transform cursor-pointer">
+            <div class="px-2.5 py-0.5 rounded-full bg-white/95 backdrop-blur-xs border border-stone-200/90 shadow-sm text-[10px] font-bold text-stone-700 flex items-center gap-1.5 whitespace-nowrap -translate-x-1/2 -translate-y-1/2 hover:scale-110 hover:border-emerald-500 hover:text-emerald-800 transition-all cursor-pointer">
               <span>${mode === 'walking' ? '🚶' : mode === 'transit' ? '🚌' : '🚗'}</span>
               <span>${duration}分钟</span>
+              <span class="text-[9px] text-stone-400 font-normal">(${dist}km)</span>
             </div>
           `;
           const badgeIcon = L.divIcon({
@@ -498,30 +552,54 @@ export function TravelMapView({
             html: badgeHtml,
             iconSize: [0, 0],
           });
-          const badgeMarker = L.marker([mid.lat, mid.lng], {
+          const badgeMarker = L.marker([offsetPos.lat, offsetPos.lng], {
             icon: badgeIcon,
+            zIndexOffset: isLegActive ? 900 : 200,
           }).addTo(map);
+
+          badgeMarker.on('click', () => {
+            handleFocusLeg(i);
+          });
+
           markers.push(badgeMarker);
         }
 
-        map.fitBounds(L.latLngBounds(latlngs), { padding: [40, 40] });
+        map.flyToBounds(L.latLngBounds(latlngs), {
+          duration: 0.9,
+          easeLinearity: 0.25,
+          padding: [45, 45],
+        });
       } else if (latlngs.length === 1) {
-        map.setView(latlngs[0], 13);
+        map.flyTo(latlngs[0], 13, { duration: 0.8, easeLinearity: 0.25 });
       }
 
       markersRef.current = markers;
     });
-  }, [routePoints, mode, city, isMapReady, setActiveSpotId]);
+  }, [
+    routePoints,
+    mode,
+    city,
+    isMapReady,
+    setActiveSpotId,
+    activeSpotIndex,
+    activeSpotId,
+  ]);
 
-  // 7.4 监听 activeSpotId 变更，平滑移动地图视角
+  // 7.4 监听 activeSpotId 变更，平滑移动地图视角 (flyTo 代替 panTo，带来沉浸式无人机航拍级俯冲运镜)
   useEffect(() => {
     if (!activeSpotId || !mapInstanceRef.current) return;
-    const target = routePoints.find((p) => p.id === activeSpotId);
+    const target = routePoints.find(
+      (p) => p.id === activeSpotId || p.name === activeSpotId,
+    );
     if (target) {
-      mapInstanceRef.current.panTo([target.lat, target.lng], {
-        animate: true,
-        duration: 0.6,
-      });
+      mapInstanceRef.current.flyTo(
+        [target.lat, target.lng],
+        Math.max(mapInstanceRef.current.getZoom(), 13.5),
+        {
+          duration: 0.8,
+          easeLinearity: 0.25,
+        },
+      );
     }
   }, [activeSpotId, routePoints]);
 
@@ -542,7 +620,9 @@ export function TravelMapView({
             pt.lat,
             pt.lng,
           ]);
-          mapInstanceRef.current?.fitBounds(L.latLngBounds(latlngs), {
+          mapInstanceRef.current?.flyToBounds(L.latLngBounds(latlngs), {
+            duration: 0.8,
+            easeLinearity: 0.25,
             padding: [40, 40],
           });
         });
@@ -556,10 +636,14 @@ export function TravelMapView({
     setActiveSpotIndex(spotIndex);
     const pt = routePoints[spotIndex];
     if (pt && mapInstanceRef.current) {
-      mapInstanceRef.current.panTo([pt.lat, pt.lng], {
-        animate: true,
-        duration: 0.6,
-      });
+      mapInstanceRef.current.flyTo(
+        [pt.lat, pt.lng],
+        Math.max(mapInstanceRef.current.getZoom(), 13.5),
+        {
+          duration: 0.8,
+          easeLinearity: 0.25,
+        },
+      );
       if (pt.id) {
         setActiveSpotId(pt.id);
       }
@@ -575,7 +659,11 @@ export function TravelMapView({
           [leg.from.lat, leg.from.lng],
           [leg.to.lat, leg.to.lng],
         ]);
-        mapInstanceRef.current?.fitBounds(bounds, { padding: [50, 50] });
+        mapInstanceRef.current?.flyToBounds(bounds, {
+          duration: 0.8,
+          easeLinearity: 0.25,
+          padding: [55, 55],
+        });
       });
     }
   }
@@ -603,6 +691,27 @@ export function TravelMapView({
           : `relative z-0 isolate flex flex-col h-full overflow-hidden rounded-3xl border border-stone-200/90 bg-[#FDFBF7] shadow-sm transition-all ${className}`
       }
     >
+      {/* 动态流动路线与标点微动效样式 */}
+      <style>{`
+        @keyframes routeFlowDash {
+          from {
+            stroke-dashoffset: 24;
+          }
+          to {
+            stroke-dashoffset: 0;
+          }
+        }
+        .flowing-route-dash {
+          animation: routeFlowDash 1.2s linear infinite !important;
+        }
+        .commute-mid-badge {
+          transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+        .custom-map-pin {
+          transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+      `}</style>
+
       {/* 顶栏 1: 资源分类筛选与多日行程快捷切换 */}
       <div className="flex items-center justify-between border-b border-stone-200/80 bg-white/95 px-3.5 py-2 gap-2">
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">

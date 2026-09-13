@@ -23,6 +23,11 @@ export function useDebounce<TArgs extends unknown[], TReturn>(
   delay: number,
 ): (...args: TArgs) => void {
   const timerRef = useRef<null | ReturnType<typeof setTimeout>>(null)
+  const fnRef = useRef(fn)
+
+  useEffect(() => {
+    fnRef.current = fn
+  }, [fn])
 
   const debouncedFn = useCallback(
     (...args: TArgs) => {
@@ -33,11 +38,11 @@ export function useDebounce<TArgs extends unknown[], TReturn>(
 
       // 设置新的定时器
       timerRef.current = setTimeout(() => {
-        fn(...args)
+        fnRef.current(...args)
         timerRef.current = null
       }, delay)
     },
-    [fn, delay],
+    [delay],
   )
 
   // 组件卸载时清除未执行的定时器，防止内存泄漏和卸载后触发
@@ -65,6 +70,11 @@ export function useDebouncedCallback<TArgs extends unknown[], TReturn>(
 ) {
   const timerRef = useRef<null | ReturnType<typeof setTimeout>>(null)
   const [isPending, setIsPending] = useState(false)
+  const fnRef = useRef(fn)
+
+  useEffect(() => {
+    fnRef.current = fn
+  }, [fn])
 
   const cancel = useCallback(() => {
     if (timerRef.current !== null) {
@@ -87,7 +97,7 @@ export function useDebouncedCallback<TArgs extends unknown[], TReturn>(
         // 设置新的定时器
         timerRef.current = setTimeout(async () => {
           try {
-            const result = await fn(...args)
+            const result = await fnRef.current(...args)
             resolve(result)
           }
           catch (err) {
@@ -99,7 +109,7 @@ export function useDebouncedCallback<TArgs extends unknown[], TReturn>(
           }
         }, delay)
       }),
-    [fn, delay],
+    [delay],
   )
 
   // 组件卸载时清除未执行的定时器

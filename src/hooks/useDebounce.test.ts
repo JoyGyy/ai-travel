@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react'
 
-import { useDebounce } from './useDebounce'
+import { useDebounce, useDebouncedCallback } from './useDebounce'
 
 // 使用真实定时器测试防抖行为
 describe('useDebounce', () => {
@@ -106,5 +106,44 @@ describe('useDebounce', () => {
     })
 
     expect(fn).not.toHaveBeenCalled()
+  })
+})
+
+describe('useDebouncedCallback', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('延迟期间函数变化时执行最新闭包函数', async () => {
+    const fn1 = vi.fn(async (x: string) => `fn1-${x}`)
+    const fn2 = vi.fn(async (x: string) => `fn2-${x}`)
+
+    const { rerender, result } = renderHook(({ f }) => useDebouncedCallback(f, 300), {
+      initialProps: { f: fn1 },
+    })
+
+    let promiseResult: Promise<string> | undefined
+    act(() => {
+      promiseResult = result.current.debouncedFn('test')
+    })
+
+    // 重新渲染，改变传入的 callback
+    act(() => {
+      rerender({ f: fn2 })
+    })
+
+    let res: string | undefined
+    await act(async () => {
+      vi.advanceTimersByTime(300)
+      res = await promiseResult
+    })
+
+    expect(fn1).not.toHaveBeenCalled()
+    expect(fn2).toHaveBeenCalledTimes(1)
+    expect(res).toBe('fn2-test')
   })
 })

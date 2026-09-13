@@ -7,7 +7,14 @@
  * 游玩亮点和注意事项，支持收藏和 AI 行程规划跳转。
  */
 import type { Attraction } from '@/types/attraction'
-import { ArrowLeft, Heart } from 'lucide-react'
+import {
+  ArrowLeft,
+  CheckCircle2,
+  ExternalLink,
+  Heart,
+  MapPin,
+  Ticket,
+} from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
@@ -15,6 +22,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 import { fetchAttractionDetail } from '@/api/attractions'
+import { AttractionAiSummaryCard } from '@/components/attractions/AttractionAiSummaryCard'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useAttractionFavorite } from '@/hooks/useAttractionFavorite'
@@ -157,7 +165,7 @@ export default function AttractionDetail() {
             {attraction.name}
           </h1>
           <p className="mb-4 text-travel-muted">{attraction.summary}</p>
-          <div className="mb-5 flex flex-wrap gap-2">
+          <div className="mb-3 flex flex-wrap gap-2">
             <Badge className={`travel-tag ${ticketTypeClass}`}>
               {attraction.ticketType === 'free' ? '免费' : '收费'}
             </Badge>
@@ -168,7 +176,19 @@ export default function AttractionDetail() {
               </Badge>
             ))}
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
+
+          {attraction.suitableFor && attraction.suitableFor.length > 0 && (
+            <div className="mb-5 flex flex-wrap items-center gap-1.5 text-xs text-stone-500">
+              <span className="text-[11px] font-medium text-stone-400">出行人群：</span>
+              {attraction.suitableFor.map(item => (
+                <span className="rounded-md bg-stone-100 px-2 py-0.5 text-[11px] font-medium text-stone-600 border border-stone-200/60" key={item}>
+                  {item}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <div className="flex flex-wrap items-center gap-3">
             <Button
               className="border-primary/25 bg-white text-primary hover:bg-primary/5 hover:text-primary"
               disabled={favoritePending}
@@ -180,15 +200,44 @@ export default function AttractionDetail() {
               />
               {favoritePending ? '处理中...' : attraction.isFavorite ? '已收藏' : '收藏'}
             </Button>
+
             <Link
               className="inline-flex h-10 items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
               href={`/chat?prompt=${prompt}`}
             >
               让 AI 规划这站
             </Link>
+
+            {attraction.bookingLinks?.ctrip && (
+              <a
+                className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg border border-amber-400/80 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-900 shadow-2xs transition-all hover:bg-amber-100 hover:border-amber-500"
+                href={attraction.bookingLinks.ctrip}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <Ticket className="h-4 w-4 text-amber-700" />
+                <span>在携程特惠购票</span>
+                <ExternalLink className="h-3.5 w-3.5 text-amber-700/80" />
+              </a>
+            )}
+
+            {attraction.ticketType === 'free' && (
+              <div className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800 border border-emerald-200/80">
+                <CheckCircle2 className="h-4 w-4 text-emerald-700" />
+                <span>免门票 · 凭身份证或官方预约入园</span>
+              </div>
+            )}
           </div>
         </div>
       </section>
+
+      {/* ---- AI 导游速览与避坑手账 ---- */}
+      <AttractionAiSummaryCard
+        highlights={attraction.highlights}
+        recommendedDuration={attraction.recommendedDuration}
+        suitableFor={attraction.suitableFor}
+        tips={attraction.tips}
+      />
 
       {/* ---- 景点介绍 ---- */}
       <section className="travel-surface-card p-6">
@@ -202,7 +251,21 @@ export default function AttractionDetail() {
         <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <dt className="text-sm font-medium text-travel-muted">地址</dt>
-            <dd className="mt-1 text-travel-ink">{attraction.address}</dd>
+            <dd className="mt-1 flex items-center justify-between gap-2 text-travel-ink">
+              <span>{attraction.address}</span>
+              {attraction.address && (
+                <a
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-800 hover:underline shrink-0"
+                  href={`https://uri.amap.com/marker?name=${encodeURIComponent(attraction.name)}&address=${encodeURIComponent(attraction.address)}`}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  title="在高德地图中查看位置"
+                >
+                  <MapPin className="h-3.5 w-3.5" />
+                  <span>高德导航</span>
+                </a>
+              )}
+            </dd>
           </div>
           <div>
             <dt className="text-sm font-medium text-travel-muted">开放时间</dt>

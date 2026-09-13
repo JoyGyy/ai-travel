@@ -306,6 +306,21 @@ export function calculateBearing(lat1: number, lng1: number, lat2: number, lng2:
 }
 
 /**
+ * 计算两点中点经纬度坐标 (用于在路径中点展示通勤耗时气泡)
+ */
+export function calculateMidPoint(
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number,
+): { lat: number, lng: number } {
+  return {
+    lat: Number(((lat1 + lat2) / 2).toFixed(6)),
+    lng: Number(((lng1 + lng2) / 2).toFixed(6)),
+  }
+}
+
+/**
  * 根据两点距离和交通方式估算耗时 (分钟)
  */
 export function estimateDurationMinutes(

@@ -1,16 +1,33 @@
 /**
  * AI 旅行攻略路线与景点提取解析器
  */
+import { lookupAttractionInfo } from './attraction-lookup'
 
 export interface ParsedRouteSpot {
   address?: string
+  coverImage?: string
   description?: string
+  durationText?: string
+  id?: string
   name: string
+  openHours?: string
   period?: '早晨' | '上午' | '中午' | '下午' | '傍晚' | '夜间' | '全天'
+  priceText?: string
+  rating?: number
+  reviewCount?: number
+  ticketType?: 'free' | 'paid'
+}
+
+export interface ParsedDayRoute {
+  day: number
+  spots: ParsedRouteSpot[]
+  theme?: string
+  title: string
 }
 
 export interface ParsedRouteData {
   city: string
+  days: ParsedDayRoute[]
   food: string[]
   routeString: string
   spots: ParsedRouteSpot[]
@@ -221,13 +238,108 @@ function extractSpotCandidate(raw: string): string {
   return isValidSpotName(candidate) ? candidate : ''
 }
 
+/** 为纯景点名称补全富媒体与产品元信息 */
+function enrichSpot(name: string, city: string, period?: ParsedRouteSpot['period']): ParsedRouteSpot {
+  const info = lookupAttractionInfo(name, city)
+  return {
+    address: info.address,
+    coverImage: info.coverImage,
+    description: info.summary,
+    durationText: info.recommendedDuration,
+    id: info.id,
+    name,
+    openHours: info.openingHours,
+    period,
+    priceText: info.priceText,
+    rating: info.rating,
+    reviewCount: info.reviewCount,
+    ticketType: info.ticketType,
+  }
+}
+
+/** 从文本块中提取景点列表 */
+function extractSpotsFromLines(lines: string[], city: string): ParsedRouteSpot[] {
+  const spotNameSet = new Set<string>()
+  const spots: ParsedRouteSpot[] = []
+
+  // 1. 优先提取路线箭头链 (例如: 断桥残雪 → 白堤 → 平湖秋月)
+  for (const line of lines) {
+    if (line.includes('→') || line.includes('➔') || line.includes('->') || line.includes('-->') || line.includes('=>')) {
+      const parts = line.split(/→|➔|->|-->|=>/)
+      for (const part of parts) {
+        const candidate = extractSpotCandidate(part)
+        if (isValidSpotName(candidate) && !spotNameSet.has(candidate)) {
+          spotNameSet.add(candidate)
+          spots.push(enrichSpot(candidate, city))
+        }
+      }
+    }
+  }
+
+  // 2. 如果箭头链不足 2 个景点，从列表项（* 或 - 或 1.）中提取
+  if (spots.length < 2) {
+    for (const line of lines) {
+      const trimmed = line.trim()
+      let rawContent = ''
+      if (trimmed.startsWith('* ') || trimmed.startsWith('- ')) {
+        rawContent = trimmed.slice(2).trim()
+      }
+      else if (/^\d+[.、]\s*/.test(trimmed)) {
+        rawContent = trimmed.replace(/^\d+[.、]\s*/, '').trim()
+      }
+
+      if (rawContent) {
+        let period: ParsedRouteSpot['period']
+        if (trimmed.includes('早晨') || trimmed.includes('清晨'))
+          period = '早晨'
+        else if (trimmed.includes('上午'))
+          period = '上午'
+        else if (trimmed.includes('中午'))
+          period = '中午'
+        else if (trimmed.includes('下午'))
+          period = '下午'
+        else if (trimmed.includes('傍晚'))
+          period = '傍晚'
+        else if (trimmed.includes('夜间') || trimmed.includes('晚上'))
+          period = '夜间'
+
+        const candidate = extractSpotCandidate(rawContent)
+        if (isValidSpotName(candidate) && !spotNameSet.has(candidate) && spots.length < 12) {
+          spotNameSet.add(candidate)
+          spots.push(enrichSpot(candidate, city, period))
+        }
+      }
+    }
+  }
+
+  return spots
+}
+
+/** 中文数字转阿拉伯数字 */
+function parseChineseNum(str: string): number {
+  const map: Record<string, number> = {
+    一: 1,
+    七: 7,
+    三: 3,
+    九: 9,
+    二: 2,
+    五: 5,
+    八: 8,
+    六: 6,
+    十: 10,
+    四: 4,
+  }
+  return map[str] || Number.parseInt(str, 10) || 1
+}
+
 /**
- * 从 Markdown 文本中提取城市、路线节点、美食与建议
+ * 从 Markdown 文本中提取城市、多日行程、美食与建议
  */
 export function parseItineraryFromMarkdown(text: string, defaultCity?: string): ParsedRouteData {
   if (!text) {
     return {
       city: defaultCity || '未知目的地',
+      days: [],
       food: [],
       routeString: '',
       spots: [],
@@ -262,44 +374,75 @@ export function parseItineraryFromMarkdown(text: string, defaultCity?: string): 
     transportMode = 'walking'
   }
 
-  // 3. 提取路线箭头链 (例如: 大理古城 → 喜洲 → 双廊 → 挖色 → 海东)
-  const spotNameSet = new Set<string>()
-  const spots: ParsedRouteSpot[] = []
-
   const lines = text.split('\n')
 
+  // 3. 识别分日段落 (Day 1 / 第1天 / D1)
+  const dayHeaderRegex = /^(?:#+\s*)?(?:第([一二三四五六七八九十\d]+)天|Day\s*(\d+)|D(\d+))[:：·\s-]*(.*)$/i
+  interface DayBlock {
+    dayNum: number
+    lines: string[]
+    title: string
+  }
+
+  const dayBlocks: DayBlock[] = []
+  let currentBlock: DayBlock | null = null
+
   for (const line of lines) {
-    if (line.includes('→') || line.includes('➔') || line.includes('->') || line.includes('-->') || line.includes('=>')) {
-      const parts = line.split(/→|➔|->|-->|=>/)
-      for (const part of parts) {
-        const candidate = extractSpotCandidate(part)
-        if (isValidSpotName(candidate) && !spotNameSet.has(candidate)) {
-          spotNameSet.add(candidate)
-          spots.push({ name: candidate })
+    const trimmed = line.trim()
+    const match = dayHeaderRegex.exec(trimmed)
+    if (match) {
+      if (currentBlock) {
+        dayBlocks.push(currentBlock)
+      }
+      const numStr = match[1] || match[2] || match[3]
+      const dayNum = parseChineseNum(numStr)
+      const rawTitle = (match[4] || '').replace(/[*#`]/g, '').trim()
+      currentBlock = {
+        dayNum,
+        lines: [],
+        title: rawTitle || `第 ${dayNum} 天行程`,
+      }
+    }
+    else if (currentBlock) {
+      currentBlock.lines.push(line)
+    }
+  }
+  if (currentBlock) {
+    dayBlocks.push(currentBlock)
+  }
+
+  // 4. 构建结构化多日数组
+  const parsedDays: ParsedDayRoute[] = []
+  const allSpots: ParsedRouteSpot[] = []
+  const globalSeenSpots = new Set<string>()
+
+  if (dayBlocks.length > 0) {
+    for (const block of dayBlocks) {
+      const daySpots = extractSpotsFromLines(block.lines, detectedCity)
+      parsedDays.push({
+        day: block.dayNum,
+        spots: daySpots,
+        title: block.title,
+      })
+      for (const sp of daySpots) {
+        if (!globalSeenSpots.has(sp.name)) {
+          globalSeenSpots.add(sp.name)
+          allSpots.push(sp)
         }
       }
     }
   }
 
-  // 4. 如果路线链不足 2 个景点，从专属路线/景点段落或结构列表中提取真实景点
-  if (spots.length < 2) {
-    for (const line of lines) {
-      const trimmed = line.trim()
-      let rawContent = ''
-      if (trimmed.startsWith('* ') || trimmed.startsWith('- ')) {
-        rawContent = trimmed.slice(2).trim()
-      }
-      else if (/^\d+[.、]\s*/.test(trimmed)) {
-        rawContent = trimmed.replace(/^\d+[.、]\s*/, '').trim()
-      }
-
-      if (rawContent) {
-        const candidate = extractSpotCandidate(rawContent)
-        if (isValidSpotName(candidate) && !spotNameSet.has(candidate) && spots.length < 8) {
-          spotNameSet.add(candidate)
-          spots.push({ name: candidate })
-        }
-      }
+  // 兜底：如果未明确分天或分天未提取出景点，全篇提取归入第 1 天
+  if (allSpots.length === 0) {
+    const fallbackSpots = extractSpotsFromLines(lines, detectedCity)
+    allSpots.push(...fallbackSpots)
+    if (fallbackSpots.length > 0) {
+      parsedDays.push({
+        day: 1,
+        spots: fallbackSpots,
+        title: `${detectedCity}精选游玩路线`,
+      })
     }
   }
 
@@ -343,13 +486,14 @@ export function parseItineraryFromMarkdown(text: string, defaultCity?: string): 
     }
   }
 
-  const routeString = spots.map(s => s.name).join(' ➔ ')
+  const routeString = allSpots.map(s => s.name).join(' ➔ ')
 
   return {
     city: detectedCity,
+    days: parsedDays,
     food: food.slice(0, 4),
     routeString,
-    spots,
+    spots: allSpots,
     summary,
     tips: tips.slice(0, 3),
     transportMode,

@@ -777,7 +777,7 @@ function ChatContent() {
         className={`
           flex-col h-full bg-[#FAF7F0] relative overflow-hidden border-r border-stone-200/90
           ${mobileActiveTab === 'chat' ? 'flex flex-1 min-w-0' : 'hidden'}
-          lg:flex ${showRightMap ? 'shrink-0' : 'flex-1 min-w-0'}
+          lg:flex ${showRightMap ? 'lg:flex-none shrink-0' : 'lg:flex-1 lg:min-w-0'}
         `}
         style={showRightMap ? { width: `${chatWidth}px` } : undefined}
       >
@@ -1479,7 +1479,7 @@ function ChatContent() {
       {/* ======================================================== */}
       <section
         className={`
-          flex-col h-full bg-stone-100 transition-all duration-300
+          flex-col h-full bg-stone-100
           ${mobileActiveTab === 'map' ? 'flex flex-1 min-w-0' : 'hidden'}
           ${showRightMap ? 'lg:flex lg:flex-1 lg:min-w-[360px]' : 'lg:hidden'}
         `}

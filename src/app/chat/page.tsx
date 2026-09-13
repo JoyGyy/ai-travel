@@ -166,7 +166,9 @@ function ChatContent() {
   const [showHistoryDrawer, setShowHistoryDrawer] = useState(false);
   const [showLeftSidebar, setShowLeftSidebar] = useState(true);
   const [showRightMap, setShowRightMap] = useState(true);
-  const [mobileActiveTab, setMobileActiveTab] = useState<'chat' | 'map'>('chat');
+  const [mobileActiveTab, setMobileActiveTab] = useState<'chat' | 'map'>(
+    'chat',
+  );
   const [expandedMapMsgIds, setExpandedMapMsgIds] = useState<
     Record<string, boolean>
   >({});
@@ -839,7 +841,9 @@ function ChatContent() {
                 }`}
                 onClick={() => setShowRightMap((prev) => !prev)}
                 size="sm"
-                title={showRightMap ? '收起大地图，聚焦纯净对话' : '展开联动大地图'}
+                title={
+                  showRightMap ? '收起大地图，聚焦纯净对话' : '展开联动大地图'
+                }
                 variant="outline"
               >
                 <span>🗺️ {showRightMap ? '收起地图' : '展开地图'}</span>

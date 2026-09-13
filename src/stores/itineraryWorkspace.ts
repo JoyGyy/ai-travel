@@ -11,8 +11,12 @@ import {
 } from '@/lib/map/amap';
 import { lookupAttractionInfo } from '@/lib/map/attraction-lookup';
 
+import { resolveSpotBookingResource } from '@/lib/booking/budget-calculator';
+import type { DomesticBookingResource } from '@/types/booking';
+
 export interface WorkspaceSpotNode {
   address: string;
+  bookingResource?: DomesticBookingResource;
   city: string;
   coverImage: string;
   id: string;
@@ -70,6 +74,7 @@ export interface ItineraryWorkspaceState {
   city: string;
   clearWorkspace: () => void;
   days: ItineraryDayPlan[];
+  hotelNightPrice: number;
   initFromParsedRoute: (data: ParsedRouteData, promptTitle?: string) => void;
   isGenerating: boolean;
   moveSpotBetweenDays: (
@@ -80,12 +85,15 @@ export interface ItineraryWorkspaceState {
   ) => void;
   moveSpotInDay: (dayNum: number, fromIndex: number, toIndex: number) => void;
   moveToUnassigned: (dayNum: number, spotIndex: number) => void;
+  participantCount: number;
   removeDay: (dayNum: number) => void;
   removeSpotFromDay: (dayNum: number, spotIndex: number) => void;
   selectedDay: number; // 0 = 总览, 1 = Day 1, 2 = Day 2...
   setActiveCategory: (cat: ResourceCategory) => void;
   setActiveSpotId: (id: string | null) => void;
+  setHotelNightPrice: (price: number) => void;
   setIsGenerating: (isGenerating: boolean) => void;
+  setParticipantCount: (count: number) => void;
   setSelectedDay: (day: number) => void;
   setStartDate: (date: string) => void;
   setTitle: (title: string) => void;
@@ -145,6 +153,14 @@ function buildSpotNode(
 
   return {
     address: overrides.address || info.address || `${cityName}市区`,
+    bookingResource:
+      overrides.bookingResource ||
+      resolveSpotBookingResource(
+        cleanName,
+        cityName,
+        (overrides.ticketType || info.ticketType) as 'free' | 'paid',
+        overrides.priceText || info.priceText,
+      ),
     city: cityName,
     coverImage: overrides.coverImage || info.coverImage,
     id: overrides.id || `${cityName}-${cleanName}-${idx}`,
@@ -172,7 +188,9 @@ export const useItineraryWorkspaceStore = create<ItineraryWorkspaceState>()(
       activeSpotId: null,
       city: '杭州',
       days: [],
+      hotelNightPrice: 320,
       isGenerating: false,
+      participantCount: 1,
       selectedDay: 1,
       startDate: '',
       title: '旅行行程规划手账',
@@ -400,6 +418,16 @@ export const useItineraryWorkspaceStore = create<ItineraryWorkspaceState>()(
       setIsGenerating: (isGenerating) =>
         set((state) => {
           state.isGenerating = isGenerating;
+        }),
+
+      setHotelNightPrice: (price) =>
+        set((state) => {
+          state.hotelNightPrice = Math.max(0, price);
+        }),
+
+      setParticipantCount: (count) =>
+        set((state) => {
+          state.participantCount = Math.max(1, count);
         }),
 
       setSelectedDay: (day) =>

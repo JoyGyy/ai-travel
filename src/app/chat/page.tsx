@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
-import type { SubmitEvent } from 'react'
-import type { ParsedRouteData } from '@/lib/map/route-parser'
-import type { ChatSession } from '@/stores/chatHistory'
+import type { SubmitEvent } from 'react';
+import type { ParsedRouteData } from '@/lib/map/route-parser';
+import type { ChatSession } from '@/stores/chatHistory';
 import {
   Bot,
   Car,
@@ -33,21 +33,29 @@ import {
   Utensils,
   Wind,
   X,
-} from 'lucide-react'
-import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+} from 'lucide-react';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
-import ReactMarkdown from 'react-markdown'
-import { TravelRouteCardModal } from '@/components/card/TravelRouteCardModal'
-import { InlinePoiCard } from '@/components/chat/InlinePoiCard'
-import { ThinkingAccordion } from '@/components/chat/ThinkingAccordion'
-import { ItineraryBoard } from '@/components/itinerary-board/ItineraryBoard'
-import { TravelMapView } from '@/components/map/TravelMapView'
-import { RAGSource } from '@/components/RAGSource'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import ReactMarkdown from 'react-markdown';
+import { TravelRouteCardModal } from '@/components/card/TravelRouteCardModal';
+import { InlinePoiCard } from '@/components/chat/InlinePoiCard';
+import { ThinkingAccordion } from '@/components/chat/ThinkingAccordion';
+import { ItineraryBoard } from '@/components/itinerary-board/ItineraryBoard';
+import { TravelMapView } from '@/components/map/TravelMapView';
+import { RAGSource } from '@/components/RAGSource';
+import { ResizeHandle } from '@/components/workspace/ResizeHandle';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -55,17 +63,17 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { useAppToast } from '@/hooks/useAppToast'
-import { useTravelChat } from '@/hooks/useTravelChat'
-import { useWeather } from '@/hooks/useWeather'
-import { extractRagSources } from '@/lib/ai/sources'
-import { generateAmapRouteUrl } from '@/lib/map/amap'
-import { parseItineraryFromMarkdown } from '@/lib/map/route-parser'
-import { useAuthStore } from '@/stores/auth'
-import { useChatHistoryStore } from '@/stores/chatHistory'
-import { useItineraryWorkspaceStore } from '@/stores/itineraryWorkspace'
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { useAppToast } from '@/hooks/useAppToast';
+import { useTravelChat } from '@/hooks/useTravelChat';
+import { useWeather } from '@/hooks/useWeather';
+import { extractRagSources } from '@/lib/ai/sources';
+import { generateAmapRouteUrl } from '@/lib/map/amap';
+import { parseItineraryFromMarkdown } from '@/lib/map/route-parser';
+import { useAuthStore } from '@/stores/auth';
+import { useChatHistoryStore } from '@/stores/chatHistory';
+import { useItineraryWorkspaceStore } from '@/stores/itineraryWorkspace';
 
 const KNOWN_CITIES = [
   '成都',
@@ -88,18 +96,33 @@ const KNOWN_CITIES = [
   '桂林',
   '洛阳',
   '敦煌',
-]
+];
 
 const QUICK_PROMPTS = [
-  { city: '西安', desc: '陕历博特展、大唐不夜城与回民街寻味', title: '西安4天3晚盛唐文化探索手账' },
-  { city: '成都', desc: '早起看熊猫吃竹子 + 奎星楼街地道川味', title: '成都美食与大熊猫悠闲3日游' },
-  { city: '杭州', desc: '西湖泛舟晨雾、龙井问茶与灵隐祈福', title: '杭州3天2晚慢节奏烟雨江南行程' },
-  { city: '大理', desc: '海东顺光自驾、喜洲古镇慢步与海景客栈', title: '大理洱海环海自驾深度路线' },
-]
+  {
+    city: '西安',
+    desc: '陕历博特展、大唐不夜城与回民街寻味',
+    title: '西安4天3晚盛唐文化探索手账',
+  },
+  {
+    city: '成都',
+    desc: '早起看熊猫吃竹子 + 奎星楼街地道川味',
+    title: '成都美食与大熊猫悠闲3日游',
+  },
+  {
+    city: '杭州',
+    desc: '西湖泛舟晨雾、龙井问茶与灵隐祈福',
+    title: '杭州3天2晚慢节奏烟雨江南行程',
+  },
+  {
+    city: '大理',
+    desc: '海东顺光自驾、喜洲古镇慢步与海景客栈',
+    title: '大理洱海环海自驾深度路线',
+  },
+];
 
 function sanitizeAiResponse(text: string): string {
-  if (!text)
-    return ''
+  if (!text) return '';
   return text
     .replace(/<tools>[\s\S]*?<\/tools>/gi, '')
     .replace(/<tool>[\s\S]*?<\/tool>/gi, '')
@@ -112,337 +135,427 @@ function sanitizeAiResponse(text: string): string {
     .replace(/(\\s*){4,}/g, '')
     .replace(/("[ \t]*){4,}/g, '')
     .replace(/\n{3,}/g, '\n\n')
-    .trim()
+    .trim();
 }
 
 function extractCity(text: string): string | null {
   for (const city of KNOWN_CITIES) {
-    if (text.includes(city))
-      return city
+    if (text.includes(city)) return city;
   }
-  return null
+  return null;
 }
 
 function ChatContent() {
-  const searchParams = useSearchParams()
-  const initialPrompt = searchParams.get('prompt')
-  const initialCity = searchParams.get('city')
-  const hasTriggeredRef = useRef(false)
+  const searchParams = useSearchParams();
+  const initialPrompt = searchParams.get('prompt');
+  const initialCity = searchParams.get('city');
+  const hasTriggeredRef = useRef(false);
 
-  const [input, setInput] = useState('')
-  const [copiedId, setCopiedId] = useState<string | null>(null)
-  const [showHistoryDrawer, setShowHistoryDrawer] = useState(false)
-  const [showLeftSidebar, setShowLeftSidebar] = useState(true)
-  const [showMiddleBoard, setShowMiddleBoard] = useState(true)
-  const [showRightMap, setShowRightMap] = useState(true)
-  const [mobileActiveTab, setMobileActiveTab] = useState<'chat' | 'board' | 'map'>('chat')
-  const [expandedMapMsgIds, setExpandedMapMsgIds] = useState<Record<string, boolean>>({})
+  const [input, setInput] = useState('');
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [showHistoryDrawer, setShowHistoryDrawer] = useState(false);
+  const [showLeftSidebar, setShowLeftSidebar] = useState(true);
+  const [showMiddleBoard, setShowMiddleBoard] = useState(true);
+  const [showRightMap, setShowRightMap] = useState(true);
+  const [mobileActiveTab, setMobileActiveTab] = useState<
+    'chat' | 'board' | 'map'
+  >('chat');
+  const [expandedMapMsgIds, setExpandedMapMsgIds] = useState<
+    Record<string, boolean>
+  >({});
 
   // 卡片弹窗状态
-  const [selectedRouteCardData, setSelectedRouteCardData] = useState<ParsedRouteData | null>(null)
-  const [isCardModalOpen, setIsCardModalOpen] = useState(false)
+  const [selectedRouteCardData, setSelectedRouteCardData] =
+    useState<ParsedRouteData | null>(null);
+  const [isCardModalOpen, setIsCardModalOpen] = useState(false);
+
+  // 栏目宽度调节状态（支持本地记忆）
+  const [chatWidth, setChatWidth] = useState<number>(400);
+  const [boardWidth, setBoardWidth] = useState<number>(420);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('travel_workspace_widths');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (typeof parsed.chat === 'number' && parsed.chat >= 300) {
+          setChatWidth(parsed.chat);
+        }
+        if (typeof parsed.board === 'number' && parsed.board >= 300) {
+          setBoardWidth(parsed.board);
+        }
+      }
+    } catch {}
+  }, []);
+
+  const saveWidths = useCallback(
+    (newChat?: number, newBoard?: number) => {
+      try {
+        const c = newChat ?? chatWidth;
+        const b = newBoard ?? boardWidth;
+        localStorage.setItem(
+          'travel_workspace_widths',
+          JSON.stringify({ board: b, chat: c }),
+        );
+      } catch {}
+    },
+    [chatWidth, boardWidth],
+  );
 
   // 滚动容器与自动视角跟焦状态
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const isAutoScrollEnabledRef = useRef<boolean>(true)
-  const [showScrollBottomBtn, setShowScrollBottomBtn] = useState(false)
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const isAutoScrollEnabledRef = useRef<boolean>(true);
+  const [showScrollBottomBtn, setShowScrollBottomBtn] = useState(false);
 
   // AI 对话 Hook
-  const { error, messages, sendMessage, setMessages, status, stop } = useTravelChat()
-  const isGenerating = status === 'submitted' || status === 'streaming'
+  const { error, messages, sendMessage, setMessages, status, stop } =
+    useTravelChat();
+  const isGenerating = status === 'submitted' || status === 'streaming';
 
   // 用 ref 持有最新 status 与 stop，供卸载清理函数读取，
   // 确保清理只在真正卸载时执行，避免 status 变化触发清理而误中止流式响应。
-  const statusRef = useRef(status)
+  const statusRef = useRef(status);
   useEffect(() => {
-    statusRef.current = status
-  }, [status])
-  const stopRef = useRef(stop)
+    statusRef.current = status;
+  }, [status]);
+  const stopRef = useRef(stop);
   useEffect(() => {
-    stopRef.current = stop
-  }, [stop])
+    stopRef.current = stop;
+  }, [stop]);
 
   // 认证状态与用户感知
-  const user = useAuthStore(state => state.user)
-  const authHydrated = useAuthStore(state => state._hasHydrated)
+  const user = useAuthStore((state) => state.user);
+  const authHydrated = useAuthStore((state) => state._hasHydrated);
 
   useEffect(() => {
     if (authHydrated) {
-      useChatHistoryStore.getState().initForUser(user?.id || null).catch(() => {})
+      useChatHistoryStore
+        .getState()
+        .initForUser(user?.id || null)
+        .catch(() => {});
     }
-  }, [authHydrated, user?.id])
+  }, [authHydrated, user?.id]);
 
   // 会话历史 Store
-  const sessions = useChatHistoryStore(state => state.sessions)
-  const activeSessionId = useChatHistoryStore(state => state.activeSessionId)
-  const _hasHydrated = useChatHistoryStore(state => state._hasHydrated)
-  const createSession = useChatHistoryStore(state => state.createSession)
-  const saveMessages = useChatHistoryStore(state => state.saveMessages)
-  const setActiveSessionId = useChatHistoryStore(state => state.setActiveSessionId)
-  const deleteSession = useChatHistoryStore(state => state.deleteSession)
-  const clearAllSessions = useChatHistoryStore(state => state.clearAllSessions)
+  const sessions = useChatHistoryStore((state) => state.sessions);
+  const activeSessionId = useChatHistoryStore((state) => state.activeSessionId);
+  const _hasHydrated = useChatHistoryStore((state) => state._hasHydrated);
+  const createSession = useChatHistoryStore((state) => state.createSession);
+  const saveMessages = useChatHistoryStore((state) => state.saveMessages);
+  const setActiveSessionId = useChatHistoryStore(
+    (state) => state.setActiveSessionId,
+  );
+  const deleteSession = useChatHistoryStore((state) => state.deleteSession);
+  const clearAllSessions = useChatHistoryStore(
+    (state) => state.clearAllSessions,
+  );
 
   // 会话删除弹窗状态
-  const [sessionToDelete, setSessionToDelete] = useState<ChatSession | null>(null)
-  const [showClearAllDialog, setShowClearAllDialog] = useState(false)
-  const toast = useAppToast()
+  const [sessionToDelete, setSessionToDelete] = useState<ChatSession | null>(
+    null,
+  );
+  const [showClearAllDialog, setShowClearAllDialog] = useState(false);
+  const toast = useAppToast();
 
   const handleConfirmDeleteSession = () => {
-    if (!sessionToDelete)
-      return
-    const title = sessionToDelete.title
-    deleteSession(sessionToDelete.id)
+    if (!sessionToDelete) return;
+    const title = sessionToDelete.title;
+    deleteSession(sessionToDelete.id);
     if (activeSessionId === sessionToDelete.id) {
-      setMessages([])
+      setMessages([]);
     }
-    setSessionToDelete(null)
-    toast.success(`已删除会话「${title}」`)
-  }
+    setSessionToDelete(null);
+    toast.success(`已删除会话「${title}」`);
+  };
 
   const handleConfirmClearAll = () => {
-    clearAllSessions()
-    setMessages([])
-    setShowClearAllDialog(false)
-    toast.success('已清空所有历史手账对话')
-  }
+    clearAllSessions();
+    setMessages([]);
+    setShowClearAllDialog(false);
+    toast.success('已清空所有历史手账对话');
+  };
 
   // 当前激活的会话对象
   const activeSession = useMemo(() => {
-    return sessions.find(s => s.id === activeSessionId)
-  }, [sessions, activeSessionId])
+    return sessions.find((s) => s.id === activeSessionId);
+  }, [sessions, activeSessionId]);
 
   // 当前对话中最近识别到的城市
   const activeCity = useMemo(() => {
     // 优先从最新助手消息中提取
     for (let i = messages.length - 1; i >= 0; i--) {
-      const msg = messages[i]
+      const msg = messages[i];
       if (msg.role === 'assistant') {
         const text = msg.parts
-          .filter(p => p.type === 'text')
-          .map(p => (p as { text: string }).text)
-          .join(' ')
-        const city = extractCity(text)
-        if (city)
-          return city
+          .filter((p) => p.type === 'text')
+          .map((p) => (p as { text: string }).text)
+          .join(' ');
+        const city = extractCity(text);
+        if (city) return city;
       }
     }
-    return activeSession?.city || initialCity || null
-  }, [messages, activeSession, initialCity])
+    return activeSession?.city || initialCity || null;
+  }, [messages, activeSession, initialCity]);
 
   // 最新一条包含完整路线的助手消息解析数据（用于右侧行程面板）
   const latestParsedRoute = useMemo<ParsedRouteData | null>(() => {
     for (let i = messages.length - 1; i >= 0; i--) {
-      const msg = messages[i]
+      const msg = messages[i];
       if (msg.role === 'assistant') {
         const raw = msg.parts
-          .filter(p => p.type === 'text')
-          .map(p => (p as { text: string }).text)
-          .join('\n')
-        const cleaned = sanitizeAiResponse(raw)
+          .filter((p) => p.type === 'text')
+          .map((p) => (p as { text: string }).text)
+          .join('\n');
+        const cleaned = sanitizeAiResponse(raw);
         if (cleaned) {
-          const parsed = parseItineraryFromMarkdown(cleaned, activeCity || undefined)
+          const parsed = parseItineraryFromMarkdown(
+            cleaned,
+            activeCity || undefined,
+          );
           if (parsed.spots.length >= 2) {
-            return parsed
+            return parsed;
           }
         }
       }
     }
-    return null
-  }, [messages, activeCity])
+    return null;
+  }, [messages, activeCity]);
 
   // 同步最新解析行程至多日工作台协同状态机
-  useEffect(() => {
-    if (latestParsedRoute) {
-      useItineraryWorkspaceStore.getState().initFromParsedRoute(latestParsedRoute, activeSession?.title)
-    }
-  }, [latestParsedRoute, activeSession?.title])
+  const lastSyncedSignatureRef = useRef<string>('');
 
   useEffect(() => {
-    useItineraryWorkspaceStore.getState().setIsGenerating(isGenerating)
-  }, [isGenerating])
+    if (!latestParsedRoute) return;
+    // 关键优化：流式生成过程中不频繁将未完稿同步到工作台，避免 token 级反复触发 Store 级联重绘
+    if (isGenerating) return;
+
+    const currentSig = `${latestParsedRoute.city}-${latestParsedRoute.spots.map((s) => s.name).join(',')}`;
+    if (lastSyncedSignatureRef.current === currentSig) return;
+
+    lastSyncedSignatureRef.current = currentSig;
+    useItineraryWorkspaceStore
+      .getState()
+      .initFromParsedRoute(latestParsedRoute, activeSession?.title);
+  }, [latestParsedRoute, activeSession?.title, isGenerating]);
+
+  useEffect(() => {
+    useItineraryWorkspaceStore.getState().setIsGenerating(isGenerating);
+  }, [isGenerating]);
 
   // 右侧气象挂件
-  const { fetchWeather, loading: weatherLoading, weather } = useWeather()
+  const { fetchWeather, loading: weatherLoading, weather } = useWeather();
   useEffect(() => {
     if (activeCity) {
-      fetchWeather(activeCity)
+      fetchWeather(activeCity);
     }
-  }, [activeCity, fetchWeather])
+  }, [activeCity, fetchWeather]);
 
   // 监听容器滚动，智能判断用户是否手动向上回看
   const handleScroll = useCallback(() => {
-    const container = scrollContainerRef.current
-    if (!container)
-      return
-    const { clientHeight, scrollHeight, scrollTop } = container
-    const isAtBottom = scrollHeight - scrollTop - clientHeight < 90
-    isAutoScrollEnabledRef.current = isAtBottom
-    setShowScrollBottomBtn(!isAtBottom)
-  }, [])
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    const { clientHeight, scrollHeight, scrollTop } = container;
+    const isAtBottom = scrollHeight - scrollTop - clientHeight < 90;
+    isAutoScrollEnabledRef.current = isAtBottom;
+    setShowScrollBottomBtn(!isAtBottom);
+  }, []);
 
   // 快捷回到底部
   const scrollToBottom = useCallback((smooth = true) => {
-    isAutoScrollEnabledRef.current = true
-    setShowScrollBottomBtn(false)
-    const container = scrollContainerRef.current
+    isAutoScrollEnabledRef.current = true;
+    setShowScrollBottomBtn(false);
+    const container = scrollContainerRef.current;
     if (container) {
       container.scrollTo({
         behavior: smooth ? 'smooth' : 'instant',
         top: container.scrollHeight,
-      })
+      });
     }
-  }, [])
+  }, []);
+
+  const hasInitializedSessionRef = useRef(false);
 
   // 1. 初始化或水合完成时加载会话或处理来自首页的定制请求
   useEffect(() => {
-    if (!_hasHydrated)
-      return
+    if (!_hasHydrated) return;
+    if (hasInitializedSessionRef.current) return;
 
     if (!hasTriggeredRef.current) {
       if (initialPrompt) {
-        hasTriggeredRef.current = true
-        const newId = createSession(initialCity ? `【${initialCity}】行程手账` : '定制行程手账')
-        setActiveSessionId(newId)
-        setMessages([])
-        sendMessage({ text: initialPrompt })
+        hasTriggeredRef.current = true;
+        hasInitializedSessionRef.current = true;
+        const newId = createSession(
+          initialCity ? `【${initialCity}】行程手账` : '定制行程手账',
+        );
+        setActiveSessionId(newId);
+        setMessages([]);
+        sendMessage({ text: initialPrompt });
         if (typeof window !== 'undefined') {
-          window.history.replaceState({}, '', '/chat')
+          window.history.replaceState({}, '', '/chat');
         }
-        return
+        return;
       }
       if (initialCity && messages.length === 0) {
-        hasTriggeredRef.current = true
-        const newId = createSession(`【${initialCity}】行程手账`)
-        setActiveSessionId(newId)
-        setMessages([])
-        sendMessage({ text: `请帮我规划一份前往【${initialCity}】的经典旅行手账路线，包含必去景点打卡、地道美食推荐与出行避坑贴士。` })
+        hasTriggeredRef.current = true;
+        hasInitializedSessionRef.current = true;
+        const newId = createSession(`【${initialCity}】行程手账`);
+        setActiveSessionId(newId);
+        setMessages([]);
+        sendMessage({
+          text: `请帮我规划一份前往【${initialCity}】的经典旅行手账路线，包含必去景点打卡、地道美食推荐与出行避坑贴士。`,
+        });
         if (typeof window !== 'undefined') {
-          window.history.replaceState({}, '', '/chat')
+          window.history.replaceState({}, '', '/chat');
         }
-        return
+        return;
       }
     }
 
     if (activeSessionId) {
-      const current = sessions.find(s => s.id === activeSessionId)
+      const current = sessions.find((s) => s.id === activeSessionId);
       if (current && current.messages.length > 0 && messages.length === 0) {
-        setMessages(current.messages)
-        const timer = setTimeout(() => scrollToBottom(false), 50)
-        return () => clearTimeout(timer)
+        setMessages(current.messages);
+        hasInitializedSessionRef.current = true;
+        const timer = setTimeout(() => scrollToBottom(false), 50);
+        return () => clearTimeout(timer);
+      } else if (current) {
+        hasInitializedSessionRef.current = true;
       }
+    } else if (sessions.length > 0) {
+      setActiveSessionId(sessions[0].id);
+      setMessages(sessions[0].messages);
+      hasInitializedSessionRef.current = true;
+      const timer = setTimeout(() => scrollToBottom(false), 50);
+      return () => clearTimeout(timer);
+    } else {
+      const newId = createSession('新的手账对话');
+      setActiveSessionId(newId);
+      hasInitializedSessionRef.current = true;
     }
-    else if (sessions.length > 0) {
-      setActiveSessionId(sessions[0].id)
-      setMessages(sessions[0].messages)
-      const timer = setTimeout(() => scrollToBottom(false), 50)
-      return () => clearTimeout(timer)
-    }
-    else {
-      const newId = createSession('新的手账对话')
-      setActiveSessionId(newId)
-    }
-  }, [_hasHydrated, initialPrompt, initialCity, activeSessionId, createSession, messages.length, sessions, setActiveSessionId, setMessages, sendMessage, scrollToBottom])
+  }, [
+    _hasHydrated,
+    initialPrompt,
+    initialCity,
+    activeSessionId,
+    createSession,
+    messages.length,
+    sessions,
+    setActiveSessionId,
+    setMessages,
+    sendMessage,
+    scrollToBottom,
+  ]);
 
   // 离开页面或卸载组件时终止进行中的流式请求
   // 注意：依赖数组必须为空，清理函数只在真正卸载时执行一次；status 通过 ref 读取最新值，
   // 否则 status 变化时清理函数会反复执行，导致流式请求刚生成首个 token 就被 stop() 中止。
   useEffect(() => {
     return () => {
-      if (statusRef.current === 'streaming' || statusRef.current === 'submitted') {
-        stopRef.current()
+      if (
+        statusRef.current === 'streaming' ||
+        statusRef.current === 'submitted'
+      ) {
+        stopRef.current();
       }
-    }
-  }, [])
+    };
+  }, []);
 
   // 2. 消息变动或生成状态变化时自动持久化到当前会话
   useEffect(() => {
-    if (!_hasHydrated || !activeSessionId || messages.length === 0)
-      return
+    if (!_hasHydrated || !activeSessionId || messages.length === 0) return;
+    // 关键优化：流式生成过程中不频繁写入存储，避免每个 token 触发全局 Store 级联重绘
+    if (status === 'streaming') return;
 
-    const lastAssistantMsg = [...messages].reverse().find(m => m.role === 'assistant')
-    const assistantText = lastAssistantMsg?.parts
-      .filter(p => p.type === 'text')
-      .map(p => (p as { text: string }).text)
-      .join('\n') || ''
-    const detectedCity = extractCity(assistantText) || undefined
+    const lastAssistantMsg = [...messages]
+      .reverse()
+      .find((m) => m.role === 'assistant');
+    const assistantText =
+      lastAssistantMsg?.parts
+        .filter((p) => p.type === 'text')
+        .map((p) => (p as { text: string }).text)
+        .join('\n') || '';
+    const detectedCity = extractCity(assistantText) || undefined;
 
-    saveMessages(activeSessionId, messages, detectedCity)
-  }, [messages, activeSessionId, _hasHydrated, saveMessages, status])
+    saveMessages(activeSessionId, messages, detectedCity);
+  }, [messages, activeSessionId, _hasHydrated, saveMessages, status]);
 
   // 3. AI 输出流式内容或消息更新时，视窗跟随移动
   useEffect(() => {
-    if (!isAutoScrollEnabledRef.current)
-      return
-    const container = scrollContainerRef.current
+    if (!isAutoScrollEnabledRef.current) return;
+    const container = scrollContainerRef.current;
     if (container) {
       requestAnimationFrame(() => {
-        container.scrollTop = container.scrollHeight
-      })
+        container.scrollTop = container.scrollHeight;
+      });
     }
-  }, [messages, status])
+  }, [messages, status]);
 
   // 新建会话
   const handleNewSession = useCallback(() => {
-    const newId = createSession('新的手账对话')
-    setActiveSessionId(newId)
-    setMessages([])
-    setInput('')
-    setShowHistoryDrawer(false)
-    isAutoScrollEnabledRef.current = true
-    setShowScrollBottomBtn(false)
-  }, [createSession, setActiveSessionId, setMessages])
+    const newId = createSession('新的手账对话');
+    setActiveSessionId(newId);
+    setMessages([]);
+    setInput('');
+    setShowHistoryDrawer(false);
+    isAutoScrollEnabledRef.current = true;
+    setShowScrollBottomBtn(false);
+    lastSyncedSignatureRef.current = '';
+    useItineraryWorkspaceStore.getState().clearWorkspace();
+  }, [createSession, setActiveSessionId, setMessages]);
 
   // 切换会话
-  const handleSwitchSession = useCallback((sessionId: string) => {
-    const target = sessions.find(s => s.id === sessionId)
-    if (!target)
-      return
-    setActiveSessionId(sessionId)
-    setMessages(target.messages || [])
-    setInput('')
-    setShowHistoryDrawer(false)
-    const timer = setTimeout(() => scrollToBottom(false), 50)
-    return () => clearTimeout(timer)
-  }, [sessions, setActiveSessionId, setMessages, scrollToBottom])
+  const handleSwitchSession = useCallback(
+    (sessionId: string) => {
+      const target = sessions.find((s) => s.id === sessionId);
+      if (!target) return;
+      setActiveSessionId(sessionId);
+      setMessages(target.messages || []);
+      setInput('');
+      setShowHistoryDrawer(false);
+      lastSyncedSignatureRef.current = '';
+      const timer = setTimeout(() => scrollToBottom(false), 50);
+      return () => clearTimeout(timer);
+    },
+    [sessions, setActiveSessionId, setMessages, scrollToBottom],
+  );
 
   // 表单提交
   function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const text = input.trim()
-    if (!text || isGenerating)
-      return
+    event.preventDefault();
+    const text = input.trim();
+    if (!text || isGenerating) return;
 
     if (!activeSessionId) {
-      const newId = createSession(text.slice(0, 16))
-      setActiveSessionId(newId)
+      const newId = createSession(text.slice(0, 16));
+      setActiveSessionId(newId);
     }
 
-    sendMessage({ text })
-    setInput('')
-    isAutoScrollEnabledRef.current = true
-    setShowScrollBottomBtn(false)
-    setTimeout(() => scrollToBottom(true), 50)
+    sendMessage({ text });
+    setInput('');
+    isAutoScrollEnabledRef.current = true;
+    setShowScrollBottomBtn(false);
+    setTimeout(() => scrollToBottom(true), 50);
   }
 
   function handleCopy(id: string, text: string) {
-    navigator.clipboard.writeText(text)
-    setCopiedId(id)
-    setTimeout(() => setCopiedId(null), 2000)
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
   }
 
   // 打开路线卡片生成弹窗
   function handleOpenRouteCard(cleanedText: string, defaultCity?: string) {
-    const parsed = parseItineraryFromMarkdown(cleanedText, defaultCity)
-    setSelectedRouteCardData(parsed)
-    setIsCardModalOpen(true)
+    const parsed = parseItineraryFromMarkdown(cleanedText, defaultCity);
+    setSelectedRouteCardData(parsed);
+    setIsCardModalOpen(true);
   }
 
   // 切换单条消息的地图视图展开状态
   function toggleMap(messageId: string) {
-    setExpandedMapMsgIds(prev => ({
+    setExpandedMapMsgIds((prev) => ({
       ...prev,
       [messageId]: !prev[messageId],
-    }))
+    }));
   }
 
   return (
@@ -475,8 +588,12 @@ function ChatContent() {
               <History className="h-4 w-4" />
             </div>
             <div>
-              <h2 className="font-serif text-sm font-bold text-stone-900 leading-tight">手账历史</h2>
-              <p className="text-[10px] text-stone-400 font-medium">AI 行程规划记录</p>
+              <h2 className="font-serif text-sm font-bold text-stone-900 leading-tight">
+                手账历史
+              </h2>
+              <p className="text-[10px] text-stone-400 font-medium">
+                AI 行程规划记录
+              </p>
             </div>
           </div>
           {/* 移动端关闭按钮 */}
@@ -520,13 +637,16 @@ function ChatContent() {
             </div>
           ) : (
             sessions.map((session) => {
-              const isActive = session.id === activeSessionId
-              const timeStr = new Date(session.updatedAt).toLocaleDateString('zh-CN', {
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                month: 'numeric',
-              })
+              const isActive = session.id === activeSessionId;
+              const timeStr = new Date(session.updatedAt).toLocaleDateString(
+                'zh-CN',
+                {
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  month: 'numeric',
+                },
+              );
 
               return (
                 <div
@@ -547,7 +667,9 @@ function ChatContent() {
                       )}
                       <h3
                         className={`text-xs truncate ${
-                          isActive ? 'text-emerald-950 font-bold' : 'text-stone-800'
+                          isActive
+                            ? 'text-emerald-950 font-bold'
+                            : 'text-stone-800'
                         }`}
                       >
                         {session.title}
@@ -559,18 +681,15 @@ function ChatContent() {
                         {timeStr}
                       </span>
                       <span>·</span>
-                      <span>
-                        {session.messages.length}
-                        条
-                      </span>
+                      <span>{session.messages.length}条</span>
                     </div>
                   </div>
 
                   <button
                     className="opacity-0 group-hover:opacity-100 p-1 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-all shrink-0 cursor-pointer"
                     onClick={(e) => {
-                      e.stopPropagation()
-                      setSessionToDelete(session)
+                      e.stopPropagation();
+                      setSessionToDelete(session);
                     }}
                     title="删除会话"
                     type="button"
@@ -578,24 +697,28 @@ function ChatContent() {
                     <Trash2 className="h-3 w-3" />
                   </button>
                 </div>
-              )
+              );
             })
           )}
 
           {/* 热门城市快捷检索 */}
           <div className="pt-4 px-1">
-            <span className="text-[11px] font-bold text-stone-400 block mb-2">热门目的地直通</span>
+            <span className="text-[11px] font-bold text-stone-400 block mb-2">
+              热门目的地直通
+            </span>
             <div className="flex flex-wrap gap-1.5">
-              {['西安', '成都', '大理', '杭州', '北京', '三亚'].map(city => (
+              {['西安', '成都', '大理', '杭州', '北京', '三亚'].map((city) => (
                 <button
                   className="px-2.5 py-1 rounded-xl bg-white border border-stone-200/80 text-[11px] font-bold text-stone-700 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-800 transition-colors cursor-pointer"
                   key={city}
-                  onClick={() => sendMessage({ text: `${city}经典游览路线与特色美食打卡推荐` })}
+                  onClick={() =>
+                    sendMessage({
+                      text: `${city}经典游览路线与特色美食打卡推荐`,
+                    })
+                  }
                   type="button"
                 >
-                  📍
-                  {' '}
-                  {city}
+                  📍 {city}
                 </button>
               ))}
             </div>
@@ -622,10 +745,15 @@ function ChatContent() {
       {/* ======================================================== */}
       <section
         className={`
-          flex-col h-full bg-[#FAF7F0] relative overflow-hidden transition-all duration-300 border-r border-stone-200/90
+          flex-col h-full bg-[#FAF7F0] relative overflow-hidden border-r border-stone-200/90
           ${mobileActiveTab === 'chat' ? 'flex flex-1 min-w-0' : 'hidden'}
-          lg:flex ${showMiddleBoard || showRightMap ? 'w-full lg:w-[380px] xl:w-[420px] 2xl:w-[460px] shrink-0' : 'flex-1 min-w-0'}
+          lg:flex ${showMiddleBoard || showRightMap ? 'shrink-0' : 'flex-1 min-w-0'}
         `}
+        style={
+          showMiddleBoard || showRightMap
+            ? { width: `${chatWidth}px` }
+            : undefined
+        }
       >
         {/* 对话视窗顶栏（无多余交叉边框） */}
         <header className="flex h-14 shrink-0 items-center justify-between border-b border-stone-200/80 bg-white/90 px-4 backdrop-blur-md z-10">
@@ -634,11 +762,15 @@ function ChatContent() {
             <button
               aria-label={showLeftSidebar ? '收起左侧边栏' : '展开左侧边栏'}
               className="hidden lg:flex p-1.5 rounded-xl text-stone-500 hover:text-stone-900 hover:bg-stone-100 cursor-pointer"
-              onClick={() => setShowLeftSidebar(prev => !prev)}
+              onClick={() => setShowLeftSidebar((prev) => !prev)}
               title={showLeftSidebar ? '收起左侧边栏' : '展开左侧边栏'}
               type="button"
             >
-              {showLeftSidebar ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
+              {showLeftSidebar ? (
+                <PanelLeftClose className="h-4 w-4" />
+              ) : (
+                <PanelLeftOpen className="h-4 w-4" />
+              )}
             </button>
             <button
               className="flex lg:hidden p-1.5 rounded-xl text-stone-500 hover:text-stone-900 hover:bg-stone-100 cursor-pointer"
@@ -694,9 +826,11 @@ function ChatContent() {
             <div className="hidden lg:flex items-center gap-1.5">
               <Button
                 className={`rounded-xl text-xs font-bold h-8 px-2.5 transition-all cursor-pointer ${
-                  showMiddleBoard ? 'bg-emerald-50 text-emerald-800 border-emerald-300 shadow-2xs' : 'text-stone-500 hover:text-stone-800'
+                  showMiddleBoard
+                    ? 'bg-emerald-50 text-emerald-800 border-emerald-300 shadow-2xs'
+                    : 'text-stone-500 hover:text-stone-800'
                 }`}
-                onClick={() => setShowMiddleBoard(prev => !prev)}
+                onClick={() => setShowMiddleBoard((prev) => !prev)}
                 size="sm"
                 title={showMiddleBoard ? '收起行程看板' : '展开行程看板'}
                 variant="outline"
@@ -705,9 +839,11 @@ function ChatContent() {
               </Button>
               <Button
                 className={`rounded-xl text-xs font-bold h-8 px-2.5 transition-all cursor-pointer ${
-                  showRightMap ? 'bg-emerald-50 text-emerald-800 border-emerald-300 shadow-2xs' : 'text-stone-500 hover:text-stone-800'
+                  showRightMap
+                    ? 'bg-emerald-50 text-emerald-800 border-emerald-300 shadow-2xs'
+                    : 'text-stone-500 hover:text-stone-800'
                 }`}
-                onClick={() => setShowRightMap(prev => !prev)}
+                onClick={() => setShowRightMap((prev) => !prev)}
                 size="sm"
                 title={showRightMap ? '收起联动地图' : '展开联动地图'}
                 variant="outline"
@@ -721,8 +857,8 @@ function ChatContent() {
               <Button
                 className="gap-1 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 hover:bg-emerald-100 text-xs font-bold shadow-2xs cursor-pointer"
                 onClick={() => {
-                  setSelectedRouteCardData(latestParsedRoute)
-                  setIsCardModalOpen(true)
+                  setSelectedRouteCardData(latestParsedRoute);
+                  setIsCardModalOpen(true);
                 }}
                 size="sm"
                 variant="outline"
@@ -761,7 +897,8 @@ function ChatContent() {
                   开启你的 AI 手账定制与地图漫游
                 </h2>
                 <p className="relative z-1 mb-2 text-xs sm:text-sm leading-relaxed text-stone-500 max-w-lg mx-auto">
-                  告诉我目的地、天数、预算和偏好，AI 将结合实时气象、真实地图路线与本地精选景点为你绘制生动路书与高清手账卡片。
+                  告诉我目的地、天数、预算和偏好，AI
+                  将结合实时气象、真实地图路线与本地精选景点为你绘制生动路书与高清手账卡片。
                 </p>
                 <div className="relative z-1 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200/80 mt-1">
                   <Sparkles className="w-3.5 h-3.5 text-amber-500" />
@@ -798,27 +935,41 @@ function ChatContent() {
           {/* 消息流 */}
           {messages.map((message) => {
             const rawText = message.parts
-              .filter(part => part.type === 'text')
-              .map(part => (part as { text: string }).text)
-              .join('\n\n')
-            const cleanedText = sanitizeAiResponse(rawText)
+              .filter((part) => part.type === 'text')
+              .map((part) => (part as { text: string }).text)
+              .join('\n\n');
+            const cleanedText = sanitizeAiResponse(rawText);
             const isToolExecuting = message.parts.some(
-              part => part.type.startsWith('tool-') || part.type === 'dynamic-tool',
-            )
+              (part) =>
+                part.type.startsWith('tool-') || part.type === 'dynamic-tool',
+            );
             const sources = extractRagSources(
               message.parts
-                .filter(part => part.type.startsWith('tool-') || part.type === 'dynamic-tool')
-                .map(part => (part as { output?: unknown }).output),
-            )
-            const detectedCity = message.role === 'assistant' ? extractCity(cleanedText) : null
+                .filter(
+                  (part) =>
+                    part.type.startsWith('tool-') ||
+                    part.type === 'dynamic-tool',
+                )
+                .map((part) => (part as { output?: unknown }).output),
+            );
+            const detectedCity =
+              message.role === 'assistant' ? extractCity(cleanedText) : null;
 
-            const parsedRoute = message.role === 'assistant' && cleanedText
-              ? parseItineraryFromMarkdown(cleanedText, detectedCity || undefined)
-              : null
-            const hasSpots = Boolean(parsedRoute && parsedRoute.spots.length >= 2)
-            const isMapExpanded = expandedMapMsgIds[message.id] ?? true
-            const isLastAssistant = message.id === messages[messages.length - 1]?.id && message.role === 'assistant'
-            const isStillGenerating = isGenerating && isLastAssistant
+            const parsedRoute =
+              message.role === 'assistant' && cleanedText
+                ? parseItineraryFromMarkdown(
+                    cleanedText,
+                    detectedCity || undefined,
+                  )
+                : null;
+            const hasSpots = Boolean(
+              parsedRoute && parsedRoute.spots.length >= 2,
+            );
+            const isMapExpanded = expandedMapMsgIds[message.id] ?? true;
+            const isLastAssistant =
+              message.id === messages[messages.length - 1]?.id &&
+              message.role === 'assistant';
+            const isStillGenerating = isGenerating && isLastAssistant;
 
             return (
               <div
@@ -873,7 +1024,12 @@ function ChatContent() {
                               {/* 生成路线卡片 */}
                               <button
                                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition-colors cursor-pointer"
-                                onClick={() => handleOpenRouteCard(cleanedText, detectedCity || undefined)}
+                                onClick={() =>
+                                  handleOpenRouteCard(
+                                    cleanedText,
+                                    detectedCity || undefined,
+                                  )
+                                }
                                 title="生成可保存为图片或分享的手账卡片"
                                 type="button"
                               >
@@ -884,13 +1040,17 @@ function ChatContent() {
                               {/* 复制文案 */}
                               <button
                                 className="inline-flex items-center gap-1 text-stone-500 hover:text-emerald-700 transition-colors cursor-pointer px-1 py-1"
-                                onClick={() => handleCopy(message.id, cleanedText)}
+                                onClick={() =>
+                                  handleCopy(message.id, cleanedText)
+                                }
                                 type="button"
                               >
                                 {copiedId === message.id ? (
                                   <>
                                     <Check className="w-3.5 h-3.5 text-emerald-600" />
-                                    <span className="text-emerald-600 font-semibold">已复制</span>
+                                    <span className="text-emerald-600 font-semibold">
+                                      已复制
+                                    </span>
                                   </>
                                 ) : (
                                   <>
@@ -915,7 +1075,9 @@ function ChatContent() {
                                       <Compass className="w-3.5 h-3.5 text-amber-700" />
                                       <span>手账贴士 & 避坑指南</span>
                                     </div>
-                                    <div className="leading-relaxed text-stone-700">{children}</div>
+                                    <div className="leading-relaxed text-stone-700">
+                                      {children}
+                                    </div>
                                   </blockquote>
                                 ),
                                 h1: ({ children }) => (
@@ -925,25 +1087,55 @@ function ChatContent() {
                                   </h1>
                                 ),
                                 h2: ({ children }) => {
-                                  const text = String(children)
-                                  let icon = <MapPin className="w-4 h-4 text-emerald-700 shrink-0" />
-                                  if (text.includes('美食') || text.includes('吃'))
-                                    icon = <Utensils className="w-4 h-4 text-amber-600 shrink-0" />
-                                  else if (text.includes('住宿') || text.includes('酒店') || text.includes('民宿'))
-                                    icon = <Hotel className="w-4 h-4 text-indigo-600 shrink-0" />
-                                  else if (text.includes('交通') || text.includes('自驾') || text.includes('出行'))
-                                    icon = <Car className="w-4 h-4 text-sky-600 shrink-0" />
-                                  else if (text.includes('路线') || text.includes('行程'))
-                                    icon = <Route className="w-4 h-4 text-emerald-700 shrink-0" />
-                                  else if (text.includes('贴士') || text.includes('注意') || text.includes('指南'))
-                                    icon = <Compass className="w-4 h-4 text-amber-700 shrink-0" />
+                                  const text = String(children);
+                                  let icon = (
+                                    <MapPin className="w-4 h-4 text-emerald-700 shrink-0" />
+                                  );
+                                  if (
+                                    text.includes('美食') ||
+                                    text.includes('吃')
+                                  )
+                                    icon = (
+                                      <Utensils className="w-4 h-4 text-amber-600 shrink-0" />
+                                    );
+                                  else if (
+                                    text.includes('住宿') ||
+                                    text.includes('酒店') ||
+                                    text.includes('民宿')
+                                  )
+                                    icon = (
+                                      <Hotel className="w-4 h-4 text-indigo-600 shrink-0" />
+                                    );
+                                  else if (
+                                    text.includes('交通') ||
+                                    text.includes('自驾') ||
+                                    text.includes('出行')
+                                  )
+                                    icon = (
+                                      <Car className="w-4 h-4 text-sky-600 shrink-0" />
+                                    );
+                                  else if (
+                                    text.includes('路线') ||
+                                    text.includes('行程')
+                                  )
+                                    icon = (
+                                      <Route className="w-4 h-4 text-emerald-700 shrink-0" />
+                                    );
+                                  else if (
+                                    text.includes('贴士') ||
+                                    text.includes('注意') ||
+                                    text.includes('指南')
+                                  )
+                                    icon = (
+                                      <Compass className="w-4 h-4 text-amber-700 shrink-0" />
+                                    );
 
                                   return (
                                     <h2 className="font-serif text-base font-bold text-stone-900 mt-5 mb-2.5 flex items-center gap-2 border-l-4 border-emerald-700 pl-3 py-1 bg-emerald-50/60 rounded-r-xl">
                                       {icon}
                                       <span>{children}</span>
                                     </h2>
-                                  )
+                                  );
                                 },
                                 h3: ({ children }) => (
                                   <h3 className="font-serif text-sm font-bold text-emerald-950 mt-4 mb-2 flex items-center gap-2">
@@ -953,7 +1145,9 @@ function ChatContent() {
                                 ),
                                 li: ({ children }) => (
                                   <li className="text-stone-700 leading-relaxed flex items-start gap-2 text-xs sm:text-sm my-1">
-                                    <span className="text-emerald-700 font-bold shrink-0 mt-0.5">•</span>
+                                    <span className="text-emerald-700 font-bold shrink-0 mt-0.5">
+                                      •
+                                    </span>
                                     <span className="flex-1">{children}</span>
                                   </li>
                                 ),
@@ -1001,18 +1195,16 @@ function ChatContent() {
                               <div className="flex items-center justify-between text-xs text-stone-500 font-bold">
                                 <span className="flex items-center gap-1.5 text-emerald-800">
                                   <Sparkles className="w-3.5 h-3.5 text-emerald-700" />
-                                  <span>打卡点位快捷透视 (可联动看板与地图)</span>
+                                  <span>
+                                    打卡点位快捷透视 (可联动看板与地图)
+                                  </span>
                                 </span>
                                 <span className="text-[10px] text-stone-400">
-                                  共
-                                  {' '}
-                                  {parsedRoute.spots.length}
-                                  {' '}
-                                  处
+                                  共 {parsedRoute.spots.length} 处
                                 </span>
                               </div>
                               <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-                                {parsedRoute.spots.map(sp => (
+                                {parsedRoute.spots.map((sp) => (
                                   <InlinePoiCard
                                     city={parsedRoute.city}
                                     coverImage={sp.coverImage}
@@ -1040,7 +1232,9 @@ function ChatContent() {
                                     onClick={() => toggleMap(message.id)}
                                     type="button"
                                   >
-                                    {isMapExpanded ? '折叠地图 ▲' : '展开地图 ▼'}
+                                    {isMapExpanded
+                                      ? '折叠地图 ▲'
+                                      : '展开地图 ▼'}
                                   </button>
                                 )}
                               </div>
@@ -1058,10 +1252,7 @@ function ChatContent() {
                                         】路线拓扑...
                                       </span>
                                       <span className="text-[10px] text-emerald-800 font-semibold bg-emerald-100 px-2 py-0.5 rounded-full">
-                                        已识别
-                                        {' '}
-                                        {parsedRoute.spots.length}
-                                        {' '}
+                                        已识别 {parsedRoute.spots.length}{' '}
                                         处打卡点
                                       </span>
                                     </div>
@@ -1089,11 +1280,7 @@ function ChatContent() {
                             <div className="mt-4 pt-3.5 border-t border-stone-200/80 flex flex-wrap items-center gap-2">
                               <span className="text-xs font-bold text-stone-500 flex items-center gap-1">
                                 <Compass className="w-3.5 h-3.5 text-emerald-700" />
-                                <span>
-                                  {detectedCity}
-                                  {' '}
-                                  探索直达:
-                                </span>
+                                <span>{detectedCity} 探索直达:</span>
                               </span>
                               <Link
                                 className="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition-colors"
@@ -1112,11 +1299,7 @@ function ChatContent() {
                                 href={`/weather?city=${encodeURIComponent(detectedCity)}`}
                               >
                                 <Sun className="w-3 h-3" />
-                                <span>
-                                  {detectedCity}
-                                  {' '}
-                                  气象预报
-                                </span>
+                                <span>{detectedCity} 气象预报</span>
                               </Link>
                               <Link
                                 className="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-amber-50 border border-amber-200 text-xs font-bold text-amber-800 hover:bg-amber-100 transition-colors"
@@ -1142,7 +1325,7 @@ function ChatContent() {
                           '🍜 推荐路线附近的特色美食',
                           '🌿 增加适合拍照打卡的小众景点',
                           '🚗 提供交通换乘与出行指南',
-                        ].map(pill => (
+                        ].map((pill) => (
                           <button
                             className="inline-flex items-center gap-1 rounded-full border border-stone-200/90 bg-white/90 px-3 py-1 text-[11px] font-bold text-stone-700 shadow-2xs transition-all hover:-translate-y-0.5 hover:border-emerald-700/60 hover:bg-emerald-50 hover:text-emerald-900 cursor-pointer"
                             disabled={isGenerating}
@@ -1158,7 +1341,7 @@ function ChatContent() {
                   </div>
                 )}
               </div>
-            )
+            );
           })}
 
           {/* 正在连接 AI 状态 */}
@@ -1173,7 +1356,9 @@ function ChatContent() {
                 <span className="h-1.5 w-1.5 animate-[dotBounce_1.2s_infinite] rounded-full bg-emerald-700" />
                 <span className="h-1.5 w-1.5 animate-[dotBounce_1.2s_infinite_0.15s] rounded-full bg-emerald-700" />
                 <span className="h-1.5 w-1.5 animate-[dotBounce_1.2s_infinite_0.3s] rounded-full bg-emerald-700" />
-                <span className="text-xs text-stone-500 font-medium ml-1.5">正在连接 AI 规划师...</span>
+                <span className="text-xs text-stone-500 font-medium ml-1.5">
+                  正在连接 AI 规划师...
+                </span>
               </div>
               <button
                 className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white border border-stone-300 text-[11px] font-bold text-red-600 hover:bg-red-50 transition-all cursor-pointer shadow-2xs ml-2"
@@ -1212,7 +1397,9 @@ function ChatContent() {
               onClick={() => scrollToBottom(true)}
               type="button"
             >
-              <ChevronDown className={`h-4 w-4 ${isGenerating ? 'animate-bounce text-amber-300' : ''}`} />
+              <ChevronDown
+                className={`h-4 w-4 ${isGenerating ? 'animate-bounce text-amber-300' : ''}`}
+              />
               <span>{isGenerating ? '视角跟随' : '回到底部'}</span>
             </button>
           </div>
@@ -1241,8 +1428,12 @@ function ChatContent() {
             <Input
               className="h-11 flex-1 rounded-xl border-none bg-transparent pl-3 text-sm text-stone-900 placeholder:text-stone-400 focus-visible:ring-0 shadow-none"
               disabled={isGenerating}
-              onChange={event => setInput(event.target.value)}
-              placeholder={isGenerating ? 'AI 正在绘制路书中...' : '例如：成都美食与大熊猫观赏攻略'}
+              onChange={(event) => setInput(event.target.value)}
+              placeholder={
+                isGenerating
+                  ? 'AI 正在绘制路书中...'
+                  : '例如：成都美食与大熊猫观赏攻略'
+              }
               value={input}
             />
             {isGenerating ? (
@@ -1270,25 +1461,54 @@ function ChatContent() {
         </div>
       </section>
 
+      {/* 栏目1与栏目2之间的拖拽手柄 */}
+      {showMiddleBoard && (
+        <ResizeHandle
+          ariaLabel="调节对话栏宽度"
+          maxWidth={650}
+          minWidth={320}
+          onResize={(w) => setChatWidth(w)}
+          onResizeEnd={(w) => saveWidths(w, undefined)}
+          width={chatWidth}
+        />
+      )}
+
       {/* ======================================================== */}
       {/* 2. 第二栏：结构化多日行程编排看板 (对标携程 Itinerary Board) */}
       {/* ======================================================== */}
       <section
         className={`
-          flex-col h-full bg-[#FDFBF7] transition-all duration-300 border-r border-stone-200/90
+          flex-col h-full bg-[#FDFBF7] border-r border-stone-200/90
           ${mobileActiveTab === 'board' ? 'flex flex-1 min-w-0' : 'hidden'}
-          lg:flex ${showMiddleBoard ? 'w-full lg:w-[380px] xl:w-[410px] 2xl:w-[450px] shrink-0' : 'hidden'}
+          lg:flex ${showMiddleBoard ? (showRightMap ? 'shrink-0' : 'flex-1 min-w-0') : 'hidden'}
         `}
+        style={
+          showMiddleBoard && showRightMap
+            ? { width: `${boardWidth}px` }
+            : undefined
+        }
       >
         <ItineraryBoard
           onExportCard={() => {
             if (latestParsedRoute) {
-              setSelectedRouteCardData(latestParsedRoute)
-              setIsCardModalOpen(true)
+              setSelectedRouteCardData(latestParsedRoute);
+              setIsCardModalOpen(true);
             }
           }}
         />
       </section>
+
+      {/* 栏目2与栏目3之间的拖拽手柄 */}
+      {showMiddleBoard && showRightMap && (
+        <ResizeHandle
+          ariaLabel="调节行程看板宽度"
+          maxWidth={680}
+          minWidth={320}
+          onResize={(w) => setBoardWidth(w)}
+          onResizeEnd={(w) => saveWidths(undefined, w)}
+          width={boardWidth}
+        />
+      )}
 
       {/* ======================================================== */}
       {/* 3. 第三栏：沉浸式常驻联动大地图 (对标携程 Map Explorer)     */}
@@ -1297,7 +1517,7 @@ function ChatContent() {
         className={`
           flex-col h-full bg-stone-100 transition-all duration-300
           ${mobileActiveTab === 'map' ? 'flex flex-1 min-w-0' : 'hidden'}
-          lg:flex ${showRightMap ? 'flex-1 min-w-[360px]' : 'hidden'}
+          lg:flex ${showRightMap ? 'flex-1 min-w-[320px]' : 'hidden'}
         `}
       >
         <TravelMapView
@@ -1322,7 +1542,10 @@ function ChatContent() {
       {/* 5. 优雅二次确认弹窗：单个会话删除与清空全部会话          */}
       {/* ======================================================== */}
       {/* 单个会话删除确认弹窗 */}
-      <Dialog onOpenChange={open => !open && setSessionToDelete(null)} open={Boolean(sessionToDelete)}>
+      <Dialog
+        onOpenChange={(open) => !open && setSessionToDelete(null)}
+        open={Boolean(sessionToDelete)}
+      >
         <DialogContent className="rounded-3xl border border-stone-200 bg-[#FDFBF7] p-6 max-w-sm">
           <DialogHeader>
             <DialogTitle className="font-serif text-base font-bold text-stone-900 flex items-center gap-2">
@@ -1331,7 +1554,9 @@ function ChatContent() {
             </DialogTitle>
             <DialogDescription className="text-xs text-stone-500 pt-2 leading-relaxed">
               确定要删除「
-              <span className="font-semibold text-stone-800">{sessionToDelete?.title}</span>
+              <span className="font-semibold text-stone-800">
+                {sessionToDelete?.title}
+              </span>
               」吗？此操作将永久清除该手账的所有聊天记录与路线规划。
             </DialogDescription>
           </DialogHeader>
@@ -1362,10 +1587,10 @@ function ChatContent() {
               <span>清空所有历史对话？</span>
             </DialogTitle>
             <DialogDescription className="text-xs text-stone-500 pt-2 leading-relaxed">
-              确定清空所有手账历史对话吗（共
-              {' '}
-              <span className="font-bold text-stone-800">{sessions.length}</span>
-              {' '}
+              确定清空所有手账历史对话吗（共{' '}
+              <span className="font-bold text-stone-800">
+                {sessions.length}
+              </span>{' '}
               个会话）？此操作无法撤销。
             </DialogDescription>
           </DialogHeader>
@@ -1387,20 +1612,21 @@ function ChatContent() {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
 
 export default function ChatPage() {
   return (
-    <Suspense fallback={(
-      <div className="h-full w-full bg-[#FAF7F0] flex items-center justify-center">
-        <div className="text-emerald-800 text-sm font-bold animate-pulse flex items-center gap-2">
-          <span>🗺️ 正在唤醒 AI 旅行顾问...</span>
+    <Suspense
+      fallback={
+        <div className="h-full w-full bg-[#FAF7F0] flex items-center justify-center">
+          <div className="text-emerald-800 text-sm font-bold animate-pulse flex items-center gap-2">
+            <span>🗺️ 正在唤醒 AI 旅行顾问...</span>
+          </div>
         </div>
-      </div>
-    )}
+      }
     >
       <ChatContent />
     </Suspense>
-  )
+  );
 }

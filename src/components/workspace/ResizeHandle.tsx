@@ -44,7 +44,10 @@ export function ResizeHandle({
         const deltaX = moveEvent.clientX - startXRef.current;
         const adjustedDelta = direction === 'right' ? deltaX : -deltaX;
         const rawNewWidth = startWidthRef.current + adjustedDelta;
-        const clampedWidth = Math.max(minWidth, Math.min(maxWidth, rawNewWidth));
+        const clampedWidth = Math.max(
+          minWidth,
+          Math.min(maxWidth, rawNewWidth),
+        );
 
         latestWidthRef.current = clampedWidth;
         onResize(clampedWidth);

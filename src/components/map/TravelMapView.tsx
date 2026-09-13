@@ -161,7 +161,8 @@ export function TravelMapView({
         name: fallback.name,
         openingHours: fallback.openHours || '全天开放',
         priceText:
-          fallback.priceText || (fallback.ticketType === 'free' ? '免费' : '收费'),
+          fallback.priceText ||
+          (fallback.ticketType === 'free' ? '免费' : '收费'),
         rating: fallback.rating || 4.8,
         recommendedDuration: fallback.durationText || '1-2小时',
         reviewCount: fallback.reviewCount || 520,

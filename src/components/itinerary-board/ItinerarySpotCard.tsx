@@ -15,6 +15,7 @@ import {
 import Image from 'next/image'
 import { useState } from 'react'
 
+import { BookingResourceCard } from '@/components/booking/BookingResourceCard'
 import { generateAmapSpotUrl } from '@/lib/map/amap'
 import { useItineraryWorkspaceStore } from '@/stores/itineraryWorkspace'
 
@@ -216,6 +217,13 @@ export function ItinerarySpotCard({
             <p className="line-clamp-1 text-[11px] text-stone-500 pt-0.5">
               {spot.summary}
             </p>
+          )}
+
+          {/* 国内 OTA 门票预约与预订微卡 */}
+          {spot.bookingResource && (
+            <div onClick={e => e.stopPropagation()}>
+              <BookingResourceCard resource={spot.bookingResource} />
+            </div>
           )}
         </div>
       </div>

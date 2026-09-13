@@ -17,6 +17,7 @@ import {
   Trash2,
 } from 'lucide-react'
 import { useItineraryWorkspaceStore } from '@/stores/itineraryWorkspace'
+import { BudgetSummaryBar } from '@/components/booking/BudgetSummaryBar'
 import { CommuteTimelineSegment } from './CommuteTimelineSegment'
 import { ItinerarySpotCard } from './ItinerarySpotCard'
 
@@ -388,6 +389,11 @@ export function ItineraryBoard({ className = '' }: ItineraryBoardProps) {
                     </React.Fragment>
                   )
                 })}
+              </div>
+
+              {/* 当日出行预算明细条 */}
+              <div className="pt-2">
+                <BudgetSummaryBar dayNum={currentDay.day} />
               </div>
             </div>
           )

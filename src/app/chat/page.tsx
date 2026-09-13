@@ -40,6 +40,9 @@ import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'rea
 
 import ReactMarkdown from 'react-markdown'
 import { TravelRouteCardModal } from '@/components/card/TravelRouteCardModal'
+import { InlinePoiCard } from '@/components/chat/InlinePoiCard'
+import { ThinkingAccordion } from '@/components/chat/ThinkingAccordion'
+import { ItineraryBoard } from '@/components/itinerary-board/ItineraryBoard'
 import { TravelMapView } from '@/components/map/TravelMapView'
 import { RAGSource } from '@/components/RAGSource'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -62,6 +65,7 @@ import { generateAmapRouteUrl } from '@/lib/map/amap'
 import { parseItineraryFromMarkdown } from '@/lib/map/route-parser'
 import { useAuthStore } from '@/stores/auth'
 import { useChatHistoryStore } from '@/stores/chatHistory'
+import { useItineraryWorkspaceStore } from '@/stores/itineraryWorkspace'
 
 const KNOWN_CITIES = [
   '成都',
@@ -129,7 +133,9 @@ function ChatContent() {
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [showHistoryDrawer, setShowHistoryDrawer] = useState(false)
   const [showLeftSidebar, setShowLeftSidebar] = useState(true)
-  const [showRightSidebar, setShowRightSidebar] = useState(true)
+  const [showMiddleBoard, setShowMiddleBoard] = useState(true)
+  const [showRightMap, setShowRightMap] = useState(true)
+  const [mobileActiveTab, setMobileActiveTab] = useState<'chat' | 'board' | 'map'>('chat')
   const [expandedMapMsgIds, setExpandedMapMsgIds] = useState<Record<string, boolean>>({})
 
   // 卡片弹窗状态
@@ -243,6 +249,17 @@ function ChatContent() {
     }
     return null
   }, [messages, activeCity])
+
+  // 同步最新解析行程至多日工作台协同状态机
+  useEffect(() => {
+    if (latestParsedRoute) {
+      useItineraryWorkspaceStore.getState().initFromParsedRoute(latestParsedRoute, activeSession?.title)
+    }
+  }, [latestParsedRoute, activeSession?.title])
+
+  useEffect(() => {
+    useItineraryWorkspaceStore.getState().setIsGenerating(isGenerating)
+  }, [isGenerating])
 
   // 右侧气象挂件
   const { fetchWeather, loading: weatherLoading, weather } = useWeather()
@@ -601,9 +618,15 @@ function ChatContent() {
       </aside>
 
       {/* ======================================================== */}
-      {/* 2. 中间主体对话视窗                                      */}
+      {/* 2. 第一栏：AI 对话与思考视窗                              */}
       {/* ======================================================== */}
-      <section className="flex flex-1 min-w-0 h-full flex-col bg-[#FAF7F0] relative overflow-hidden">
+      <section
+        className={`
+          flex-col h-full bg-[#FAF7F0] relative overflow-hidden transition-all duration-300 border-r border-stone-200/90
+          ${mobileActiveTab === 'chat' ? 'flex flex-1 min-w-0' : 'hidden'}
+          lg:flex ${showMiddleBoard || showRightMap ? 'w-full lg:w-[380px] xl:w-[420px] 2xl:w-[460px] shrink-0' : 'flex-1 min-w-0'}
+        `}
+      >
         {/* 对话视窗顶栏（无多余交叉边框） */}
         <header className="flex h-14 shrink-0 items-center justify-between border-b border-stone-200/80 bg-white/90 px-4 backdrop-blur-md z-10">
           <div className="flex items-center gap-2 min-w-0">
@@ -641,7 +664,58 @@ function ChatContent() {
           </div>
 
           {/* 顶栏右侧操作 */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* 移动端视图切换 Tabs */}
+            <div className="flex lg:hidden items-center bg-stone-100 p-0.5 rounded-xl text-xs font-bold border border-stone-200/80">
+              <button
+                className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${mobileActiveTab === 'chat' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-stone-500'}`}
+                onClick={() => setMobileActiveTab('chat')}
+                type="button"
+              >
+                💬 对话
+              </button>
+              <button
+                className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${mobileActiveTab === 'board' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-stone-500'}`}
+                onClick={() => setMobileActiveTab('board')}
+                type="button"
+              >
+                📋 看板
+              </button>
+              <button
+                className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${mobileActiveTab === 'map' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-stone-500'}`}
+                onClick={() => setMobileActiveTab('map')}
+                type="button"
+              >
+                🗺️ 地图
+              </button>
+            </div>
+
+            {/* 桌面端栏目展开/折叠控制 */}
+            <div className="hidden lg:flex items-center gap-1.5">
+              <Button
+                className={`rounded-xl text-xs font-bold h-8 px-2.5 transition-all cursor-pointer ${
+                  showMiddleBoard ? 'bg-emerald-50 text-emerald-800 border-emerald-300 shadow-2xs' : 'text-stone-500 hover:text-stone-800'
+                }`}
+                onClick={() => setShowMiddleBoard(prev => !prev)}
+                size="sm"
+                title={showMiddleBoard ? '收起行程看板' : '展开行程看板'}
+                variant="outline"
+              >
+                <span>📋 行程看板</span>
+              </Button>
+              <Button
+                className={`rounded-xl text-xs font-bold h-8 px-2.5 transition-all cursor-pointer ${
+                  showRightMap ? 'bg-emerald-50 text-emerald-800 border-emerald-300 shadow-2xs' : 'text-stone-500 hover:text-stone-800'
+                }`}
+                onClick={() => setShowRightMap(prev => !prev)}
+                size="sm"
+                title={showRightMap ? '收起联动地图' : '展开联动地图'}
+                variant="outline"
+              >
+                <span>🗺️ 联动地图</span>
+              </Button>
+            </div>
+
             {/* 导出卡片快捷入口 */}
             {latestParsedRoute && (
               <Button
@@ -654,7 +728,7 @@ function ChatContent() {
                 variant="outline"
               >
                 <Share2 className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">导出手账长图</span>
+                <span className="hidden sm:inline">导出手账</span>
               </Button>
             )}
 
@@ -667,17 +741,6 @@ function ChatContent() {
               <Plus className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">新建</span>
             </Button>
-
-            {/* 右侧边栏切换按钮 */}
-            <button
-              aria-label={showRightSidebar ? '收起右侧行程看板' : '展开右侧行程看板'}
-              className="hidden xl:flex p-1.5 rounded-xl text-stone-500 hover:text-stone-900 hover:bg-stone-100 cursor-pointer"
-              onClick={() => setShowRightSidebar(prev => !prev)}
-              title={showRightSidebar ? '收起右侧行程看板' : '展开右侧行程看板'}
-              type="button"
-            >
-              {showRightSidebar ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4" />}
-            </button>
           </div>
         </header>
 
@@ -839,6 +902,9 @@ function ChatContent() {
                             </div>
                           </div>
 
+                          {/* 深度思考推演折叠区 (对标 DeepSeek-R1 / 携程深度思考) */}
+                          <ThinkingAccordion isGenerating={isStillGenerating} />
+
                           {/* Markdown 富文本 */}
                           <div className="text-sm leading-relaxed text-stone-800 space-y-3">
                             <ReactMarkdown
@@ -928,6 +994,37 @@ function ChatContent() {
                               {cleanedText}
                             </ReactMarkdown>
                           </div>
+
+                          {/* 图文打卡微卡片序列 (对标携程线路明细微卡片) */}
+                          {hasSpots && parsedRoute && (
+                            <div className="mt-4 pt-3.5 border-t border-stone-200/80 space-y-2">
+                              <div className="flex items-center justify-between text-xs text-stone-500 font-bold">
+                                <span className="flex items-center gap-1.5 text-emerald-800">
+                                  <Sparkles className="w-3.5 h-3.5 text-emerald-700" />
+                                  <span>打卡点位快捷透视 (可联动看板与地图)</span>
+                                </span>
+                                <span className="text-[10px] text-stone-400">
+                                  共
+                                  {' '}
+                                  {parsedRoute.spots.length}
+                                  {' '}
+                                  处
+                                </span>
+                              </div>
+                              <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+                                {parsedRoute.spots.map(sp => (
+                                  <InlinePoiCard
+                                    city={parsedRoute.city}
+                                    coverImage={sp.coverImage}
+                                    durationText={sp.durationText}
+                                    key={sp.name}
+                                    name={sp.name}
+                                    rating={sp.rating}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          )}
 
                           {/* 路线与地图呈现 */}
                           {hasSpots && parsedRoute && (
@@ -1174,210 +1271,41 @@ function ChatContent() {
       </section>
 
       {/* ======================================================== */}
-      {/* 3. 右侧智能行程与气象辅助看板（桌面端充实两侧布局）      */}
+      {/* 2. 第二栏：结构化多日行程编排看板 (对标携程 Itinerary Board) */}
       {/* ======================================================== */}
-      <aside
+      <section
         className={`
-          hidden xl:flex flex-col bg-[#FDFBF7] border-l border-stone-200/90
-          transition-all duration-300 ease-in-out shrink-0 overflow-y-auto p-4 space-y-4 no-scrollbar
-          ${showRightSidebar ? 'w-[310px] 2xl:w-[350px]' : 'w-0 border-l-0 p-0 overflow-hidden'}
+          flex-col h-full bg-[#FDFBF7] transition-all duration-300 border-r border-stone-200/90
+          ${mobileActiveTab === 'board' ? 'flex flex-1 min-w-0' : 'hidden'}
+          lg:flex ${showMiddleBoard ? 'w-full lg:w-[380px] xl:w-[410px] 2xl:w-[450px] shrink-0' : 'hidden'}
         `}
       >
-        {/* 看板顶栏 */}
-        <div className="flex items-center justify-between pb-2 border-b border-stone-200/80">
-          <div className="flex items-center gap-1.5 font-bold text-stone-900 text-xs">
-            <Sparkles className="w-4 h-4 text-emerald-700" />
-            <span>智能行程速览 & 气象看板</span>
-          </div>
-          {activeCity && (
-            <Badge className="bg-emerald-100 text-emerald-800 border-none font-bold text-[10px]" variant="secondary">
-              📍
-              {' '}
-              {activeCity}
-            </Badge>
-          )}
-        </div>
+        <ItineraryBoard
+          onExportCard={() => {
+            if (latestParsedRoute) {
+              setSelectedRouteCardData(latestParsedRoute)
+              setIsCardModalOpen(true)
+            }
+          }}
+        />
+      </section>
 
-        {/* 模块 1: 当前行程拓扑透视 */}
-        {latestParsedRoute ? (
-          <div className="rounded-2xl border border-stone-200/90 bg-white p-4 shadow-2xs space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="font-serif text-xs font-bold text-stone-900 flex items-center gap-1">
-                <Route className="w-3.5 h-3.5 text-emerald-700" />
-                <span>
-                  【
-                  {latestParsedRoute.city}
-                  】打卡路线
-                </span>
-              </span>
-              <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full">
-                共
-                {latestParsedRoute.spots.length}
-                站
-              </span>
-            </div>
-
-            {/* 打卡点链条 */}
-            <div className="space-y-1.5">
-              {latestParsedRoute.spots.map((spot, idx) => (
-                <div className="flex items-center gap-2 text-xs" key={spot.name}>
-                  <span className="flex h-4 w-4 items-center justify-center rounded-md bg-emerald-800 text-[10px] font-black text-white shrink-0">
-                    {idx + 1}
-                  </span>
-                  <span className="font-bold text-stone-800 truncate flex-1">{spot.name}</span>
-                  {idx < latestParsedRoute.spots.length - 1 && (
-                    <ChevronRight className="w-3 h-3 text-stone-300 shrink-0" />
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {/* 快捷操作 */}
-            <div className="pt-2 border-t border-stone-100 flex items-center gap-2">
-              <Button
-                className="flex-1 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-bold h-8 cursor-pointer"
-                onClick={() => {
-                  setSelectedRouteCardData(latestParsedRoute)
-                  setIsCardModalOpen(true)
-                }}
-                size="sm"
-              >
-                <Share2 className="w-3 h-3 mr-1" />
-                <span>导出手账卡片</span>
-              </Button>
-
-              <a
-                className="inline-flex items-center justify-center px-2.5 h-8 rounded-xl bg-stone-100 hover:bg-stone-200 border border-stone-200 text-stone-700 text-[11px] font-bold transition-colors"
-                href={generateAmapRouteUrl(
-                  latestParsedRoute.spots[0],
-                  latestParsedRoute.spots[latestParsedRoute.spots.length - 1],
-                  latestParsedRoute.city,
-                  'car',
-                  latestParsedRoute.spots.slice(1, -1),
-                )}
-                rel="noreferrer"
-                target="_blank"
-                title="在高德地图中打开全程导航"
-              >
-                <ExternalLink className="w-3 h-3" />
-              </a>
-            </div>
-          </div>
-        ) : (
-          <div className="rounded-2xl border border-dashed border-stone-200 bg-white/60 p-4 text-center text-xs text-stone-400">
-            <Route className="h-6 w-6 mx-auto mb-1.5 opacity-40 text-emerald-700" />
-            <p className="font-medium text-stone-600 mb-0.5">暂无解析路线</p>
-            <p className="text-[11px]">向 AI 发送城市旅行规划，右侧将自动呈现打卡清单与导航透视</p>
-          </div>
-        )}
-
-        {/* 模块 2: 当前目的地实时气象 */}
-        {activeCity && (
-          <div className="rounded-2xl border border-stone-200/90 bg-white p-4 shadow-2xs space-y-2.5">
-            <div className="flex items-center justify-between">
-              <span className="font-serif text-xs font-bold text-stone-900 flex items-center gap-1">
-                <Sun className="w-3.5 h-3.5 text-amber-500" />
-                <span>
-                  {activeCity}
-                  实时气象
-                </span>
-              </span>
-              <Link
-                className="text-[11px] font-semibold text-emerald-800 hover:underline flex items-center gap-0.5"
-                href={`/weather?city=${encodeURIComponent(activeCity)}`}
-              >
-                <span>7日预报</span>
-                <ExternalLink className="w-2.5 h-2.5" />
-              </Link>
-            </div>
-
-            {weatherLoading ? (
-              <div className="py-3 text-center text-xs text-stone-400 animate-pulse">
-                正在同步气象台数据...
-              </div>
-            ) : weather ? (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between bg-stone-50 p-2.5 rounded-xl border border-stone-100">
-                  <div>
-                    <div className="text-xl font-serif font-black text-stone-900">
-                      {weather.temperature}
-                      °C
-                    </div>
-                    <div className="text-[11px] text-stone-500 font-medium">{weather.weatherDesc}</div>
-                  </div>
-                  <div className="text-right text-[10px] text-stone-400 space-y-0.5">
-                    {weather.humidity !== undefined && (
-                      <div className="flex items-center justify-end gap-1">
-                        <Umbrella className="w-3 h-3 text-sky-500" />
-                        <span>
-                          湿度
-                          {' '}
-                          {weather.humidity}
-                          %
-                        </span>
-                      </div>
-                    )}
-                    {weather.feelsLike !== undefined && (
-                      <div className="flex items-center justify-end gap-1">
-                        <Wind className="w-3 h-3 text-emerald-600" />
-                        <span>
-                          体感
-                          {' '}
-                          {weather.feelsLike}
-                          °C
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="text-[11px] text-stone-600 bg-amber-50/70 border border-amber-200/60 p-2 rounded-xl flex items-start gap-1.5">
-                  <Sparkles className="w-3 h-3 text-amber-600 shrink-0 mt-0.5" />
-                  <span>
-                    出行建议：气温适宜，
-                    {weather.weatherDesc.includes('雨') ? '请携带雨具并注意防滑' : '适合户外漫游与拍照打卡'}
-                  </span>
-                </div>
-              </div>
-            ) : (
-              <div className="text-xs text-stone-400 py-2 text-center">暂未获取到实时天气</div>
-            )}
-          </div>
-        )}
-
-        {/* 模块 3: 美食风味小抄 */}
-        {latestParsedRoute && latestParsedRoute.food.length > 0 && (
-          <div className="rounded-2xl border border-stone-200/90 bg-white p-4 shadow-2xs space-y-2">
-            <div className="font-serif text-xs font-bold text-stone-900 flex items-center gap-1">
-              <Utensils className="w-3.5 h-3.5 text-amber-600" />
-              <span>特色风味小抄</span>
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {latestParsedRoute.food.map(f => (
-                <span
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-amber-50 border border-amber-200 text-[11px] font-bold text-amber-900"
-                  key={f}
-                >
-                  🍜
-                  {' '}
-                  {f}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* 模块 4: 旅人出行指南便签 */}
-        <div className="rounded-2xl border border-stone-200/90 bg-emerald-900 text-white p-4 shadow-sm space-y-2">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-amber-300">
-            <Compass className="w-3.5 h-3.5" />
-            <span>旅人手账贴士</span>
-          </div>
-          <p className="text-[11px] text-emerald-100/90 leading-relaxed">
-            热门历史博物馆（如陕历博、故宫）通常需提前 3-7 天预约特展门票；自驾前请留意沿途路况与潮汐天气。
-          </p>
-        </div>
-      </aside>
+      {/* ======================================================== */}
+      {/* 3. 第三栏：沉浸式常驻联动大地图 (对标携程 Map Explorer)     */}
+      {/* ======================================================== */}
+      <section
+        className={`
+          flex-col h-full bg-stone-100 transition-all duration-300
+          ${mobileActiveTab === 'map' ? 'flex flex-1 min-w-0' : 'hidden'}
+          lg:flex ${showRightMap ? 'flex-1 min-w-[360px]' : 'hidden'}
+        `}
+      >
+        <TravelMapView
+          city={activeCity || '杭州'}
+          className="w-full h-full rounded-none border-none shadow-none"
+          spots={latestParsedRoute?.spots || []}
+        />
+      </section>
 
       {/* ======================================================== */}
       {/* 4. 手账路线卡片生成与分享弹窗                            */}

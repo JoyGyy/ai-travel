@@ -1,0 +1,140 @@
+import type { ParsedRouteData } from '@/lib/map/route-parser'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { useItineraryWorkspaceStore } from './itineraryWorkspace'
+
+describe('itineraryWorkspaceStore', () => {
+  beforeEach(() => {
+    useItineraryWorkspaceStore.getState().clearWorkspace()
+  })
+
+  const mockParsedRoute: ParsedRouteData = {
+    city: '杭州',
+    days: [
+      {
+        day: 1,
+        spots: [
+          { name: '断桥残雪' },
+          { name: '白堤' },
+          { name: '平湖秋月' },
+        ],
+        title: '西湖环湖经典',
+      },
+      {
+        day: 2,
+        spots: [
+          { name: '灵隐寺' },
+          { name: '龙井村' },
+        ],
+        title: '灵隐祈福与茶香',
+      },
+    ],
+    food: ['西湖醋鱼', '东坡肉'],
+    routeString: '断桥残雪 ➔ 白堤 ➔ 平湖秋月 ➔ 灵隐寺 ➔ 龙井村',
+    spots: [
+      { name: '断桥残雪' },
+      { name: '白堤' },
+      { name: '平湖秋月' },
+      { name: '灵隐寺' },
+      { name: '龙井村' },
+    ],
+    summary: '3天2晚慢游',
+    tips: ['提前预约灵隐寺'],
+    transportMode: 'walking',
+  }
+
+  it('能够从 ParsedRouteData 正确初始化多日工作台结构并计算通勤段', () => {
+    const store = useItineraryWorkspaceStore.getState()
+    store.initFromParsedRoute(mockParsedRoute, '独自一人游杭州3天2晚')
+
+    const state = useItineraryWorkspaceStore.getState()
+    expect(state.city).toBe('杭州')
+    expect(state.title).toBe('独自一人游杭州3天2晚')
+    expect(state.days.length).toBe(2)
+
+    // 检查第 1 天
+    const day1 = state.days[0]
+    expect(day1.day).toBe(1)
+    expect(day1.title).toBe('西湖环湖经典')
+    expect(day1.spots.map(s => s.name)).toEqual(['断桥残雪', '白堤', '平湖秋月'])
+    expect(day1.legs.length).toBe(2)
+    expect(day1.legs[0].fromSpotName).toBe('断桥残雪')
+    expect(day1.legs[0].toSpotName).toBe('白堤')
+    expect(day1.legs[0].distanceKm).toBeGreaterThan(0)
+    expect(day1.legs[0].durationText).toBeTruthy()
+
+    // 检查第 2 天
+    const day2 = state.days[1]
+    expect(day2.day).toBe(2)
+    expect(day2.spots.map(s => s.name)).toEqual(['灵隐寺', '龙井村'])
+    expect(day2.legs.length).toBe(1)
+  })
+
+  it('支持在当天内调整景点顺序并自动重算通勤', () => {
+    const store = useItineraryWorkspaceStore.getState()
+    store.initFromParsedRoute(mockParsedRoute)
+
+    // 将第 1 天的索引 0 (断桥残雪) 移动到索引 2
+    store.moveSpotInDay(1, 0, 2)
+
+    const day1 = useItineraryWorkspaceStore.getState().days[0]
+    expect(day1.spots.map(s => s.name)).toEqual(['白堤', '平湖秋月', '断桥残雪'])
+    expect(day1.legs[0].fromSpotName).toBe('白堤')
+    expect(day1.legs[0].toSpotName).toBe('平湖秋月')
+  })
+
+  it('支持删除景点并重算通勤段落', () => {
+    const store = useItineraryWorkspaceStore.getState()
+    store.initFromParsedRoute(mockParsedRoute)
+
+    // 删除第 1 天的中间景点（白堤）
+    store.removeSpotFromDay(1, 1)
+
+    const day1 = useItineraryWorkspaceStore.getState().days[0]
+    expect(day1.spots.map(s => s.name)).toEqual(['断桥残雪', '平湖秋月'])
+    expect(day1.legs.length).toBe(1)
+    expect(day1.legs[0].fromSpotName).toBe('断桥残雪')
+    expect(day1.legs[0].toSpotName).toBe('平湖秋月')
+  })
+
+  it('支持添加景点到指定天', () => {
+    const store = useItineraryWorkspaceStore.getState()
+    store.initFromParsedRoute(mockParsedRoute)
+
+    store.addSpotToDay(1, { name: '雷峰塔' })
+
+    const day1 = useItineraryWorkspaceStore.getState().days[0]
+    expect(day1.spots.map(s => s.name)).toEqual(['断桥残雪', '白堤', '平湖秋月', '雷峰塔'])
+    expect(day1.legs.length).toBe(3)
+  })
+
+  it('支持将景点移入待安排池并移回', () => {
+    const store = useItineraryWorkspaceStore.getState()
+    store.initFromParsedRoute(mockParsedRoute)
+
+    // 移入待安排池
+    store.moveToUnassigned(1, 0)
+    expect(useItineraryWorkspaceStore.getState().unassignedSpots.length).toBe(1)
+    expect(useItineraryWorkspaceStore.getState().unassignedSpots[0].name).toBe('断桥残雪')
+    expect(useItineraryWorkspaceStore.getState().days[0].spots.length).toBe(2)
+
+    // 从待安排池移入第 2 天
+    store.addFromUnassignedToDay(0, 2)
+    expect(useItineraryWorkspaceStore.getState().unassignedSpots.length).toBe(0)
+    expect(useItineraryWorkspaceStore.getState().days[1].spots.map(s => s.name)).toContain('断桥残雪')
+  })
+
+  it('支持动态增删天数与修改备注', () => {
+    const store = useItineraryWorkspaceStore.getState()
+    store.initFromParsedRoute(mockParsedRoute)
+
+    store.addDay()
+    expect(useItineraryWorkspaceStore.getState().days.length).toBe(3)
+    expect(useItineraryWorkspaceStore.getState().selectedDay).toBe(3)
+
+    store.updateDayNotes(1, '注意带防晒霜和雨伞')
+    expect(useItineraryWorkspaceStore.getState().days[0].notes).toBe('注意带防晒霜和雨伞')
+
+    store.removeDay(3)
+    expect(useItineraryWorkspaceStore.getState().days.length).toBe(2)
+  })
+})

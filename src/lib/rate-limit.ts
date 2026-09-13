@@ -46,9 +46,15 @@ export async function checkRateLimit(
 ): Promise<NextResponse | null> {
   // 如果调用方已传入 userId，直接使用；否则从 header 解析
   const uid = userId ?? (await getAuthFromHeaders(req.headers))?.id
+  // 优先提取 X-Real-IP（由可信反向代理设置，客户端无法伪造覆写）
+  // 其次从 X-Forwarded-For 提取最靠近反向代理的非空 IP
+  const forwardedHeader = req.headers.get('x-forwarded-for')
+  const forwardedIps = forwardedHeader
+    ? forwardedHeader.split(',').map(item => item.trim()).filter(Boolean)
+    : []
   const ip
-    = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-      || req.headers.get('x-real-ip')
+    = req.headers.get('x-real-ip')?.trim()
+      || forwardedIps[forwardedIps.length - 1]
       || 'unknown'
 
   const identity = uid ? `user:${uid}` : `ip:${ip}`

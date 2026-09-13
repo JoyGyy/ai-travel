@@ -111,4 +111,27 @@ describe('route-parser', () => {
     // 验证全量扁平列表兼容性
     expect(parsed.spots.length).toBe(8)
   })
+
+  it('应该能彻底清洗景点名称中的脚注引用[^9]、时间戳及孤立残留数字', () => {
+    const text = `
+杭州西湖精选游：
+1. **白堤**
+2. **平湖秋月**
+3. **孤山**[^9]
+4. **花港观鱼**
+5. **雷峰塔** [16]
+6. **深潭口** (16:00)
+`
+    const parsed = parseItineraryFromMarkdown(text, '杭州')
+    expect(parsed.spots.map(s => s.name)).toEqual([
+      '白堤',
+      '平湖秋月',
+      '孤山',
+      '花港观鱼',
+      '雷峰塔',
+      '深潭口',
+    ])
+    expect(parsed.spots.map(s => s.name)).not.toContain('孤山9')
+    expect(parsed.spots.map(s => s.name)).not.toContain('雷峰塔16')
+  })
 })

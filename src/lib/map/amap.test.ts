@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   calculateBearing,
   calculateDistanceKm,
+  calculateNormalOffset,
   estimateDurationMinutes,
   formatMinutesText,
   gcj02ToBd09,
@@ -10,6 +11,7 @@ import {
   generateAmapSpotUrl,
   generateBaiduRouteUrl,
   generateBaiduSpotUrl,
+  generateSmoothRoutePolyline,
   generateTencentRouteUrl,
   generateTencentSpotUrl,
   getSpotCoordinates,
@@ -126,5 +128,32 @@ describe('amap 工具与地理计算测试', () => {
     expect(scheme).toContain(`sname=${encodeURIComponent('断桥残雪')}`);
     expect(scheme).toContain(`dname=${encodeURIComponent('灵隐寺')}`);
     expect(scheme).toContain('t=1'); // 公交模式
+  });
+
+  it('calculateNormalOffset 应计算中点垂直法线偏移位置，防止气泡遮挡折线与标记', () => {
+    // 东西向两点
+    const p1 = { lat: 30.25, lng: 120.1 };
+    const p2 = { lat: 30.25, lng: 120.2 };
+    const offset = calculateNormalOffset(p1.lat, p1.lng, p2.lat, p2.lng, 0.1);
+
+    expect(offset.lng).toBeCloseTo(120.15, 2);
+    // 经法线偏移后纬度应不等于原中点纬度
+    expect(offset.lat).not.toBe(30.25);
+  });
+
+  it('generateSmoothRoutePolyline 应为折线点生成平滑插值点集', () => {
+    const points = [
+      { lat: 30.2589, lng: 120.1489 },
+      { lat: 30.2415, lng: 120.1009 },
+      { lat: 30.2662, lng: 120.061 },
+    ];
+    const smooth = generateSmoothRoutePolyline(points, 0.1);
+    // 3 个点插值后点数应显著大于 3
+    expect(smooth.length).toBeGreaterThan(15);
+    // 首尾点应保持一致
+    expect(smooth[0][0]).toBeCloseTo(points[0].lat, 4);
+    expect(smooth[0][1]).toBeCloseTo(points[0].lng, 4);
+    expect(smooth[smooth.length - 1][0]).toBeCloseTo(points[2].lat, 4);
+    expect(smooth[smooth.length - 1][1]).toBeCloseTo(points[2].lng, 4);
   });
 });

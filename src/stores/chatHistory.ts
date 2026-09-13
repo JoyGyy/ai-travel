@@ -49,6 +49,7 @@ interface ChatHistoryState {
 
 // 防抖定时器映射：sessionId -> Timeout
 const saveTimers = new Map<string, ReturnType<typeof setTimeout>>()
+let activeSyncPromise: Promise<void> | null = null
 
 function getStorageKey(userId: string | null): string {
   return userId ? `travel_chat_sessions_${userId}` : 'travel_chat_sessions_guest'
@@ -355,34 +356,44 @@ export const useChatHistoryStore = create<ChatHistoryState>()(
         if (!currentUserId)
           return
 
-        const res = await fetchChatSessionsApi()
-        if (res?.sessions) {
-          const mapped: ChatSession[] = res.sessions.map(s => ({
-            city: s.city || undefined,
-            createdAt: new Date(s.createdAt).getTime(),
-            id: s.id,
-            messages: Array.isArray(s.messages) ? s.messages : [],
-            title: s.title,
-            updatedAt: new Date(s.updatedAt).getTime(),
-          }))
-
-          set((state) => {
-            // 保留当前激活的 activeSessionId，若不在列表中则默认选中第一个
-            let nextActiveId = state.activeSessionId
-            if (mapped.length > 0 && (!nextActiveId || !mapped.some(s => s.id === nextActiveId))) {
-              nextActiveId = mapped[0].id
-            }
-            else if (mapped.length === 0) {
-              nextActiveId = null
-            }
-            return {
-              activeSessionId: nextActiveId,
-              sessions: mapped,
-            }
-          })
-
-          persistLocalSessions(currentUserId, mapped)
+        if (activeSyncPromise) {
+          return activeSyncPromise
         }
+
+        activeSyncPromise = (async () => {
+          const res = await fetchChatSessionsApi()
+          if (res?.sessions) {
+            const mapped: ChatSession[] = res.sessions.map(s => ({
+              city: s.city || undefined,
+              createdAt: new Date(s.createdAt).getTime(),
+              id: s.id,
+              messages: Array.isArray(s.messages) ? s.messages : [],
+              title: s.title,
+              updatedAt: new Date(s.updatedAt).getTime(),
+            }))
+
+            set((state) => {
+              // 保留当前激活的 activeSessionId，若不在列表中则默认选中第一个
+              let nextActiveId = state.activeSessionId
+              if (mapped.length > 0 && (!nextActiveId || !mapped.some(s => s.id === nextActiveId))) {
+                nextActiveId = mapped[0].id
+              }
+              else if (mapped.length === 0) {
+                nextActiveId = null
+              }
+              return {
+                activeSessionId: nextActiveId,
+                sessions: mapped,
+              }
+            })
+
+            persistLocalSessions(currentUserId, mapped)
+          }
+        })().finally(() => {
+          activeSyncPromise = null
+        })
+
+        return activeSyncPromise
       },
     }),
     { name: 'ChatHistoryStore' },

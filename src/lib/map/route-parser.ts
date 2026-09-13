@@ -210,7 +210,12 @@ function extractSpotCandidate(raw: string): string {
   if (!raw)
     return ''
 
-  const cleaned = raw.replace(/\*\*/g, '').trim()
+  const cleaned = raw
+    .replace(/\*\*/g, '')
+    .replace(/\[\^?\d+\]/g, '')
+    .replace(/（\s*\d{1,2}:\d{2}[^）]*）|\(\s*\d{1,2}:\d{2}[^)]*\)/g, '')
+    .replace(/\b\d{1,2}:\d{2}\b/g, '')
+    .trim()
 
   // 如果包含冒号（如 "早晨：户部巷" 或 "黄鹤楼：登楼远眺" 或 "1. 预算分配：100元"）
   if (cleaned.includes('：') || cleaned.includes(':')) {
@@ -514,8 +519,13 @@ function cleanSpotName(raw: string): string {
     cleaned = segments[segments.length - 1]
   }
   return cleaned
+    .replace(/\[\^?\d+\]/g, '')
+    .replace(/（\s*\d{1,2}:\d{2}[^）]*）|\(\s*\d{1,2}:\d{2}[^)]*\)/g, '')
+    .replace(/\b\d{1,2}:\d{2}\b/g, '')
     .replace(/^[\u{1F300}-\u{1FAFF}#*`\s\d.、-]+/u, '')
-    .replace(/[。，,;:!！?？*`()（）【】]/g, '')
+    .replace(/[。，,;:!！?？*`()（）【】[\]]/g, '')
+    .replace(/(?<=[\u4e00-\u9fa5])\d+$/u, '')
+    .replace(/\s*\d+$/, '')
     .replace(/(?:推荐|游览|打卡|出发|到达|前往|建议|游玩)$/, '')
     .trim()
 }

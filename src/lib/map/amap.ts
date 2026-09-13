@@ -347,6 +347,105 @@ export function calculateMidPoint(
 }
 
 /**
+ * 计算线段中点在垂直法线方向上的微调坐标 (用于防止耗时气泡与折线或端点标点死板重叠)
+ */
+export function calculateNormalOffset(
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number,
+  offsetRatio = 0.08,
+): { lat: number; lng: number } {
+  const mid = calculateMidPoint(lat1, lng1, lat2, lng2);
+  const dLat = lat2 - lat1;
+  const avgLatRad = (mid.lat * Math.PI) / 180;
+  const dLng = (lng2 - lng1) * Math.cos(avgLatRad);
+  const len = Math.sqrt(dLat * dLat + dLng * dLng);
+
+  if (len < 1e-6) {
+    return mid;
+  }
+
+  const normLat = -dLng / len;
+  const normLng = dLat / len / Math.cos(avgLatRad);
+
+  const offsetMagnitude = len * offsetRatio;
+  return {
+    lat: Number((mid.lat + normLat * offsetMagnitude).toFixed(6)),
+    lng: Number((mid.lng + normLng * offsetMagnitude).toFixed(6)),
+  };
+}
+
+/**
+ * 为两点生成平滑的二次贝塞尔弧线点集 (模拟商业旅行地图大跨度线路的自然地理曲线，消除生硬折线)
+ */
+export function generateCurvedSegmentPoints(
+  p1: { lat: number; lng: number },
+  p2: { lat: number; lng: number },
+  curvature = 0.12,
+  numSegments = 16,
+): [number, number][] {
+  const dist = calculateDistanceKm(p1.lat, p1.lng, p2.lat, p2.lng);
+  if (dist < 0.8 || curvature === 0) {
+    return [
+      [p1.lat, p1.lng],
+      [p2.lat, p2.lng],
+    ];
+  }
+
+  const mid = calculateMidPoint(p1.lat, p1.lng, p2.lat, p2.lng);
+  const dLat = p2.lat - p1.lat;
+  const avgLatRad = (mid.lat * Math.PI) / 180;
+  const dLng = (p2.lng - p1.lng) * Math.cos(avgLatRad);
+  const len = Math.sqrt(dLat * dLat + dLng * dLng);
+
+  const normLat = -dLng / len;
+  const normLng = dLat / len / Math.cos(avgLatRad);
+
+  const ctrlLat = mid.lat + normLat * len * curvature;
+  const ctrlLng = mid.lng + normLng * len * curvature;
+
+  const points: [number, number][] = [];
+  for (let i = 0; i <= numSegments; i++) {
+    const t = i / numSegments;
+    const invT = 1 - t;
+    const lat = invT * invT * p1.lat + 2 * invT * t * ctrlLat + t * t * p2.lat;
+    const lng = invT * invT * p1.lng + 2 * invT * t * ctrlLng + t * t * p2.lng;
+    points.push([Number(lat.toFixed(6)), Number(lng.toFixed(6))]);
+  }
+  return points;
+}
+
+/**
+ * 生成全路线平滑连续轨迹点集
+ */
+export function generateSmoothRoutePolyline(
+  points: { lat: number; lng: number }[],
+  curvature = 0.08,
+): [number, number][] {
+  if (points.length < 2) {
+    return points.map((p) => [p.lat, p.lng]);
+  }
+
+  const fullPath: [number, number][] = [];
+  for (let i = 0; i < points.length - 1; i++) {
+    const sign = i % 2 === 0 ? 1 : -0.7;
+    const segment = generateCurvedSegmentPoints(
+      points[i],
+      points[i + 1],
+      curvature * sign,
+      12,
+    );
+    if (i > 0) {
+      fullPath.push(...segment.slice(1));
+    } else {
+      fullPath.push(...segment);
+    }
+  }
+  return fullPath;
+}
+
+/**
  * 根据两点距离和交通方式估算耗时 (分钟)
  */
 export function estimateDurationMinutes(

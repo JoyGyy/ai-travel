@@ -80,4 +80,35 @@ describe('route-parser', () => {
       '昙华林',
     ])
   })
+
+  it('应该能正确解析多日行程分片 (Day 1, Day 2, Day 3)', () => {
+    const text = `
+# 杭州3天2晚慢游手账
+
+## Day 1: 西湖环湖经典，从断桥到雷峰塔
+* 上午：断桥残雪
+* 中午：白堤
+* 下午：平湖秋月
+* 傍晚：雷峰塔
+
+## Day 2: 灵隐禅意与茶乡漫游
+* 上午：灵隐寺
+* 下午：龙井村
+
+## Day 3: 运河历史文化寻踪
+* 上午：拱宸桥
+* 下午：西溪湿地
+`
+    const parsed = parseItineraryFromMarkdown(text, '杭州')
+    expect(parsed.city).toBe('杭州')
+    expect(parsed.days.length).toBe(3)
+    expect(parsed.days[0].day).toBe(1)
+    expect(parsed.days[0].spots.map(s => s.name)).toEqual(['断桥残雪', '白堤', '平湖秋月', '雷峰塔'])
+    expect(parsed.days[1].day).toBe(2)
+    expect(parsed.days[1].spots.map(s => s.name)).toEqual(['灵隐寺', '龙井村'])
+    expect(parsed.days[2].day).toBe(3)
+    expect(parsed.days[2].spots.map(s => s.name)).toEqual(['拱宸桥', '西溪湿地'])
+    // 验证全量扁平列表兼容性
+    expect(parsed.spots.length).toBe(8)
+  })
 })

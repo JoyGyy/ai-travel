@@ -616,6 +616,16 @@ function ChatContent() {
               </p>
             </div>
           </div>
+          {/* 桌面端收起历史侧栏按钮 (放在历史记录栏内) */}
+          <button
+            aria-label="收起手账历史"
+            className="hidden lg:flex p-1.5 rounded-xl text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors cursor-pointer"
+            onClick={() => setShowLeftSidebar(false)}
+            title="收起手账历史"
+            type="button"
+          >
+            <PanelLeftClose className="h-4 w-4" />
+          </button>
           {/* 移动端关闭按钮 */}
           <button
             className="p-1.5 rounded-xl text-stone-400 hover:text-stone-700 lg:hidden cursor-pointer"
@@ -774,20 +784,18 @@ function ChatContent() {
         {/* 对话视窗顶栏（无多余交叉边框） */}
         <header className="flex h-14 shrink-0 items-center justify-between border-b border-stone-200/80 bg-white/90 px-4 backdrop-blur-md z-10">
           <div className="flex items-center gap-2 min-w-0">
-            {/* 左侧边栏切换按钮 */}
-            <button
-              aria-label={showLeftSidebar ? '收起左侧边栏' : '展开左侧边栏'}
-              className="hidden lg:flex p-1.5 rounded-xl text-stone-500 hover:text-stone-900 hover:bg-stone-100 cursor-pointer"
-              onClick={() => setShowLeftSidebar((prev) => !prev)}
-              title={showLeftSidebar ? '收起左侧边栏' : '展开左侧边栏'}
-              type="button"
-            >
-              {showLeftSidebar ? (
-                <PanelLeftClose className="h-4 w-4" />
-              ) : (
+            {/* 仅在左侧栏收起时，在对话栏顶栏左侧展示“展开手账历史”按钮 */}
+            {!showLeftSidebar && (
+              <button
+                aria-label="展开手账历史"
+                className="hidden lg:flex p-1.5 rounded-xl text-stone-500 hover:text-stone-900 hover:bg-stone-100 transition-colors cursor-pointer"
+                onClick={() => setShowLeftSidebar(true)}
+                title="展开手账历史"
+                type="button"
+              >
                 <PanelLeftOpen className="h-4 w-4" />
-              )}
-            </button>
+              </button>
+            )}
             <button
               className="flex lg:hidden p-1.5 rounded-xl text-stone-500 hover:text-stone-900 hover:bg-stone-100 cursor-pointer"
               onClick={() => setShowHistoryDrawer(true)}
@@ -831,24 +839,19 @@ function ChatContent() {
               </button>
             </div>
 
-            {/* 桌面端大地图展开/折叠控制 */}
-            <div className="hidden lg:flex items-center gap-1.5">
+            {/* 桌面端大地图展开快捷入口（仅在右侧地图收起时在对话栏呈现；地图开启时由地图顶栏自身收起） */}
+            {!showRightMap && (
               <Button
-                className={`rounded-xl text-xs font-bold h-8 px-2.5 transition-all cursor-pointer ${
-                  showRightMap
-                    ? 'bg-emerald-50 text-emerald-800 border-emerald-300 shadow-2xs'
-                    : 'text-stone-500 hover:text-stone-800'
-                }`}
-                onClick={() => setShowRightMap((prev) => !prev)}
+                className="gap-1.5 rounded-xl text-xs font-bold h-8 px-2.5 bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100 shadow-2xs cursor-pointer transition-all"
+                onClick={() => setShowRightMap(true)}
                 size="sm"
-                title={
-                  showRightMap ? '收起大地图，聚焦纯净对话' : '展开联动大地图'
-                }
+                title="展开联动大地图"
                 variant="outline"
               >
-                <span>🗺️ {showRightMap ? '收起地图' : '展开地图'}</span>
+                <PanelRightOpen className="h-3.5 w-3.5" />
+                <span>展开地图</span>
               </Button>
-            </div>
+            )}
 
             {/* 导出卡片快捷入口 */}
             {latestParsedRoute && (
@@ -1478,15 +1481,30 @@ function ChatContent() {
         className={`
           flex-col h-full bg-stone-100 transition-all duration-300
           ${mobileActiveTab === 'map' ? 'flex flex-1 min-w-0' : 'hidden'}
-          lg:flex ${showRightMap ? 'flex-1 min-w-[360px]' : 'hidden'}
+          ${showRightMap ? 'lg:flex lg:flex-1 lg:min-w-[360px]' : 'lg:hidden'}
         `}
       >
         <TravelMapView
           city={activeCity || '杭州'}
           className="w-full h-full rounded-none border-none shadow-none"
+          onToggleCollapse={() => setShowRightMap(false)}
           spots={latestParsedRoute?.spots || []}
         />
       </section>
+
+      {/* 桌面端地图收起后的右侧快捷展开悬浮入口 */}
+      {!showRightMap && (
+        <button
+          aria-label="展开联动大地图"
+          className="hidden lg:flex fixed right-3 top-20 z-30 items-center gap-1.5 px-3 py-2 rounded-2xl bg-white/95 backdrop-blur-md border border-stone-200/90 shadow-md hover:shadow-lg text-emerald-800 hover:bg-emerald-50 text-xs font-bold transition-all cursor-pointer hover:scale-105"
+          onClick={() => setShowRightMap(true)}
+          title="展开联动大地图"
+          type="button"
+        >
+          <PanelRightOpen className="h-4 w-4" />
+          <span>展开地图</span>
+        </button>
+      )}
 
       {/* ======================================================== */}
       {/* 4. 手账路线卡片生成与分享弹窗                            */}

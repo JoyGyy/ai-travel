@@ -6,7 +6,11 @@
 import * as Sentry from '@sentry/nextjs';
 
 export interface TelemetryEvent {
-  metric: 'ai_ttft' | 'map_tile_latency' | 'offline_activation' | 'weather_fallback';
+  metric:
+    | 'ai_ttft'
+    | 'map_tile_latency'
+    | 'offline_activation'
+    | 'weather_fallback';
   metadata?: Record<string, unknown>;
   timestamp: number;
   value: number;

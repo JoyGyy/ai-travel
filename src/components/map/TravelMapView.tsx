@@ -275,7 +275,10 @@ export function TravelMapView({
       if (!isMounted || !mapContainerRef.current) return;
 
       if (!mapInstanceRef.current) {
-        const cityCoord = CITY_COORDINATES[city] || { lat: 30.2741, lng: 120.1551 };
+        const cityCoord = CITY_COORDINATES[city] || {
+          lat: 30.2741,
+          lng: 120.1551,
+        };
         const centerPos: [number, number] =
           routePoints.length > 0
             ? [routePoints[0].lat, routePoints[0].lng]
@@ -411,7 +414,10 @@ export function TravelMapView({
 
       // 若当前无打卡点，平滑复位到城市中心
       if (routePoints.length === 0) {
-        const cityCoord = CITY_COORDINATES[city] || { lat: 30.2741, lng: 120.1551 };
+        const cityCoord = CITY_COORDINATES[city] || {
+          lat: 30.2741,
+          lng: 120.1551,
+        };
         map.setView([cityCoord.lat, cityCoord.lng], 11);
         return;
       }

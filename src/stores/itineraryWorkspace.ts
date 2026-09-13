@@ -12,6 +12,11 @@ import {
 import { lookupAttractionInfo } from '@/lib/map/attraction-lookup';
 
 import { resolveSpotBookingResource } from '@/lib/booking/budget-calculator';
+import {
+  getIsOnline,
+  getLatestOfflineItinerary,
+  saveOfflineItinerary,
+} from '@/lib/offline/itinerary-cache';
 import type { DomesticBookingResource } from '@/types/booking';
 
 export interface WorkspaceSpotNode {
@@ -77,6 +82,7 @@ export interface ItineraryWorkspaceState {
   hotelNightPrice: number;
   initFromParsedRoute: (data: ParsedRouteData, promptTitle?: string) => void;
   isGenerating: boolean;
+  isOffline: boolean;
   moveSpotBetweenDays: (
     fromDay: number,
     fromIndex: number,
@@ -88,13 +94,16 @@ export interface ItineraryWorkspaceState {
   participantCount: number;
   removeDay: (dayNum: number) => void;
   removeSpotFromDay: (dayNum: number, spotIndex: number) => void;
+  restoreFromOfflineCache: () => Promise<boolean>;
   selectedDay: number; // 0 = 总览, 1 = Day 1, 2 = Day 2...
   setActiveCategory: (cat: ResourceCategory) => void;
   setActiveSpotId: (id: string | null) => void;
   setHotelNightPrice: (price: number) => void;
   setIsGenerating: (isGenerating: boolean) => void;
+  setIsOffline: (isOffline: boolean) => void;
   setParticipantCount: (count: number) => void;
   setSelectedDay: (day: number) => void;
+  syncToOfflineCache: () => Promise<void>;
   setStartDate: (date: string) => void;
   setTitle: (title: string) => void;
   setTransportMode: (mode: 'driving' | 'transit' | 'walking') => void;
@@ -190,6 +199,7 @@ export const useItineraryWorkspaceStore = create<ItineraryWorkspaceState>()(
       days: [],
       hotelNightPrice: 320,
       isGenerating: false,
+      isOffline: !getIsOnline(),
       participantCount: 1,
       selectedDay: 1,
       startDate: '',
@@ -344,6 +354,10 @@ export const useItineraryWorkspaceStore = create<ItineraryWorkspaceState>()(
           if (!stillExists) {
             state.activeSpotId = newDays[0]?.spots[0]?.id || null;
           }
+
+          setTimeout(() => {
+            void useItineraryWorkspaceStore.getState().syncToOfflineCache();
+          }, 0);
         }),
 
       moveSpotBetweenDays: (fromDay, fromIndex, toDay, toIndex) =>
@@ -430,10 +444,44 @@ export const useItineraryWorkspaceStore = create<ItineraryWorkspaceState>()(
           state.participantCount = Math.max(1, count);
         }),
 
+      setIsOffline: (isOffline) =>
+        set((state) => {
+          state.isOffline = isOffline;
+        }),
+
       setSelectedDay: (day) =>
         set((state) => {
           state.selectedDay = day;
         }),
+
+      syncToOfflineCache: async () => {
+        const current = useItineraryWorkspaceStore.getState();
+        if (current.days.length === 0) return;
+        await saveOfflineItinerary({
+          id: `${current.city}-${current.title || '行程'}`,
+          title: current.title,
+          city: current.city,
+          days: current.days,
+          participantCount: current.participantCount,
+          hotelNightPrice: current.hotelNightPrice,
+          transportMode: current.transportMode,
+        });
+      },
+
+      restoreFromOfflineCache: async () => {
+        const latest = await getLatestOfflineItinerary();
+        if (!latest || !latest.days || latest.days.length === 0) return false;
+        set((state) => {
+          state.city = latest.city;
+          state.title = latest.title;
+          state.days = latest.days;
+          state.participantCount = latest.participantCount || 1;
+          state.hotelNightPrice = latest.hotelNightPrice || 320;
+          state.transportMode = latest.transportMode || 'driving';
+          state.selectedDay = 1;
+        });
+        return true;
+      },
 
       setStartDate: (date) =>
         set((state) => {

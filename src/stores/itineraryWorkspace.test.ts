@@ -192,4 +192,25 @@ describe('itineraryWorkspaceStore', () => {
     expect(updated.participantCount).toBe(2);
     expect(updated.hotelNightPrice).toBe(450);
   });
+
+  it('支持同步与从离线缓存中恢复行程手账', async () => {
+    const store = useItineraryWorkspaceStore.getState();
+    store.initFromParsedRoute(mockParsedRoute, '高铁离线测试');
+
+    // 手动调用 syncToOfflineCache
+    await store.syncToOfflineCache();
+
+    // 清空当前工作台模拟重新加载或无网进入
+    store.clearWorkspace();
+    expect(useItineraryWorkspaceStore.getState().days.length).toBe(0);
+
+    // 从离线手账恢复
+    const restored = await store.restoreFromOfflineCache();
+    expect(restored).toBe(true);
+
+    const after = useItineraryWorkspaceStore.getState();
+    expect(after.city).toBe('杭州');
+    expect(after.title).toBe('高铁离线测试');
+    expect(after.days.length).toBe(2);
+  });
 });

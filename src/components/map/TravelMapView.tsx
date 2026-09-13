@@ -3,16 +3,22 @@
 import type { Map as LeafletMap, Marker as LeafletMarker, Polyline as LeafletPolyline } from 'leaflet'
 import type React from 'react'
 import type { ParsedRouteSpot } from '@/lib/map/route-parser'
+import type { ResourceCategory, WorkspaceSpotNode } from '@/stores/itineraryWorkspace'
 import {
+  Building2,
   Car,
   Clock,
   Compass,
   ExternalLink,
   Footprints,
+  Hotel,
   LocateFixed,
   Maximize2,
   Minimize2,
   Navigation as NavigationIcon,
+  ShoppingBag,
+  Train,
+  Utensils,
   Zap,
 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -20,6 +26,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   calculateBearing,
   calculateDistanceKm,
+  calculateMidPoint,
   estimateDurationMinutes,
   formatMinutesText,
   generateAmapRouteUrl,
@@ -30,28 +37,52 @@ import {
   generateTencentSpotUrl,
   getSpotCoordinates,
 } from '@/lib/map/amap'
+import { useItineraryWorkspaceStore } from '@/stores/itineraryWorkspace'
+import { FloatingPoiCard } from './FloatingPoiCard'
 import 'leaflet/dist/leaflet.css'
 
 export interface TravelMapViewProps {
+  city?: string
   className?: string
-  city: string
   initialMode?: 'driving' | 'transit' | 'walking'
-  spots: ParsedRouteSpot[]
+  spots?: ParsedRouteSpot[]
 }
 
 type TileLayerType = 'amap-street' | 'amap-satellite' | 'cartodb'
 
+const CATEGORY_TABS: { icon: React.ComponentType<{ className?: string }>, id: ResourceCategory, label: string }[] = [
+  { icon: Compass, id: 'attractions', label: '景点' },
+  { icon: Hotel, id: 'hotels', label: '酒店' },
+  { icon: Utensils, id: 'restaurants', label: '美食' },
+  { icon: ShoppingBag, id: 'shopping', label: '购物' },
+  { icon: Train, id: 'transport', label: '交通' },
+]
+
 export function TravelMapView({
-  city,
+  city: propCity,
   className = '',
   initialMode = 'driving',
-  spots,
+  spots: propSpots = [],
 }: TravelMapViewProps): React.JSX.Element | null {
-  const [mode, setMode] = useState<'driving' | 'transit' | 'walking'>(initialMode)
+  // 1. 读取工作台状态
+  const workspaceCity = useItineraryWorkspaceStore(s => s.city)
+  const workspaceDays = useItineraryWorkspaceStore(s => s.days)
+  const selectedDay = useItineraryWorkspaceStore(s => s.selectedDay)
+  const activeSpotId = useItineraryWorkspaceStore(s => s.activeSpotId)
+  const setActiveSpotId = useItineraryWorkspaceStore(s => s.setActiveSpotId)
+  const activeCategory = useItineraryWorkspaceStore(s => s.activeCategory)
+  const setActiveCategory = useItineraryWorkspaceStore(s => s.setActiveCategory)
+  const workspaceTransportMode = useItineraryWorkspaceStore(s => s.transportMode)
+  const setWorkspaceTransportMode = useItineraryWorkspaceStore(s => s.setTransportMode)
+
+  const city = propCity || workspaceCity || '杭州'
+  const mode = workspaceTransportMode || initialMode
+
   const [activeTab, setActiveTab] = useState<'map' | 'legs'>('map')
   const [tileType, setTileType] = useState<TileLayerType>('amap-street')
   const [activeSpotIndex, setActiveSpotIndex] = useState<number>(0)
   const [isExpanded, setIsExpanded] = useState(false)
+  const [selectedPoi, setSelectedPoi] = useState<WorkspaceSpotNode | null>(null)
 
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<LeafletMap | null>(null)
@@ -61,9 +92,28 @@ export function TravelMapView({
   const tileLayerRef = useRef<unknown>(null)
   const overlayLayerRef = useRef<unknown>(null)
 
-  // 1. 计算所有打卡点真实地理坐标
+  // 2. 根据工作台多天筛选或 props 汇总打卡点
+  const currentSpots: ParsedRouteSpot[] = useMemo(() => {
+    if (workspaceDays.length > 0) {
+      if (selectedDay > 0) {
+        const dayObj = workspaceDays.find(d => d.day === selectedDay)
+        return dayObj ? dayObj.spots : []
+      }
+      else if (selectedDay === 0) {
+        // 总览模式：聚合所有天
+        return workspaceDays.flatMap(d => d.spots)
+      }
+      else if (selectedDay === -1) {
+        // 待安排
+        return workspaceDays.flatMap(d => d.spots)
+      }
+    }
+    return propSpots
+  }, [workspaceDays, selectedDay, propSpots])
+
+  // 3. 计算所有打卡点真实地理坐标
   const routePoints = useMemo(() => {
-    return spots.map((spot, idx) => {
+    return currentSpots.map((spot, idx) => {
       const coord = getSpotCoordinates(spot.name, city, idx)
       return {
         ...spot,
@@ -71,9 +121,9 @@ export function TravelMapView({
         index: idx + 1,
       }
     })
-  }, [spots, city])
+  }, [currentSpots, city])
 
-  // 2. 计算分段路书导航段落 (Legs: 点A -> 点B, 点B -> 点C)
+  // 4. 计算分段路书导航段落 (Legs: 点A -> 点B, 点B -> 点C)
   const routeLegs = useMemo(() => {
     if (routePoints.length < 2)
       return []
@@ -117,7 +167,7 @@ export function TravelMapView({
     return legs
   }, [routePoints, mode, city])
 
-  // 3. 计算全程总里程与总耗时
+  // 5. 计算全程总里程与总耗时
   const totalMetrics = useMemo(() => {
     if (routeLegs.length === 0) {
       return { totalKm: 8, totalMinutes: 30, totalTimeText: '约 30 分钟' }
@@ -131,7 +181,20 @@ export function TravelMapView({
     }
   }, [routeLegs])
 
-  // 4.1 初始化 Leaflet 实例与底图 (挂载时仅执行一次)
+  // 6. 查找全局选中的 POI 对象以供浮动卡片展示
+  useEffect(() => {
+    if (activeSpotId) {
+      for (const d of workspaceDays) {
+        const found = d.spots.find(sp => sp.id === activeSpotId)
+        if (found) {
+          setSelectedPoi(found)
+          return
+        }
+      }
+    }
+  }, [activeSpotId, workspaceDays])
+
+  // 7.1 初始化 Leaflet 实例与底图 (挂载时仅执行一次)
   useEffect(() => {
     if (!mapContainerRef.current)
       return
@@ -188,11 +251,9 @@ export function TravelMapView({
         mapInstanceRef.current = null
       }
     }
-    // 地图容器仅在挂载时创建一次，后续底图与路线变化由下方独立 effect 响应式增量更新
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // 4.2 底图类型切换 (平滑更换图层，不销毁地图容器)
+  // 7.2 底图类型切换
   useEffect(() => {
     if (!mapInstanceRef.current)
       return
@@ -213,7 +274,7 @@ export function TravelMapView({
 
       const tileUrls = {
         'amap-satellite': 'https://wprd0{s}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=6',
-        'amap-street': 'https://wprd0{s}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&style=7',
+        'amap-street': 'https://wprd0{s}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=7',
         'cartodb': 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
       }
 
@@ -235,7 +296,7 @@ export function TravelMapView({
     })
   }, [tileType])
 
-  // 4.3 景点标点与路线更新 (纯增量图层更新，杜绝白屏与闪烁)
+  // 7.3 景点标点、中点通勤气泡与路线 Polyline 渲染
   useEffect(() => {
     if (routePoints.length === 0)
       return
@@ -245,7 +306,7 @@ export function TravelMapView({
       if (!map)
         return
 
-      // 清理旧标点
+      // 清理旧标点与标记
       markersRef.current.forEach(m => map.removeLayer(m))
       markersRef.current = []
 
@@ -288,38 +349,34 @@ export function TravelMapView({
         })
 
         const marker = L.marker(pos, { icon: customIcon }).addTo(map)
-        marker.bindPopup(`
-          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; padding: 4px 6px; min-width: 170px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px;">
-              <span style="font-weight: 900; font-size: 14px; color: #047857;">#${pt.index} ${pt.name}</span>
-              <span style="background: #ecfdf5; color: #047857; font-size: 10px; font-weight: bold; padding: 1px 6px; border-radius: 9999px;">
-                ${isFirst ? '起点' : isLast ? '终点' : '途径'}
-              </span>
-            </div>
-            <div style="color: #6b7280; font-size: 11px; margin-bottom: 8px;">
-              📍 所属城市：${city}
-            </div>
-            <div style="display: flex; gap: 4px; margin-top: 4px;">
-              <a href="${generateAmapSpotUrl(pt, city)}" target="_blank" style="flex: 1; text-align: center; padding: 4px 6px; border-radius: 8px; background: #047857; color: #fff; font-size: 11px; font-weight: bold; text-decoration: none; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
-                高德
-              </a>
-              <a href="${generateBaiduSpotUrl(pt, city)}" target="_blank" style="flex: 1; text-align: center; padding: 4px 6px; border-radius: 8px; background: #f3f4f6; color: #374151; font-size: 11px; font-weight: bold; text-decoration: none; border: 1px solid #e5e7eb;">
-                百度
-              </a>
-              <a href="${generateTencentSpotUrl(pt, city)}" target="_blank" style="flex: 1; text-align: center; padding: 4px 6px; border-radius: 8px; background: #f3f4f6; color: #374151; font-size: 11px; font-weight: bold; text-decoration: none; border: 1px solid #e5e7eb;">
-                腾讯
-              </a>
-            </div>
-          </div>
-        `)
 
         marker.on('click', () => {
           setActiveSpotIndex(idx)
+          if (pt.id) {
+            setActiveSpotId(pt.id)
+          }
+          // 构建 POI 卡片展示
+          setSelectedPoi({
+            address: pt.address || `${city}景点`,
+            city,
+            coverImage: pt.coverImage || '/images/attractions/hangzhou/hangzhou-west-lake.webp',
+            id: pt.id || `spot-${idx}`,
+            lat: pt.lat,
+            lng: pt.lng,
+            name: pt.name,
+            openingHours: pt.openHours || '全天开放',
+            priceText: pt.priceText || (pt.ticketType === 'free' ? '免费' : '收费'),
+            rating: pt.rating || 4.8,
+            recommendedDuration: pt.durationText || '1-2小时',
+            reviewCount: pt.reviewCount || 520,
+            summary: pt.description || '',
+            tags: ['必游', '推荐'],
+            ticketType: pt.ticketType || 'free',
+          })
         })
 
         markers.push(marker)
       })
-      markersRef.current = markers
 
       // 绘制真实折线路径 Polyline
       if (latlngs.length > 1) {
@@ -336,16 +393,53 @@ export function TravelMapView({
           weight: 4.5,
         }).addTo(map)
 
-        map.fitBounds(L.latLngBounds(latlngs), { padding: [36, 36] })
-      }
-    })
-  }, [routePoints, mode, city])
+        // 绘制折线中点通勤耗时标牌气泡 (对标携程路况标牌)
+        for (let i = 0; i < routePoints.length - 1; i++) {
+          const p1 = routePoints[i]
+          const p2 = routePoints[i + 1]
+          const mid = calculateMidPoint(p1.lat, p1.lng, p2.lat, p2.lng)
+          const dist = calculateDistanceKm(p1.lat, p1.lng, p2.lat, p2.lng)
+          const duration = estimateDurationMinutes(dist, mode)
 
-  // 4.4 监听全屏切换，自动触发 Leaflet 尺寸重算与视窗重绘
+          const badgeHtml = `
+            <div class="px-2 py-0.5 rounded-full bg-white/95 border border-stone-300/80 shadow-xs text-[10px] font-bold text-stone-700 flex items-center gap-1 whitespace-nowrap -translate-x-1/2 -translate-y-1/2 hover:scale-110 transition-transform cursor-pointer">
+              <span>${mode === 'walking' ? '🚶' : mode === 'transit' ? '🚌' : '🚗'}</span>
+              <span>${duration}分钟</span>
+            </div>
+          `
+          const badgeIcon = L.divIcon({
+            className: 'commute-mid-badge',
+            html: badgeHtml,
+            iconSize: [0, 0],
+          })
+          const badgeMarker = L.marker([mid.lat, mid.lng], { icon: badgeIcon }).addTo(map)
+          markers.push(badgeMarker)
+        }
+
+        map.fitBounds(L.latLngBounds(latlngs), { padding: [40, 40] })
+      }
+      else if (latlngs.length === 1) {
+        map.setView(latlngs[0], 13)
+      }
+
+      markersRef.current = markers
+    })
+  }, [routePoints, mode, city, setActiveSpotId])
+
+  // 7.4 监听 activeSpotId 变更，平滑移动地图视角
+  useEffect(() => {
+    if (!activeSpotId || !mapInstanceRef.current)
+      return
+    const target = routePoints.find(p => p.id === activeSpotId)
+    if (target) {
+      mapInstanceRef.current.panTo([target.lat, target.lng], { animate: true, duration: 0.6 })
+    }
+  }, [activeSpotId, routePoints])
+
+  // 7.5 全屏切换与重算尺寸
   useEffect(() => {
     if (!mapInstanceRef.current)
       return
-
     if (isExpanded) {
       document.body.style.overflow = 'hidden'
     }
@@ -353,50 +447,30 @@ export function TravelMapView({
       document.body.style.overflow = ''
     }
 
-    const timer1 = setTimeout(() => {
+    const timer = setTimeout(() => {
       mapInstanceRef.current?.invalidateSize()
       if (routePoints.length > 1) {
         import('leaflet').then((L) => {
           const latlngs: [number, number][] = routePoints.map(pt => [pt.lat, pt.lng])
-          mapInstanceRef.current?.fitBounds(L.latLngBounds(latlngs), { padding: [48, 48] })
+          mapInstanceRef.current?.fitBounds(L.latLngBounds(latlngs), { padding: [40, 40] })
         })
       }
-    }, 60)
-
-    const timer2 = setTimeout(() => {
-      mapInstanceRef.current?.invalidateSize()
     }, 250)
 
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape' && isExpanded) {
-        setIsExpanded(false)
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-
-    return () => {
-      clearTimeout(timer1)
-      clearTimeout(timer2)
-      window.removeEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = ''
-    }
+    return () => clearTimeout(timer)
   }, [isExpanded, routePoints])
 
-  // 聚焦具体景点
-  function handleFocusSpot(index: number) {
-    setActiveSpotIndex(index)
-    const pt = routePoints[index]
+  function handleFocusSpot(spotIndex: number) {
+    setActiveSpotIndex(spotIndex)
+    const pt = routePoints[spotIndex]
     if (pt && mapInstanceRef.current) {
-      mapInstanceRef.current.flyTo([pt.lat, pt.lng], 14, { duration: 0.8 })
-      const marker = markersRef.current[index]
-      if (marker) {
-        marker.openPopup()
+      mapInstanceRef.current.panTo([pt.lat, pt.lng], { animate: true, duration: 0.6 })
+      if (pt.id) {
+        setActiveSpotId(pt.id)
       }
     }
   }
 
-  // 聚焦某一路段 (从 A 到 B)
   function handleFocusLeg(legIndex: number) {
     setActiveSpotIndex(legIndex)
     const leg = routeLegs[legIndex]
@@ -412,33 +486,23 @@ export function TravelMapView({
   }
 
   if (routePoints.length === 0) {
-    return null
+    return (
+      <div className={`flex flex-col items-center justify-center h-full min-h-[350px] bg-stone-100/70 rounded-3xl border border-stone-200 text-center p-6 ${className}`}>
+        <Compass className="h-10 w-10 text-stone-400 mb-2 animate-pulse" />
+        <p className="text-xs text-stone-500 font-medium">规划生成中或未选定打卡点，地图将自动呈现路线...</p>
+      </div>
+    )
   }
 
   const startSpot = routePoints[0] || { name: `${city}起点` }
   const endSpot = routePoints[routePoints.length - 1] || { name: `${city}终点` }
   const viaPoints = routePoints.length > 2 ? routePoints.slice(1, -1) : []
 
-  // 全程导航：传入全部途经点，确保展示完整路线
   const amapOverallUrl = generateAmapRouteUrl(
     startSpot,
     endSpot,
     city,
     mode === 'driving' ? 'car' : mode === 'transit' ? 'bus' : 'walk',
-    viaPoints,
-  )
-  const baiduOverallUrl = generateBaiduRouteUrl(
-    startSpot,
-    endSpot,
-    city,
-    mode === 'driving' ? 'driving' : mode === 'transit' ? 'transit' : 'walking',
-    viaPoints,
-  )
-  const tencentOverallUrl = generateTencentRouteUrl(
-    startSpot,
-    endSpot,
-    city,
-    mode === 'driving' ? 'drive' : mode === 'transit' ? 'bus' : 'walk',
     viaPoints,
   )
 
@@ -447,258 +511,119 @@ export function TravelMapView({
       className={
         isExpanded
           ? `fixed inset-0 z-40 isolate flex flex-col bg-[#FAF7F0] shadow-2xl h-dvh w-screen overflow-hidden ${className}`
-          : `relative z-0 isolate overflow-hidden rounded-3xl border border-stone-200/90 bg-[#FDFBF7] shadow-sm transition-all ${className}`
+          : `relative z-0 isolate flex flex-col h-full overflow-hidden rounded-3xl border border-stone-200/90 bg-[#FDFBF7] shadow-sm transition-all ${className}`
       }
     >
-      {/* 顶栏：城市总览、交通模式切换、底图切换与全屏视野 */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200/80 bg-white/95 px-4 py-3 sm:px-5">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-700 text-white font-bold shadow-sm shadow-emerald-800/20">
-            <Compass className="h-4 w-4" />
-          </div>
-          <div>
-            <h4 className="font-serif text-sm font-bold text-stone-900 flex items-center gap-1.5">
-              <span>{city}</span>
-              <span className="text-xs font-normal text-stone-400">·</span>
-              <span className="text-xs font-bold text-emerald-800">
-                {routePoints.length}
-                {' '}
-                处景点真实路线规划
-              </span>
-            </h4>
-            <div className="flex items-center gap-2 text-[11px] text-stone-500 font-medium mt-0.5">
-              <span className="flex items-center gap-1 text-emerald-700 font-bold">
-                <NavigationIcon className="h-3 w-3" />
-                全程 ~
-                {totalMetrics.totalKm}
-                {' '}
-                km
-              </span>
-              <span>·</span>
-              <span className="flex items-center gap-1 text-amber-700 font-semibold">
-                <Clock className="h-3 w-3" />
-                {totalMetrics.totalTimeText}
-              </span>
-            </div>
-          </div>
+      {/* 顶栏 1: 资源分类筛选 (对标携程: [🏞️ 景点] [🏨 酒店] [🍴 美食] [🛍️ 购物] [✈️ 交通]) */}
+      <div className="flex items-center justify-between border-b border-stone-200/80 bg-white/95 px-3.5 py-2">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+          {CATEGORY_TABS.map((cat) => {
+            const Icon = cat.icon
+            const isCatActive = activeCategory === cat.id
+            return (
+              <button
+                className={`
+                  flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0
+                  ${isCatActive
+                    ? 'bg-emerald-700 text-white shadow-2xs'
+                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200 hover:text-stone-900'}
+                `}
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                type="button"
+              >
+                <Icon className="h-3.5 w-3.5" />
+                <span>{cat.label}</span>
+              </button>
+            )
+          })}
         </div>
 
-        {/* 控制区：Tab 切换、交通方式胶囊、底图切换与展开 */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Tab 切换：地图 / 分段路书 */}
-          <div className="flex items-center rounded-xl bg-stone-100 p-0.5 border border-stone-200/70 text-xs font-bold">
+        {/* 展开/全屏切换 */}
+        <button
+          aria-label={isExpanded ? '退出全屏' : '全屏地图'}
+          className="flex h-7 w-7 items-center justify-center rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-600 transition-colors cursor-pointer shrink-0"
+          onClick={() => setIsExpanded(!isExpanded)}
+          type="button"
+        >
+          {isExpanded ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
+        </button>
+      </div>
+
+      {/* 顶栏 2: 城市总览与交通模式/底图图层控制 */}
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-200/70 bg-[#FAF7F0] px-3.5 py-2 text-xs">
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-stone-800">
+            {city}
+            {' '}
+            ·
+            {selectedDay > 0 ? ` 第 ${selectedDay} 天` : ' 全程总览'}
+          </span>
+          <span className="text-stone-400">|</span>
+          <span className="text-emerald-700 font-semibold">
+            {routePoints.length}
+            站
+          </span>
+          <span className="text-stone-400">|</span>
+          <span className="text-stone-500">{totalMetrics.totalKm}km</span>
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          {/* 交通模式 */}
+          <div className="flex rounded-lg bg-stone-200/70 p-0.5 text-[11px] font-bold">
             <button
-              className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
-                activeTab === 'map' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-stone-500 hover:text-stone-800'
-              }`}
-              onClick={() => setActiveTab('map')}
+              className={`px-2 py-0.5 rounded-md transition-all cursor-pointer ${mode === 'driving' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-stone-600'}`}
+              onClick={() => setWorkspaceTransportMode('driving')}
               type="button"
             >
-              🗺️ 真实地图
+              驾车
             </button>
             <button
-              className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
-                activeTab === 'legs' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-stone-500 hover:text-stone-800'
-              }`}
-              onClick={() => setActiveTab('legs')}
+              className={`px-2 py-0.5 rounded-md transition-all cursor-pointer ${mode === 'transit' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-stone-600'}`}
+              onClick={() => setWorkspaceTransportMode('transit')}
               type="button"
             >
-              📋 分段导航 (
-              {routeLegs.length}
-              段)
+              公交
+            </button>
+            <button
+              className={`px-2 py-0.5 rounded-md transition-all cursor-pointer ${mode === 'walking' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-stone-600'}`}
+              onClick={() => setWorkspaceTransportMode('walking')}
+              type="button"
+            >
+              步行
             </button>
           </div>
 
-          {/* 交通工具切换 */}
-          <div className="flex items-center gap-0.5 rounded-xl bg-stone-100 p-0.5 border border-stone-200/70">
-            <button
-              className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                mode === 'driving' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-stone-500 hover:text-stone-800'
-              }`}
-              onClick={() => setMode('driving')}
-              title="自驾驾车"
-              type="button"
-            >
-              <Car className="h-3 w-3" />
-              <span className="hidden sm:inline">驾车</span>
-            </button>
-            <button
-              className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                mode === 'transit' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-stone-500 hover:text-stone-800'
-              }`}
-              onClick={() => setMode('transit')}
-              title="公共交通/地铁"
-              type="button"
-            >
-              <Zap className="h-3 w-3" />
-              <span className="hidden sm:inline">公交</span>
-            </button>
-            <button
-              className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                mode === 'walking' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-stone-500 hover:text-stone-800'
-              }`}
-              onClick={() => setMode('walking')}
-              title="步行漫游"
-              type="button"
-            >
-              <Footprints className="h-3 w-3" />
-              <span className="hidden sm:inline">步行</span>
-            </button>
-          </div>
-
-          {/* 底图样式切换 */}
+          {/* 底图样式 */}
           <select
-            aria-label="选择地图样式图层"
-            className="bg-stone-100 border border-stone-200 text-stone-700 text-xs font-medium rounded-xl px-2 py-1 outline-hidden cursor-pointer"
+            className="rounded-lg bg-stone-200/70 px-2 py-0.5 text-[11px] font-medium text-stone-700 outline-none cursor-pointer"
             onChange={e => setTileType(e.target.value as TileLayerType)}
             value={tileType}
           >
-            <option value="amap-street">高德街道</option>
-            <option value="amap-satellite">高德实景</option>
-            <option value="cartodb">Carto艺术</option>
+            <option value="amap-street">高德标准</option>
+            <option value="amap-satellite">高德卫星</option>
+            <option value="cartodb">艺术底图</option>
           </select>
-
-          {/* 展开/退出全屏视野 */}
-          <button
-            aria-label={isExpanded ? '退出地图全屏 (ESC)' : '展开地图全屏视野'}
-            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              isExpanded
-                ? 'bg-emerald-700 text-white shadow-sm hover:bg-emerald-800 ring-2 ring-emerald-300'
-                : 'bg-stone-100 border border-stone-200 text-stone-600 hover:text-stone-900 hover:bg-stone-200'
-            }`}
-            onClick={() => setIsExpanded(!isExpanded)}
-            title={isExpanded ? '退出地图全屏 (ESC)' : '展开地图全屏视野'}
-            type="button"
-          >
-            {isExpanded ? (
-              <>
-                <Minimize2 className="h-3.5 w-3.5" />
-                <span>退出全屏 (ESC)</span>
-              </>
-            ) : (
-              <>
-                <Maximize2 className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">全屏视野</span>
-              </>
-            )}
-          </button>
         </div>
       </div>
 
-      {/* 主展示区：地图视图 vs 分段路书视图 */}
-      {activeTab === 'map' ? (
-        <div className={`relative z-0 isolate ${isExpanded ? 'flex-1 min-h-0 w-full' : ''}`}>
-          {/* Leaflet 地图容器 */}
-          <div
-            className={`w-full bg-stone-100 transition-all duration-300 ${
-              isExpanded ? 'h-full w-full' : 'h-[380px] sm:h-[420px]'
-            }`}
-            ref={mapContainerRef}
+      {/* 地图核心视窗 */}
+      <div className="relative flex-1 min-h-[350px] w-full bg-stone-100 overflow-hidden">
+        <div className="h-full w-full" ref={mapContainerRef} />
+
+        {/* 选点详情浮动卡片 (对标携程底部浮层) */}
+        {selectedPoi && (
+          <FloatingPoiCard
+            city={city}
+            onClose={() => setSelectedPoi(null)}
+            spot={selectedPoi}
           />
-        </div>
-      ) : (
-        /* 分段路书列表视图 (Legs) */
-        <div className={`divide-y divide-stone-100 overflow-y-auto bg-stone-50/50 p-3 sm:p-4 ${
-          isExpanded ? 'flex-1 min-h-0 p-4 sm:p-6' : 'max-h-[420px]'
-        }`}
-        >
-          <div className="text-xs font-bold text-stone-500 mb-3 px-1 flex items-center justify-between">
-            <span>分段行程导航与接驳指南</span>
-            <span>
-              共
-              {routeLegs.length}
-              段路书
-            </span>
-          </div>
+        )}
+      </div>
 
-          <div className="space-y-2.5">
-            {routeLegs.map((leg, i) => (
-              <div
-                className={`rounded-2xl border p-3.5 transition-all bg-white ${
-                  activeSpotIndex === i
-                    ? 'border-emerald-500 shadow-md ring-2 ring-emerald-100'
-                    : 'border-stone-200/80 hover:border-stone-300'
-                }`}
-                key={leg.index}
-              >
-                <div className="flex items-center justify-between gap-2 mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-700 text-white text-xs font-black">
-                      {leg.index}
-                    </span>
-                    <span className="text-xs font-bold text-stone-900">
-                      {leg.from.name}
-                      {' '}
-                      ➔
-                      {' '}
-                      {leg.to.name}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs">
-                    <span className="font-bold text-emerald-800">
-                      ~
-                      {leg.distanceKm}
-                      km
-                    </span>
-                    <span className="text-stone-300">|</span>
-                    <span className="font-semibold text-amber-700">{leg.durationText}</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-2 border-t border-stone-100 mt-2 text-xs">
-                  <button
-                    className="text-emerald-700 font-bold hover:underline cursor-pointer flex items-center gap-1"
-                    onClick={() => {
-                      setActiveTab('map')
-                      handleFocusLeg(i)
-                    }}
-                    type="button"
-                  >
-                    <LocateFixed className="h-3.5 w-3.5" />
-                    <span>在地图中聚焦</span>
-                  </button>
-
-                  <div className="flex items-center gap-1.5">
-                    <a
-                      className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[11px] font-bold text-emerald-800 hover:bg-emerald-100 transition-colors"
-                      href={leg.amapUrl}
-                      rel="noreferrer"
-                      target="_blank"
-                    >
-                      <span>高德</span>
-                      <ExternalLink className="h-2.5 w-2.5" />
-                    </a>
-                    <a
-                      className="inline-flex items-center gap-1 rounded-lg bg-stone-100 border border-stone-200 px-2 py-0.5 text-[11px] font-bold text-stone-700 hover:bg-stone-200 transition-colors"
-                      href={leg.baiduUrl}
-                      rel="noreferrer"
-                      target="_blank"
-                    >
-                      <span>百度</span>
-                      <ExternalLink className="h-2.5 w-2.5" />
-                    </a>
-                    <a
-                      className="inline-flex items-center gap-1 rounded-lg bg-stone-100 border border-stone-200 px-2 py-0.5 text-[11px] font-bold text-stone-700 hover:bg-stone-200 transition-colors"
-                      href={leg.tencentUrl}
-                      rel="noreferrer"
-                      target="_blank"
-                    >
-                      <span>腾讯</span>
-                      <ExternalLink className="h-2.5 w-2.5" />
-                    </a>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* 底栏：打卡点快速定位胶囊 & 第三方直达 */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-stone-200/80 bg-white/95 px-4 py-2.5 sm:px-5">
-        {/* 打卡点快速切换 */}
-        <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 max-w-full sm:max-w-md no-scrollbar">
-          <span className="text-[11px] font-bold text-stone-400 shrink-0">打卡点:</span>
+      {/* 底部打卡点快捷胶囊 & 全程高德导航 */}
+      <div className="flex items-center justify-between gap-2 border-t border-stone-200/80 bg-white px-3.5 py-2">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
           {routePoints.map((spot, i) => (
             <button
               className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold transition-all shrink-0 cursor-pointer ${
@@ -706,11 +631,8 @@ export function TravelMapView({
                   ? 'bg-emerald-700 text-white shadow-xs'
                   : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
               }`}
-              key={`${spot.name}-${spot.lat}-${spot.lng}`}
-              onClick={() => {
-                setActiveTab('map')
-                handleFocusSpot(i)
-              }}
+              key={`${spot.name}-${i}`}
+              onClick={() => handleFocusSpot(i)}
               type="button"
             >
               <span className="text-[10px] opacity-80">
@@ -722,36 +644,15 @@ export function TravelMapView({
           ))}
         </div>
 
-        {/* 全程真实导航直达链接 (带完整途经点) */}
-        <div className="flex items-center gap-2 shrink-0">
-          <a
-            className="inline-flex items-center gap-1 rounded-xl bg-emerald-700 hover:bg-emerald-800 px-3 py-1.5 text-xs font-bold text-white transition-colors shadow-sm shadow-emerald-800/20"
-            href={amapOverallUrl}
-            rel="noreferrer"
-            target="_blank"
-          >
-            <span>高德全程导航</span>
-            <ExternalLink className="h-3 w-3" />
-          </a>
-          <a
-            className="inline-flex items-center gap-1 rounded-xl bg-stone-100 hover:bg-stone-200 border border-stone-200 px-2.5 py-1.5 text-xs font-bold text-stone-700 transition-colors shadow-2xs"
-            href={baiduOverallUrl}
-            rel="noreferrer"
-            target="_blank"
-          >
-            <span>百度地图</span>
-            <ExternalLink className="h-3 w-3" />
-          </a>
-          <a
-            className="inline-flex items-center gap-1 rounded-xl bg-stone-100 hover:bg-stone-200 border border-stone-200 px-2.5 py-1.5 text-xs font-bold text-stone-700 transition-colors shadow-2xs"
-            href={tencentOverallUrl}
-            rel="noreferrer"
-            target="_blank"
-          >
-            <span>腾讯地图</span>
-            <ExternalLink className="h-3 w-3" />
-          </a>
-        </div>
+        <a
+          className="inline-flex items-center gap-1 rounded-xl bg-emerald-700 hover:bg-emerald-800 px-3 py-1 text-xs font-bold text-white transition-colors shadow-2xs shrink-0"
+          href={amapOverallUrl}
+          rel="noreferrer"
+          target="_blank"
+        >
+          <span>高德导航</span>
+          <ExternalLink className="h-3 w-3" />
+        </a>
       </div>
     </div>
   )

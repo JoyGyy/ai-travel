@@ -40,6 +40,11 @@ export function ResizeHandle({
       startWidthRef.current = latestWidthRef.current;
       setIsDragging(true);
 
+      const targetElem = e.currentTarget;
+      try {
+        targetElem.setPointerCapture(e.pointerId);
+      } catch {}
+
       const handlePointerMove = (moveEvent: PointerEvent) => {
         const deltaX = moveEvent.clientX - startXRef.current;
         const adjustedDelta = direction === 'right' ? deltaX : -deltaX;
@@ -51,13 +56,15 @@ export function ResizeHandle({
 
         latestWidthRef.current = clampedWidth;
         onResize(clampedWidth);
-
-        // 触发全局 resize 事件以通知 Leaflet 地图立即更新
-        window.dispatchEvent(new Event('resize'));
       };
 
-      const handlePointerUp = () => {
+      const handlePointerUp = (upEvent: PointerEvent) => {
         setIsDragging(false);
+
+        try {
+          targetElem.releasePointerCapture(upEvent.pointerId);
+        } catch {}
+
         window.removeEventListener('pointermove', handlePointerMove);
         window.removeEventListener('pointerup', handlePointerUp);
         window.removeEventListener('pointercancel', handlePointerUp);
@@ -79,20 +86,47 @@ export function ResizeHandle({
     [direction, minWidth, maxWidth, onResize, onResizeEnd],
   );
 
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLDivElement>) => {
+      const step = 20;
+      let newWidth = latestWidthRef.current;
+      if (e.key === 'ArrowLeft') {
+        newWidth = Math.max(minWidth, latestWidthRef.current - step);
+      } else if (e.key === 'ArrowRight') {
+        newWidth = Math.min(maxWidth, latestWidthRef.current + step);
+      } else {
+        return;
+      }
+
+      e.preventDefault();
+      latestWidthRef.current = newWidth;
+      onResize(newWidth);
+      if (onResizeEnd) {
+        onResizeEnd(newWidth);
+      }
+      window.dispatchEvent(new Event('resize'));
+    },
+    [minWidth, maxWidth, onResize, onResizeEnd],
+  );
+
   return (
     <div
       aria-label={ariaLabel}
       aria-orientation="vertical"
+      aria-valuemax={maxWidth}
+      aria-valuemin={minWidth}
       aria-valuenow={width}
       className={`
         relative group z-20 hidden lg:flex items-center justify-center
         w-2.5 -mx-1 hover:w-3 hover:-mx-1.5 transition-all duration-150 cursor-col-resize select-none shrink-0
+        outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 rounded-sm
         ${className}
       `}
+      onKeyDown={handleKeyDown}
       onPointerDown={handlePointerDown}
       role="separator"
       tabIndex={0}
-      title="按住左右拖拽可调整栏目宽度"
+      title="按住左右拖拽可调整栏目宽度（支持键盘方向键微调）"
     >
       {/* 拖拽线条 */}
       <div

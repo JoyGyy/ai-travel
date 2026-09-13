@@ -20,6 +20,8 @@ describe('ResizeHandle', () => {
     expect(separator).toBeInTheDocument();
     expect(separator).toHaveAttribute('aria-orientation', 'vertical');
     expect(separator).toHaveAttribute('aria-valuenow', '400');
+    expect(separator).toHaveAttribute('aria-valuemin', '300');
+    expect(separator).toHaveAttribute('aria-valuemax', '650');
   });
 
   it('在按下并拖拽移动时正确计算并限制宽度', () => {
@@ -64,5 +66,32 @@ describe('ResizeHandle', () => {
     // 模拟 pointerup 结束拖拽
     fireEvent(window, new MouseEvent('pointerup'));
     expect(handleResizeEnd).toHaveBeenCalledWith(600);
+  });
+
+  it('支持使用键盘左右方向键微调宽度', () => {
+    const handleResize = vi.fn();
+    const handleResizeEnd = vi.fn();
+
+    render(
+      <ResizeHandle
+        maxWidth={500}
+        minWidth={300}
+        onResize={handleResize}
+        onResizeEnd={handleResizeEnd}
+        width={400}
+      />,
+    );
+
+    const separator = screen.getByRole('separator');
+
+    // 按左方向键减小宽度
+    fireEvent.keyDown(separator, { key: 'ArrowLeft' });
+    expect(handleResize).toHaveBeenCalledWith(380);
+    expect(handleResizeEnd).toHaveBeenCalledWith(380);
+
+    // 按右方向键增加宽度
+    fireEvent.keyDown(separator, { key: 'ArrowRight' });
+    expect(handleResize).toHaveBeenCalledWith(400);
+    expect(handleResizeEnd).toHaveBeenCalledWith(400);
   });
 });

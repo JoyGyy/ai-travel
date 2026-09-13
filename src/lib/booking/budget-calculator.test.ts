@@ -9,7 +9,11 @@ import {
 describe('budget-calculator', () => {
   describe('resolveSpotBookingResource', () => {
     it('应精准匹配西湖等 5A 免费景区并标明预约须知', () => {
-      const res = resolveSpotBookingResource('杭州西湖断桥残雪', '杭州', 'free');
+      const res = resolveSpotBookingResource(
+        '杭州西湖断桥残雪',
+        '杭州',
+        'free',
+      );
       expect(res.discountPrice).toBe(0);
       expect(res.originalPrice).toBe(0);
       expect(res.tags).toContain('国家5A');
@@ -34,7 +38,12 @@ describe('budget-calculator', () => {
     });
 
     it('对于未在预设库的通用付费景点能解析文本价格', () => {
-      const res = resolveSpotBookingResource('某特色古镇', '嘉兴', 'paid', '¥85/人');
+      const res = resolveSpotBookingResource(
+        '某特色古镇',
+        '嘉兴',
+        'paid',
+        '¥85/人',
+      );
       expect(res.originalPrice).toBe(85);
       expect(res.discountPrice).toBe(80);
       expect(res.provider).toBe('携程自营');
@@ -55,7 +64,9 @@ describe('budget-calculator', () => {
 
     it('自驾/网约车打车起步价与里程费估算', () => {
       expect(estimateLegTransitCost('driving', 2.5)).toBe(14);
-      expect(estimateLegTransitCost('driving', 10)).toBe(Math.round(14 + 7 * 2.6));
+      expect(estimateLegTransitCost('driving', 10)).toBe(
+        Math.round(14 + 7 * 2.6),
+      );
     });
   });
 
@@ -97,7 +108,9 @@ describe('budget-calculator', () => {
 
   describe('generateDomesticPriceTrends', () => {
     it('应生成未来 7 天的走势，周末点位标记为 isPeak 并上浮机票酒店价格', () => {
-      const trends = generateDomesticPriceTrends(new Date('2026-05-01T00:00:00Z'));
+      const trends = generateDomesticPriceTrends(
+        new Date('2026-05-01T00:00:00Z'),
+      );
       expect(trends).toHaveLength(7);
       const friday = trends[0]; // 2026-05-01 is Friday
       expect(friday.isPeak).toBe(true);

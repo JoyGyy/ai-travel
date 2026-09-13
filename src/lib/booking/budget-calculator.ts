@@ -152,7 +152,9 @@ export function resolveSpotBookingResource(
   // 3. 通用付费景点规则
   // 从原始价格文本尝试解析数字 (如 "¥80" -> 80)
   const numericPriceMatch = rawPriceText?.match(/\d+/);
-  const parsedPrice = numericPriceMatch ? parseInt(numericPriceMatch[0], 10) : 60;
+  const parsedPrice = numericPriceMatch
+    ? parseInt(numericPriceMatch[0], 10)
+    : 60;
   const discountPrice = Math.max(0, parsedPrice - 5);
 
   return {
@@ -238,7 +240,9 @@ export function calculateDayBudgetBreakdown({
 
   // 单人基础参考总花费 (单人票 + 酒店平摊 + 交通平摊)
   const subtotal = Math.round(
-    singlePersonTicketCost + totalHotel / safeParticipants + totalTransit / safeParticipants,
+    singlePersonTicketCost +
+      totalHotel / safeParticipants +
+      totalTransit / safeParticipants,
   );
 
   // 实付总计 (所有总和减去单次优惠券抵扣)
@@ -261,7 +265,9 @@ export function calculateDayBudgetBreakdown({
 /**
  * 生成未来 7 天内的高铁 vs 机票 vs 酒店价格走势（周末与节假日波峰）
  */
-export function generateDomesticPriceTrends(baseDate: Date = new Date()): PriceTrendPoint[] {
+export function generateDomesticPriceTrends(
+  baseDate: Date = new Date(),
+): PriceTrendPoint[] {
   const points: PriceTrendPoint[] = [];
   const daysOfWeek = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 

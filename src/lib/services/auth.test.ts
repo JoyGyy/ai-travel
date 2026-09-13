@@ -283,6 +283,20 @@ describe('auth 服务', () => {
       expect(mockJwtVerify).toHaveBeenCalledWith('real-token', expect.anything())
       expect(result).toEqual(payload)
     })
+
+    it('不误匹配带连字符的 cookie 名如 app-token 或 other-token', async () => {
+      // arrange
+      const payload = { id: 'user-2', username: 'testuser2' }
+      mockJwtVerify.mockResolvedValue({ payload })
+      const headers = new Headers({ cookie: 'app-token=fake123; token=real-token' })
+
+      // act
+      const result = await getAuthFromHeaders(headers)
+
+      // assert
+      expect(mockJwtVerify).toHaveBeenCalledWith('real-token', expect.anything())
+      expect(result).toEqual(payload)
+    })
   })
 
   // ---------- consumeAiQuota ----------

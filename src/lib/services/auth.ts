@@ -61,8 +61,8 @@ export async function getAuthFromHeaders(headers: Headers): Promise<JwtPayload |
 
   const cookie = headers.get('cookie')
   if (cookie) {
-    // 使用 \b 确保精确匹配 'token' cookie，不会误匹配 'csrf_token' 等
-    const match = cookie.match(/\btoken=([^;]+)/)
+    // 精确匹配 'token' cookie，确保以字符串起始或分号空格开头，不误匹配 'my-token' 或 'csrf_token'
+    const match = cookie.match(/(?:^|;\s*)token=([^;]+)/)
     if (match) {
       try {
         return await verifyToken(match[1])

@@ -45,14 +45,24 @@ import {
   useState,
 } from 'react';
 
+import dynamic from 'next/dynamic';
 import ReactMarkdown from 'react-markdown';
 import { TravelRouteCardModal } from '@/components/card/TravelRouteCardModal';
 import { InlinePoiCard } from '@/components/chat/InlinePoiCard';
 import { ThinkingAccordion } from '@/components/chat/ThinkingAccordion';
 import { ItineraryBoard } from '@/components/itinerary-board/ItineraryBoard';
-import { TravelMapView } from '@/components/map/TravelMapView';
+import { TravelMapSkeleton } from '@/components/map/TravelMapSkeleton';
 import { RAGSource } from '@/components/RAGSource';
 import { ResizeHandle } from '@/components/workspace/ResizeHandle';
+
+const TravelMapView = dynamic(
+  () =>
+    import('@/components/map/TravelMapView').then((mod) => mod.TravelMapView),
+  {
+    ssr: false,
+    loading: () => <TravelMapSkeleton />,
+  },
+);
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

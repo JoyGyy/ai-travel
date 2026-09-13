@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Calendar,
   Check,
@@ -15,61 +15,100 @@ import {
   Route,
   Sparkles,
   Trash2,
-} from 'lucide-react'
-import { useItineraryWorkspaceStore } from '@/stores/itineraryWorkspace'
-import { BudgetSummaryBar } from '@/components/booking/BudgetSummaryBar'
-import { CommuteTimelineSegment } from './CommuteTimelineSegment'
-import { ItinerarySpotCard } from './ItinerarySpotCard'
+  Wifi,
+  WifiOff,
+} from 'lucide-react';
+import { useItineraryWorkspaceStore } from '@/stores/itineraryWorkspace';
+import { subscribeNetworkStatus } from '@/lib/offline/itinerary-cache';
+import { BudgetSummaryBar } from '@/components/booking/BudgetSummaryBar';
+import { CommuteTimelineSegment } from './CommuteTimelineSegment';
+import { ItinerarySpotCard } from './ItinerarySpotCard';
 
 interface ItineraryBoardProps {
-  className?: string
-  onExportCard?: () => void
+  className?: string;
+  onExportCard?: () => void;
 }
 
 export function ItineraryBoard({ className = '' }: ItineraryBoardProps) {
-  const city = useItineraryWorkspaceStore(s => s.city)
-  const days = useItineraryWorkspaceStore(s => s.days)
-  const selectedDay = useItineraryWorkspaceStore(s => s.selectedDay)
-  const setSelectedDay = useItineraryWorkspaceStore(s => s.setSelectedDay)
-  const addDay = useItineraryWorkspaceStore(s => s.addDay)
-  const unassignedSpots = useItineraryWorkspaceStore(s => s.unassignedSpots)
-  const addFromUnassignedToDay = useItineraryWorkspaceStore(s => s.addFromUnassignedToDay)
-  const updateDayNotes = useItineraryWorkspaceStore(s => s.updateDayNotes)
-  const viewMode = useItineraryWorkspaceStore(s => s.viewMode)
-  const setViewMode = useItineraryWorkspaceStore(s => s.setViewMode)
+  const city = useItineraryWorkspaceStore((s) => s.city);
+  const days = useItineraryWorkspaceStore((s) => s.days);
+  const isOffline = useItineraryWorkspaceStore((s) => s.isOffline);
+  const setIsOffline = useItineraryWorkspaceStore((s) => s.setIsOffline);
 
-  const [isEditingNotes, setIsEditingNotes] = useState(false)
-  const [noteDraft, setNoteDraft] = useState('')
+  useEffect(() => {
+    const unsubscribe = subscribeNetworkStatus((online) => {
+      setIsOffline(!online);
+    });
+    return unsubscribe;
+  }, [setIsOffline]);
+  const selectedDay = useItineraryWorkspaceStore((s) => s.selectedDay);
+  const setSelectedDay = useItineraryWorkspaceStore((s) => s.setSelectedDay);
+  const addDay = useItineraryWorkspaceStore((s) => s.addDay);
+  const unassignedSpots = useItineraryWorkspaceStore((s) => s.unassignedSpots);
+  const addFromUnassignedToDay = useItineraryWorkspaceStore(
+    (s) => s.addFromUnassignedToDay,
+  );
+  const updateDayNotes = useItineraryWorkspaceStore((s) => s.updateDayNotes);
+  const viewMode = useItineraryWorkspaceStore((s) => s.viewMode);
+  const setViewMode = useItineraryWorkspaceStore((s) => s.setViewMode);
+
+  const [isEditingNotes, setIsEditingNotes] = useState(false);
+  const [noteDraft, setNoteDraft] = useState('');
 
   // 当前激活的单日行程对象 (selectedDay > 0)
   const currentDay = useMemo(() => {
-    return days.find(d => d.day === selectedDay) || null
-  }, [days, selectedDay])
+    return days.find((d) => d.day === selectedDay) || null;
+  }, [days, selectedDay]);
 
   // 当前日统计指标
   const metrics = useMemo(() => {
     if (!currentDay || currentDay.spots.length === 0) {
-      return null
+      return null;
     }
-    const spotCount = currentDay.spots.length
-    const totalDistance = currentDay.legs.reduce((acc, leg) => acc + leg.distanceKm, 0)
-    const totalCommuteMinutes = currentDay.legs.reduce((acc, leg) => acc + leg.durationMins, 0)
+    const spotCount = currentDay.spots.length;
+    const totalDistance = currentDay.legs.reduce(
+      (acc, leg) => acc + leg.distanceKm,
+      0,
+    );
+    const totalCommuteMinutes = currentDay.legs.reduce(
+      (acc, leg) => acc + leg.durationMins,
+      0,
+    );
     return {
-      commuteText: totalCommuteMinutes > 0 ? `通勤约 ${totalCommuteMinutes} 分钟` : '起止点邻近',
-      distanceText: totalDistance > 0 ? `全程约 ${totalDistance.toFixed(1)} km` : '步行可达',
+      commuteText:
+        totalCommuteMinutes > 0
+          ? `通勤约 ${totalCommuteMinutes} 分钟`
+          : '起止点邻近',
+      distanceText:
+        totalDistance > 0
+          ? `全程约 ${totalDistance.toFixed(1)} km`
+          : '步行可达',
       spotCount: `共 ${spotCount} 处打卡点`,
-    }
-  }, [currentDay])
+    };
+  }, [currentDay]);
 
   const handleSaveNotes = () => {
     if (currentDay) {
-      updateDayNotes(currentDay.day, noteDraft)
+      updateDayNotes(currentDay.day, noteDraft);
     }
-    setIsEditingNotes(false)
-  }
+    setIsEditingNotes(false);
+  };
 
   return (
     <div className={`flex flex-col h-full bg-[#FDFBF7] ${className}`}>
+      {/* 高铁/弱网离线手账横幅 */}
+      {isOffline && (
+        <div className="flex items-center justify-between gap-2 bg-amber-500/15 border-b border-amber-300 px-3 py-1.5 text-xs text-amber-900 font-medium animate-in fade-in duration-200">
+          <div className="flex items-center gap-1.5">
+            <WifiOff className="h-3.5 w-3.5 text-amber-700 shrink-0" />
+            <span>🚄 高铁/弱网离线手账已激活 · 当前行程已完整离线保存，无信号亦可顺畅查阅</span>
+          </div>
+          <span className="shrink-0 rounded bg-amber-200 px-1.5 py-0.5 text-[10px] font-bold text-amber-900">
+            离线可用
+          </span>
+        </div>
+      )}
+
       {/* 1. 顶栏：多天控制器 (对标携程: [总览] [第1天] [第2天] ... [待安排] [+]) */}
       <div className="border-b border-stone-200/90 bg-white px-3 py-2.5 shadow-2xs">
         <div className="flex items-center justify-between gap-2 overflow-x-auto no-scrollbar">
@@ -78,9 +117,11 @@ export function ItineraryBoard({ className = '' }: ItineraryBoardProps) {
             <button
               className={`
                 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer
-                ${selectedDay === 0
-                  ? 'bg-emerald-700 text-white shadow-2xs'
-                  : 'bg-stone-100 text-stone-600 hover:bg-stone-200 hover:text-stone-900'}
+                ${
+                  selectedDay === 0
+                    ? 'bg-emerald-700 text-white shadow-2xs'
+                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200 hover:text-stone-900'
+                }
               `}
               onClick={() => setSelectedDay(0)}
               type="button"
@@ -89,21 +130,21 @@ export function ItineraryBoard({ className = '' }: ItineraryBoardProps) {
             </button>
 
             {/* 各天 Tab */}
-            {days.map(d => (
+            {days.map((d) => (
               <button
                 className={`
                   px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer
-                  ${selectedDay === d.day
-                    ? 'bg-emerald-700 text-white shadow-2xs'
-                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200 hover:text-stone-900'}
+                  ${
+                    selectedDay === d.day
+                      ? 'bg-emerald-700 text-white shadow-2xs'
+                      : 'bg-stone-100 text-stone-600 hover:bg-stone-200 hover:text-stone-900'
+                  }
                 `}
                 key={d.day}
                 onClick={() => setSelectedDay(d.day)}
                 type="button"
               >
-                第
-                {d.day}
-                天
+                第{d.day}天
               </button>
             ))}
 
@@ -111,9 +152,11 @@ export function ItineraryBoard({ className = '' }: ItineraryBoardProps) {
             <button
               className={`
                 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1
-                ${selectedDay === -1
-                  ? 'bg-amber-600 text-white shadow-2xs'
-                  : 'bg-stone-100 text-stone-600 hover:bg-stone-200 hover:text-stone-900'}
+                ${
+                  selectedDay === -1
+                    ? 'bg-amber-600 text-white shadow-2xs'
+                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200 hover:text-stone-900'
+                }
               `}
               onClick={() => setSelectedDay(-1)}
               type="button"
@@ -176,7 +219,8 @@ export function ItineraryBoard({ className = '' }: ItineraryBoardProps) {
               等待生成智能行程看板
             </h3>
             <p className="mt-1.5 max-w-xs text-xs text-stone-500 leading-relaxed">
-              在左侧告诉 AI 您想去的城市与游玩天数，生成完毕后将在此呈现如携程般精美的多日编排与动线图景。
+              在左侧告诉 AI
+              您想去的城市与游玩天数，生成完毕后将在此呈现如携程般精美的多日编排与动线图景。
             </p>
           </div>
         ) : selectedDay === -1 ? (
@@ -188,11 +232,7 @@ export function ItineraryBoard({ className = '' }: ItineraryBoardProps) {
                 <span>待安排景点 & 灵感池</span>
               </div>
               <span className="text-xs text-stone-500">
-                共
-                {' '}
-                {unassignedSpots.length}
-                {' '}
-                个待定点
+                共 {unassignedSpots.length} 个待定点
               </span>
             </div>
 
@@ -208,20 +248,22 @@ export function ItineraryBoard({ className = '' }: ItineraryBoardProps) {
                     key={spot.id}
                   >
                     <div>
-                      <h4 className="font-bold text-stone-900 text-xs">{spot.name}</h4>
-                      <p className="text-[11px] text-stone-500 mt-0.5">{spot.recommendedDuration || '建议 1-2 小时'}</p>
+                      <h4 className="font-bold text-stone-900 text-xs">
+                        {spot.name}
+                      </h4>
+                      <p className="text-[11px] text-stone-500 mt-0.5">
+                        {spot.recommendedDuration || '建议 1-2 小时'}
+                      </p>
                     </div>
                     <div className="flex items-center gap-1">
-                      {days.map(d => (
+                      {days.map((d) => (
                         <button
                           className="rounded-lg bg-emerald-50 px-2 py-1 text-[11px] font-bold text-emerald-800 hover:bg-emerald-100 transition-colors cursor-pointer"
                           key={d.day}
                           onClick={() => addFromUnassignedToDay(idx, d.day)}
                           type="button"
                         >
-                          + 第
-                          {d.day}
-                          天
+                          + 第{d.day}天
                         </button>
                       ))}
                     </div>
@@ -238,26 +280,19 @@ export function ItineraryBoard({ className = '' }: ItineraryBoardProps) {
                 <h3 className="font-serif text-sm font-bold text-stone-900 flex items-center gap-1.5">
                   <Sparkles className="h-4 w-4 text-emerald-700" />
                   <span>
-                    【
-                    {city}
-                    】
-                    {days.length}
+                    【{city}】{days.length}
                     天完整行程总览
                   </span>
                 </h3>
                 <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full">
-                  共
-                  {' '}
-                  {days.reduce((acc, d) => acc + d.spots.length, 0)}
-                  {' '}
-                  个打卡点
+                  共 {days.reduce((acc, d) => acc + d.spots.length, 0)} 个打卡点
                 </span>
               </div>
             </div>
 
             {/* 逐天展开 */}
             <div className="space-y-4">
-              {days.map(d => (
+              {days.map((d) => (
                 <div
                   className="rounded-2xl border border-stone-200 bg-white p-4 shadow-2xs space-y-3 cursor-pointer hover:border-emerald-500 transition-colors"
                   key={d.day}
@@ -266,8 +301,7 @@ export function ItineraryBoard({ className = '' }: ItineraryBoardProps) {
                   <div className="flex items-center justify-between border-b border-stone-100 pb-2">
                     <span className="font-bold text-xs text-emerald-950 flex items-center gap-1.5">
                       <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-emerald-700 text-[10px] font-black text-white">
-                        D
-                        {d.day}
+                        D{d.day}
                       </span>
                       <span>{d.title}</span>
                     </span>
@@ -283,7 +317,9 @@ export function ItineraryBoard({ className = '' }: ItineraryBoardProps) {
                         className="inline-flex items-center gap-1 rounded-xl bg-stone-50 border border-stone-200/80 px-2 py-1 text-xs text-stone-700"
                         key={sp.id}
                       >
-                        <span className="font-black text-emerald-700">{sIdx + 1}</span>
+                        <span className="font-black text-emerald-700">
+                          {sIdx + 1}
+                        </span>
                         <span>{sp.name}</span>
                       </span>
                     ))}
@@ -301,11 +337,7 @@ export function ItineraryBoard({ className = '' }: ItineraryBoardProps) {
                 <div className="flex items-start justify-between">
                   <div>
                     <h3 className="font-serif text-sm font-bold text-stone-900">
-                      第
-                      {currentDay.day}
-                      天 ·
-                      {' '}
-                      {currentDay.title}
+                      第{currentDay.day}天 · {currentDay.title}
                     </h3>
                     {metrics && (
                       <div className="flex flex-wrap items-center gap-2 text-[11px] text-stone-500 mt-1">
@@ -313,7 +345,9 @@ export function ItineraryBoard({ className = '' }: ItineraryBoardProps) {
                         <span>•</span>
                         <span>{metrics.distanceText}</span>
                         <span>•</span>
-                        <span className="text-emerald-700 font-semibold">{metrics.commuteText}</span>
+                        <span className="text-emerald-700 font-semibold">
+                          {metrics.commuteText}
+                        </span>
                       </div>
                     )}
                   </div>
@@ -325,7 +359,7 @@ export function ItineraryBoard({ className = '' }: ItineraryBoardProps) {
                     <div className="space-y-2">
                       <textarea
                         className="w-full rounded-xl border border-stone-300 p-2 text-xs focus:border-emerald-600 focus:outline-none"
-                        onChange={e => setNoteDraft(e.target.value)}
+                        onChange={(e) => setNoteDraft(e.target.value)}
                         placeholder="记录今天的出游提醒、着装建议或必吃小吃..."
                         rows={2}
                         value={noteDraft}
@@ -351,12 +385,14 @@ export function ItineraryBoard({ className = '' }: ItineraryBoardProps) {
                     <div
                       className="flex items-center justify-between text-xs text-stone-500 hover:text-stone-800 cursor-pointer group"
                       onClick={() => {
-                        setNoteDraft(currentDay.notes || '')
-                        setIsEditingNotes(true)
+                        setNoteDraft(currentDay.notes || '');
+                        setIsEditingNotes(true);
                       }}
                     >
                       <span className="italic truncate">
-                        {currentDay.notes ? `📝 备注：${currentDay.notes}` : '+ 添加当日行程备注'}
+                        {currentDay.notes
+                          ? `📝 备注：${currentDay.notes}`
+                          : '+ 添加当日行程备注'}
                       </span>
                       <Edit2 className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
@@ -367,8 +403,8 @@ export function ItineraryBoard({ className = '' }: ItineraryBoardProps) {
               {/* 景点节点时间线 */}
               <div className="relative pt-1 space-y-1">
                 {currentDay.spots.map((spot, sIdx) => {
-                  const leg = currentDay.legs[sIdx]
-                  const isLast = sIdx === currentDay.spots.length - 1
+                  const leg = currentDay.legs[sIdx];
+                  const isLast = sIdx === currentDay.spots.length - 1;
 
                   return (
                     <React.Fragment key={spot.id}>
@@ -387,7 +423,7 @@ export function ItineraryBoard({ className = '' }: ItineraryBoardProps) {
                         <CommuteTimelineSegment city={city} leg={leg} />
                       )}
                     </React.Fragment>
-                  )
+                  );
                 })}
               </div>
 
@@ -400,5 +436,5 @@ export function ItineraryBoard({ className = '' }: ItineraryBoardProps) {
         )}
       </div>
     </div>
-  )
+  );
 }

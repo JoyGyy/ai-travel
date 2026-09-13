@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import type { WorkspaceSpotNode } from '@/stores/itineraryWorkspace'
+import type { WorkspaceSpotNode } from '@/stores/itineraryWorkspace';
 import {
   ArrowDown,
   ArrowUp,
@@ -11,22 +11,22 @@ import {
   MoreHorizontal,
   Ticket,
   Trash2,
-} from 'lucide-react'
-import Image from 'next/image'
-import { useState } from 'react'
+} from 'lucide-react';
+import Image from 'next/image';
+import { useState } from 'react';
 
-import { BookingResourceCard } from '@/components/booking/BookingResourceCard'
-import { generateAmapSpotUrl } from '@/lib/map/amap'
-import { useItineraryWorkspaceStore } from '@/stores/itineraryWorkspace'
+import { BookingResourceCard } from '@/components/booking/BookingResourceCard';
+import { generateAmapSpotUrl } from '@/lib/map/amap';
+import { useItineraryWorkspaceStore } from '@/stores/itineraryWorkspace';
 
 interface ItinerarySpotCardProps {
-  canMoveDown: boolean
-  canMoveUp: boolean
-  city: string
-  dayNum: number
-  index: number
-  isTotalLast: boolean
-  spot: WorkspaceSpotNode
+  canMoveDown: boolean;
+  canMoveUp: boolean;
+  city: string;
+  dayNum: number;
+  index: number;
+  isTotalLast: boolean;
+  spot: WorkspaceSpotNode;
 }
 
 export function ItinerarySpotCard({
@@ -37,20 +37,24 @@ export function ItinerarySpotCard({
   index,
   spot,
 }: ItinerarySpotCardProps) {
-  const [showMenu, setShowMenu] = useState(false)
-  const activeSpotId = useItineraryWorkspaceStore(s => s.activeSpotId)
-  const setActiveSpotId = useItineraryWorkspaceStore(s => s.setActiveSpotId)
-  const moveSpotInDay = useItineraryWorkspaceStore(s => s.moveSpotInDay)
-  const removeSpotFromDay = useItineraryWorkspaceStore(s => s.removeSpotFromDay)
-  const moveToUnassigned = useItineraryWorkspaceStore(s => s.moveToUnassigned)
+  const [showMenu, setShowMenu] = useState(false);
+  const activeSpotId = useItineraryWorkspaceStore((s) => s.activeSpotId);
+  const setActiveSpotId = useItineraryWorkspaceStore((s) => s.setActiveSpotId);
+  const moveSpotInDay = useItineraryWorkspaceStore((s) => s.moveSpotInDay);
+  const removeSpotFromDay = useItineraryWorkspaceStore(
+    (s) => s.removeSpotFromDay,
+  );
+  const moveToUnassigned = useItineraryWorkspaceStore(
+    (s) => s.moveToUnassigned,
+  );
 
-  const isActive = activeSpotId === spot.id
+  const isActive = activeSpotId === spot.id;
 
   const handleCardClick = () => {
-    setActiveSpotId(spot.id)
-  }
+    setActiveSpotId(spot.id);
+  };
 
-  const amapSpotUrl = generateAmapSpotUrl(spot.name, city)
+  const amapSpotUrl = generateAmapSpotUrl(spot.name, city);
 
   return (
     <div className="relative pl-8">
@@ -85,7 +89,10 @@ export function ItinerarySpotCard({
             className="object-cover transition-transform duration-300 group-hover:scale-105"
             fill
             sizes="88px"
-            src={spot.coverImage || '/images/attractions/hangzhou/hangzhou-west-lake.webp'}
+            src={
+              spot.coverImage ||
+              '/images/attractions/hangzhou/hangzhou-west-lake.webp'
+            }
           />
           {spot.rating && (
             <div className="absolute bottom-1 right-1 flex items-center gap-0.5 rounded-md bg-black/60 px-1 py-0.5 text-[9px] font-bold text-amber-300 backdrop-blur-xs">
@@ -99,9 +106,7 @@ export function ItinerarySpotCard({
         <div className="min-w-0 flex-1 space-y-1">
           <div className="flex items-center justify-between">
             <h4 className="truncate font-sans text-sm font-bold text-stone-900 group-hover:text-emerald-800">
-              {index + 1}
-              .
-              {spot.name}
+              {index + 1}.{spot.name}
             </h4>
 
             {/* 更多操作菜单 */}
@@ -110,8 +115,8 @@ export function ItinerarySpotCard({
                 aria-label="更多操作"
                 className="flex h-6 w-6 items-center justify-center rounded-lg text-stone-400 hover:bg-stone-100 hover:text-stone-700 transition-colors cursor-pointer"
                 onClick={(e) => {
-                  e.stopPropagation()
-                  setShowMenu(prev => !prev)
+                  e.stopPropagation();
+                  setShowMenu((prev) => !prev);
                 }}
                 type="button"
               >
@@ -123,8 +128,8 @@ export function ItinerarySpotCard({
                   <div
                     className="fixed inset-0 z-20"
                     onClick={(e) => {
-                      e.stopPropagation()
-                      setShowMenu(false)
+                      e.stopPropagation();
+                      setShowMenu(false);
                     }}
                   />
                   <div className="absolute right-0 top-7 z-30 w-36 rounded-xl border border-stone-200 bg-white py-1 shadow-lg text-xs">
@@ -132,9 +137,9 @@ export function ItinerarySpotCard({
                       <button
                         className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-stone-700 hover:bg-stone-50 cursor-pointer"
                         onClick={(e) => {
-                          e.stopPropagation()
-                          setShowMenu(false)
-                          moveSpotInDay(dayNum, index, index - 1)
+                          e.stopPropagation();
+                          setShowMenu(false);
+                          moveSpotInDay(dayNum, index, index - 1);
                         }}
                         type="button"
                       >
@@ -146,9 +151,9 @@ export function ItinerarySpotCard({
                       <button
                         className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-stone-700 hover:bg-stone-50 cursor-pointer"
                         onClick={(e) => {
-                          e.stopPropagation()
-                          setShowMenu(false)
-                          moveSpotInDay(dayNum, index, index + 1)
+                          e.stopPropagation();
+                          setShowMenu(false);
+                          moveSpotInDay(dayNum, index, index + 1);
                         }}
                         type="button"
                       >
@@ -159,9 +164,9 @@ export function ItinerarySpotCard({
                     <button
                       className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-stone-700 hover:bg-stone-50 cursor-pointer"
                       onClick={(e) => {
-                        e.stopPropagation()
-                        setShowMenu(false)
-                        moveToUnassigned(dayNum, index)
+                        e.stopPropagation();
+                        setShowMenu(false);
+                        moveToUnassigned(dayNum, index);
                       }}
                       type="button"
                     >
@@ -171,7 +176,7 @@ export function ItinerarySpotCard({
                     <a
                       className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-stone-700 hover:bg-stone-50"
                       href={amapSpotUrl}
-                      onClick={e => e.stopPropagation()}
+                      onClick={(e) => e.stopPropagation()}
                       rel="noreferrer"
                       target="_blank"
                     >
@@ -182,9 +187,9 @@ export function ItinerarySpotCard({
                     <button
                       className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-rose-600 hover:bg-rose-50 cursor-pointer"
                       onClick={(e) => {
-                        e.stopPropagation()
-                        setShowMenu(false)
-                        removeSpotFromDay(dayNum, index)
+                        e.stopPropagation();
+                        setShowMenu(false);
+                        removeSpotFromDay(dayNum, index);
                       }}
                       type="button"
                     >
@@ -204,11 +209,15 @@ export function ItinerarySpotCard({
               <span>{spot.recommendedDuration || '建议玩1-2小时'}</span>
             </span>
             <span className="text-stone-300">|</span>
-            <span className="truncate max-w-[120px]">{spot.openingHours || '全天开放'}</span>
+            <span className="truncate max-w-[120px]">
+              {spot.openingHours || '全天开放'}
+            </span>
             <span className="text-stone-300">|</span>
             <span className="flex items-center gap-1 font-semibold text-emerald-700">
               <Ticket className="h-3 w-3" />
-              <span>{spot.ticketType === 'free' ? '免费' : spot.priceText || '收费'}</span>
+              <span>
+                {spot.ticketType === 'free' ? '免费' : spot.priceText || '收费'}
+              </span>
             </span>
           </div>
 
@@ -221,12 +230,12 @@ export function ItinerarySpotCard({
 
           {/* 国内 OTA 门票预约与预订微卡 */}
           {spot.bookingResource && (
-            <div onClick={e => e.stopPropagation()}>
+            <div onClick={(e) => e.stopPropagation()}>
               <BookingResourceCard resource={spot.bookingResource} />
             </div>
           )}
         </div>
       </div>
     </div>
-  )
+  );
 }

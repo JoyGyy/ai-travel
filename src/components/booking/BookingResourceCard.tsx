@@ -125,7 +125,9 @@ export function BookingResourceCard({
               快速确认出票
             </span>
             {resource.salesVolume && (
-              <span className="text-stone-600">热度: {resource.salesVolume}</span>
+              <span className="text-stone-600">
+                热度: {resource.salesVolume}
+              </span>
             )}
           </div>
         </div>

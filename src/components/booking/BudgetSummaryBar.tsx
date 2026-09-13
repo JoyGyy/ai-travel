@@ -12,7 +12,10 @@ import {
   Users,
   Utensils,
 } from 'lucide-react';
-import { calculateDayBudgetBreakdown, estimateLegTransitCost } from '@/lib/booking/budget-calculator';
+import {
+  calculateDayBudgetBreakdown,
+  estimateLegTransitCost,
+} from '@/lib/booking/budget-calculator';
 import { useItineraryWorkspaceStore } from '@/stores/itineraryWorkspace';
 import { PriceTrendModal } from './PriceTrendModal';
 
@@ -27,7 +30,9 @@ export function BudgetSummaryBar({
 }: BudgetSummaryBarProps) {
   const city = useItineraryWorkspaceStore((s) => s.city);
   const days = useItineraryWorkspaceStore((s) => s.days);
-  const participantCount = useItineraryWorkspaceStore((s) => s.participantCount);
+  const participantCount = useItineraryWorkspaceStore(
+    (s) => s.participantCount,
+  );
   const setParticipantCount = useItineraryWorkspaceStore(
     (s) => s.setParticipantCount,
   );

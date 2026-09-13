@@ -35,13 +35,17 @@ describe('BookingResourceCard', () => {
     render(<BookingResourceCard resource={mockResource} />);
 
     // 默认不展示展开细节
-    expect(screen.queryByText('需提前预约灵隐飞来峰景区大门票')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('需提前预约灵隐飞来峰景区大门票'),
+    ).not.toBeInTheDocument();
 
     // 点击展开
     const expandBtn = screen.getByRole('button', { name: /预约与退改/i });
     fireEvent.click(expandBtn);
 
-    expect(screen.getByText('需提前预约灵隐飞来峰景区大门票')).toBeInTheDocument();
+    expect(
+      screen.getByText('需提前预约灵隐飞来峰景区大门票'),
+    ).toBeInTheDocument();
     expect(screen.getByText('官方渠道核销')).toBeInTheDocument();
   });
 

@@ -106,23 +106,13 @@ export function requireCsrf(req: Request): void {
   const headerToken = req.headers.get('x-csrf-token') || req.headers.get('x-xsrf-token')
   const cookieToken = extractCsrfCookie(req.headers.get('cookie') || undefined)
 
-  // 1. 若同时存在 Header 与 Cookie（Double Submit 模式）
+  // 严格要求 Double Submit 模式：Header 与 Cookie 必须同时存在、匹配且签名有效
   if (headerToken && cookieToken) {
     const rawHeader = decodeURIComponent(headerToken)
     const rawCookie = decodeURIComponent(cookieToken)
     if (rawHeader === rawCookie && verifyCsrfToken(rawHeader)) {
       return
     }
-  }
-
-  // 2. 若 Header 签名有效
-  if (headerToken && verifyCsrfToken(headerToken)) {
-    return
-  }
-
-  // 3. 若 Cookie 签名有效
-  if (cookieToken && verifyCsrfToken(cookieToken)) {
-    return
   }
 
   throw httpError(403, 'CSRF token 无效')
@@ -305,6 +295,14 @@ export function withRateLimit(
 
 /** 判断是否为敏感错误（数据库、驱动等），不应暴露给客户端 */
 function isSensitiveError(err: Error): boolean {
+  // 生产环境默认脱敏 500 内部异常，除非显式标记为客户端安全
+  if (process.env.NODE_ENV === 'production') {
+    if ('isClientSafe' in err && Boolean((err as Record<string, unknown>).isClientSafe)) {
+      return false
+    }
+    return true
+  }
+
   // 数据库/驱动错误特征
   const sensitivePatterns = [
     'select "',
@@ -315,8 +313,10 @@ function isSensitiveError(err: Error): boolean {
     'column "',
     'syntax error at',
     'pg_',
-    'ECONNREFUSED',
-    'connect ECONNREFUSED',
+    'econnrefused',
+    'connect econnrefused',
+    'password',
+    'secret',
   ]
   const msg = err.message.toLowerCase()
   return sensitivePatterns.some(p => msg.includes(p.toLowerCase()))

@@ -29,6 +29,37 @@ describe('withProtectedRaw', () => {
     expect(handler).not.toHaveBeenCalled()
   })
 
+  it('拒绝仅携带 Cookie 但缺少 X-CSRF-Token Header 的写请求', async () => {
+    const handler = vi.fn(async () => new Response('ok'))
+    const route = withProtectedRaw(handler, {
+      rateLimit: { max: 1, name: 'test:stream' },
+    })
+    const token = generateCsrfToken()
+    const response = await route(new Request('http://localhost/api/test', {
+      headers: { cookie: `csrf_token=${token}` },
+      method: 'POST',
+    }))
+
+    expect(response.status).toBe(403)
+    expect(handler).not.toHaveBeenCalled()
+  })
+
+  it('拒绝 Header 与 Cookie 中 CSRF Token 不匹配的写请求', async () => {
+    const handler = vi.fn(async () => new Response('ok'))
+    const route = withProtectedRaw(handler, {
+      rateLimit: { max: 1, name: 'test:stream' },
+    })
+    const token1 = generateCsrfToken()
+    const token2 = generateCsrfToken()
+    const response = await route(new Request('http://localhost/api/test', {
+      headers: { 'cookie': `csrf_token=${token1}`, 'X-CSRF-Token': token2 },
+      method: 'POST',
+    }))
+
+    expect(response.status).toBe(403)
+    expect(handler).not.toHaveBeenCalled()
+  })
+
   it('使用用户 ID 限流后执行处理器', async () => {
     const handler = vi.fn(async () => new Response('ok'))
     const route = withProtectedRaw(handler, {

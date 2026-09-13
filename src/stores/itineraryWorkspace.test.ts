@@ -137,4 +137,19 @@ describe('itineraryWorkspaceStore', () => {
     store.removeDay(3)
     expect(useItineraryWorkspaceStore.getState().days.length).toBe(2)
   })
+
+  it('生成确定性打卡点 ID 并在重复初始化相同内容时去重防抖', () => {
+    const store = useItineraryWorkspaceStore.getState()
+    store.initFromParsedRoute(mockParsedRoute, '测试行程')
+
+    const initialDay1Spots = useItineraryWorkspaceStore.getState().days[0].spots
+    const id1 = initialDay1Spots[0].id
+    expect(id1).toBeTruthy()
+
+    // 再次以相同路线初始化，应当命中去重防抖，保持引用和 ID 稳定
+    store.initFromParsedRoute(mockParsedRoute, '测试行程更新')
+    const updatedState = useItineraryWorkspaceStore.getState()
+    expect(updatedState.title).toBe('测试行程更新')
+    expect(updatedState.days[0].spots[0].id).toBe(id1)
+  })
 })

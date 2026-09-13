@@ -50,7 +50,6 @@ import ReactMarkdown from 'react-markdown';
 import { TravelRouteCardModal } from '@/components/card/TravelRouteCardModal';
 import { InlinePoiCard } from '@/components/chat/InlinePoiCard';
 import { ThinkingAccordion } from '@/components/chat/ThinkingAccordion';
-import { ItineraryBoard } from '@/components/itinerary-board/ItineraryBoard';
 import { TravelMapSkeleton } from '@/components/map/TravelMapSkeleton';
 import { RAGSource } from '@/components/RAGSource';
 import { ResizeHandle } from '@/components/workspace/ResizeHandle';
@@ -165,11 +164,8 @@ function ChatContent() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [showHistoryDrawer, setShowHistoryDrawer] = useState(false);
   const [showLeftSidebar, setShowLeftSidebar] = useState(true);
-  const [showMiddleBoard, setShowMiddleBoard] = useState(true);
   const [showRightMap, setShowRightMap] = useState(true);
-  const [mobileActiveTab, setMobileActiveTab] = useState<
-    'chat' | 'board' | 'map'
-  >('chat');
+  const [mobileActiveTab, setMobileActiveTab] = useState<'chat' | 'map'>('chat');
   const [expandedMapMsgIds, setExpandedMapMsgIds] = useState<
     Record<string, boolean>
   >({});
@@ -179,37 +175,32 @@ function ChatContent() {
     useState<ParsedRouteData | null>(null);
   const [isCardModalOpen, setIsCardModalOpen] = useState(false);
 
-  // 栏目宽度调节状态（支持本地记忆）
-  const [chatWidth, setChatWidth] = useState<number>(400);
-  const [boardWidth, setBoardWidth] = useState<number>(420);
+  // 栏目宽度调节状态（支持本地记忆，默认 460px 舒适阅读宽度）
+  const [chatWidth, setChatWidth] = useState<number>(460);
 
   useEffect(() => {
     try {
       const saved = localStorage.getItem('travel_workspace_widths');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (typeof parsed.chat === 'number' && parsed.chat >= 300) {
+        if (typeof parsed.chat === 'number' && parsed.chat >= 320) {
           setChatWidth(parsed.chat);
-        }
-        if (typeof parsed.board === 'number' && parsed.board >= 300) {
-          setBoardWidth(parsed.board);
         }
       }
     } catch {}
   }, []);
 
   const saveWidths = useCallback(
-    (newChat?: number, newBoard?: number) => {
+    (newChat?: number) => {
       try {
         const c = newChat ?? chatWidth;
-        const b = newBoard ?? boardWidth;
         localStorage.setItem(
           'travel_workspace_widths',
-          JSON.stringify({ board: b, chat: c }),
+          JSON.stringify({ chat: c }),
         );
       } catch {}
     },
-    [chatWidth, boardWidth],
+    [chatWidth],
   );
 
   // 滚动容器与自动视角跟焦状态
@@ -757,13 +748,9 @@ function ChatContent() {
         className={`
           flex-col h-full bg-[#FAF7F0] relative overflow-hidden border-r border-stone-200/90
           ${mobileActiveTab === 'chat' ? 'flex flex-1 min-w-0' : 'hidden'}
-          lg:flex ${showMiddleBoard || showRightMap ? 'shrink-0' : 'flex-1 min-w-0'}
+          lg:flex ${showRightMap ? 'shrink-0' : 'flex-1 min-w-0'}
         `}
-        style={
-          showMiddleBoard || showRightMap
-            ? { width: `${chatWidth}px` }
-            : undefined
-        }
+        style={showRightMap ? { width: `${chatWidth}px` } : undefined}
       >
         {/* 对话视窗顶栏（无多余交叉边框） */}
         <header className="flex h-14 shrink-0 items-center justify-between border-b border-stone-200/80 bg-white/90 px-4 backdrop-blur-md z-10">
@@ -810,43 +797,23 @@ function ChatContent() {
             {/* 移动端视图切换 Tabs */}
             <div className="flex lg:hidden items-center bg-stone-100 p-0.5 rounded-xl text-xs font-bold border border-stone-200/80">
               <button
-                className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${mobileActiveTab === 'chat' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-stone-500'}`}
+                className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${mobileActiveTab === 'chat' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-stone-500'}`}
                 onClick={() => setMobileActiveTab('chat')}
                 type="button"
               >
                 💬 对话
               </button>
               <button
-                className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${mobileActiveTab === 'board' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-stone-500'}`}
-                onClick={() => setMobileActiveTab('board')}
-                type="button"
-              >
-                📋 看板
-              </button>
-              <button
-                className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${mobileActiveTab === 'map' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-stone-500'}`}
+                className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${mobileActiveTab === 'map' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-stone-500'}`}
                 onClick={() => setMobileActiveTab('map')}
                 type="button"
               >
-                🗺️ 地图
+                🗺️ 地图 & 行程
               </button>
             </div>
 
-            {/* 桌面端栏目展开/折叠控制 */}
+            {/* 桌面端大地图展开/折叠控制 */}
             <div className="hidden lg:flex items-center gap-1.5">
-              <Button
-                className={`rounded-xl text-xs font-bold h-8 px-2.5 transition-all cursor-pointer ${
-                  showMiddleBoard
-                    ? 'bg-emerald-50 text-emerald-800 border-emerald-300 shadow-2xs'
-                    : 'text-stone-500 hover:text-stone-800'
-                }`}
-                onClick={() => setShowMiddleBoard((prev) => !prev)}
-                size="sm"
-                title={showMiddleBoard ? '收起行程看板' : '展开行程看板'}
-                variant="outline"
-              >
-                <span>📋 行程看板</span>
-              </Button>
               <Button
                 className={`rounded-xl text-xs font-bold h-8 px-2.5 transition-all cursor-pointer ${
                   showRightMap
@@ -855,10 +822,10 @@ function ChatContent() {
                 }`}
                 onClick={() => setShowRightMap((prev) => !prev)}
                 size="sm"
-                title={showRightMap ? '收起联动地图' : '展开联动地图'}
+                title={showRightMap ? '收起大地图，聚焦纯净对话' : '展开联动大地图'}
                 variant="outline"
               >
-                <span>🗺️ 联动地图</span>
+                <span>🗺️ {showRightMap ? '收起地图' : '展开地图'}</span>
               </Button>
             </div>
 
@@ -1471,63 +1438,26 @@ function ChatContent() {
         </div>
       </section>
 
-      {/* 栏目1与栏目2之间的拖拽手柄 */}
-      {showMiddleBoard && (
+      {/* 对话栏与联动地图之间的拖拽手柄 */}
+      {showRightMap && (
         <ResizeHandle
-          ariaLabel="调节对话栏宽度"
-          maxWidth={650}
-          minWidth={320}
+          ariaLabel="调节对话与地图分栏宽度"
+          maxWidth={850}
+          minWidth={360}
           onResize={(w) => setChatWidth(w)}
-          onResizeEnd={(w) => saveWidths(w, undefined)}
+          onResizeEnd={(w) => saveWidths(w)}
           width={chatWidth}
         />
       )}
 
       {/* ======================================================== */}
-      {/* 2. 第二栏：结构化多日行程编排看板 (对标携程 Itinerary Board) */}
-      {/* ======================================================== */}
-      <section
-        className={`
-          flex-col h-full bg-[#FDFBF7] border-r border-stone-200/90
-          ${mobileActiveTab === 'board' ? 'flex flex-1 min-w-0' : 'hidden'}
-          lg:flex ${showMiddleBoard ? (showRightMap ? 'shrink-0' : 'flex-1 min-w-0') : 'hidden'}
-        `}
-        style={
-          showMiddleBoard && showRightMap
-            ? { width: `${boardWidth}px` }
-            : undefined
-        }
-      >
-        <ItineraryBoard
-          onExportCard={() => {
-            if (latestParsedRoute) {
-              setSelectedRouteCardData(latestParsedRoute);
-              setIsCardModalOpen(true);
-            }
-          }}
-        />
-      </section>
-
-      {/* 栏目2与栏目3之间的拖拽手柄 */}
-      {showMiddleBoard && showRightMap && (
-        <ResizeHandle
-          ariaLabel="调节行程看板宽度"
-          maxWidth={680}
-          minWidth={320}
-          onResize={(w) => setBoardWidth(w)}
-          onResizeEnd={(w) => saveWidths(undefined, w)}
-          width={boardWidth}
-        />
-      )}
-
-      {/* ======================================================== */}
-      {/* 3. 第三栏：沉浸式常驻联动大地图 (对标携程 Map Explorer)     */}
+      {/* 2. 第二栏：联动大地图与多日行程工作台 (对标携程/高德 Map Explorer) */}
       {/* ======================================================== */}
       <section
         className={`
           flex-col h-full bg-stone-100 transition-all duration-300
           ${mobileActiveTab === 'map' ? 'flex flex-1 min-w-0' : 'hidden'}
-          lg:flex ${showRightMap ? 'flex-1 min-w-[320px]' : 'hidden'}
+          lg:flex ${showRightMap ? 'flex-1 min-w-[360px]' : 'hidden'}
         `}
       >
         <TravelMapView

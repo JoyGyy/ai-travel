@@ -8,9 +8,9 @@
  * const debouncedSearch = useDebounce(fetchWeather, 300)
  * // 输入时调用 debouncedSearch(value)，停止输入 300ms 后才触发 fetchWeather
  */
-'use client'
+'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 /**
  * 防抖 Hook
@@ -22,41 +22,41 @@ export function useDebounce<TArgs extends unknown[], TReturn>(
   fn: (...args: TArgs) => TReturn,
   delay: number,
 ): (...args: TArgs) => void {
-  const timerRef = useRef<null | ReturnType<typeof setTimeout>>(null)
-  const fnRef = useRef(fn)
+  const timerRef = useRef<null | ReturnType<typeof setTimeout>>(null);
+  const fnRef = useRef(fn);
 
   useEffect(() => {
-    fnRef.current = fn
-  }, [fn])
+    fnRef.current = fn;
+  }, [fn]);
 
   const debouncedFn = useCallback(
     (...args: TArgs) => {
       // 清除之前的定时器
       if (timerRef.current !== null) {
-        clearTimeout(timerRef.current)
+        clearTimeout(timerRef.current);
       }
 
       // 设置新的定时器
       timerRef.current = setTimeout(() => {
-        fnRef.current(...args)
-        timerRef.current = null
-      }, delay)
+        fnRef.current(...args);
+        timerRef.current = null;
+      }, delay);
     },
     [delay],
-  )
+  );
 
   // 组件卸载时清除未执行的定时器，防止内存泄漏和卸载后触发
   useEffect(
     () => () => {
       if (timerRef.current !== null) {
-        clearTimeout(timerRef.current)
-        timerRef.current = null
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
       }
     },
     [],
-  )
+  );
 
-  return debouncedFn
+  return debouncedFn;
 }
 
 /**
@@ -68,60 +68,58 @@ export function useDebouncedCallback<TArgs extends unknown[], TReturn>(
   fn: (...args: TArgs) => Promise<TReturn>,
   delay: number,
 ) {
-  const timerRef = useRef<null | ReturnType<typeof setTimeout>>(null)
-  const [isPending, setIsPending] = useState(false)
-  const fnRef = useRef(fn)
+  const timerRef = useRef<null | ReturnType<typeof setTimeout>>(null);
+  const [isPending, setIsPending] = useState(false);
+  const fnRef = useRef(fn);
 
   useEffect(() => {
-    fnRef.current = fn
-  }, [fn])
+    fnRef.current = fn;
+  }, [fn]);
 
   const cancel = useCallback(() => {
     if (timerRef.current !== null) {
-      clearTimeout(timerRef.current)
-      timerRef.current = null
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
     }
-    setIsPending(false)
-  }, [])
+    setIsPending(false);
+  }, []);
 
   const debouncedFn = useCallback(
     (...args: TArgs): Promise<TReturn> =>
       new Promise((resolve, reject) => {
         // 清除之前的定时器
         if (timerRef.current !== null) {
-          clearTimeout(timerRef.current)
+          clearTimeout(timerRef.current);
         }
 
-        setIsPending(true)
+        setIsPending(true);
 
         // 设置新的定时器
         timerRef.current = setTimeout(async () => {
           try {
-            const result = await fnRef.current(...args)
-            resolve(result)
+            const result = await fnRef.current(...args);
+            resolve(result);
+          } catch (err) {
+            reject(err);
+          } finally {
+            setIsPending(false);
+            timerRef.current = null;
           }
-          catch (err) {
-            reject(err)
-          }
-          finally {
-            setIsPending(false)
-            timerRef.current = null
-          }
-        }, delay)
+        }, delay);
       }),
     [delay],
-  )
+  );
 
   // 组件卸载时清除未执行的定时器
   useEffect(
     () => () => {
       if (timerRef.current !== null) {
-        clearTimeout(timerRef.current)
-        timerRef.current = null
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
       }
     },
     [],
-  )
+  );
 
-  return { cancel, debouncedFn, isPending }
+  return { cancel, debouncedFn, isPending };
 }

@@ -1,19 +1,19 @@
-'use client'
+'use client';
 
-import { useMemo } from 'react'
-import { useChat } from '@ai-sdk/react'
-import { DefaultChatTransport } from 'ai'
+import { useMemo } from 'react';
+import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
 
-import { getCsrfHeaders } from '@/api/client'
+import { getCsrfHeaders } from '@/api/client';
 
 interface TravelRecommendParams {
-  city: string
-  budget: number
-  days: number
+  city: string;
+  budget: number;
+  days: number;
 }
 
 export function useTravelRecommend(params: TravelRecommendParams) {
-  const { budget, city, days } = params
+  const { budget, city, days } = params;
 
   const transport = useMemo(
     () =>
@@ -24,10 +24,10 @@ export function useTravelRecommend(params: TravelRecommendParams) {
         headers: getCsrfHeaders,
       }),
     [budget, city, days],
-  )
+  );
 
   return useChat({
     id: 'travel-recommend',
     transport,
-  })
+  });
 }

@@ -4,55 +4,56 @@
  * 提供统一的 JSON 请求方法，内置 Cookie 认证、
  * CSRF token 附加、响应解析和错误处理。
  */
-import type { ApiSuccess } from '@/types/api'
+import type { ApiSuccess } from '@/types/api';
 
 interface RequestOptions {
-  auth?: boolean
-  body?: FormData | unknown
-  headers?: Record<string, string>
-  method?: string
-  signal?: AbortSignal
+  auth?: boolean;
+  body?: FormData | unknown;
+  headers?: Record<string, string>;
+  method?: string;
+  signal?: AbortSignal;
 }
 
-type RequestMethodOptions = Omit<RequestOptions, 'body' | 'method'>
+type RequestMethodOptions = Omit<RequestOptions, 'body' | 'method'>;
 
 /** 自定义 API 错误，携带 HTTP 状态码和响应数据 */
 export class ApiError extends Error {
-  data?: unknown
-  status?: number
+  data?: unknown;
+  status?: number;
 
-  constructor(message: string, { data, status }: { data?: unknown, status?: number } = {}) {
-    super(message)
-    this.name = 'ApiError'
-    this.status = status
-    this.data = data
+  constructor(
+    message: string,
+    { data, status }: { data?: unknown; status?: number } = {},
+  ) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.data = data;
   }
 }
 
 export function getAuthHeader(): Record<string, string> {
-  return {}
+  return {};
 }
 
 export function hasAuthToken(): boolean {
-  return false
+  return false;
 }
 
 /** 安全解析 JSON 响应，非 JSON 类型返回 null */
 async function parseResponse<T>(res: Response): Promise<null | T> {
-  const contentType = res.headers.get('content-type') || ''
-  if (!contentType.includes('application/json'))
-    return null
+  const contentType = res.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) return null;
 
   try {
-    return (await res.json()) as T
-  }
-  catch {
-    return null
+    return (await res.json()) as T;
+  } catch {
+    return null;
   }
 }
 
 // 不需要 CSRF 保护的 HTTP 方法
-const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS'])
+const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
 /**
  * 发起 JSON API 请求。
@@ -62,59 +63,72 @@ export async function request<T = ApiSuccess>(
   path: string,
   options: RequestOptions = {},
 ): Promise<T> {
-  const { auth = false, body, headers, method = 'GET', signal } = options
+  const { auth = false, body, headers, method = 'GET', signal } = options;
 
-  const isWriteMethod = !SAFE_METHODS.has(method.toUpperCase())
-  if (isWriteMethod)
-    await ensureCsrfToken()
+  const isWriteMethod = !SAFE_METHODS.has(method.toUpperCase());
+  if (isWriteMethod) await ensureCsrfToken();
 
-  const isFormData = body instanceof FormData
+  const isFormData = body instanceof FormData;
 
   async function doFetch(): Promise<Response> {
     return fetch(path, {
-      body: body === undefined ? undefined : isFormData ? body : JSON.stringify(body),
+      body:
+        body === undefined
+          ? undefined
+          : isFormData
+            ? body
+            : JSON.stringify(body),
       credentials: 'include',
       headers: {
-        ...(body === undefined || isFormData ? {} : { 'Content-Type': 'application/json' }),
+        ...(body === undefined || isFormData
+          ? {}
+          : { 'Content-Type': 'application/json' }),
         ...(auth ? getAuthHeader() : {}),
         ...(isWriteMethod ? getCsrfHeader() : {}),
         ...headers,
       },
       method,
       signal,
-    })
+    });
   }
 
-  let res = await doFetch()
-  let data = await parseResponse<T>(res)
+  let res = await doFetch();
+  let data = await parseResponse<T>(res);
 
   // CSRF 403 自动刷新重试一次
   if (!res.ok && res.status === 403 && isWriteMethod) {
-    const errMsg
-      = data && typeof data === 'object'
-        ? (data as Record<string, unknown>).message || (data as Record<string, unknown>).error
-        : ''
+    const errMsg =
+      data && typeof data === 'object'
+        ? (data as Record<string, unknown>).message ||
+          (data as Record<string, unknown>).error
+        : '';
     if (/csrf/i.test(String(errMsg))) {
-      await refreshCsrfToken()
-      res = await doFetch()
-      data = await parseResponse<T>(res)
+      await refreshCsrfToken();
+      res = await doFetch();
+      data = await parseResponse<T>(res);
     }
   }
 
   // 非 2xx 响应抛出 ApiError
   if (!res.ok) {
-    const fallback = data && typeof data === 'object' ? (data as Record<string, unknown>) : {}
-    const message
-      = (fallback.message as string) || (fallback.error as string) || `请求失败: HTTP ${res.status}`
-    throw new ApiError(message, { data, status: res.status })
+    const fallback =
+      data && typeof data === 'object' ? (data as Record<string, unknown>) : {};
+    const message =
+      (fallback.message as string) ||
+      (fallback.error as string) ||
+      `请求失败: HTTP ${res.status}`;
+    throw new ApiError(message, { data, status: res.status });
   }
 
-  return data as T
+  return data as T;
 }
 
 /** GET 请求便捷方法 */
-export function get<T = ApiSuccess>(path: string, options: RequestMethodOptions = {}): Promise<T> {
-  return request<T>(path, { ...options, method: 'GET' })
+export function get<T = ApiSuccess>(
+  path: string,
+  options: RequestMethodOptions = {},
+): Promise<T> {
+  return request<T>(path, { ...options, method: 'GET' });
 }
 
 /** POST 请求便捷方法 */
@@ -123,7 +137,7 @@ export function post<T = ApiSuccess>(
   body?: FormData | unknown,
   options: RequestMethodOptions = {},
 ): Promise<T> {
-  return request<T>(path, { ...options, body, method: 'POST' })
+  return request<T>(path, { ...options, body, method: 'POST' });
 }
 
 /** PUT 请求便捷方法 */
@@ -132,35 +146,37 @@ export function put<T = ApiSuccess>(
   body?: FormData | unknown,
   options: RequestMethodOptions = {},
 ): Promise<T> {
-  return request<T>(path, { ...options, body, method: 'PUT' })
+  return request<T>(path, { ...options, body, method: 'PUT' });
 }
 
 /** DELETE 请求便捷方法 */
-export function del<T = ApiSuccess>(path: string, options: RequestMethodOptions = {}): Promise<T> {
-  return request<T>(path, { ...options, method: 'DELETE' })
+export function del<T = ApiSuccess>(
+  path: string,
+  options: RequestMethodOptions = {},
+): Promise<T> {
+  return request<T>(path, { ...options, method: 'DELETE' });
 }
 
-export { del as delete, del as deleteRequest }
+export { del as delete, del as deleteRequest };
 
-let cachedCsrfToken = ''
+let cachedCsrfToken = '';
 
 /** 写请求前确保浏览器已有有效的 CSRF cookie */
 async function ensureCsrfToken(): Promise<void> {
-  if (readCsrfToken())
-    return
+  if (readCsrfToken()) return;
 
-  await refreshCsrfToken()
+  await refreshCsrfToken();
 }
 
 function getCsrfHeader(): Record<string, string> {
-  const token = readCsrfToken()
-  return token ? { 'X-CSRF-Token': token } : {}
+  const token = readCsrfToken();
+  return token ? { 'X-CSRF-Token': token } : {};
 }
 
 /** 为 AI SDK 等独立请求通道准备 CSRF 请求头。 */
 export async function getCsrfHeaders(): Promise<Record<string, string>> {
-  await ensureCsrfToken()
-  return getCsrfHeader()
+  await ensureCsrfToken();
+  return getCsrfHeader();
 }
 
 /**
@@ -168,68 +184,72 @@ export async function getCsrfHeaders(): Promise<Record<string, string>> {
  */
 function readCsrfToken(): string {
   if (cachedCsrfToken) {
-    const parts = cachedCsrfToken.split(':')
+    const parts = cachedCsrfToken.split(':');
     if (parts.length === 3) {
-      const timestamp = Number(parts[1])
-      if (Number.isFinite(timestamp) && Date.now() - timestamp < 24 * 60 * 60 * 1000) {
-        return cachedCsrfToken
+      const timestamp = Number(parts[1]);
+      if (
+        Number.isFinite(timestamp) &&
+        Date.now() - timestamp < 24 * 60 * 60 * 1000
+      ) {
+        return cachedCsrfToken;
       }
-      cachedCsrfToken = ''
+      cachedCsrfToken = '';
     }
   }
 
-  if (typeof document === 'undefined')
-    return ''
+  if (typeof document === 'undefined') return '';
 
-  const raw = document.cookie.match(/csrf_token=([^;]+)/)?.[1] || ''
-  if (!raw)
-    return ''
+  const raw = document.cookie.match(/csrf_token=([^;]+)/)?.[1] || '';
+  if (!raw) return '';
 
-  const token = decodeURIComponent(raw)
+  const token = decodeURIComponent(raw);
 
   // 格式: random:timestamp:signature，检查 timestamp 是否在 24 小时内
-  const parts = token.split(':')
+  const parts = token.split(':');
   if (parts.length === 3) {
-    const timestamp = Number(parts[1])
-    if (Number.isFinite(timestamp) && Date.now() - timestamp > 24 * 60 * 60 * 1000) {
-      document.cookie = 'csrf_token=; max-age=0; path=/'
-      return ''
+    const timestamp = Number(parts[1]);
+    if (
+      Number.isFinite(timestamp) &&
+      Date.now() - timestamp > 24 * 60 * 60 * 1000
+    ) {
+      document.cookie = 'csrf_token=; max-age=0; path=/';
+      return '';
     }
-    cachedCsrfToken = token
+    cachedCsrfToken = token;
   }
 
-  return token
+  return token;
 }
 
-let refreshPromise: Promise<string> | null = null
+let refreshPromise: Promise<string> | null = null;
 
 /** 强制刷新 CSRF token（清除旧 cookie 后重新获取，并同时写入内存与 cookie，包含并发请求去重锁） */
 async function refreshCsrfToken(): Promise<string> {
   if (refreshPromise) {
-    return refreshPromise
+    return refreshPromise;
   }
 
   refreshPromise = (async () => {
-    cachedCsrfToken = ''
+    cachedCsrfToken = '';
     if (typeof document !== 'undefined') {
-      document.cookie = 'csrf_token=; max-age=0; path=/'
+      document.cookie = 'csrf_token=; max-age=0; path=/';
     }
-    const res = await fetch('/api/auth/csrf-token', { credentials: 'include' })
+    const res = await fetch('/api/auth/csrf-token', { credentials: 'include' });
     if (!res.ok)
-      throw new ApiError('CSRF token 获取失败', { status: res.status })
+      throw new ApiError('CSRF token 获取失败', { status: res.status });
 
-    const data = (await res.json().catch(() => ({}))) as { csrfToken?: string }
+    const data = (await res.json().catch(() => ({}))) as { csrfToken?: string };
     if (data?.csrfToken) {
-      cachedCsrfToken = data.csrfToken
+      cachedCsrfToken = data.csrfToken;
       if (typeof document !== 'undefined') {
-        document.cookie = `csrf_token=${encodeURIComponent(data.csrfToken)}; path=/; max-age=86400; SameSite=Lax`
+        document.cookie = `csrf_token=${encodeURIComponent(data.csrfToken)}; path=/; max-age=86400; SameSite=Lax`;
       }
-      return data.csrfToken
+      return data.csrfToken;
     }
-    return ''
+    return '';
   })().finally(() => {
-    refreshPromise = null
-  })
+    refreshPromise = null;
+  });
 
-  return refreshPromise
+  return refreshPromise;
 }

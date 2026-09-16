@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
-import { useMemo } from 'react'
-import { useChat } from '@ai-sdk/react'
-import { DefaultChatTransport } from 'ai'
+import { useMemo } from 'react';
+import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
 
-import { getCsrfHeaders } from '@/api/client'
+import { getCsrfHeaders } from '@/api/client';
 
 export function useTravelChat() {
   const transport = useMemo(
@@ -15,10 +15,10 @@ export function useTravelChat() {
         headers: getCsrfHeaders,
       }),
     [],
-  )
+  );
 
   return useChat({
     id: 'travel-chat',
     transport,
-  })
+  });
 }

@@ -11,24 +11,29 @@
  * - 水合状态检测（防止 hydration mismatch）
  * - 联动手账 Store（按账号初始化与隔离历史记录）
  */
-import type { AuthUser } from '@/types/api'
-import { create } from 'zustand'
+import type { AuthUser } from '@/types/api';
+import { create } from 'zustand';
 
-import { devtools, persist } from 'zustand/middleware'
+import { devtools, persist } from 'zustand/middleware';
 
-import { getMeApi, loginApi, logoutApi, registerApi } from '@/api/auth'
-import { useChatHistoryStore } from './chatHistory'
+import { getMeApi, loginApi, logoutApi, registerApi } from '@/api/auth';
+import { useChatHistoryStore } from './chatHistory';
 
 // --- 类型定义 ---
 
 interface AuthState {
-  _hasHydrated: boolean
-  checkAuth: () => Promise<void>
-  login: (username: string, password: string) => Promise<void>
-  logout: () => Promise<void>
-  register: (username: string, password: string, email?: string, code?: string) => Promise<void>
-  setHasHydrated: (v: boolean) => void
-  user: AuthUser | null
+  _hasHydrated: boolean;
+  checkAuth: () => Promise<void>;
+  login: (username: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+  register: (
+    username: string,
+    password: string,
+    email?: string,
+    code?: string,
+  ) => Promise<void>;
+  setHasHydrated: (v: boolean) => void;
+  user: AuthUser | null;
 }
 
 // --- 创建 Store ---
@@ -36,89 +41,108 @@ interface AuthState {
 export const useAuthStore = create<AuthState>()(
   devtools(
     persist(
-      set => ({
+      (set) => ({
         // --- 初始状态 ---
         _hasHydrated: false,
 
         /** 静默校验并与服务端 Session 同步 */
         async checkAuth() {
           try {
-            const data = await getMeApi()
+            const data = await getMeApi();
             if (data?.user) {
-              set({ user: data.user })
-              useChatHistoryStore.getState().initForUser(data.user.id).catch(() => {})
+              set({ user: data.user });
+              useChatHistoryStore
+                .getState()
+                .initForUser(data.user.id)
+                .catch(() => {});
+            } else {
+              set({ user: null });
+              useChatHistoryStore
+                .getState()
+                .initForUser(null)
+                .catch(() => {});
             }
-            else {
-              set({ user: null })
-              useChatHistoryStore.getState().initForUser(null).catch(() => {})
-            }
-          }
-          catch {
+          } catch {
             // 服务端 Cookie 无效或过期，清空前端 user，避免 UI 假登录
-            set({ user: null })
-            useChatHistoryStore.getState().initForUser(null).catch(() => {})
+            set({ user: null });
+            useChatHistoryStore
+              .getState()
+              .initForUser(null)
+              .catch(() => {});
           }
         },
 
         async login(username, password) {
-          const data = await loginApi(username, password)
+          const data = await loginApi(username, password);
           if (data) {
-            set({ user: data.user })
-            useChatHistoryStore.getState().initForUser(data.user.id).catch(() => {})
+            set({ user: data.user });
+            useChatHistoryStore
+              .getState()
+              .initForUser(data.user.id)
+              .catch(() => {});
           }
         },
 
         /** 退出登录：同时通知后端清除 Cookie 与重置本地状态 */
         async logout() {
           try {
-            await logoutApi()
-          }
-          catch {
+            await logoutApi();
+          } catch {
             // 忽略网络错误，确保本地状态清空
-          }
-          finally {
-            set({ user: null })
-            useChatHistoryStore.getState().initForUser(null).catch(() => {})
+          } finally {
+            set({ user: null });
+            useChatHistoryStore
+              .getState()
+              .initForUser(null)
+              .catch(() => {});
           }
         },
 
         async register(username, password, email, code) {
           const data = email
             ? await registerApi(username, password, email, code)
-            : await registerApi(username, password)
+            : await registerApi(username, password);
           if (data) {
-            set({ user: data.user })
-            useChatHistoryStore.getState().initForUser(data.user.id).catch(() => {})
+            set({ user: data.user });
+            useChatHistoryStore
+              .getState()
+              .initForUser(data.user.id)
+              .catch(() => {});
           }
         },
 
-        setHasHydrated: v => set({ _hasHydrated: v }),
+        setHasHydrated: (v) => set({ _hasHydrated: v }),
 
         user: null,
       }),
       // --- 持久化配置 ---
       {
         merge: (persistedState, currentState) => {
-          const state = persistedState as Partial<AuthState> | undefined
-          return { ...currentState, user: state?.user ?? null }
+          const state = persistedState as Partial<AuthState> | undefined;
+          return { ...currentState, user: state?.user ?? null };
         },
         name: 'travel_auth',
         onRehydrateStorage: () => (state) => {
-          state?.setHasHydrated(true)
+          state?.setHasHydrated(true);
           if (state?.user?.id) {
-            useChatHistoryStore.getState().initForUser(state.user.id).catch(() => {})
-          }
-          else {
-            useChatHistoryStore.getState().initForUser(null).catch(() => {})
+            useChatHistoryStore
+              .getState()
+              .initForUser(state.user.id)
+              .catch(() => {});
+          } else {
+            useChatHistoryStore
+              .getState()
+              .initForUser(null)
+              .catch(() => {});
           }
           // 水合完成后自动向服务端验证 Cookie 是否仍然有效
           if (state?.user) {
-            state.checkAuth()
+            state.checkAuth();
           }
         },
-        partialize: state => ({ user: state.user }),
+        partialize: (state) => ({ user: state.user }),
       },
     ),
     { name: 'AuthStore' },
   ),
-)
+);

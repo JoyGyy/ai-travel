@@ -32,6 +32,7 @@ import { Input } from '@/components/ui/input'
 import { useAttractionFavorite } from '@/hooks/useAttractionFavorite'
 import { useDebounce } from '@/hooks/useDebounce'
 
+import { AttractionCard } from '@/components/attractions/AttractionCard'
 import { AttractionCardSkeleton } from './AttractionCardSkeleton'
 
 const ticketOptions = [
@@ -264,82 +265,14 @@ export default function Attractions() {
             {!loading && !error && items.length > 0 && (
               <>
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
-                  {items.map((item) => {
-                    const isFavoritePending = favoritePendingIds.has(item.id)
-                    return (
-                      <Link
-                        className="group block"
-                        href={`/attractions/${item.id}`}
-                        key={item.id}
-                      >
-                        <article className="h-full overflow-hidden rounded-3xl border border-stone-200/90 bg-[#FDFBF7] shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-700/60 hover:shadow-xl flex flex-col">
-                          <div className="relative h-[200px] w-full overflow-hidden shrink-0">
-                            <Image
-                              alt={`${item.name}，${item.city}景点封面`}
-                              className="object-cover transition-transform duration-700 group-hover:scale-108"
-                              fill
-                              loading="lazy"
-                              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                              src={item.coverImage}
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-stone-950/50 via-transparent to-transparent opacity-60" />
-                            <button
-                              className="absolute right-3 top-3 rounded-full p-2 bg-white/90 backdrop-blur-md text-stone-400 shadow-sm transition-all hover:scale-110 hover:text-red-500 cursor-pointer"
-                              disabled={isFavoritePending}
-                              onClick={(e) => {
-                                e.preventDefault()
-                                e.stopPropagation()
-                                handleToggleFavorite(item)
-                              }}
-                              type="button"
-                            >
-                              <Heart
-                                className={item.isFavorite ? 'fill-red-500 text-red-500' : ''}
-                                size={16}
-                              />
-                            </button>
-                            <Badge className="absolute left-3 top-3 bg-white/95 text-xs font-bold text-emerald-800 shadow-sm backdrop-blur-md rounded-full border border-stone-200">
-                              📍
-                              {' '}
-                              {item.city}
-                            </Badge>
-                          </div>
-                          <div className="p-4 sm:p-5 flex flex-col flex-1 justify-between">
-                            <div>
-                              <div className="mb-2 flex items-start justify-between gap-2 min-h-[2.5rem]">
-                                <h3
-                                  className="font-serif text-sm sm:text-base font-bold text-stone-900 group-hover:text-emerald-800 transition-colors line-clamp-2 leading-snug flex-1 min-w-0"
-                                  title={item.name}
-                                >
-                                  {item.name}
-                                </h3>
-                                <Badge
-                                  className={`rounded-full text-[10px] font-bold shrink-0 whitespace-nowrap mt-0.5 ${
-                                    item.ticketType === 'free'
-                                      ? 'bg-emerald-100 text-emerald-900 border border-emerald-200'
-                                      : 'bg-amber-100 text-amber-900 border border-amber-300'
-                                  }`}
-                                >
-                                  {item.ticketType === 'free' ? '免费' : item.priceText || '收费'}
-                                </Badge>
-                              </div>
-                              <p className="mb-3 text-xs leading-relaxed text-stone-500 line-clamp-2">
-                                {item.summary}
-                              </p>
-                            </div>
-                            <div className="flex flex-wrap gap-1 pt-2.5 border-t border-stone-200/70">
-                              {item.tags.slice(0, 3).map(tag => (
-                                <span className="bg-stone-100/80 text-stone-600 text-[10px] font-medium rounded-md px-2 py-0.5" key={tag}>
-                                  #
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        </article>
-                      </Link>
-                    )
-                  })}
+                  {items.map(item => (
+                    <AttractionCard
+                      attraction={item}
+                      isFavoritePending={favoritePendingIds.has(item.id)}
+                      key={item.id}
+                      onToggleFavorite={handleToggleFavorite}
+                    />
+                  ))}
                 </div>
 
                 {/* 分页组件 */}

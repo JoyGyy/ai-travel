@@ -36,6 +36,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { fetchFavoriteAttractions, unfavoriteAttraction } from '@/api/attractions'
 import { changePasswordApi, getProfileApi } from '@/api/auth'
 import { ApiError } from '@/api/client'
+import { AttractionCard } from '@/components/attractions/AttractionCard'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -480,67 +481,14 @@ export default function Profile() {
                   {favorites.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {favorites.map(item => (
-                        <div
-                          className="group relative overflow-hidden rounded-2xl border border-stone-200/80 bg-white hover:border-emerald-300 hover:shadow-md transition-all flex flex-col justify-between"
+                        <AttractionCard
+                          attraction={item}
+                          isFavoritePending={removingFavoriteIds.has(item.id)}
                           key={item.id}
-                        >
-                          <div className="relative h-36 w-full overflow-hidden">
-                            <Image
-                              alt={item.name}
-                              className="object-cover transition-transform duration-500 group-hover:scale-105"
-                              fill
-                              src={item.coverImage}
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-stone-950/40 via-transparent to-transparent opacity-60" />
-                            <Badge className="absolute left-2.5 top-2.5 bg-white/95 text-[10px] font-bold text-emerald-800 shadow-sm rounded-full">
-                              📍
-                              {' '}
-                              {item.city}
-                            </Badge>
-                            <button
-                              className="absolute right-2.5 top-2.5 p-1.5 rounded-full bg-white/90 text-stone-400 hover:text-red-500 shadow-sm cursor-pointer transition-transform hover:scale-110"
-                              disabled={removingFavoriteIds.has(item.id)}
-                              onClick={() => handleRemoveFavorite(item.id)}
-                              title="取消收藏"
-                              type="button"
-                            >
-                              <Heart className="w-3.5 h-3.5 fill-red-500 text-red-500" />
-                            </button>
-                          </div>
-
-                          <div className="p-3.5 flex flex-col justify-between flex-1">
-                            <div>
-                              <div className="flex items-start justify-between gap-1.5 mb-1.5 min-h-[2.2rem]">
-                                <h4
-                                  className="font-serif text-sm font-bold text-stone-900 line-clamp-2 leading-snug flex-1 min-w-0"
-                                  title={item.name}
-                                >
-                                  {item.name}
-                                </h4>
-                                <Badge
-                                  className={`rounded-full text-[10px] font-bold shrink-0 whitespace-nowrap mt-0.5 ${
-                                    item.ticketType === 'free'
-                                      ? 'bg-emerald-100 text-emerald-900 border border-emerald-200'
-                                      : 'bg-amber-100 text-amber-900 border border-amber-300'
-                                  }`}
-                                >
-                                  {item.ticketType === 'free' ? '免费' : item.priceText || '收费'}
-                                </Badge>
-                              </div>
-                              <p className="text-[11px] text-stone-500 line-clamp-1">{item.summary}</p>
-                            </div>
-
-                            <div className="pt-2.5 mt-2 border-t border-stone-100 flex items-center justify-between">
-                              <Link
-                                className="text-xs font-bold text-emerald-800 hover:underline flex items-center gap-1"
-                                href={`/attractions/${item.id}`}
-                              >
-                                <span>查看详情</span>
-                                <ArrowRight className="w-3 h-3" />
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
+                          onRemoveFavorite={handleRemoveFavorite}
+                          showRemoveFavorite
+                          size="compact"
+                        />
                       ))}
                     </div>
                   ) : (

@@ -206,6 +206,8 @@ function ChatContent() {
   // 滚动容器与自动视角跟焦状态
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isAutoScrollEnabledRef = useRef<boolean>(true);
+  const isProgrammaticScrollRef = useRef<boolean>(false);
+  const touchStartYRef = useRef<number>(0);
   const [showScrollBottomBtn, setShowScrollBottomBtn] = useState(false);
 
   // AI 对话 Hook
@@ -369,12 +371,46 @@ function ChatContent() {
 
   // 监听容器滚动，智能判断用户是否手动向上回看
   const handleScroll = useCallback(() => {
+    // 若本次滚动由程序自动吸底触发，忽略该事件，避免重置用户的交互状态
+    if (isProgrammaticScrollRef.current) {
+      isProgrammaticScrollRef.current = false;
+      return;
+    }
+
     const container = scrollContainerRef.current;
     if (!container) return;
     const { clientHeight, scrollHeight, scrollTop } = container;
-    const isAtBottom = scrollHeight - scrollTop - clientHeight < 90;
+    // 距离底部 30px 以内认为贴底，重新恢复自动吸底；否则保持用户回看状态
+    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+    const isAtBottom = distanceFromBottom <= 30;
     isAutoScrollEnabledRef.current = isAtBottom;
     setShowScrollBottomBtn(!isAtBottom);
+  }, []);
+
+  // 鼠标滚轮监听：只要向上滚（deltaY < 0），瞬间切断自动跟随，避免被流式输出拖回底部
+  const handleWheel = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
+    if (e.deltaY < 0) {
+      isAutoScrollEnabledRef.current = false;
+      setShowScrollBottomBtn(true);
+    }
+  }, []);
+
+  // 触屏滑动监听：支持手机与触控板手势向上回看
+  const handleTouchStart = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length > 0) {
+      touchStartYRef.current = e.touches[0].clientY;
+    }
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length > 0) {
+      const currentY = e.touches[0].clientY;
+      // 手指向下滑动（查看上方历史内容）
+      if (currentY - touchStartYRef.current > 5) {
+        isAutoScrollEnabledRef.current = false;
+        setShowScrollBottomBtn(true);
+      }
+    }
   }, []);
 
   // 快捷回到底部
@@ -383,6 +419,7 @@ function ChatContent() {
     setShowScrollBottomBtn(false);
     const container = scrollContainerRef.current;
     if (container) {
+      isProgrammaticScrollRef.current = true;
       container.scrollTo({
         behavior: smooth ? 'smooth' : 'instant',
         top: container.scrollHeight,
@@ -501,7 +538,9 @@ function ChatContent() {
     if (!isAutoScrollEnabledRef.current) return;
     const container = scrollContainerRef.current;
     if (container) {
+      isProgrammaticScrollRef.current = true;
       requestAnimationFrame(() => {
+        if (!isAutoScrollEnabledRef.current) return;
         container.scrollTop = container.scrollHeight;
       });
     }
@@ -875,6 +914,9 @@ function ChatContent() {
         <div
           className="chat-scrollbar flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 py-6 space-y-6"
           onScroll={handleScroll}
+          onTouchMove={handleTouchMove}
+          onTouchStart={handleTouchStart}
+          onWheel={handleWheel}
           ref={scrollContainerRef}
         >
           {messages.length === 0 && (

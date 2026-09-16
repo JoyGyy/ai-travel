@@ -35,7 +35,23 @@ export async function logoutApi(): Promise<{ message: string, success: true }> {
   return post('/api/auth/logout')
 }
 
+/** 发送邮箱验证码 */
+export async function sendCodeApi(
+  email: string,
+  type: 'register' | 'reset_password' = 'register',
+): Promise<{ message: string, success: true }> {
+  return post('/api/auth/send-code', { email, type })
+}
+
 /** 用户注册 */
-export async function registerApi(username: string, password: string): Promise<AuthResponse> {
-  return post('/api/auth/register', { password, username })
+export async function registerApi(
+  username: string,
+  password: string,
+  email?: string,
+  code?: string,
+): Promise<AuthResponse> {
+  const payload: Record<string, string> = { password, username }
+  if (email) payload.email = email
+  if (code) payload.code = code
+  return post('/api/auth/register', payload)
 }

@@ -88,6 +88,19 @@ describe('useAuthStore', () => {
       expect(readPersistedState()).not.toHaveProperty('token')
       expect(registerApi).toHaveBeenCalledWith('newuser', 'password123')
     })
+
+    it('支持传递邮箱和验证码进行注册', async () => {
+      vi.mocked(registerApi).mockResolvedValue({
+        success: true,
+        token: mockToken,
+        user: { id: '2', username: 'emailuser' },
+      })
+
+      await useAuthStore.getState().register('emailuser', 'password123', 'email@test.com', '123456')
+
+      expect(registerApi).toHaveBeenCalledWith('emailuser', 'password123', 'email@test.com', '123456')
+      expect(useAuthStore.getState().user).toEqual({ id: '2', username: 'emailuser' })
+    })
   })
 
   describe('logout', () => {

@@ -26,7 +26,7 @@ interface AuthState {
   checkAuth: () => Promise<void>
   login: (username: string, password: string) => Promise<void>
   logout: () => Promise<void>
-  register: (username: string, password: string) => Promise<void>
+  register: (username: string, password: string, email?: string, code?: string) => Promise<void>
   setHasHydrated: (v: boolean) => void
   user: AuthUser | null
 }
@@ -82,8 +82,10 @@ export const useAuthStore = create<AuthState>()(
           }
         },
 
-        async register(username, password) {
-          const data = await registerApi(username, password)
+        async register(username, password, email, code) {
+          const data = email
+            ? await registerApi(username, password, email, code)
+            : await registerApi(username, password)
           if (data) {
             set({ user: data.user })
             useChatHistoryStore.getState().initForUser(data.user.id).catch(() => {})

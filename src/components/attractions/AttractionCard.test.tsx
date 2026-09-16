@@ -1,10 +1,7 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import {
-  AttractionCard,
-  formatTicketPrice,
-} from './AttractionCard';
+import { AttractionCard, formatTicketPrice } from './AttractionCard';
 
 describe('formatTicketPrice', () => {
   it('免费门票应统一规范为「免费开放」', () => {

@@ -1,17 +1,17 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { clearWeatherCache } from '@/lib/weather-cache'
-import { getDressAdvice, getWeather, isGoodForOutdoor } from './weather'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { clearWeatherCache } from '@/lib/weather-cache';
+import { getDressAdvice, getWeather, isGoodForOutdoor } from './weather';
 
 describe('weather service', () => {
   beforeEach(() => {
-    clearWeatherCache()
-    vi.restoreAllMocks()
-  })
+    clearWeatherCache();
+    vi.restoreAllMocks();
+  });
 
   describe('getDressAdvice', () => {
     it('天气为 null 时返回空数组', () => {
-      expect(getDressAdvice(null)).toEqual([])
-    })
+      expect(getDressAdvice(null)).toEqual([]);
+    });
 
     it('高温炎热时给出短袖防晒建议', () => {
       const advice = getDressAdvice({
@@ -23,9 +23,9 @@ describe('weather service', () => {
         weatherCode: 0,
         weatherDesc: '晴',
         windSpeed: 10,
-      })
-      expect(advice).toContain('天气炎热，建议穿透气短袖、短裤，注意防晒')
-    })
+      });
+      expect(advice).toContain('天气炎热，建议穿透气短袖、短裤，注意防晒');
+    });
 
     it('下雨时给出带伞建议', () => {
       const advice = getDressAdvice({
@@ -37,10 +37,10 @@ describe('weather service', () => {
         weatherCode: 61,
         weatherDesc: '小雨',
         windSpeed: 8,
-      })
-      expect(advice).toContain('有雨，记得携带雨伞或雨衣')
-      expect(advice).toContain('湿度较高，注意防潮')
-    })
+      });
+      expect(advice).toContain('有雨，记得携带雨伞或雨衣');
+      expect(advice).toContain('湿度较高，注意防潮');
+    });
 
     it('严寒时给出羽绒服手套建议', () => {
       const advice = getDressAdvice({
@@ -52,42 +52,46 @@ describe('weather service', () => {
         weatherCode: 71,
         weatherDesc: '小雪',
         windSpeed: 15,
-      })
-      expect(advice).toContain('天气寒冷，建议穿羽绒服、围巾、手套')
-    })
-  })
+      });
+      expect(advice).toContain('天气寒冷，建议穿羽绒服、围巾、手套');
+    });
+  });
 
   describe('isGoodForOutdoor', () => {
     it('天气为 null 时默认返回 true', () => {
-      expect(isGoodForOutdoor(null)).toBe(true)
-    })
+      expect(isGoodForOutdoor(null)).toBe(true);
+    });
 
     it('晴朗舒适天气适合户外', () => {
-      expect(isGoodForOutdoor({
-        city: '大理',
-        feelsLike: 22,
-        forecast: [],
-        humidity: 50,
-        temperature: 22,
-        weatherCode: 0,
-        weatherDesc: '晴',
-        windSpeed: 5,
-      })).toBe(true)
-    })
+      expect(
+        isGoodForOutdoor({
+          city: '大理',
+          feelsLike: 22,
+          forecast: [],
+          humidity: 50,
+          temperature: 22,
+          weatherCode: 0,
+          weatherDesc: '晴',
+          windSpeed: 5,
+        }),
+      ).toBe(true);
+    });
 
     it('暴雨雷雨天气不适合户外', () => {
-      expect(isGoodForOutdoor({
-        city: '襄阳',
-        feelsLike: 30,
-        forecast: [],
-        humidity: 90,
-        temperature: 28,
-        weatherCode: 96,
-        weatherDesc: '雷暴大雨',
-        windSpeed: 20,
-      })).toBe(false)
-    })
-  })
+      expect(
+        isGoodForOutdoor({
+          city: '襄阳',
+          feelsLike: 30,
+          forecast: [],
+          humidity: 90,
+          temperature: 28,
+          weatherCode: 96,
+          weatherDesc: '雷暴大雨',
+          windSpeed: 20,
+        }),
+      ).toBe(false);
+    });
+  });
 
   describe('getWeather with Domestic Engine', () => {
     it('能够成功通过国内高可用天气引擎查询天气并解析', async () => {
@@ -115,38 +119,38 @@ describe('weather service', () => {
             wind: '北风',
           },
         ],
-      }
+      };
 
       vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
-        const url = String(input)
+        const url = String(input);
         if (url.includes('asilu.com')) {
           return {
             json: async () => mockAsilu,
             ok: true,
-          } as Response
+          } as Response;
         }
-        return { ok: false } as Response
-      })
+        return { ok: false } as Response;
+      });
 
-      const weather = await getWeather('襄阳')
-      expect(weather).not.toBeNull()
-      expect(weather?.city).toBe('襄阳')
-      expect(weather?.temperature).toBe(30)
-      expect(weather?.forecast).toHaveLength(3)
-      expect(weather?.forecast[0].maxTemp).toBe(30)
-      expect(weather?.forecast[0].minTemp).toBe(24)
-    })
-  })
+      const weather = await getWeather('襄阳');
+      expect(weather).not.toBeNull();
+      expect(weather?.city).toBe('襄阳');
+      expect(weather?.temperature).toBe(30);
+      expect(weather?.forecast).toHaveLength(3);
+      expect(weather?.forecast[0].maxTemp).toBe(30);
+      expect(weather?.forecast[0].minTemp).toBe(24);
+    });
+  });
 
   describe('getWeather with Amap', () => {
-    const originalAmapKey = process.env.AMAP_API_KEY
+    const originalAmapKey = process.env.AMAP_API_KEY;
 
     afterEach(() => {
-      process.env.AMAP_API_KEY = originalAmapKey
-    })
+      process.env.AMAP_API_KEY = originalAmapKey;
+    });
 
     it('配置高德 Key 时优先调用高德天气 API', async () => {
-      process.env.AMAP_API_KEY = 'test-amap-key'
+      process.env.AMAP_API_KEY = 'test-amap-key';
 
       const mockAmapResponse = {
         forecasts: [
@@ -182,32 +186,32 @@ describe('weather service', () => {
         ],
         infocode: '10000',
         status: '1',
-      }
+      };
 
       vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
-        const url = String(input)
+        const url = String(input);
         if (url.includes('restapi.amap.com/v3/weather/weatherInfo')) {
           return {
             json: async () => mockAmapResponse,
             ok: true,
-          } as Response
+          } as Response;
         }
-        return { ok: false } as Response
-      })
+        return { ok: false } as Response;
+      });
 
-      const weather = await getWeather('杭州')
-      expect(weather).not.toBeNull()
-      expect(weather?.city).toBe('杭州')
-      expect(weather?.temperature).toBe(23)
-      expect(weather?.weatherDesc).toBe('晴')
-      expect(weather?.forecast).toHaveLength(3)
-      expect(weather?.forecast[0].date).toBe('2026-09-16')
-      expect(weather?.forecast[0].maxTemp).toBe(28)
-      expect(weather?.forecast[0].minTemp).toBe(18)
-    })
+      const weather = await getWeather('杭州');
+      expect(weather).not.toBeNull();
+      expect(weather?.city).toBe('杭州');
+      expect(weather?.temperature).toBe(23);
+      expect(weather?.weatherDesc).toBe('晴');
+      expect(weather?.forecast).toHaveLength(3);
+      expect(weather?.forecast[0].date).toBe('2026-09-16');
+      expect(weather?.forecast[0].maxTemp).toBe(28);
+      expect(weather?.forecast[0].minTemp).toBe(18);
+    });
 
     it('高德接口异常时能够平滑降级至 Asilu 接口查询', async () => {
-      process.env.AMAP_API_KEY = 'test-amap-key'
+      process.env.AMAP_API_KEY = 'test-amap-key';
 
       const mockAsilu = {
         weather: [
@@ -227,39 +231,41 @@ describe('weather service', () => {
             weather: '小雨',
           },
         ],
-      }
+      };
 
       vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
-        const url = String(input)
+        const url = String(input);
         if (url.includes('restapi.amap.com/v3/weather/weatherInfo')) {
-          return { ok: false } as Response
+          return { ok: false } as Response;
         }
         if (url.includes('asilu.com')) {
           return {
             json: async () => mockAsilu,
             ok: true,
-          } as Response
+          } as Response;
         }
-        return { ok: false } as Response
-      })
+        return { ok: false } as Response;
+      });
 
-      const weather = await getWeather('杭州')
-      expect(weather).not.toBeNull()
-      expect(weather?.city).toBe('杭州')
-      expect(weather?.temperature).toBe(28)
-      expect(weather?.forecast).toHaveLength(3)
-    })
-  })
+      const weather = await getWeather('杭州');
+      expect(weather).not.toBeNull();
+      expect(weather?.city).toBe('杭州');
+      expect(weather?.temperature).toBe(28);
+      expect(weather?.forecast).toHaveLength(3);
+    });
+  });
 
   describe('getWeather offline fallback', () => {
     it('所有外部接口均失败或超时时能够触发智能气候模拟兜底', async () => {
-      vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('Network offline'))
+      vi.spyOn(globalThis, 'fetch').mockRejectedValue(
+        new Error('Network offline'),
+      );
 
-      const weather = await getWeather('襄阳')
-      expect(weather).not.toBeNull()
-      expect(weather?.city).toBe('襄阳')
-      expect(weather?.forecast).toHaveLength(3)
-      expect(weather?.temperature).toBeGreaterThan(0)
-    })
-  })
-})
+      const weather = await getWeather('襄阳');
+      expect(weather).not.toBeNull();
+      expect(weather?.city).toBe('襄阳');
+      expect(weather?.forecast).toHaveLength(3);
+      expect(weather?.temperature).toBeGreaterThan(0);
+    });
+  });
+});

@@ -12,7 +12,9 @@ const mockCreateTransport = vi.fn((..._args: unknown[]) => ({
 
 vi.mock('nodemailer', () => ({
   default: {
-    createTransport: vi.fn((...args: unknown[]) => mockCreateTransport(...args)),
+    createTransport: vi.fn((...args: unknown[]) =>
+      mockCreateTransport(...args),
+    ),
   },
 }));
 
@@ -64,7 +66,11 @@ describe('email 服务', () => {
     it('验证码正确且未过期时返回 true 并销毁', async () => {
       mockQuery.mockResolvedValueOnce({ rows: [{ id: 1 }] });
 
-      const isValid = await verifyAndConsumeCode('test@example.com', '123456', 'register');
+      const isValid = await verifyAndConsumeCode(
+        'test@example.com',
+        '123456',
+        'register',
+      );
 
       expect(isValid).toBe(true);
       expect(mockQuery).toHaveBeenCalledTimes(1);
@@ -76,7 +82,11 @@ describe('email 服务', () => {
     it('验证码错误或已过期时返回 false', async () => {
       mockQuery.mockResolvedValueOnce({ rows: [] });
 
-      const isValid = await verifyAndConsumeCode('test@example.com', 'wrong', 'register');
+      const isValid = await verifyAndConsumeCode(
+        'test@example.com',
+        'wrong',
+        'register',
+      );
 
       expect(isValid).toBe(false);
     });
@@ -86,7 +96,11 @@ describe('email 服务', () => {
     it('调用 nodemailer 发送包含验证码的美化 HTML 邮件', async () => {
       mockSendMail.mockResolvedValueOnce({ messageId: 'msg-123' });
 
-      const result = await sendVerificationCodeEmail('user@test.com', '654321', 'register');
+      const result = await sendVerificationCodeEmail(
+        'user@test.com',
+        '654321',
+        'register',
+      );
 
       expect(result.messageId).toBe('msg-123');
       expect(mockSendMail).toHaveBeenCalledWith(

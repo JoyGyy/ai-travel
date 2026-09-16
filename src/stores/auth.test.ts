@@ -1,7 +1,7 @@
-import type { AuthUser } from '@/types/api'
-import { getMeApi, loginApi, logoutApi, registerApi } from '@/api/auth'
+import type { AuthUser } from '@/types/api';
+import { getMeApi, loginApi, logoutApi, registerApi } from '@/api/auth';
 
-import { useAuthStore } from './auth'
+import { useAuthStore } from './auth';
 
 // --- Mock API 模块 ---
 
@@ -10,16 +10,16 @@ vi.mock('@/api/auth', () => ({
   loginApi: vi.fn(),
   logoutApi: vi.fn(),
   registerApi: vi.fn(),
-}))
+}));
 
-const mockUser: AuthUser = { id: '1', username: 'testuser' }
-const mockToken = 'mock-jwt-token'
+const mockUser: AuthUser = { id: '1', username: 'testuser' };
+const mockToken = 'mock-jwt-token';
 
 function readPersistedState(): Record<string, unknown> {
-  const stored = localStorage.getItem('travel_auth')
-  expect(stored).not.toBeNull()
+  const stored = localStorage.getItem('travel_auth');
+  expect(stored).not.toBeNull();
 
-  return JSON.parse(stored as string).state
+  return JSON.parse(stored as string).state;
 }
 
 // --- 测试套件 ---
@@ -27,24 +27,24 @@ function readPersistedState(): Record<string, unknown> {
 describe('useAuthStore', () => {
   // 每个测试前重置 store 状态和 localStorage
   beforeEach(() => {
-    localStorage.clear()
-    useAuthStore.getState().logout()
-    useAuthStore.getState().setHasHydrated(false)
-    vi.clearAllMocks()
-  })
+    localStorage.clear();
+    useAuthStore.getState().logout();
+    useAuthStore.getState().setHasHydrated(false);
+    vi.clearAllMocks();
+  });
 
   describe('初始状态', () => {
     it('只保存用户信息，不暴露 token 字段', () => {
-      const state = useAuthStore.getState()
+      const state = useAuthStore.getState();
 
-      expect(state.user).toBeNull()
-      expect(state).not.toHaveProperty('token')
-    })
+      expect(state.user).toBeNull();
+      expect(state).not.toHaveProperty('token');
+    });
 
     it('_hasHydrated 应该为 false', () => {
-      expect(useAuthStore.getState()._hasHydrated).toBe(false)
-    })
-  })
+      expect(useAuthStore.getState()._hasHydrated).toBe(false);
+    });
+  });
 
   describe('login', () => {
     it('成功登录后应该设置 user，但不保存 token', async () => {
@@ -52,25 +52,25 @@ describe('useAuthStore', () => {
         success: true,
         token: mockToken,
         user: mockUser,
-      })
+      });
 
-      await useAuthStore.getState().login('testuser', 'password123')
+      await useAuthStore.getState().login('testuser', 'password123');
 
-      const state = useAuthStore.getState()
-      expect(state.user).toEqual(mockUser)
-      expect(state).not.toHaveProperty('token')
-      expect(readPersistedState()).not.toHaveProperty('token')
-      expect(loginApi).toHaveBeenCalledWith('testuser', 'password123')
-    })
+      const state = useAuthStore.getState();
+      expect(state.user).toEqual(mockUser);
+      expect(state).not.toHaveProperty('token');
+      expect(readPersistedState()).not.toHaveProperty('token');
+      expect(loginApi).toHaveBeenCalledWith('testuser', 'password123');
+    });
 
     it('aPI 返回空值时不更新状态', async () => {
-      vi.mocked(loginApi).mockResolvedValue(null as never)
+      vi.mocked(loginApi).mockResolvedValue(null as never);
 
-      await useAuthStore.getState().login('testuser', 'wrong')
+      await useAuthStore.getState().login('testuser', 'wrong');
 
-      expect(useAuthStore.getState().user).toBeNull()
-    })
-  })
+      expect(useAuthStore.getState().user).toBeNull();
+    });
+  });
 
   describe('register', () => {
     it('成功注册后应该设置 user，但不保存 token', async () => {
@@ -78,75 +78,88 @@ describe('useAuthStore', () => {
         success: true,
         token: mockToken,
         user: mockUser,
-      })
+      });
 
-      await useAuthStore.getState().register('newuser', 'password123')
+      await useAuthStore.getState().register('newuser', 'password123');
 
-      const state = useAuthStore.getState()
-      expect(state.user).toEqual(mockUser)
-      expect(state).not.toHaveProperty('token')
-      expect(readPersistedState()).not.toHaveProperty('token')
-      expect(registerApi).toHaveBeenCalledWith('newuser', 'password123')
-    })
+      const state = useAuthStore.getState();
+      expect(state.user).toEqual(mockUser);
+      expect(state).not.toHaveProperty('token');
+      expect(readPersistedState()).not.toHaveProperty('token');
+      expect(registerApi).toHaveBeenCalledWith('newuser', 'password123');
+    });
 
     it('支持传递邮箱和验证码进行注册', async () => {
       vi.mocked(registerApi).mockResolvedValue({
         success: true,
         token: mockToken,
         user: { id: '2', username: 'emailuser' },
-      })
+      });
 
-      await useAuthStore.getState().register('emailuser', 'password123', 'email@test.com', '123456')
+      await useAuthStore
+        .getState()
+        .register('emailuser', 'password123', 'email@test.com', '123456');
 
-      expect(registerApi).toHaveBeenCalledWith('emailuser', 'password123', 'email@test.com', '123456')
-      expect(useAuthStore.getState().user).toEqual({ id: '2', username: 'emailuser' })
-    })
-  })
+      expect(registerApi).toHaveBeenCalledWith(
+        'emailuser',
+        'password123',
+        'email@test.com',
+        '123456',
+      );
+      expect(useAuthStore.getState().user).toEqual({
+        id: '2',
+        username: 'emailuser',
+      });
+    });
+  });
 
   describe('logout', () => {
     it('应该调用 logoutApi 并清空 user', async () => {
-      useAuthStore.setState({ user: mockUser })
-      vi.mocked(logoutApi).mockResolvedValue({ message: '已退出登录', success: true })
+      useAuthStore.setState({ user: mockUser });
+      vi.mocked(logoutApi).mockResolvedValue({
+        message: '已退出登录',
+        success: true,
+      });
 
-      await useAuthStore.getState().logout()
+      await useAuthStore.getState().logout();
 
-      expect(logoutApi).toHaveBeenCalled()
-      expect(useAuthStore.getState().user).toBeNull()
-    })
-  })
+      expect(logoutApi).toHaveBeenCalled();
+      expect(useAuthStore.getState().user).toBeNull();
+    });
+  });
 
   describe('checkAuth', () => {
     it('服务端返回当前用户时应更新 user 状态', async () => {
       vi.mocked(getMeApi).mockResolvedValue({
         success: true,
         user: mockUser,
-      })
+      });
 
-      await useAuthStore.getState().checkAuth()
+      await useAuthStore.getState().checkAuth();
 
-      expect(useAuthStore.getState().user).toEqual(mockUser)
-      expect(getMeApi).toHaveBeenCalled()
-    })
+      expect(useAuthStore.getState().user).toEqual(mockUser);
+      expect(getMeApi).toHaveBeenCalled();
+    });
 
     it('服务端抛错（如 401 凭证失效）时应同步清空 user 状态', async () => {
-      useAuthStore.setState({ user: mockUser })
-      vi.mocked(getMeApi).mockRejectedValue(new Error('未登录'))
+      useAuthStore.setState({ user: mockUser });
+      vi.mocked(getMeApi).mockRejectedValue(new Error('未登录'));
 
-      await useAuthStore.getState().checkAuth()
+      await useAuthStore.getState().checkAuth();
 
-      expect(useAuthStore.getState().user).toBeNull()
-    })
-  })
+      expect(useAuthStore.getState().user).toBeNull();
+    });
+  });
 
   describe('setHasHydrated', () => {
     it('应该更新 _hasHydrated 状态', () => {
-      useAuthStore.getState().setHasHydrated(true)
-      expect(useAuthStore.getState()._hasHydrated).toBe(true)
+      useAuthStore.getState().setHasHydrated(true);
+      expect(useAuthStore.getState()._hasHydrated).toBe(true);
 
-      useAuthStore.getState().setHasHydrated(false)
-      expect(useAuthStore.getState()._hasHydrated).toBe(false)
-    })
-  })
+      useAuthStore.getState().setHasHydrated(false);
+      expect(useAuthStore.getState()._hasHydrated).toBe(false);
+    });
+  });
 
   describe('persist 持久化', () => {
     it('localStorage 只持久化 user，不持久化 token', async () => {
@@ -154,25 +167,25 @@ describe('useAuthStore', () => {
         success: true,
         token: mockToken,
         user: mockUser,
-      })
+      });
 
-      await useAuthStore.getState().login('testuser', 'password123')
+      await useAuthStore.getState().login('testuser', 'password123');
 
-      const persistedState = readPersistedState()
-      expect(persistedState.user).toEqual(mockUser)
-      expect(persistedState).not.toHaveProperty('token')
-    })
+      const persistedState = readPersistedState();
+      expect(persistedState.user).toEqual(mockUser);
+      expect(persistedState).not.toHaveProperty('token');
+    });
 
     it('加载旧版 localStorage 时会清理遗留 token', async () => {
       localStorage.setItem(
         'travel_auth',
         JSON.stringify({ state: { token: mockToken, user: mockUser } }),
-      )
+      );
 
-      await useAuthStore.persist.rehydrate()
+      await useAuthStore.persist.rehydrate();
 
-      expect(useAuthStore.getState()).not.toHaveProperty('token')
-      expect(readPersistedState()).not.toHaveProperty('token')
-    })
-  })
-})
+      expect(useAuthStore.getState()).not.toHaveProperty('token');
+      expect(readPersistedState()).not.toHaveProperty('token');
+    });
+  });
+});

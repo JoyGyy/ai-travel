@@ -62,10 +62,13 @@ describe('classifyUserIntent 意图识别', () => {
       '北京玩',
     ];
 
-    it.each(clarificationSamples)('能够正确识别高模糊目的地并引导澄清: %s', (sample) => {
-      const result = classifyUserIntent(sample);
-      expect(result.intent).toBe('clarification');
-      expect(result.detectedCity).toBeTruthy();
-    });
+    it.each(clarificationSamples)(
+      '能够正确识别高模糊目的地并引导澄清: %s',
+      (sample) => {
+        const result = classifyUserIntent(sample);
+        expect(result.intent).toBe('clarification');
+        expect(result.detectedCity).toBeTruthy();
+      },
+    );
   });
 });

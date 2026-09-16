@@ -46,7 +46,7 @@ export interface TravelMapViewProps {
   spots?: ParsedRouteSpot[];
 }
 
-type TileLayerType = 'amap-street' | 'amap-satellite' | 'cartodb';
+type TileLayerType = 'amap-street' | 'amap-satellite';
 
 export function TravelMapView({
   city: propCity,
@@ -269,18 +269,14 @@ export function TravelMapView({
 
         L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(map);
 
-        const tileUrls = {
+        const tileUrls: Record<TileLayerType, string> = {
           'amap-satellite':
             'https://wprd0{s}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=6',
           'amap-street':
             'https://wprd0{s}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=7',
-          cartodb:
-            'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
         };
 
-        const subdomains = tileType.startsWith('amap')
-          ? ['1', '2', '3', '4']
-          : ['a', 'b', 'c', 'd'];
+        const subdomains = ['1', '2', '3', '4'];
         const baseLayer = L.tileLayer(tileUrls[tileType], {
           maxZoom: 18,
           minZoom: 3,
@@ -333,18 +329,14 @@ export function TravelMapView({
         overlayLayerRef.current = null;
       }
 
-      const tileUrls = {
+      const tileUrls: Record<TileLayerType, string> = {
         'amap-satellite':
           'https://wprd0{s}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=6',
         'amap-street':
           'https://wprd0{s}.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=7',
-        cartodb:
-          'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
       };
 
-      const subdomains = tileType.startsWith('amap')
-        ? ['1', '2', '3', '4']
-        : ['a', 'b', 'c', 'd'];
+      const subdomains = ['1', '2', '3', '4'];
       const baseLayer = L.tileLayer(tileUrls[tileType], {
         maxZoom: 18,
         minZoom: 3,
@@ -785,7 +777,6 @@ export function TravelMapView({
           >
             <option value="amap-street">高德标准</option>
             <option value="amap-satellite">高德卫星</option>
-            <option value="cartodb">艺术底图</option>
           </select>
 
           {/* 查看行程明细悬浮抽屉开关 */}

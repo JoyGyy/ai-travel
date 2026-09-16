@@ -1,4 +1,4 @@
-import type { UIMessage } from 'ai'
+import type { UIMessage } from 'ai';
 
 import {
   convertToModelMessages,
@@ -6,12 +6,12 @@ import {
   isStepCount,
   streamText,
   toUIMessageStream,
-} from 'ai'
+} from 'ai';
 
-import { classifyUserIntent } from './intent'
-import { logAiFinish, logAiRequest } from './observability'
-import { getTravelModel } from './providers'
-import { travelTools } from './tools'
+import { classifyUserIntent } from './intent';
+import { logAiFinish, logAiRequest } from './observability';
+import { getTravelModel } from './providers';
+import { travelTools } from './tools';
 
 export const TRAVEL_SYSTEM_PROMPT = `你是「远方」专业 AI 旅行规划师与手账顾问。你的职责是根据用户的真实需求，提供生动详实、结构精美、专业可靠的旅行攻略与手账解答。
 
@@ -37,44 +37,60 @@ export const TRAVEL_SYSTEM_PROMPT = `你是「远方」专业 AI 旅行规划师
      - ✨ 【延伸建议（可选）】：针对该问题的贴心周边建议或后续行动建议。
 
 通用要求：
-- 纯净输出：严禁输出任何伪造工具格式、内部 JSON 标签（如 {"type":"function"...}、<tools> 等）或无意义的重复字符。直接向用户提供排版规范优美的中文 Markdown 内容。`
+- 纯净输出：严禁输出任何伪造工具格式、内部 JSON 标签（如 {"type":"function"...}、<tools> 等）或无意义的重复字符。直接向用户提供排版规范优美的中文 Markdown 内容。`;
 
 export async function createTravelChatStream(
   messages: UIMessage[],
   requestId: string,
 ) {
-  const startedAt = logAiRequest({ operation: 'chat', requestId })
+  const startedAt = logAiRequest({ operation: 'chat', requestId });
 
   // 提取最新一条用户消息文本并进行意图分类
-  const lastUserMsg = [...messages].reverse().find(m => m.role === 'user')
-  const userText = lastUserMsg?.parts
-    ?.filter(p => p.type === 'text')
-    ?.map(p => (p as { text: string }).text)
-    ?.join('\n') || ''
+  const lastUserMsg = [...messages].reverse().find((m) => m.role === 'user');
+  const userText =
+    lastUserMsg?.parts
+      ?.filter((p) => p.type === 'text')
+      ?.map((p) => (p as { text: string }).text)
+      ?.join('\n') || '';
 
-  const intentResult = classifyUserIntent(userText)
-  const intentGuidance = intentResult.intent === 'consultation'
-    ? `\n\n【动态指令】：当前用户输入判定为【日常咨询/单点问答】（特征：${intentResult.reason}）。请务必执行分支二策略：严禁输出虚构的游览路线，严禁输出“➔”路线连线！直接给出条理清晰、专业有温度的干货答复与贴士。`
-    : `\n\n【动态指令】：当前用户输入判定为【行程规划与路线定制】（特征：${intentResult.reason}）。请执行分支一策略：输出带“➔”连线的【详细游览路线】、分日分时段游玩安排及避坑指南。`
+  const intentResult = classifyUserIntent(userText);
+  let intentGuidance = '';
+  if (intentResult.intent === 'clarification') {
+    const city = intentResult.detectedCity || '该目的地';
+    intentGuidance = `\n\n【动态指令】：当前用户仅输入了目的地城市【${city}】，属于【高模糊/缺少偏好要素】（特征：${intentResult.reason}）。
+请严格执行【向导式澄清引导策略】：
+1. 用 1~2 句生动自然的手账语言概括${city}的旅行魅力与当季风情；
+2. 亲切询问用户的具体出行规划与偏好：
+   - 计划游玩几天？（如周末 1~2 天、3 天小长假还是 4~5 天深度游）；
+   - 和谁一起出行？（独自放空、情侣浪漫、带父母长辈还是亲子带娃）；
+   - 偏好哪种游玩节奏？（经典地标打卡、老街市井寻味、自然风光还是慢调度假）；
+3. 简述 2~3 个适合${city}的典型游玩方向灵感供其参考；
+4. 严禁直接输出“➔”路线连线！严禁生造虚假日程表。友好提醒用户补充上述信息或直接点击下方推荐胶囊即可立即生成完整行程！`;
+  } else if (intentResult.intent === 'consultation') {
+    intentGuidance = `\n\n【动态指令】：当前用户输入判定为【日常咨询/单点问答】（特征：${intentResult.reason}）。请务必执行分支二策略：严禁输出虚构的游览路线，严禁输出“➔”路线连线！直接给出条理清晰、专业有温度的干货答复与贴士。`;
+  } else {
+    intentGuidance = `\n\n【动态指令】：当前用户输入判定为【行程规划与路线定制】（特征：${intentResult.reason}）。请执行分支一策略：输出带“➔”连线的【详细游览路线】、分日分时段游玩安排及避坑指南。`;
+  }
 
   const result = streamText({
     frequencyPenalty: 0.2,
     maxOutputTokens: 4096,
     messages: await convertToModelMessages(messages),
     model: getTravelModel(),
-    onFinish: event => logAiFinish({
-      ...event,
-      durationMs: Date.now() - startedAt,
-      operation: 'chat',
-      requestId,
-    }),
+    onFinish: (event) =>
+      logAiFinish({
+        ...event,
+        durationMs: Date.now() - startedAt,
+        operation: 'chat',
+        requestId,
+      }),
     stopWhen: isStepCount(5),
     system: `${TRAVEL_SYSTEM_PROMPT}${intentGuidance}`,
     temperature: 0.6,
     tools: travelTools,
-  })
+  });
 
   return createUIMessageStreamResponse({
     stream: toUIMessageStream({ stream: result.stream }),
-  })
+  });
 }

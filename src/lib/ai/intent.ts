@@ -3,7 +3,7 @@
  * 区分用户输入是「行程规划 / 路线定制」还是「日常旅行问答 / 单点咨询」
  */
 
-export type UserIntentType = 'itinerary' | 'consultation';
+export type UserIntentType = 'itinerary' | 'consultation' | 'clarification';
 
 export interface UserIntentResult {
   /** 识别出的意图类型 */
@@ -18,9 +18,29 @@ export interface UserIntentResult {
 
 /** 常见城市列表，用于意图上下文提取 */
 const CITIES = [
-  '北京', '上海', '成都', '西安', '杭州', '三亚', '大理', '丽江',
-  '厦门', '南京', '武汉', '重庆', '广州', '青岛', '苏州', '长沙',
-  '昆明', '桂林', '洛阳', '敦煌', '九寨沟', '黄山', '张家界',
+  '北京',
+  '上海',
+  '成都',
+  '西安',
+  '杭州',
+  '三亚',
+  '大理',
+  '丽江',
+  '厦门',
+  '南京',
+  '武汉',
+  '重庆',
+  '广州',
+  '青岛',
+  '苏州',
+  '长沙',
+  '昆明',
+  '桂林',
+  '洛阳',
+  '敦煌',
+  '九寨沟',
+  '黄山',
+  '张家界',
 ];
 
 /** 强行程规划特征词汇与模式 */
@@ -145,7 +165,14 @@ export function classifyUserIntent(prompt: string): UserIntentResult {
   }
 
   // 4. 短文本且不包含行程编排动作的判定（如纯问题："三亚有椰子鸡吗？"、"西湖断桥要门票吗"）
-  if (itineraryScore === 0 && (trimmed.endsWith('？') || trimmed.endsWith('?') || trimmed.includes('吗') || trimmed.includes('多少') || trimmed.includes('怎么'))) {
+  if (
+    itineraryScore === 0 &&
+    (trimmed.endsWith('？') ||
+      trimmed.endsWith('?') ||
+      trimmed.includes('吗') ||
+      trimmed.includes('多少') ||
+      trimmed.includes('怎么'))
+  ) {
     consultationScore += 1;
   }
 
@@ -158,7 +185,8 @@ export function classifyUserIntent(prompt: string): UserIntentResult {
         confidence: 0.85,
         detectedCity,
         intent: 'consultation',
-        reason: '虽含时间/天数词，但核心关注点为具体问答（天气/门票/开放时间等）',
+        reason:
+          '虽含时间/天数词，但核心关注点为具体问答（天气/门票/开放时间等）',
       };
     }
     // 否则若有明显行程规划词，归为 itinerary
@@ -176,6 +204,17 @@ export function classifyUserIntent(prompt: string): UserIntentResult {
       detectedCity,
       intent: 'itinerary',
       reason: '命中行程天数、路线串联或游玩编排特征',
+    };
+  }
+
+  // 6. 若包含目标城市，但既无明确行程天数/路线动作，又无具体单点问答特征（例如纯城市名“杭州”或“想去成都”）：
+  // 判定为向导式澄清意图 (clarification)
+  if (detectedCity && itineraryScore === 0 && consultationScore === 0) {
+    return {
+      confidence: 0.9,
+      detectedCity,
+      intent: 'clarification',
+      reason: `用户输入了目的地【${detectedCity}】，缺少天数、同行人员或游玩风格等关键要素，需触发向导式澄清引导`,
     };
   }
 

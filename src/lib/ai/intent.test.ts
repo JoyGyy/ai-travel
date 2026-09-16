@@ -46,7 +46,26 @@ describe('classifyUserIntent 意图识别', () => {
 
     it('正确提取目标城市', () => {
       expect(classifyUserIntent('三亚4日游路线安排').detectedCity).toBe('三亚');
-      expect(classifyUserIntent('西安兵马俑两天行程').detectedCity).toBe('西安');
+      expect(classifyUserIntent('西安兵马俑两天行程').detectedCity).toBe(
+        '西安',
+      );
+    });
+  });
+
+  describe('向导式澄清引导 (clarification)', () => {
+    const clarificationSamples = [
+      '杭州',
+      '我想去成都',
+      '三亚',
+      '大理旅游',
+      '去西安',
+      '北京玩',
+    ];
+
+    it.each(clarificationSamples)('能够正确识别高模糊目的地并引导澄清: %s', (sample) => {
+      const result = classifyUserIntent(sample);
+      expect(result.intent).toBe('clarification');
+      expect(result.detectedCity).toBeTruthy();
     });
   });
 });

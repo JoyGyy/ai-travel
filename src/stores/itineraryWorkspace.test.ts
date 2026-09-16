@@ -22,6 +22,7 @@ describe('itineraryWorkspaceStore', () => {
       },
     ],
     food: ['西湖醋鱼', '东坡肉'],
+    isItinerary: true,
     routeString: '断桥残雪 ➔ 白堤 ➔ 平湖秋月 ➔ 灵隐寺 ➔ 龙井村',
     spots: [
       { name: '断桥残雪' },

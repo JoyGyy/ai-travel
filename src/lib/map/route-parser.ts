@@ -1,39 +1,40 @@
 /**
  * AI 旅行攻略路线与景点提取解析器
  */
-import { lookupAttractionInfo } from './attraction-lookup'
+import { lookupAttractionInfo } from './attraction-lookup';
 
 export interface ParsedRouteSpot {
-  address?: string
-  coverImage?: string
-  description?: string
-  durationText?: string
-  id?: string
-  name: string
-  openHours?: string
-  period?: '早晨' | '上午' | '中午' | '下午' | '傍晚' | '夜间' | '全天'
-  priceText?: string
-  rating?: number
-  reviewCount?: number
-  ticketType?: 'free' | 'paid'
+  address?: string;
+  coverImage?: string;
+  description?: string;
+  durationText?: string;
+  id?: string;
+  name: string;
+  openHours?: string;
+  period?: '早晨' | '上午' | '中午' | '下午' | '傍晚' | '夜间' | '全天';
+  priceText?: string;
+  rating?: number;
+  reviewCount?: number;
+  ticketType?: 'free' | 'paid';
 }
 
 export interface ParsedDayRoute {
-  day: number
-  spots: ParsedRouteSpot[]
-  theme?: string
-  title: string
+  day: number;
+  spots: ParsedRouteSpot[];
+  theme?: string;
+  title: string;
 }
 
 export interface ParsedRouteData {
-  city: string
-  days: ParsedDayRoute[]
-  food: string[]
-  routeString: string
-  spots: ParsedRouteSpot[]
-  summary: string
-  tips: string[]
-  transportMode: 'driving' | 'transit' | 'walking'
+  city: string;
+  days: ParsedDayRoute[];
+  food: string[];
+  isItinerary: boolean;
+  routeString: string;
+  spots: ParsedRouteSpot[];
+  summary: string;
+  tips: string[];
+  transportMode: 'driving' | 'transit' | 'walking';
 }
 
 const COMMON_CITIES = [
@@ -61,7 +62,7 @@ const COMMON_CITIES = [
   '张家界',
   '黄山',
   '九寨沟',
-]
+];
 
 /** 时间段或路线引导词前缀（真实景点位于冒号后） */
 const TIME_OR_HEADER_PREFIXES = [
@@ -87,7 +88,7 @@ const TIME_OR_HEADER_PREFIXES = [
   /^次日$/,
   /^第[一二三四五六七八九十\d]+天$/,
   /^Day\s*\d+$/i,
-]
+];
 
 /** 元数据/非景点版块（如：预算、季节、体验、贴士、穿搭等，整行不作为景点提取） */
 const META_SECTION_PATTERNS = [
@@ -191,61 +192,64 @@ const META_SECTION_PATTERNS = [
   /必吃美食/,
   /餐饮推荐/,
   /餐厅推荐/,
-]
+];
 
 function isTimeOrHeaderPrefix(name: string): boolean {
-  if (!name)
-    return false
-  return TIME_OR_HEADER_PREFIXES.some(p => p.test(name))
+  if (!name) return false;
+  return TIME_OR_HEADER_PREFIXES.some((p) => p.test(name));
 }
 
 function isMetaSection(name: string): boolean {
-  if (!name)
-    return false
-  return META_SECTION_PATTERNS.some(p => p.test(name))
+  if (!name) return false;
+  return META_SECTION_PATTERNS.some((p) => p.test(name));
 }
 
 /** 提取单个可能包含时间前缀的文本中的真实景点名称 */
 function extractSpotCandidate(raw: string): string {
-  if (!raw)
-    return ''
+  if (!raw) return '';
 
   const cleaned = raw
     .replace(/\*\*/g, '')
     .replace(/\[\^?\d+\]/g, '')
     .replace(/（\s*\d{1,2}:\d{2}[^）]*）|\(\s*\d{1,2}:\d{2}[^)]*\)/g, '')
     .replace(/\b\d{1,2}:\d{2}\b/g, '')
-    .trim()
+    .trim();
 
   // 如果包含冒号（如 "早晨：户部巷" 或 "黄鹤楼：登楼远眺" 或 "1. 预算分配：100元"）
   if (cleaned.includes('：') || cleaned.includes(':')) {
-    const parts = cleaned.split(/[：:]/)
-    const titlePart = cleanSpotName(parts[0])
-    const contentPart = parts.slice(1).join('：').trim()
+    const parts = cleaned.split(/[：:]/);
+    const titlePart = cleanSpotName(parts[0]);
+    const contentPart = parts.slice(1).join('：').trim();
 
     // 1. 如果冒号前是元数据/非景点版块（预算、核心体验、最佳季节等），整行废弃
     if (isMetaSection(titlePart)) {
-      return ''
+      return '';
     }
 
     // 2. 如果冒号前是时间段或路线标题前缀（早晨、上午、详细游览路线等），真实景点在冒号后
     if (isTimeOrHeaderPrefix(titlePart)) {
-      const candidateAfterColon = cleanSpotName(contentPart.split(/[（(，,。]/)[0])
-      return isValidSpotName(candidateAfterColon) ? candidateAfterColon : ''
+      const candidateAfterColon = cleanSpotName(
+        contentPart.split(/[（(，,。]/)[0],
+      );
+      return isValidSpotName(candidateAfterColon) ? candidateAfterColon : '';
     }
 
     // 3. 否则冒号前即为景点名称（如 "黄鹤楼：上午登楼远眺"）
-    return isValidSpotName(titlePart) ? titlePart : ''
+    return isValidSpotName(titlePart) ? titlePart : '';
   }
 
   // 没有冒号的直接按括号/标点截取
-  const candidate = cleanSpotName(cleaned.split(/[（(，,。]/)[0])
-  return isValidSpotName(candidate) ? candidate : ''
+  const candidate = cleanSpotName(cleaned.split(/[（(，,。]/)[0]);
+  return isValidSpotName(candidate) ? candidate : '';
 }
 
 /** 为纯景点名称补全富媒体与产品元信息 */
-function enrichSpot(name: string, city: string, period?: ParsedRouteSpot['period']): ParsedRouteSpot {
-  const info = lookupAttractionInfo(name, city)
+function enrichSpot(
+  name: string,
+  city: string,
+  period?: ParsedRouteSpot['period'],
+): ParsedRouteSpot {
+  const info = lookupAttractionInfo(name, city);
   return {
     address: info.address,
     coverImage: info.coverImage,
@@ -259,23 +263,32 @@ function enrichSpot(name: string, city: string, period?: ParsedRouteSpot['period
     rating: info.rating,
     reviewCount: info.reviewCount,
     ticketType: info.ticketType,
-  }
+  };
 }
 
 /** 从文本块中提取景点列表 */
-function extractSpotsFromLines(lines: string[], city: string): ParsedRouteSpot[] {
-  const spotNameSet = new Set<string>()
-  const spots: ParsedRouteSpot[] = []
+function extractSpotsFromLines(
+  lines: string[],
+  city: string,
+): ParsedRouteSpot[] {
+  const spotNameSet = new Set<string>();
+  const spots: ParsedRouteSpot[] = [];
 
   // 1. 优先提取路线箭头链 (例如: 断桥残雪 → 白堤 → 平湖秋月)
   for (const line of lines) {
-    if (line.includes('→') || line.includes('➔') || line.includes('->') || line.includes('-->') || line.includes('=>')) {
-      const parts = line.split(/→|➔|->|-->|=>/)
+    if (
+      line.includes('→') ||
+      line.includes('➔') ||
+      line.includes('->') ||
+      line.includes('-->') ||
+      line.includes('=>')
+    ) {
+      const parts = line.split(/→|➔|->|-->|=>/);
       for (const part of parts) {
-        const candidate = extractSpotCandidate(part)
+        const candidate = extractSpotCandidate(part);
         if (isValidSpotName(candidate) && !spotNameSet.has(candidate)) {
-          spotNameSet.add(candidate)
-          spots.push(enrichSpot(candidate, city))
+          spotNameSet.add(candidate);
+          spots.push(enrichSpot(candidate, city));
         }
       }
     }
@@ -284,40 +297,39 @@ function extractSpotsFromLines(lines: string[], city: string): ParsedRouteSpot[]
   // 2. 如果箭头链不足 2 个景点，从列表项（* 或 - 或 1.）中提取
   if (spots.length < 2) {
     for (const line of lines) {
-      const trimmed = line.trim()
-      let rawContent = ''
+      const trimmed = line.trim();
+      let rawContent = '';
       if (trimmed.startsWith('* ') || trimmed.startsWith('- ')) {
-        rawContent = trimmed.slice(2).trim()
-      }
-      else if (/^\d+[.、]\s*/.test(trimmed)) {
-        rawContent = trimmed.replace(/^\d+[.、]\s*/, '').trim()
+        rawContent = trimmed.slice(2).trim();
+      } else if (/^\d+[.、]\s*/.test(trimmed)) {
+        rawContent = trimmed.replace(/^\d+[.、]\s*/, '').trim();
       }
 
       if (rawContent) {
-        let period: ParsedRouteSpot['period']
+        let period: ParsedRouteSpot['period'];
         if (trimmed.includes('早晨') || trimmed.includes('清晨'))
-          period = '早晨'
-        else if (trimmed.includes('上午'))
-          period = '上午'
-        else if (trimmed.includes('中午'))
-          period = '中午'
-        else if (trimmed.includes('下午'))
-          period = '下午'
-        else if (trimmed.includes('傍晚'))
-          period = '傍晚'
+          period = '早晨';
+        else if (trimmed.includes('上午')) period = '上午';
+        else if (trimmed.includes('中午')) period = '中午';
+        else if (trimmed.includes('下午')) period = '下午';
+        else if (trimmed.includes('傍晚')) period = '傍晚';
         else if (trimmed.includes('夜间') || trimmed.includes('晚上'))
-          period = '夜间'
+          period = '夜间';
 
-        const candidate = extractSpotCandidate(rawContent)
-        if (isValidSpotName(candidate) && !spotNameSet.has(candidate) && spots.length < 12) {
-          spotNameSet.add(candidate)
-          spots.push(enrichSpot(candidate, city, period))
+        const candidate = extractSpotCandidate(rawContent);
+        if (
+          isValidSpotName(candidate) &&
+          !spotNameSet.has(candidate) &&
+          spots.length < 12
+        ) {
+          spotNameSet.add(candidate);
+          spots.push(enrichSpot(candidate, city, period));
         }
       }
     }
   }
 
-  return spots
+  return spots;
 }
 
 /** 中文数字转阿拉伯数字 */
@@ -333,190 +345,275 @@ function parseChineseNum(str: string): number {
     六: 6,
     十: 10,
     四: 4,
-  }
-  return map[str] || Number.parseInt(str, 10) || 1
+  };
+  return map[str] || Number.parseInt(str, 10) || 1;
+}
+
+/**
+ * 检验文本是否具备明确的旅行行程规划与路线时序特征
+ */
+export function hasItineraryFeatures(text: string, dayBlocksCount = 0): boolean {
+  // 1. 包含日程分日块 (Day 1, 第1天, D1)
+  if (dayBlocksCount > 0) return true;
+
+  // 2. 包含显式路线连线箭头 (A ➔ B 或 A → B 或 A -> B)
+  if (/[➔➜→]|(?:->)|(?:-->)/.test(text)) return true;
+
+  // 3. 包含明确的路线或行程标题/栏目
+  const itineraryKeywords =
+    /(?:游览路线|行程规划|游玩路线|路线推荐|路线设计|行程安排|路线安排|精选路线|打卡路线|漫游路线|旅游路线|旅行路书|游览行程|玩转路线|精选游|[一二两三四五六七八九十\d]+[日天步]游|[一二两三四五六七八九十\d]+天.*[晚夜]游?|周末.*游|漫游[：:])/i;
+  if (itineraryKeywords.test(text)) return true;
+
+  // 4. 包含按时间段游览多个景点的结构（至少2个时段标记，如 早晨/上午/下午/傍晚/夜间）
+  const timeSlotCount = (
+    text.match(
+      /(?:^|\n)\s*[*#-]?\s*\*{0,2}(?:早晨|清晨|上午|中午|下午|傍晚|夜间|晚上)\*{0,2}[:：]/g,
+    ) || []
+  ).length;
+  if (timeSlotCount >= 2) return true;
+
+  return false;
 }
 
 /**
  * 从 Markdown 文本中提取城市、多日行程、美食与建议
  */
-export function parseItineraryFromMarkdown(text: string, defaultCity?: string): ParsedRouteData {
+export function parseItineraryFromMarkdown(
+  text: string,
+  defaultCity?: string,
+): ParsedRouteData {
   if (!text) {
     return {
       city: defaultCity || '未知目的地',
       days: [],
       food: [],
+      isItinerary: false,
       routeString: '',
       spots: [],
       summary: '',
       tips: [],
       transportMode: 'driving',
-    }
+    };
   }
 
   // 1. 识别城市
-  let detectedCity = defaultCity || ''
+  let detectedCity = defaultCity || '';
   if (!detectedCity) {
     for (const c of COMMON_CITIES) {
       if (text.includes(c)) {
-        detectedCity = c
-        break
+        detectedCity = c;
+        break;
       }
     }
   }
-  if (!detectedCity)
-    detectedCity = '旅行目的地'
+  if (!detectedCity) detectedCity = '旅行目的地';
 
   // 2. 识别交通方式偏好
-  let transportMode: 'driving' | 'transit' | 'walking' = 'driving'
-  if (text.includes('自驾') || text.includes('租车') || text.includes('环湖') || text.includes('公路')) {
-    transportMode = 'driving'
-  }
-  else if (text.includes('地铁') || text.includes('公交') || text.includes('高铁') || text.includes('大巴')) {
-    transportMode = 'transit'
-  }
-  else if (text.includes('徒步') || text.includes('漫步') || text.includes('步行') || text.includes('骑行')) {
-    transportMode = 'walking'
+  let transportMode: 'driving' | 'transit' | 'walking' = 'driving';
+  if (
+    text.includes('自驾') ||
+    text.includes('租车') ||
+    text.includes('环湖') ||
+    text.includes('公路')
+  ) {
+    transportMode = 'driving';
+  } else if (
+    text.includes('地铁') ||
+    text.includes('公交') ||
+    text.includes('高铁') ||
+    text.includes('大巴')
+  ) {
+    transportMode = 'transit';
+  } else if (
+    text.includes('徒步') ||
+    text.includes('漫步') ||
+    text.includes('步行') ||
+    text.includes('骑行')
+  ) {
+    transportMode = 'walking';
   }
 
-  const lines = text.split('\n')
+  const lines = text.split('\n');
 
   // 3. 识别分日段落 (Day 1 / 第1天 / D1)
-  const dayHeaderRegex = /^(?:#+\s*)?(?:第([一二三四五六七八九十\d]+)天|Day\s*(\d+)|D(\d+))[:：·\s-]*(.*)$/i
+  const dayHeaderRegex =
+    /^(?:#+\s*)?(?:第([一二三四五六七八九十\d]+)天|Day\s*(\d+)|D(\d+))[:：·\s-]*(.*)$/i;
   interface DayBlock {
-    dayNum: number
-    lines: string[]
-    title: string
+    dayNum: number;
+    lines: string[];
+    title: string;
   }
 
-  const dayBlocks: DayBlock[] = []
-  let currentBlock: DayBlock | null = null
+  const dayBlocks: DayBlock[] = [];
+  let currentBlock: DayBlock | null = null;
 
   for (const line of lines) {
-    const trimmed = line.trim()
-    const match = dayHeaderRegex.exec(trimmed)
+    const trimmed = line.trim();
+    const match = dayHeaderRegex.exec(trimmed);
     if (match) {
       if (currentBlock) {
-        dayBlocks.push(currentBlock)
+        dayBlocks.push(currentBlock);
       }
-      const numStr = match[1] || match[2] || match[3]
-      const dayNum = parseChineseNum(numStr)
-      const rawTitle = (match[4] || '').replace(/[*#`]/g, '').trim()
+      const numStr = match[1] || match[2] || match[3];
+      const dayNum = parseChineseNum(numStr);
+      const rawTitle = (match[4] || '').replace(/[*#`]/g, '').trim();
       currentBlock = {
         dayNum,
         lines: [],
         title: rawTitle || `第 ${dayNum} 天行程`,
-      }
-    }
-    else if (currentBlock) {
-      currentBlock.lines.push(line)
+      };
+    } else if (currentBlock) {
+      currentBlock.lines.push(line);
     }
   }
   if (currentBlock) {
-    dayBlocks.push(currentBlock)
+    dayBlocks.push(currentBlock);
   }
 
   // 4. 构建结构化多日数组
-  const parsedDays: ParsedDayRoute[] = []
-  const allSpots: ParsedRouteSpot[] = []
-  const globalSeenSpots = new Set<string>()
+  const parsedDays: ParsedDayRoute[] = [];
+  const allSpots: ParsedRouteSpot[] = [];
+  const globalSeenSpots = new Set<string>();
 
   if (dayBlocks.length > 0) {
     for (const block of dayBlocks) {
-      const daySpots = extractSpotsFromLines(block.lines, detectedCity)
+      const daySpots = extractSpotsFromLines(block.lines, detectedCity);
       parsedDays.push({
         day: block.dayNum,
         spots: daySpots,
         title: block.title,
-      })
+      });
       for (const sp of daySpots) {
         if (!globalSeenSpots.has(sp.name)) {
-          globalSeenSpots.add(sp.name)
-          allSpots.push(sp)
+          globalSeenSpots.add(sp.name);
+          allSpots.push(sp);
         }
       }
     }
   }
 
-  // 兜底：如果未明确分天或分天未提取出景点，全篇提取归入第 1 天
-  if (allSpots.length === 0) {
-    const fallbackSpots = extractSpotsFromLines(lines, detectedCity)
-    allSpots.push(...fallbackSpots)
+  // 检验文本是否符合真实行程特征
+  const hasItinerary = hasItineraryFeatures(text, dayBlocks.length);
+
+  // 兜底：如果明确有行程特征，但未明确分天或分天未提取出景点，全篇提取归入第 1 天
+  if (hasItinerary && allSpots.length === 0) {
+    const fallbackSpots = extractSpotsFromLines(lines, detectedCity);
+    allSpots.push(...fallbackSpots);
     if (fallbackSpots.length > 0) {
       parsedDays.push({
         day: 1,
         spots: fallbackSpots,
         title: `${detectedCity}精选游玩路线`,
-      })
+      });
     }
   }
 
-  // 5. 提取核心建议/摘要
-  let summary = ''
-  const summaryMatch = /[^\n]*【(?:核心建议|行程亮点|亮点建议|总体规划|行程规划|核心亮点)[^】]*】[^\n]*\n([\s\S]*?)(?=\n[#*【]|$)/.exec(text)
-  if (summaryMatch && summaryMatch[1]) {
-    summary = cleanDecorativeText(summaryMatch[1]).slice(0, 160)
+  // 若不是真实行程，清空可能误提取的假点位和假路线
+  const isItinerary = hasItinerary && allSpots.length > 0;
+  if (!isItinerary) {
+    allSpots.length = 0;
+    parsedDays.length = 0;
   }
-  else {
-    const cleanLines = text.split('\n')
-      .map(l => cleanDecorativeText(l))
-      .filter(l => l.length > 15 && !l.startsWith('你是') && !l.startsWith('回答规范'))
-    summary = cleanLines[0] ? cleanLines[0].slice(0, 160) : '根据您的偏好精心定制的专属行程方案。'
+
+  // 5. 提取核心建议/摘要
+  let summary = '';
+  const summarySectionRegex =
+    /[^\n]*【(?:核心建议|行程亮点|亮点建议|总体规划|行程规划|核心亮点|核心答案|重点速览|答案速览)[^】]*】[:：]?\s*([^\n]*)(?:\n([\s\S]*?))?(?=\n[#*【]|$)/;
+  const summaryMatch = summarySectionRegex.exec(text);
+  if (summaryMatch) {
+    const inlineContent = (summaryMatch[1] || '').trim();
+    const multilineContent = (summaryMatch[2] || '').trim();
+    const rawSummary = inlineContent
+      ? `${inlineContent}${multilineContent ? `\n${multilineContent}` : ''}`
+      : multilineContent;
+    if (rawSummary) {
+      summary = cleanDecorativeText(rawSummary).slice(0, 160);
+    }
+  } else {
+    const cleanLines = text
+      .split('\n')
+      .map((l) => cleanDecorativeText(l))
+      .filter(
+        (l) =>
+          l.length > 15 && !l.startsWith('你是') && !l.startsWith('回答规范'),
+      );
+    summary = cleanLines[0]
+      ? cleanLines[0].slice(0, 160)
+      : '根据您的偏好精心定制的专属行程方案。';
   }
 
   // 6. 提取美食推荐
-  const food: string[] = []
-  const foodMatch = /[^\n]*【(?:地道美食|美食推荐|特色美食|美食品尝|美食打卡|特色小吃)[^】]*】[^\n]*\n([\s\S]*?)(?=\n[#*【]|$)/.exec(text)
+  const food: string[] = [];
+  const foodMatch =
+    /[^\n]*【(?:地道美食|美食推荐|特色美食|美食品尝|美食打卡|特色小吃)[^】]*】[^\n]*\n([\s\S]*?)(?=\n[#*【]|$)/.exec(
+      text,
+    );
   if (foodMatch && foodMatch[1]) {
-    const foodItems = foodMatch[1].match(/[*-]\s*([^：:\n]+)/g)
+    const foodItems = foodMatch[1].match(/[*-]\s*([^：:\n]+)/g);
     if (foodItems) {
       for (const item of foodItems) {
-        const cleaned = item.replace(/^[*-]\s*/, '').replace(/[*`]/g, '').trim()
+        const cleaned = item
+          .replace(/^[*-]\s*/, '')
+          .replace(/[*`]/g, '')
+          .trim();
         if (cleaned && cleaned.length <= 25 && !food.includes(cleaned)) {
-          food.push(cleaned)
+          food.push(cleaned);
         }
       }
     }
   }
 
   // 7. 提取避坑贴士
-  const tips: string[] = []
+  const tips: string[] = [];
   for (const line of lines) {
-    const trimmed = line.trim()
-    if (trimmed.startsWith('>') || trimmed.includes('💡') || trimmed.includes('贴士') || trimmed.includes('避坑')) {
-      const cleanTip = cleanDecorativeText(trimmed).replace(/^[贴士避坑：:\s]+/, '').trim()
-      if (cleanTip.length >= 8 && cleanTip.length <= 80 && !tips.includes(cleanTip) && tips.length < 4) {
-        tips.push(cleanTip)
+    const trimmed = line.trim();
+    if (
+      trimmed.startsWith('>') ||
+      trimmed.includes('💡') ||
+      trimmed.includes('贴士') ||
+      trimmed.includes('避坑')
+    ) {
+      const cleanTip = cleanDecorativeText(trimmed)
+        .replace(/^[贴士避坑：:\s]+/, '')
+        .trim();
+      if (
+        cleanTip.length >= 8 &&
+        cleanTip.length <= 80 &&
+        !tips.includes(cleanTip) &&
+        tips.length < 4
+      ) {
+        tips.push(cleanTip);
       }
     }
   }
 
-  const routeString = allSpots.map(s => s.name).join(' ➔ ')
+  const routeString = isItinerary ? allSpots.map((s) => s.name).join(' ➔ ') : '';
 
   return {
     city: detectedCity,
     days: parsedDays,
     food: food.slice(0, 4),
+    isItinerary,
     routeString,
     spots: allSpots,
     summary,
     tips: tips.slice(0, 3),
     transportMode,
-  }
+  };
 }
 
 function cleanDecorativeText(str: string): string {
   return str
     .replace(/[*#>]/g, '')
     .replace(/[\u{1F300}-\u{1FAFF}]/gu, '')
-    .trim()
+    .trim();
 }
 
 function cleanSpotName(raw: string): string {
-  let cleaned = raw.trim()
+  let cleaned = raw.trim();
   if (cleaned.includes('：') || cleaned.includes(':')) {
-    const segments = cleaned.split(/[：:]/)
-    cleaned = segments[segments.length - 1]
+    const segments = cleaned.split(/[：:]/);
+    cleaned = segments[segments.length - 1];
   }
   return cleaned
     .replace(/\[\^?\d+\]/g, '')
@@ -527,15 +624,13 @@ function cleanSpotName(raw: string): string {
     .replace(/(?<=[\u4e00-\u9fa5])\d+$/u, '')
     .replace(/\s*\d+$/, '')
     .replace(/(?:推荐|游览|打卡|出发|到达|前往|建议|游玩)$/, '')
-    .trim()
+    .trim();
 }
 
 function isValidSpotName(name: string): boolean {
-  if (!name || name.length < 2 || name.length > 20)
-    return false
+  if (!name || name.length < 2 || name.length > 20) return false;
 
-  if (isMetaSection(name) || isTimeOrHeaderPrefix(name))
-    return false
+  if (isMetaSection(name) || isTimeOrHeaderPrefix(name)) return false;
 
-  return true
+  return true;
 }

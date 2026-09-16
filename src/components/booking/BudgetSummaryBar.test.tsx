@@ -18,6 +18,7 @@ describe('BudgetSummaryBar', () => {
         },
       ],
       food: ['素斋'],
+      isItinerary: true,
       routeString: '灵隐寺',
       spots: [{ name: '灵隐寺' }],
       summary: '灵隐寺一日游',

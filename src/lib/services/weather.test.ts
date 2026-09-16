@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { clearWeatherCache } from '@/lib/weather-cache'
 import { getDressAdvice, getWeather, isGoodForOutdoor } from './weather'
 
@@ -138,64 +138,116 @@ describe('weather service', () => {
     })
   })
 
-  describe('getWeather with Open-Meteo', () => {
-    it('国内接口失败时能够平滑降级至 Open-Meteo 查询', async () => {
-      const mockGeo = {
-        results: [
+  describe('getWeather with Amap', () => {
+    const originalAmapKey = process.env.AMAP_API_KEY
+
+    afterEach(() => {
+      process.env.AMAP_API_KEY = originalAmapKey
+    })
+
+    it('配置高德 Key 时优先调用高德天气 API', async () => {
+      process.env.AMAP_API_KEY = 'test-amap-key'
+
+      const mockAmapResponse = {
+        forecasts: [
           {
-            id: 1790587,
-            latitude: 32.0422,
-            longitude: 112.14479,
-            name: '襄阳',
+            adcode: '330100',
+            casts: [
+              {
+                date: '2026-09-16',
+                daytemp: '28',
+                dayweather: '晴',
+                nighttemp: '18',
+                nightweather: '晴',
+              },
+              {
+                date: '2026-09-17',
+                daytemp: '26',
+                dayweather: '多云',
+                nighttemp: '17',
+                nightweather: '阴',
+              },
+              {
+                date: '2026-09-18',
+                daytemp: '24',
+                dayweather: '小雨',
+                nighttemp: '19',
+                nightweather: '小雨',
+              },
+            ],
+            city: '杭州市',
+            province: '浙江',
+            reporttime: '2026-09-16 11:30:00',
           },
         ],
-      }
-
-      const mockForecast = {
-        current: {
-          apparent_temperature: 36.5,
-          relative_humidity_2m: 78,
-          temperature_2m: 30.2,
-          weather_code: 96,
-          wind_speed_10m: 12,
-        },
-        daily: {
-          temperature_2m_max: [31.5, 33.0, 32.0],
-          temperature_2m_min: [25.0, 24.5, 25.2],
-          time: ['2026-08-24', '2026-08-25', '2026-08-26'],
-          weather_code: [96, 53, 1],
-        },
+        infocode: '10000',
+        status: '1',
       }
 
       vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
         const url = String(input)
-        if (url.includes('asilu.com')) {
-          return { ok: false } as Response
-        }
-        if (url.includes('geocoding-api.open-meteo.com')) {
+        if (url.includes('restapi.amap.com/v3/weather/weatherInfo')) {
           return {
-            json: async () => mockGeo,
-            ok: true,
-          } as Response
-        }
-        if (url.includes('api.open-meteo.com')) {
-          return {
-            json: async () => mockForecast,
+            json: async () => mockAmapResponse,
             ok: true,
           } as Response
         }
         return { ok: false } as Response
       })
 
-      const weather = await getWeather('襄阳')
+      const weather = await getWeather('杭州')
       expect(weather).not.toBeNull()
-      expect(weather?.city).toBe('襄阳')
-      expect(weather?.temperature).toBe(30)
-      expect(weather?.feelsLike).toBe(37)
-      expect(weather?.humidity).toBe(78)
-      expect(weather?.weatherDesc).toBe('雷暴大雨')
+      expect(weather?.city).toBe('杭州')
+      expect(weather?.temperature).toBe(23)
+      expect(weather?.weatherDesc).toBe('晴')
       expect(weather?.forecast).toHaveLength(3)
-      expect(weather?.forecast[0].date).toBe('2026-08-24')
+      expect(weather?.forecast[0].date).toBe('2026-09-16')
+      expect(weather?.forecast[0].maxTemp).toBe(28)
+      expect(weather?.forecast[0].minTemp).toBe(18)
+    })
+
+    it('高德接口异常时能够平滑降级至 Asilu 接口查询', async () => {
+      process.env.AMAP_API_KEY = 'test-amap-key'
+
+      const mockAsilu = {
+        weather: [
+          {
+            date: '16日（今天）',
+            temp: '28~18℃',
+            weather: '晴',
+          },
+          {
+            date: '17日（明天）',
+            temp: '26~17℃',
+            weather: '多云',
+          },
+          {
+            date: '18日（后天）',
+            temp: '24~19℃',
+            weather: '小雨',
+          },
+        ],
+      }
+
+      vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+        const url = String(input)
+        if (url.includes('restapi.amap.com/v3/weather/weatherInfo')) {
+          return { ok: false } as Response
+        }
+        if (url.includes('asilu.com')) {
+          return {
+            json: async () => mockAsilu,
+            ok: true,
+          } as Response
+        }
+        return { ok: false } as Response
+      })
+
+      const weather = await getWeather('杭州')
+      expect(weather).not.toBeNull()
+      expect(weather?.city).toBe('杭州')
+      expect(weather?.temperature).toBe(28)
+      expect(weather?.forecast).toHaveLength(3)
     })
   })
 

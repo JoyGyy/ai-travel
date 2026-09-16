@@ -11,3 +11,4 @@ CREATE TABLE IF NOT EXISTS email_verification_codes (
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_email_verification_email_type ON email_verification_codes (email, type);
 CREATE INDEX IF NOT EXISTS idx_email_verification_expires_at ON email_verification_codes (expires_at);
+

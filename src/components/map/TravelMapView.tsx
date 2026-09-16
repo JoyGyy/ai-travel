@@ -7,27 +7,13 @@ import type {
 } from 'leaflet';
 import type React from 'react';
 import type { ParsedRouteSpot } from '@/lib/map/route-parser';
-import type {
-  ResourceCategory,
-  WorkspaceSpotNode,
-} from '@/stores/itineraryWorkspace';
+import type { WorkspaceSpotNode } from '@/stores/itineraryWorkspace';
 import {
-  Building2,
-  Car,
-  Clock,
   Compass,
   ExternalLink,
-  Footprints,
-  Hotel,
-  LocateFixed,
   Maximize2,
   Minimize2,
-  Navigation as NavigationIcon,
   PanelRightClose,
-  ShoppingBag,
-  Train,
-  Utensils,
-  Zap,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -62,18 +48,6 @@ export interface TravelMapViewProps {
 
 type TileLayerType = 'amap-street' | 'amap-satellite' | 'cartodb';
 
-const CATEGORY_TABS: {
-  icon: React.ComponentType<{ className?: string }>;
-  id: ResourceCategory;
-  label: string;
-}[] = [
-  { icon: Compass, id: 'attractions', label: '景点' },
-  { icon: Hotel, id: 'hotels', label: '酒店' },
-  { icon: Utensils, id: 'restaurants', label: '美食' },
-  { icon: ShoppingBag, id: 'shopping', label: '购物' },
-  { icon: Train, id: 'transport', label: '交通' },
-];
-
 export function TravelMapView({
   city: propCity,
   className = '',
@@ -88,10 +62,6 @@ export function TravelMapView({
   const setSelectedDay = useItineraryWorkspaceStore((s) => s.setSelectedDay);
   const activeSpotId = useItineraryWorkspaceStore((s) => s.activeSpotId);
   const setActiveSpotId = useItineraryWorkspaceStore((s) => s.setActiveSpotId);
-  const activeCategory = useItineraryWorkspaceStore((s) => s.activeCategory);
-  const setActiveCategory = useItineraryWorkspaceStore(
-    (s) => s.setActiveCategory,
-  );
   const workspaceTransportMode = useItineraryWorkspaceStore(
     (s) => s.transportMode,
   );
@@ -102,7 +72,6 @@ export function TravelMapView({
   const city = propCity || workspaceCity || '杭州';
   const mode = workspaceTransportMode || initialMode;
 
-  const [activeTab, setActiveTab] = useState<'map' | 'legs'>('map');
   const [tileType, setTileType] = useState<TileLayerType>('amap-street');
   const [activeSpotIndex, setActiveSpotIndex] = useState<number>(0);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -717,34 +686,108 @@ export function TravelMapView({
         }
       `}</style>
 
-      {/* 顶栏 1: 资源分类筛选与多日行程快捷切换 */}
-      <div className="flex items-center justify-between border-b border-stone-200/80 bg-white/95 px-3.5 py-2 gap-2">
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-          {CATEGORY_TABS.map((cat) => {
-            const Icon = cat.icon;
-            const isCatActive = activeCategory === cat.id;
-            return (
+      {/* 顶部控制栏: 城市与行程节点、多天切换、交通模式、底图与窗口控制 (单行极简集成) */}
+      <div className="flex items-center justify-between border-b border-stone-200/80 bg-white/95 px-3 py-1.5 gap-2 text-xs select-none">
+        {/* 左侧：城市与行程天数导航 */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar min-w-0">
+          <div className="flex items-center gap-1.5 font-bold text-stone-800 shrink-0">
+            <span>{city}</span>
+            <span className="text-stone-300">·</span>
+            <span className="text-emerald-700 font-semibold">
+              {routePoints.length}站
+            </span>
+            {totalMetrics.totalKm > 0 && (
+              <>
+                <span className="text-stone-300">|</span>
+                <span className="text-stone-500 font-normal text-[11px]">
+                  {totalMetrics.totalKm}km
+                </span>
+              </>
+            )}
+          </div>
+
+          {/* 多日行程切换胶囊 */}
+          {workspaceDays.length > 0 && (
+            <div className="flex items-center gap-1 pl-2 border-l border-stone-200/80 shrink-0">
               <button
-                className={`
-                  flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0
-                  ${
-                    isCatActive
-                      ? 'bg-emerald-700 text-white shadow-2xs'
-                      : 'bg-stone-100 text-stone-600 hover:bg-stone-200 hover:text-stone-900'
-                  }
-                `}
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
+                className={`px-2 py-0.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer shrink-0 ${
+                  selectedDay === 0
+                    ? 'bg-emerald-700 text-white shadow-2xs'
+                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200 hover:text-stone-900'
+                }`}
+                onClick={() => setSelectedDay(0)}
                 type="button"
               >
-                <Icon className="h-3.5 w-3.5" />
-                <span>{cat.label}</span>
+                全程
               </button>
-            );
-          })}
+              {workspaceDays.map((d) => (
+                <button
+                  className={`px-2 py-0.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer shrink-0 ${
+                    selectedDay === d.day
+                      ? 'bg-emerald-700 text-white shadow-2xs'
+                      : 'bg-stone-100 text-stone-600 hover:bg-stone-200 hover:text-stone-900'
+                  }`}
+                  key={d.day}
+                  onClick={() => setSelectedDay(d.day)}
+                  type="button"
+                >
+                  D{d.day}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
+        {/* 右侧：交通模式、底图切换、行程明细抽屉、全屏与收起 */}
         <div className="flex items-center gap-1.5 shrink-0">
+          {/* 交通模式 */}
+          <div className="flex rounded-lg bg-stone-100 p-0.5 text-[11px] font-bold">
+            <button
+              className={`px-2 py-0.5 rounded-md transition-all cursor-pointer ${
+                mode === 'driving'
+                  ? 'bg-white text-emerald-800 shadow-2xs'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+              onClick={() => setWorkspaceTransportMode('driving')}
+              type="button"
+            >
+              驾车
+            </button>
+            <button
+              className={`px-2 py-0.5 rounded-md transition-all cursor-pointer ${
+                mode === 'transit'
+                  ? 'bg-white text-emerald-800 shadow-2xs'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+              onClick={() => setWorkspaceTransportMode('transit')}
+              type="button"
+            >
+              公交
+            </button>
+            <button
+              className={`px-2 py-0.5 rounded-md transition-all cursor-pointer ${
+                mode === 'walking'
+                  ? 'bg-white text-emerald-800 shadow-2xs'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+              onClick={() => setWorkspaceTransportMode('walking')}
+              type="button"
+            >
+              步行
+            </button>
+          </div>
+
+          {/* 底图样式 */}
+          <select
+            className="rounded-lg bg-stone-100 px-2 py-1 text-[11px] font-medium text-stone-700 outline-none cursor-pointer border border-transparent hover:border-stone-200"
+            onChange={(e) => setTileType(e.target.value as TileLayerType)}
+            value={tileType}
+          >
+            <option value="amap-street">高德标准</option>
+            <option value="amap-satellite">高德卫星</option>
+            <option value="cartodb">艺术底图</option>
+          </select>
+
           {/* 查看行程明细悬浮抽屉开关 */}
           <button
             className={`flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
@@ -757,7 +800,7 @@ export function TravelMapView({
             type="button"
           >
             <span>📋</span>
-            <span className="hidden sm:inline">行程明细</span>
+            <span className="hidden sm:inline">明细</span>
             {routePoints.length > 0 && (
               <span
                 className={`px-1.5 py-0.2 text-[10px] rounded-full font-black ${
@@ -801,95 +844,6 @@ export function TravelMapView({
         </div>
       </div>
 
-      {/* 顶栏 2: 城市总览、多天切换胶囊与交通模式/底图控制 */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-200/70 bg-[#FAF7F0] px-3.5 py-2 text-xs">
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5">
-          <div className="flex items-center gap-1.5 font-bold text-stone-800 shrink-0">
-            <span>{city}</span>
-            <span className="text-stone-300">·</span>
-            <span className="text-emerald-700 font-semibold">
-              {routePoints.length}站
-            </span>
-            {totalMetrics.totalKm > 0 && (
-              <>
-                <span className="text-stone-300">|</span>
-                <span className="text-stone-500 font-normal">
-                  {totalMetrics.totalKm}km
-                </span>
-              </>
-            )}
-          </div>
-
-          {/* 多日行程切换胶囊 (直接集成在地图顶栏，解决中间栏占地方问题) */}
-          {workspaceDays.length > 0 && (
-            <div className="flex items-center gap-1 pl-2 border-l border-stone-200/80">
-              <button
-                className={`px-2 py-0.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer shrink-0 ${
-                  selectedDay === 0
-                    ? 'bg-emerald-700 text-white shadow-2xs'
-                    : 'bg-stone-200/70 text-stone-600 hover:bg-stone-200 hover:text-stone-900'
-                }`}
-                onClick={() => setSelectedDay(0)}
-                type="button"
-              >
-                全程总览
-              </button>
-              {workspaceDays.map((d) => (
-                <button
-                  className={`px-2 py-0.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer shrink-0 ${
-                    selectedDay === d.day
-                      ? 'bg-emerald-700 text-white shadow-2xs'
-                      : 'bg-stone-200/70 text-stone-600 hover:bg-stone-200 hover:text-stone-900'
-                  }`}
-                  key={d.day}
-                  onClick={() => setSelectedDay(d.day)}
-                  type="button"
-                >
-                  D{d.day}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="flex items-center gap-1.5 shrink-0 ml-auto">
-          {/* 交通模式 */}
-          <div className="flex rounded-lg bg-stone-200/70 p-0.5 text-[11px] font-bold">
-            <button
-              className={`px-2 py-0.5 rounded-md transition-all cursor-pointer ${mode === 'driving' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-stone-600'}`}
-              onClick={() => setWorkspaceTransportMode('driving')}
-              type="button"
-            >
-              驾车
-            </button>
-            <button
-              className={`px-2 py-0.5 rounded-md transition-all cursor-pointer ${mode === 'transit' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-stone-600'}`}
-              onClick={() => setWorkspaceTransportMode('transit')}
-              type="button"
-            >
-              公交
-            </button>
-            <button
-              className={`px-2 py-0.5 rounded-md transition-all cursor-pointer ${mode === 'walking' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-stone-600'}`}
-              onClick={() => setWorkspaceTransportMode('walking')}
-              type="button"
-            >
-              步行
-            </button>
-          </div>
-
-          {/* 底图样式 */}
-          <select
-            className="rounded-lg bg-stone-200/70 px-2 py-0.5 text-[11px] font-medium text-stone-700 outline-none cursor-pointer"
-            onChange={(e) => setTileType(e.target.value as TileLayerType)}
-            value={tileType}
-          >
-            <option value="amap-street">高德标准</option>
-            <option value="amap-satellite">高德卫星</option>
-            <option value="cartodb">艺术底图</option>
-          </select>
-        </div>
-      </div>
 
       {/* 地图核心视窗 */}
       <div className="relative flex-1 min-h-[350px] w-full bg-stone-100 overflow-hidden">

@@ -3,98 +3,101 @@
  * 提供用户注册、登录、JWT 验证功能
  * 使用 PostgreSQL 存储用户数据
  */
-import bcrypt from 'bcryptjs'
-import { jwtVerify, SignJWT } from 'jose'
-import { nanoid } from 'nanoid'
+import bcrypt from 'bcryptjs';
+import { jwtVerify, SignJWT } from 'jose';
+import { nanoid } from 'nanoid';
 
-import { query } from '../db'
-import { env } from '../env'
+import { query } from '../db';
+import { env } from '../env';
 
 /** bcrypt 加盐轮数 */
-const SALT_ROUNDS = 10
+const SALT_ROUNDS = 10;
 /** 每日 AI 调用上限 */
-const DAILY_AI_LIMIT = 10
+const DAILY_AI_LIMIT = 10;
 
 export interface AiQuotaStatus {
-  limit: number
-  remaining: number
-  used: number
+  limit: number;
+  remaining: number;
+  used: number;
 }
 
 /** 用户角色 */
-export type UserRole = 'admin' | 'user'
+export type UserRole = 'admin' | 'user';
 
 export interface AuthResult {
-  token: string
-  user: { createdAt: string, id: string, username: string }
+  token: string;
+  user: { createdAt: string; id: string; username: string };
 }
 
 export interface JwtPayload {
-  id: string
-  role?: UserRole
-  username: string
+  id: string;
+  role?: UserRole;
+  username: string;
 }
 
 export interface UserProfile {
-  aiQuota: AiQuotaStatus
-  createdAt: string
-  favoriteIds: string[]
-  id: string
-  role: UserRole
-  username: string
+  aiQuota: AiQuotaStatus;
+  createdAt: string;
+  favoriteIds: string[];
+  id: string;
+  role: UserRole;
+  username: string;
 }
 
 /** 从 Authorization 头 (Bearer Token) 或 httpOnly Cookie 提取并验证用户 */
-export async function getAuthFromHeaders(headers: Headers): Promise<JwtPayload | null> {
-  const authHeader = headers.get('authorization')
+export async function getAuthFromHeaders(
+  headers: Headers,
+): Promise<JwtPayload | null> {
+  const authHeader = headers.get('authorization');
   if (authHeader?.startsWith('Bearer ')) {
-    const token = authHeader.slice(7).trim()
+    const token = authHeader.slice(7).trim();
     if (token) {
       try {
-        return await verifyToken(token)
-      }
-      catch {
-        return null
+        return await verifyToken(token);
+      } catch {
+        return null;
       }
     }
   }
 
-  const cookie = headers.get('cookie')
+  const cookie = headers.get('cookie');
   if (cookie) {
     // 精确匹配 'token' cookie，确保以字符串起始或分号空格开头，不误匹配 'my-token' 或 'csrf_token'
-    const match = cookie.match(/(?:^|;\s*)token=([^;]+)/)
+    const match = cookie.match(/(?:^|;\s*)token=([^;]+)/);
     if (match) {
       try {
-        return await verifyToken(match[1])
-      }
-      catch {
-        return null
+        return await verifyToken(match[1]);
+      } catch {
+        return null;
       }
     }
   }
 
-  return null
+  return null;
 }
 
 /** 必需认证，失败返回 null */
-export async function requireAuthFromHeaders(headers: Headers): Promise<JwtPayload> {
-  const user = await getAuthFromHeaders(headers)
+export async function requireAuthFromHeaders(
+  headers: Headers,
+): Promise<JwtPayload> {
+  const user = await getAuthFromHeaders(headers);
   if (!user) {
-    throw new Error('未登录')
+    throw new Error('未登录');
   }
-  return user
+  return user;
 }
 
-async function addFavoriteAttraction(userId: string, attractionId: string): Promise<void> {
-  if (!userId)
-    throw new Error('用户信息无效')
-  if (!attractionId)
-    throw new Error('景点信息无效')
+async function addFavoriteAttraction(
+  userId: string,
+  attractionId: string,
+): Promise<void> {
+  if (!userId) throw new Error('用户信息无效');
+  if (!attractionId) throw new Error('景点信息无效');
 
   await query(
     'INSERT INTO user_favorite_attractions (user_id, attraction_id) VALUES ($1, $2) ON CONFLICT DO NOTHING',
     [userId, attractionId],
-  )
+  );
 }
 
 async function changePassword(
@@ -102,38 +105,45 @@ async function changePassword(
   currentPassword: string,
   newPassword: string,
 ): Promise<void> {
-  if (!userId)
-    throw new Error('用户信息无效')
+  if (!userId) throw new Error('用户信息无效');
   if (!currentPassword || !newPassword)
-    throw new Error('当前密码和新密码不能为空')
-  validatePassword(newPassword)
+    throw new Error('当前密码和新密码不能为空');
+  validatePassword(newPassword);
 
-  const result = await query('SELECT password_hash FROM users WHERE id = $1', [userId])
-  if (result.rows.length === 0)
-    throw new Error('用户不存在')
+  const result = await query('SELECT password_hash FROM users WHERE id = $1', [
+    userId,
+  ]);
+  if (result.rows.length === 0) throw new Error('用户不存在');
 
-  const match = await bcrypt.compare(currentPassword, result.rows[0].password_hash)
-  if (!match)
-    throw new Error('当前密码错误')
+  const match = await bcrypt.compare(
+    currentPassword,
+    result.rows[0].password_hash,
+  );
+  if (!match) throw new Error('当前密码错误');
 
-  const newHashed = await bcrypt.hash(newPassword, SALT_ROUNDS)
-  await query('UPDATE users SET password_hash = $1 WHERE id = $2', [newHashed, userId])
+  const newHashed = await bcrypt.hash(newPassword, SALT_ROUNDS);
+  await query('UPDATE users SET password_hash = $1 WHERE id = $2', [
+    newHashed,
+    userId,
+  ]);
 }
 
 /** 管理员无限额度标记 */
-const UNLIMITED = -1
+const UNLIMITED = -1;
 
 /** 消耗一次 AI 配额（单条 SQL UPSERT + RETURNING），超限抛出 429 错误。管理员不限次数 */
-async function consumeAiQuota(userId: string, date = getTodayKey()): Promise<AiQuotaStatus> {
-  if (!userId)
-    throw new Error('用户信息无效')
+async function consumeAiQuota(
+  userId: string,
+  date = getTodayKey(),
+): Promise<AiQuotaStatus> {
+  if (!userId) throw new Error('用户信息无效');
 
   // 管理员跳过额度限制
   if (await isAdmin(userId)) {
-    return { limit: UNLIMITED, remaining: UNLIMITED, used: 0 }
+    return { limit: UNLIMITED, remaining: UNLIMITED, used: 0 };
   }
 
-  const updatedAt = new Date().toISOString()
+  const updatedAt = new Date().toISOString();
 
   // 单条 SQL：原子递增并返回结果，避免先 SELECT 再 INSERT 的两次往返
   const result = await query(
@@ -144,26 +154,26 @@ async function consumeAiQuota(userId: string, date = getTodayKey()): Promise<AiQ
      WHERE ai_usage.used_count < $4
      RETURNING used_count`,
     [userId, date, updatedAt, DAILY_AI_LIMIT],
-  )
+  );
 
   // RETURNING 为空说明 WHERE 条件不满足（已达上限）
   if (result.rows.length === 0) {
-    const currentQuota = await getAiQuotaStatus(userId, date)
+    const currentQuota = await getAiQuotaStatus(userId, date);
     const err = new Error('今日 AI 使用次数已达上限，请明天再试') as Error & {
-      quota: AiQuotaStatus
-      status: number
-    }
-    err.status = 429
-    err.quota = currentQuota
-    throw err
+      quota: AiQuotaStatus;
+      status: number;
+    };
+    err.status = 429;
+    err.quota = currentQuota;
+    throw err;
   }
 
-  const used = result.rows[0].used_count as number
+  const used = result.rows[0].used_count as number;
   return {
     limit: DAILY_AI_LIMIT,
     remaining: DAILY_AI_LIMIT - used,
     used,
-  }
+  };
 }
 
 /** 查询用户当日 AI 配额使用情况（管理员返回无限额度） */
@@ -171,50 +181,50 @@ async function getAiQuotaStatus(
   userId: string | undefined,
   date = getTodayKey(),
 ): Promise<AiQuotaStatus> {
-  if (!userId)
-    throw new Error('用户信息无效')
+  if (!userId) throw new Error('用户信息无效');
 
   // 管理员返回无限额度
   if (await isAdmin(userId)) {
-    return { limit: UNLIMITED, remaining: UNLIMITED, used: 0 }
+    return { limit: UNLIMITED, remaining: UNLIMITED, used: 0 };
   }
 
   const result = await query(
     'SELECT used_count FROM ai_usage WHERE user_id = $1 AND usage_date = $2',
     [userId, date],
-  )
+  );
 
-  const used = result.rows.length > 0 ? result.rows[0].used_count : 0
+  const used = result.rows.length > 0 ? result.rows[0].used_count : 0;
 
   return {
     limit: DAILY_AI_LIMIT,
     remaining: Math.max(DAILY_AI_LIMIT - used, 0),
     used,
-  }
+  };
 }
 
 /** 判断用户是否为管理员 */
 async function isAdmin(userId: string): Promise<boolean> {
-  const result = await query('SELECT role FROM users WHERE id = $1', [userId])
-  return result.rows.length > 0 && result.rows[0].role === 'admin'
+  const result = await query('SELECT role FROM users WHERE id = $1', [userId]);
+  return result.rows.length > 0 && result.rows[0].role === 'admin';
 }
 
 /** 获取 JWT 签名密钥 */
 function getJwtKey(): Uint8Array {
-  return new TextEncoder().encode(env.JWT_SECRET)
+  return new TextEncoder().encode(env.JWT_SECRET);
 }
 
 async function getProfile(userId: string): Promise<UserProfile> {
-  if (!userId)
-    throw new Error('用户信息无效')
+  if (!userId) throw new Error('用户信息无效');
 
-  const result = await query('SELECT id, username, role, created_at FROM users WHERE id = $1', [userId])
-  if (result.rows.length === 0)
-    throw new Error('用户不存在')
+  const result = await query(
+    'SELECT id, username, role, created_at FROM users WHERE id = $1',
+    [userId],
+  );
+  if (result.rows.length === 0) throw new Error('用户不存在');
 
-  const user = result.rows[0]
-  const aiQuota = await getAiQuotaStatus(userId)
-  const favoriteIds = await listFavoriteAttractionIds(userId)
+  const user = result.rows[0];
+  const aiQuota = await getAiQuotaStatus(userId);
+  const favoriteIds = await listFavoriteAttractionIds(userId);
 
   return {
     aiQuota,
@@ -223,50 +233,47 @@ async function getProfile(userId: string): Promise<UserProfile> {
     id: user.id,
     role: user.role || 'user',
     username: user.username,
-  }
+  };
 }
 
 /** 生成当天日期 key，格式 YYYY-MM-DD，用于 AI 配额按日统计 */
 function getTodayKey(): string {
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const day = String(now.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 async function listFavoriteAttractionIds(userId: string): Promise<string[]> {
-  if (!userId)
-    throw new Error('用户信息无效')
+  if (!userId) throw new Error('用户信息无效');
 
   const result = await query(
     'SELECT attraction_id FROM user_favorite_attractions WHERE user_id = $1 ORDER BY created_at DESC',
     [userId],
-  )
+  );
 
-  return result.rows.map((row: { attraction_id: string }) => row.attraction_id)
+  return result.rows.map((row: { attraction_id: string }) => row.attraction_id);
 }
 
-/** 用户登录：验证用户名密码，签发 JWT（有效期 7 天） */
-async function login(username: string, password: string): Promise<AuthResult> {
-  if (!username || !password)
-    throw new Error('用户名和密码不能为空')
+/** 用户登录：支持用户名或邮箱 + 密码验证，签发 JWT（有效期 7 天） */
+async function login(account: string, password: string): Promise<AuthResult> {
+  if (!account || !password) throw new Error('用户名和密码不能为空');
 
+  const trimmed = account.trim();
   const result = await query(
-    'SELECT id, username, password_hash, role, created_at FROM users WHERE username = $1',
-    [username],
-  )
+    'SELECT id, username, password_hash, role, created_at FROM users WHERE username = $1 OR LOWER(email) = LOWER($1)',
+    [trimmed],
+  );
 
-  if (result.rows.length === 0)
-    throw new Error('用户名或密码错误')
+  if (result.rows.length === 0) throw new Error('用户名或密码错误');
 
-  const user = result.rows[0]
-  const match = await bcrypt.compare(password, user.password_hash)
-  if (!match)
-    throw new Error('用户名或密码错误')
+  const user = result.rows[0];
+  const match = await bcrypt.compare(password, user.password_hash);
+  if (!match) throw new Error('用户名或密码错误');
 
-  const role: UserRole = user.role || 'user'
-  const token = await signJwt({ id: user.id, role, username: user.username })
+  const role: UserRole = user.role || 'user';
+  const token = await signJwt({ id: user.id, role, username: user.username });
   return {
     token,
     user: {
@@ -274,74 +281,83 @@ async function login(username: string, password: string): Promise<AuthResult> {
       id: user.id,
       username: user.username,
     },
-  }
+  };
 }
 
 /** 用户注册：校验参数、密码哈希、写入数据库、签发 JWT */
-async function register(username: string, password: string, email?: string): Promise<AuthResult> {
-  if (!username || !password)
-    throw new Error('用户名和密码不能为空')
+async function register(
+  username: string,
+  password: string,
+  email?: string,
+): Promise<AuthResult> {
+  if (!username || !password) throw new Error('用户名和密码不能为空');
   if (username.length < 2 || username.length > 20)
-    throw new Error('用户名长度为 2-20 个字符')
-  validatePassword(password)
+    throw new Error('用户名长度为 2-20 个字符');
+  validatePassword(password);
 
-  const existing = await query('SELECT id FROM users WHERE username = $1', [username])
-  if (existing.rows.length > 0)
-    throw new Error('用户名已存在')
+  const existing = await query('SELECT id FROM users WHERE username = $1', [
+    username,
+  ]);
+  if (existing.rows.length > 0) throw new Error('用户名已存在');
 
-  const hashed = await bcrypt.hash(password, SALT_ROUNDS)
-  const id = nanoid()
-  const createdAt = new Date().toISOString()
-  const userEmail = email || `${username}@travel.local`
+  const hashed = await bcrypt.hash(password, SALT_ROUNDS);
+  const id = nanoid();
+  const createdAt = new Date().toISOString();
+  const userEmail = email || `${username}@travel.local`;
 
   await query(
     'INSERT INTO users (id, username, password_hash, email, created_at) VALUES ($1, $2, $3, $4, $5)',
     [id, username, hashed, userEmail, new Date(createdAt)],
-  )
+  );
 
-  const token = await signJwt({ id, role: 'user', username })
-  return { token, user: { createdAt, id, username } }
+  const token = await signJwt({ id, role: 'user', username });
+  return { token, user: { createdAt, id, username } };
 }
 
-async function removeFavoriteAttraction(userId: string, attractionId: string): Promise<void> {
-  if (!userId)
-    throw new Error('用户信息无效')
-  if (!attractionId)
-    throw new Error('景点信息无效')
+async function removeFavoriteAttraction(
+  userId: string,
+  attractionId: string,
+): Promise<void> {
+  if (!userId) throw new Error('用户信息无效');
+  if (!attractionId) throw new Error('景点信息无效');
 
-  await query('DELETE FROM user_favorite_attractions WHERE user_id = $1 AND attraction_id = $2', [
-    userId,
-    attractionId,
-  ])
+  await query(
+    'DELETE FROM user_favorite_attractions WHERE user_id = $1 AND attraction_id = $2',
+    [userId, attractionId],
+  );
 }
 
 /** 签发 JWT（有效期 7 天） */
-async function signJwt(payload: { id: string, role?: UserRole, username: string }): Promise<string> {
+async function signJwt(payload: {
+  id: string;
+  role?: UserRole;
+  username: string;
+}): Promise<string> {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setExpirationTime('7d')
-    .sign(getJwtKey())
+    .sign(getJwtKey());
 }
 
 /** 密码复杂度校验：至少 8 位，包含大小写字母和数字 */
 function validatePassword(password: string): void {
-  if (password.length < 8)
-    throw new Error('密码长度至少 8 个字符')
-  if (!/[a-z]/.test(password))
-    throw new Error('密码需包含小写字母')
-  if (!/[A-Z]/.test(password))
-    throw new Error('密码需包含大写字母')
-  if (!/\d/.test(password))
-    throw new Error('密码需包含数字')
+  if (password.length < 8) throw new Error('密码长度至少 8 个字符');
+  if (!/[a-z]/.test(password)) throw new Error('密码需包含小写字母');
+  if (!/[A-Z]/.test(password)) throw new Error('密码需包含大写字母');
+  if (!/\d/.test(password)) throw new Error('密码需包含数字');
 }
 
 /** 验证 JWT token，无效时抛出异常 */
 async function verifyToken(token: string): Promise<JwtPayload> {
-  const { payload } = await jwtVerify(token, getJwtKey())
+  const { payload } = await jwtVerify(token, getJwtKey());
   if (typeof payload.id !== 'string' || typeof payload.username !== 'string') {
-    throw new TypeError('无效的 token 结构')
+    throw new TypeError('无效的 token 结构');
   }
-  return { id: payload.id, role: payload.role as UserRole | undefined, username: payload.username }
+  return {
+    id: payload.id,
+    role: payload.role as UserRole | undefined,
+    username: payload.username,
+  };
 }
 
 export {
@@ -355,4 +371,4 @@ export {
   register,
   removeFavoriteAttraction,
   verifyToken,
-}
+};

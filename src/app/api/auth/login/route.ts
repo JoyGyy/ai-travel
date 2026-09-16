@@ -10,10 +10,11 @@ export const POST = withPublicPost('auth-login', 10, 60_000, async (req) => {
   const body = await req.json().catch(() => {
     throw httpError(400, '请求格式无效')
   })
-  // login() 对凭证错误抛的是普通 Error，默认会映射成 500；这里转成 401。
+  // 支持通过 username、account 或 email 字段传入登录账号
+  const account = body.account || body.username || body.email
   let result: Awaited<ReturnType<typeof login>>
   try {
-    result = await login(body.username, body.password)
+    result = await login(account, body.password)
   }
   catch (err) {
     if (err instanceof Error && err.message === '用户名或密码错误')

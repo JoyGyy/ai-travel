@@ -66,6 +66,25 @@ describe('pOST /api/auth/login', () => {
     expect(setAuthCookie).toHaveBeenCalled()
   })
 
+  it('支持使用 email 字段登录成功', async () => {
+    mockLogin.mockResolvedValueOnce({
+      token: 'jwt-token-email',
+      user: { createdAt: '2024-01-01T00:00:00Z', id: 'u2', username: 'emailuser' },
+    })
+
+    const req = new Request('http://localhost/api/auth/login', {
+      body: JSON.stringify({ email: 'emailuser@example.com', password: 'Test1234' }),
+      method: 'POST',
+    })
+
+    const res = await POST(req)
+    const data = await res.json()
+
+    expect(res.status).toBe(200)
+    expect(data.success).toBe(true)
+    expect(mockLogin).toHaveBeenCalledWith('emailuser@example.com', 'Test1234')
+  })
+
   it('用户名或密码错误返回 401', async () => {
     mockLogin.mockRejectedValueOnce(new Error('用户名或密码错误'))
 

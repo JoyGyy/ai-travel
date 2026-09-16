@@ -5,12 +5,17 @@
 import type * as httpUtils from '@/lib/utils/http'
 
 import { register } from '@/lib/services/auth'
+import { verifyAndConsumeCode } from '@/lib/services/email'
 
 import { setAuthCookie } from '@/lib/utils/http'
 import { POST } from './route'
 
 vi.mock('@/lib/services/auth', () => ({
   register: vi.fn(),
+}))
+
+vi.mock('@/lib/services/email', () => ({
+  verifyAndConsumeCode: vi.fn(),
 }))
 
 vi.mock('@/lib/utils/http', async (importOriginal) => {
@@ -94,5 +99,51 @@ describe('pOST /api/auth/register', () => {
 
     const res = await POST(req)
     expect(res.status).toBe(500)
+  })
+
+  it('邮箱验证码无效时返回 400', async () => {
+    vi.mocked(verifyAndConsumeCode).mockResolvedValueOnce(false)
+
+    const req = new Request('http://localhost/api/auth/register', {
+      body: JSON.stringify({
+        code: '000000',
+        email: 'test@example.com',
+        password: 'Password123',
+        username: 'test',
+      }),
+      method: 'POST',
+    })
+
+    const res = await POST(req)
+    const data = await res.json()
+
+    expect(res.status).toBe(400)
+    expect(data.message).toBe('验证码错误或已过期')
+  })
+
+  it('邮箱验证码正确时通过校验并完成注册', async () => {
+    vi.mocked(verifyAndConsumeCode).mockResolvedValueOnce(true)
+    mockRegister.mockResolvedValueOnce({
+      token: 'jwt-token-verified',
+      user: { createdAt: '2024-01-01T00:00:00Z', id: 'u-verified', username: 'verifieduser' },
+    })
+
+    const req = new Request('http://localhost/api/auth/register', {
+      body: JSON.stringify({
+        code: '654321',
+        email: 'verified@example.com',
+        password: 'Password123',
+        username: 'verifieduser',
+      }),
+      method: 'POST',
+    })
+
+    const res = await POST(req)
+    const data = await res.json()
+
+    expect(res.status).toBe(200)
+    expect(data.success).toBe(true)
+    expect(verifyAndConsumeCode).toHaveBeenCalledWith('verified@example.com', '654321', 'register')
+    expect(mockRegister).toHaveBeenCalledWith('verifieduser', 'Password123', 'verified@example.com')
   })
 })

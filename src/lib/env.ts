@@ -35,6 +35,12 @@ export interface EnvConfig {
   SILICONFLOW_BASE_URL: string;
   SILICONFLOW_FALLBACK_MODEL: string;
   SILICONFLOW_MODEL: string;
+  SMTP_FROM: string;
+  SMTP_HOST: string;
+  SMTP_PASS: string;
+  SMTP_PORT: number;
+  SMTP_SECURE: boolean;
+  SMTP_USER: string;
 }
 
 function readNumber(name: string, fallback: number): number {
@@ -73,6 +79,12 @@ const env: EnvConfig = {
     'SILICONFLOW_FALLBACK_MODEL',
     DEFAULT_SILICONFLOW_FALLBACK_MODEL,
   ),
+  SMTP_FROM: readString('SMTP_FROM'),
+  SMTP_HOST: readString('SMTP_HOST'),
+  SMTP_PASS: readString('SMTP_PASS'),
+  SMTP_PORT: readNumber('SMTP_PORT', 465),
+  SMTP_SECURE: readString('SMTP_SECURE', 'true') === 'true',
+  SMTP_USER: readString('SMTP_USER'),
 };
 
 env.IS_PRODUCTION = env.NODE_ENV === 'production';

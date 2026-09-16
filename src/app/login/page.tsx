@@ -8,8 +8,9 @@
 import { ArrowLeft, Compass, Eye, EyeOff } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
+import { sendCodeApi } from '@/api/auth'
 import { ComplianceFooter } from '@/components/ComplianceFooter'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -47,14 +48,40 @@ export default function Login() {
   const [tab, setTab] = useState<'login' | 'register'>('login')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('')
+  const [code, setCode] = useState('')
+  const [countdown, setCountdown] = useState(0)
+  const [sendingCode, setSendingCode] = useState(false)
   const [loading, setLoading] = useState(false)
   const [formError, setFormError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [fieldErrors, setFieldErrors] = useState<{ password?: string, username?: string }>({})
-  const [touched, setTouched] = useState<{ password?: boolean, username?: boolean }>({})
+  const [fieldErrors, setFieldErrors] = useState<{
+    code?: string
+    email?: string
+    password?: string
+    username?: string
+  }>({})
+  const [touched, setTouched] = useState<{
+    code?: boolean
+    email?: boolean
+    password?: boolean
+    username?: boolean
+  }>({})
   const usernameRef = useRef<HTMLInputElement>(null)
+  const emailRef = useRef<HTMLInputElement>(null)
+  const codeRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
   const currentCopy = formCopy[tab]
+
+  /* ---------- 验证码 60s 倒计时 ---------- */
+
+  useEffect(() => {
+    if (countdown <= 0) return
+    const timer = setInterval(() => {
+      setCountdown(c => c - 1)
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [countdown])
 
   /* ---------- 登录/注册模式切换 ---------- */
 
@@ -62,6 +89,8 @@ export default function Login() {
     setTab(t)
     setUsername('')
     setPassword('')
+    setEmail('')
+    setCode('')
     setFormError('')
     setFieldErrors({})
     setTouched({})
@@ -70,8 +99,18 @@ export default function Login() {
 
   /* ---------- 表单校验（返回字段级错误） ---------- */
 
-  function validateForm(): { password?: string, username?: string } {
-    const errors: { password?: string, username?: string } = {}
+  function validateForm(): {
+    code?: string
+    email?: string
+    password?: string
+    username?: string
+  } {
+    const errors: {
+      code?: string
+      email?: string
+      password?: string
+      username?: string
+    } = {}
     if (!username.trim())
       errors.username = '请输入用户名'
     if (!password) {
@@ -90,15 +129,65 @@ export default function Login() {
       else if (!/\d/.test(password)) {
         errors.password = '密码需包含数字'
       }
+
+      if (!email.trim()) {
+        errors.email = '请输入电子邮箱'
+      }
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+        errors.email = '邮箱格式不正确'
+      }
+
+      if (!code.trim()) {
+        errors.code = '请输入验证码'
+      }
+      else if (!/^\d{6}$/.test(code.trim())) {
+        errors.code = '验证码需为 6 位数字'
+      }
     }
     return errors
   }
 
   /* ---------- 单字段校验（onBlur 时调用） ---------- */
 
-  function validateField(field: 'password' | 'username') {
+  function validateField(field: 'code' | 'email' | 'password' | 'username') {
     const errors = validateForm()
     setFieldErrors(prev => ({ ...prev, [field]: errors[field] }))
+  }
+
+  /* ---------- 获取邮箱验证码 ---------- */
+
+  async function handleSendCode() {
+    if (sendingCode || countdown > 0) return
+    const trimmedEmail = email.trim()
+    if (!trimmedEmail) {
+      setFieldErrors(prev => ({ ...prev, email: '请输入电子邮箱' }))
+      setTouched(prev => ({ ...prev, email: true }))
+      emailRef.current?.focus()
+      return
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      setFieldErrors(prev => ({ ...prev, email: '邮箱格式不正确' }))
+      setTouched(prev => ({ ...prev, email: true }))
+      emailRef.current?.focus()
+      return
+    }
+
+    setSendingCode(true)
+    setFormError('')
+    try {
+      await sendCodeApi(trimmedEmail, 'register')
+      toast.success('验证码已发送至您的邮箱，请注意查收')
+      setCountdown(60)
+      codeRef.current?.focus()
+    }
+    catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : '发送验证码失败，请稍后重试'
+      toast.error(msg)
+      setFormError(msg)
+    }
+    finally {
+      setSendingCode(false)
+    }
   }
 
   /* ---------- 提交登录/注册请求 ---------- */
@@ -109,12 +198,18 @@ export default function Login() {
       return
 
     const errors = validateForm()
-    if (errors.username || errors.password) {
+    if (errors.username || errors.email || errors.code || errors.password) {
       setFieldErrors(errors)
-      setTouched({ password: true, username: true })
+      setTouched({ code: true, email: true, password: true, username: true })
       setFormError('')
       if (errors.username) {
         usernameRef.current?.focus()
+      }
+      else if (errors.email) {
+        emailRef.current?.focus()
+      }
+      else if (errors.code) {
+        codeRef.current?.focus()
       }
       else if (errors.password) {
         passwordRef.current?.focus()
@@ -131,7 +226,7 @@ export default function Login() {
         await login(username.trim(), password)
       }
       else {
-        await register(username.trim(), password)
+        await register(username.trim(), password, email.trim(), code.trim())
       }
       toast.success(tab === 'login' ? '登录成功' : '注册成功')
       router.push('/')
@@ -289,6 +384,90 @@ export default function Login() {
                 </p>
               )}
             </div>
+
+            {tab === 'register' && (
+              <>
+                {/* 电子邮箱 */}
+                <div className="mb-6 animate-fade-in-up" style={{ animationDelay: '150ms' }}>
+                  <Label className="mb-2 text-gray-700" htmlFor="register-email">
+                    电子邮箱
+                    <span className="ml-1 text-red-500">*</span>
+                  </Label>
+                  <Input
+                    autoComplete="email"
+                    className="h-12 mt-2 border-gray-200 hover:border-primary/30 focus:border-primary/50 focus:ring-2 focus:ring-primary/15"
+                    id="register-email"
+                    name="email"
+                    onBlur={() => {
+                      setTouched(prev => ({ ...prev, email: true }))
+                      validateField('email')
+                    }}
+                    onChange={(e) => {
+                      setEmail(e.target.value)
+                      if (fieldErrors.email)
+                        setFieldErrors(prev => ({ ...prev, email: undefined }))
+                      if (formError)
+                        setFormError('')
+                    }}
+                    placeholder="请输入常用邮箱（接收验证码）"
+                    ref={emailRef}
+                    type="email"
+                    value={email}
+                  />
+                  {touched.email && fieldErrors.email && (
+                    <p className="mt-2 text-xs font-medium text-red-500">
+                      {fieldErrors.email}
+                    </p>
+                  )}
+                </div>
+
+                {/* 验证码 */}
+                <div className="mb-6 animate-fade-in-up" style={{ animationDelay: '180ms' }}>
+                  <Label className="mb-2 text-gray-700" htmlFor="register-code">
+                    邮箱验证码
+                    <span className="ml-1 text-red-500">*</span>
+                  </Label>
+                  <div className="mt-2 flex gap-2">
+                    <Input
+                      autoComplete="one-time-code"
+                      className="h-12 border-gray-200 hover:border-primary/30 focus:border-primary/50 focus:ring-2 focus:ring-primary/15 font-mono tracking-widest text-base"
+                      id="register-code"
+                      maxLength={6}
+                      name="code"
+                      onBlur={() => {
+                        setTouched(prev => ({ ...prev, code: true }))
+                        validateField('code')
+                      }}
+                      onChange={(e) => {
+                        setCode(e.target.value)
+                        if (fieldErrors.code)
+                          setFieldErrors(prev => ({ ...prev, code: undefined }))
+                        if (formError)
+                          setFormError('')
+                      }}
+                      placeholder="6 位数字验证码"
+                      ref={codeRef}
+                      type="text"
+                      value={code}
+                    />
+                    <Button
+                      className="h-12 shrink-0 px-4 text-xs font-semibold border-primary/30 text-primary hover:bg-primary/5 disabled:opacity-50"
+                      disabled={sendingCode || countdown > 0}
+                      onClick={handleSendCode}
+                      type="button"
+                      variant="outline"
+                    >
+                      {sendingCode ? '发送中…' : countdown > 0 ? `${countdown}s 后重发` : '获取验证码'}
+                    </Button>
+                  </div>
+                  {touched.code && fieldErrors.code && (
+                    <p className="mt-2 text-xs font-medium text-red-500">
+                      {fieldErrors.code}
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
 
             <div className="mb-6 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
               <Label className="mb-2 text-gray-700" htmlFor="login-password">

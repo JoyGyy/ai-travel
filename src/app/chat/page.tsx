@@ -178,6 +178,23 @@ function extractCity(text: string): string | null {
   return null;
 }
 
+function getSuggestedPills(city: string | null, hasSpots: boolean): string[] {
+  if (city && !hasSpots) {
+    return [
+      `🧭 ${city}周末2天经典漫游路线`,
+      `👨‍👩‍👧 带父母和家人去${city}玩3天慢节奏攻略`,
+      `⚡ ${city}1天特种兵精华打卡路线`,
+      `🍜 ${city}有哪些地道必吃特色美食？`,
+    ];
+  }
+  return [
+    '💰 帮我优化预算并节省开支',
+    '🍜 推荐路线附近的特色美食',
+    '🌿 增加适合拍照打卡的小众景点',
+    '🚗 提供交通换乘与出行指南',
+  ];
+}
+
 function ChatContent() {
   const searchParams = useSearchParams();
   const initialPrompt = searchParams.get('prompt');
@@ -428,11 +445,14 @@ function ChatContent() {
   }, []);
 
   // 触屏滑动监听：支持手机与触控板手势向上回看
-  const handleTouchStart = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
-    if (e.touches.length > 0) {
-      touchStartYRef.current = e.touches[0].clientY;
-    }
-  }, []);
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent<HTMLDivElement>) => {
+      if (e.touches.length > 0) {
+        touchStartYRef.current = e.touches[0].clientY;
+      }
+    },
+    [],
+  );
 
   const handleTouchMove = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
     if (e.touches.length > 0) {
@@ -637,7 +657,6 @@ function ChatContent() {
     setSelectedRouteCardData(parsed);
     setIsCardModalOpen(true);
   }
-
 
   return (
     <div className="flex h-full w-full min-h-0 overflow-hidden bg-[#FAF7F0] text-stone-900">
@@ -1056,8 +1075,19 @@ function ChatContent() {
                 )
                 .map((part) => (part as { output?: unknown }).output),
             );
+            const userPromptBefore = messages
+              .slice(0, messages.findIndex((m) => m.id === message.id))
+              .reverse()
+              .find((m) => m.role === 'user');
+            const userTextBefore =
+              userPromptBefore?.parts
+                ?.filter((p) => p.type === 'text')
+                ?.map((p) => (p as { text: string }).text)
+                ?.join(' ') || '';
             const detectedCity =
-              message.role === 'assistant' ? extractCity(cleanedText) : null;
+              message.role === 'assistant'
+                ? extractCity(cleanedText) || extractCity(userTextBefore)
+                : null;
 
             const parsedRoute =
               message.role === 'assistant' && cleanedText
@@ -1121,7 +1151,11 @@ function ChatContent() {
                           <div className="flex flex-wrap items-center justify-between border-b border-stone-200/80 pb-3 mb-4 text-xs text-stone-500 gap-2">
                             <div className="flex items-center gap-1.5 font-bold text-emerald-800">
                               <Sparkles className="w-3.5 h-3.5 text-emerald-700" />
-                              <span>{isItinerary ? '远方 AI · 行程手账方案' : '远方 AI · 旅行出行解答'}</span>
+                              <span>
+                                {isItinerary
+                                  ? '远方 AI · 行程手账方案'
+                                  : '远方 AI · 旅行出行解答'}
+                              </span>
                             </div>
 
                             <div className="flex items-center gap-2">
@@ -1341,7 +1375,6 @@ function ChatContent() {
                             </button>
                           )}
 
-
                           {/* 探索直达工具栏 */}
                           {detectedCity && (
                             <div className="mt-4 pt-3.5 border-t border-stone-200/80 flex flex-wrap items-center gap-2">
@@ -1385,14 +1418,9 @@ function ChatContent() {
                         <RAGSource sources={sources} />
                       </div>
 
-                      {/* 快捷微调指令胶囊 */}
+                      {/* 快捷微调指令胶囊 / 向导式澄清胶囊 */}
                       <div className="flex flex-wrap gap-1.5 pt-1">
-                        {[
-                          '💰 帮我优化预算并节省开支',
-                          '🍜 推荐路线附近的特色美食',
-                          '🌿 增加适合拍照打卡的小众景点',
-                          '🚗 提供交通换乘与出行指南',
-                        ].map((pill) => (
+                        {getSuggestedPills(detectedCity, hasSpots).map((pill) => (
                           <button
                             className="inline-flex items-center gap-1 rounded-full border border-stone-200/90 bg-white/90 px-3 py-1 text-[11px] font-bold text-stone-700 shadow-2xs transition-all hover:-translate-y-0.5 hover:border-emerald-700/60 hover:bg-emerald-50 hover:text-emerald-900 cursor-pointer"
                             disabled={isGenerating}

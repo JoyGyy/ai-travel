@@ -2,55 +2,56 @@
  * 环境变量配置
  * Next.js 自动加载 .env 文件，此处提供统一的读取和校验
  */
-import { getErrorMessage } from './utils'
+import { getErrorMessage } from './utils';
 
 // ========== 类型定义 ==========
 
 export interface LLMProviderConfig {
-  apiKey: string
-  baseUrl: string
-  model: string
-  name: string
+  apiKey: string;
+  baseUrl: string;
+  model: string;
+  name: string;
 }
 
 // ========== 默认值常量 ==========
 
-const DEFAULT_SILICONFLOW_BASE_URL = 'https://api.siliconflow.cn/v1'
-const DEFAULT_SILICONFLOW_MODEL = 'deepseek-ai/DeepSeek-V3'
-const MIN_JWT_SECRET_LENGTH = 32
+const DEFAULT_SILICONFLOW_BASE_URL = 'https://api.siliconflow.cn/v1';
+const DEFAULT_SILICONFLOW_MODEL = 'Qwen/Qwen2.5-72B-Instruct';
+const DEFAULT_SILICONFLOW_FALLBACK_MODEL = 'deepseek-ai/DeepSeek-V3';
+const MIN_JWT_SECRET_LENGTH = 32;
 
 // ========== 环境变量读取工具函数 ==========
 
 export interface EnvConfig {
-  ADMIN_USERS: string
-  DATABASE_URL: string
-  IMAGE_BASE_URL: string
-  IS_PRODUCTION: boolean
-  JWT_SECRET: string
-  LLM_STREAM_TIMEOUT_MS: number
-  LLM_TIMEOUT_MS: number
-  NODE_ENV: string
-  SILICONFLOW_API_KEY: string
-  SILICONFLOW_BASE_URL: string
-  SILICONFLOW_MODEL: string
+  ADMIN_USERS: string;
+  DATABASE_URL: string;
+  IMAGE_BASE_URL: string;
+  IS_PRODUCTION: boolean;
+  JWT_SECRET: string;
+  LLM_STREAM_TIMEOUT_MS: number;
+  LLM_TIMEOUT_MS: number;
+  NODE_ENV: string;
+  SILICONFLOW_API_KEY: string;
+  SILICONFLOW_BASE_URL: string;
+  SILICONFLOW_FALLBACK_MODEL: string;
+  SILICONFLOW_MODEL: string;
 }
 
 function readNumber(name: string, fallback: number): number {
-  const raw = readString(name)
-  if (!raw)
-    return fallback
+  const raw = readString(name);
+  if (!raw) return fallback;
 
-  const value = Number(raw)
+  const value = Number(raw);
   if (!Number.isFinite(value) || value <= 0) {
-    throw new Error(`${name} 必须是大于 0 的数字`)
+    throw new Error(`${name} 必须是大于 0 的数字`);
   }
-  return value
+  return value;
 }
 
 // ========== 统一配置对象 ==========
 
 function readString(name: string, fallback = ''): string {
-  return process.env[name]?.trim() || fallback
+  return process.env[name]?.trim() || fallback;
 }
 
 const env: EnvConfig = {
@@ -63,46 +64,53 @@ const env: EnvConfig = {
   LLM_TIMEOUT_MS: readNumber('LLM_TIMEOUT_MS', 60_000),
   NODE_ENV: readString('NODE_ENV', 'development'),
   SILICONFLOW_API_KEY: readString('SILICONFLOW_API_KEY'),
-  SILICONFLOW_BASE_URL: readString('SILICONFLOW_BASE_URL', DEFAULT_SILICONFLOW_BASE_URL),
+  SILICONFLOW_BASE_URL: readString(
+    'SILICONFLOW_BASE_URL',
+    DEFAULT_SILICONFLOW_BASE_URL,
+  ),
   SILICONFLOW_MODEL: readString('SILICONFLOW_MODEL', DEFAULT_SILICONFLOW_MODEL),
-}
+  SILICONFLOW_FALLBACK_MODEL: readString(
+    'SILICONFLOW_FALLBACK_MODEL',
+    DEFAULT_SILICONFLOW_FALLBACK_MODEL,
+  ),
+};
 
-env.IS_PRODUCTION = env.NODE_ENV === 'production'
+env.IS_PRODUCTION = env.NODE_ENV === 'production';
 
 // ========== 配置校验（仅服务端执行） ==========
 
 function validateEnv(): void {
   if (!env.JWT_SECRET) {
-    throw new Error('JWT_SECRET 环境变量未设置，请在 .env 中配置')
+    throw new Error('JWT_SECRET 环境变量未设置，请在 .env 中配置');
   }
   if (env.IS_PRODUCTION && env.JWT_SECRET.length < MIN_JWT_SECRET_LENGTH) {
-    throw new Error(`生产环境 JWT_SECRET 长度至少需要 ${MIN_JWT_SECRET_LENGTH} 个字符`)
+    throw new Error(
+      `生产环境 JWT_SECRET 长度至少需要 ${MIN_JWT_SECRET_LENGTH} 个字符`,
+    );
   }
 
   // DATABASE_URL 必填与格式校验
   if (!env.DATABASE_URL) {
-    throw new Error('DATABASE_URL 环境变量未设置，请在 .env 中配置')
-  }
-  else if (
-    !env.DATABASE_URL.startsWith('postgresql://')
-    && !env.DATABASE_URL.startsWith('postgres://')
+    throw new Error('DATABASE_URL 环境变量未设置，请在 .env 中配置');
+  } else if (
+    !env.DATABASE_URL.startsWith('postgresql://') &&
+    !env.DATABASE_URL.startsWith('postgres://')
   ) {
-    throw new Error('DATABASE_URL 必须以 postgresql:// 或 postgres:// 开头')
+    throw new Error('DATABASE_URL 必须以 postgresql:// 或 postgres:// 开头');
   }
 }
 
 // 仅在服务端运行时执行校验（构建时跳过）
 if (typeof window === 'undefined' && process.env.NODE_ENV !== undefined) {
   try {
-    validateEnv()
-  }
-  catch (err) {
+    validateEnv();
+  } catch (err) {
     // 生产环境必须通过校验，否则阻止启动
     if (env.IS_PRODUCTION) {
-      throw err
+      throw err;
     }
     // 开发/构建时仅打印警告
-    console.warn('[env] 环境变量校验:', getErrorMessage(err))
+    console.warn('[env] 环境变量校验:', getErrorMessage(err));
   }
 }
 
@@ -110,16 +118,27 @@ if (typeof window === 'undefined' && process.env.NODE_ENV !== undefined) {
 
 /** 根据配置返回已启用的 LLM 提供商列表（按优先级排序） */
 export function getLLMProviders(): LLMProviderConfig[] {
-  const providers: LLMProviderConfig[] = []
+  const providers: LLMProviderConfig[] = [];
   if (env.SILICONFLOW_API_KEY) {
     providers.push({
       apiKey: env.SILICONFLOW_API_KEY,
       baseUrl: env.SILICONFLOW_BASE_URL,
       model: env.SILICONFLOW_MODEL,
-      name: 'SiliconFlow',
-    })
+      name: 'SiliconFlow (Primary)',
+    });
+    if (
+      env.SILICONFLOW_FALLBACK_MODEL &&
+      env.SILICONFLOW_FALLBACK_MODEL !== env.SILICONFLOW_MODEL
+    ) {
+      providers.push({
+        apiKey: env.SILICONFLOW_API_KEY,
+        baseUrl: env.SILICONFLOW_BASE_URL,
+        model: env.SILICONFLOW_FALLBACK_MODEL,
+        name: 'SiliconFlow (Fallback)',
+      });
+    }
   }
-  return providers
+  return providers;
 }
 
-export { env }
+export { env };

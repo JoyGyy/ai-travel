@@ -6,27 +6,26 @@
  * 若部署到 Serverless 环境（Vercel 等），限流状态不跨实例共享，
  * 需改用 Redis 或数据库存储。可将 requestLog 替换为外部存储适配器。
  */
-import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
 
-import { getAuthFromHeaders } from './services/auth'
+import { getAuthFromHeaders } from './services/auth';
 
 /** 按 key 存储请求时间戳列表，用于滑动窗口计数 */
-const requestLog = new Map<string, number[]>()
+const requestLog = new Map<string, number[]>();
 
-const CLEANUP_INTERVAL = 60_000
-const MAX_RECORD_AGE = 60 * 60_000
+const CLEANUP_INTERVAL = 60_000;
+const MAX_RECORD_AGE = 60 * 60_000;
 
 // 定期清理过期的时间戳记录，防止内存泄漏
 if (typeof setInterval !== 'undefined') {
   setInterval(() => {
-    const now = Date.now()
+    const now = Date.now();
     for (const [key, timestamps] of requestLog) {
-      const valid = timestamps.filter(t => now - t < MAX_RECORD_AGE)
-      if (valid.length === 0)
-        requestLog.delete(key)
-      else requestLog.set(key, valid)
+      const valid = timestamps.filter((t) => now - t < MAX_RECORD_AGE);
+      if (valid.length === 0) requestLog.delete(key);
+      else requestLog.set(key, valid);
     }
-  }, CLEANUP_INTERVAL)
+  }, CLEANUP_INTERVAL);
 }
 
 /**
@@ -44,34 +43,50 @@ export async function checkRateLimit(
   windowMs: number = 60_000,
   userId?: string,
 ): Promise<NextResponse | null> {
+  // 本地开发模式下跳过限流（除非显式开启 ENABLE_DEV_RATE_LIMIT），避免热更新（Fast Refresh）与多标签页频繁请求触发 429
+  if (process.env.NODE_ENV === 'development' && !process.env.ENABLE_DEV_RATE_LIMIT) {
+    return null;
+  }
+
   // 如果调用方已传入 userId，直接使用；否则从 header 解析
-  const uid = userId ?? (await getAuthFromHeaders(req.headers))?.id
+  const uid = userId ?? (await getAuthFromHeaders(req.headers))?.id;
   // 优先提取 X-Real-IP（由可信反向代理设置，客户端无法伪造覆写）
   // 其次从 X-Forwarded-For 提取最靠近反向代理的非空 IP
-  const forwardedHeader = req.headers.get('x-forwarded-for')
+  const forwardedHeader = req.headers.get('x-forwarded-for');
   const forwardedIps = forwardedHeader
-    ? forwardedHeader.split(',').map(item => item.trim()).filter(Boolean)
-    : []
-  const ip
-    = req.headers.get('x-real-ip')?.trim()
-      || forwardedIps[forwardedIps.length - 1]
-      || 'unknown'
+    ? forwardedHeader
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean)
+    : [];
+  const ip =
+    req.headers.get('x-real-ip')?.trim() ||
+    forwardedIps[forwardedIps.length - 1] ||
+    'unknown';
 
-  const identity = uid ? `user:${uid}` : `ip:${ip}`
-  const key = `${name}:${identity}`
+  const identity = uid ? `user:${uid}` : `ip:${ip}`;
+  const key = `${name}:${identity}`;
 
-  const now = Date.now()
-  const timestamps = (requestLog.get(key) || []).filter(t => now - t < windowMs)
+  const now = Date.now();
+  const timestamps = (requestLog.get(key) || []).filter(
+    (t) => now - t < windowMs,
+  );
 
   if (timestamps.length >= maxRequests) {
-    const retryAfter = Math.ceil((timestamps[0] + windowMs - now) / 1000)
+    const retryAfter = Math.ceil((timestamps[0] + windowMs - now) / 1000);
     return NextResponse.json(
       { message: '请求过于频繁，请稍后再试', retryAfter, success: false },
       { status: 429 },
-    )
+    );
   }
 
-  timestamps.push(now)
-  requestLog.set(key, timestamps)
-  return null
+  timestamps.push(now);
+  requestLog.set(key, timestamps);
+  return null;
 }
+
+/** 仅用于单元测试清理滑动窗口记录 */
+export function _resetRateLimitStore(): void {
+  requestLog.clear();
+}
+

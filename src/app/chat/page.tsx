@@ -108,11 +108,11 @@ const KNOWN_CITIES = [
   '敦煌',
 ];
 
-const QUICK_PROMPTS = [
+const ITINERARY_QUICK_PROMPTS = [
   {
     city: '西安',
     desc: '陕历博特展、大唐不夜城与回民街寻味',
-    title: '西安4天3晚盛唐文化探索手账',
+    title: '西安4天3晚盛唐文化探索路线',
   },
   {
     city: '成都',
@@ -128,6 +128,29 @@ const QUICK_PROMPTS = [
     city: '大理',
     desc: '海东顺光自驾、喜洲古镇慢步与海景客栈',
     title: '大理洱海环海自驾深度路线',
+  },
+];
+
+const CONSULTATION_QUICK_PROMPTS = [
+  {
+    city: '北京',
+    desc: '每周一闭馆规定、门票预约渠道与放票攻略',
+    title: '故宫周一开馆吗？门票怎么预约？',
+  },
+  {
+    city: '三亚',
+    desc: '特色小吃清单、防宰避坑与海鲜市场防坑',
+    title: '三亚有什么必吃美食和避坑注意事项？',
+  },
+  {
+    city: '拉萨',
+    desc: '红景天提前服用、初到高原运动与穿衣贴士',
+    title: '去西藏旅游怎么预防高原反应？',
+  },
+  {
+    city: '西安',
+    desc: '兵马俑官方预约、人工讲解选择与交通路线',
+    title: '兵马俑怎么预约讲解？需要提前几天买票？',
   },
 ];
 
@@ -165,7 +188,7 @@ function ChatContent() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [showHistoryDrawer, setShowHistoryDrawer] = useState(false);
   const [showLeftSidebar, setShowLeftSidebar] = useState(true);
-  const [showRightMap, setShowRightMap] = useState(true);
+  const [showRightMap, setShowRightMap] = useState(false);
   const [mobileActiveTab, setMobileActiveTab] = useState<'chat' | 'map'>(
     'chat',
   );
@@ -331,7 +354,7 @@ function ChatContent() {
             cleaned,
             activeCity || undefined,
           );
-          if (parsed.spots.length >= 2) {
+          if (parsed.isItinerary && parsed.spots.length >= 1) {
             return parsed;
           }
         }
@@ -339,6 +362,15 @@ function ChatContent() {
     }
     return null;
   }, [messages, activeCity]);
+
+  // 当识别到有效行程规划输出时，自动平滑展开右侧大地图
+  const prevIsItineraryRef = useRef(false);
+  useEffect(() => {
+    if (latestParsedRoute?.isItinerary && !prevIsItineraryRef.current) {
+      setShowRightMap(true);
+      prevIsItineraryRef.current = true;
+    }
+  }, [latestParsedRoute?.isItinerary]);
 
   // 同步最新解析行程至多日工作台协同状态机
   const lastSyncedSignatureRef = useRef<string>('');
@@ -883,7 +915,7 @@ function ChatContent() {
             )}
 
             {/* 导出卡片快捷入口 */}
-            {latestParsedRoute && (
+            {latestParsedRoute?.isItinerary && (
               <Button
                 className="gap-1 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 hover:bg-emerald-100 text-xs font-bold shadow-2xs cursor-pointer"
                 onClick={() => {
@@ -940,27 +972,66 @@ function ChatContent() {
               </div>
 
               {/* 灵感快捷提示词卡片 */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {QUICK_PROMPTS.map((item, index) => (
-                  <button
-                    className="flex items-start gap-3 rounded-2xl border border-stone-200/90 bg-white p-4 text-left shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-600 hover:bg-emerald-50/40 hover:shadow-md cursor-pointer"
-                    key={item.title}
-                    onClick={() => sendMessage({ text: item.title })}
-                    type="button"
-                  >
-                    <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-lg bg-emerald-800 text-xs font-bold text-white shadow-2xs mt-0.5">
-                      {index + 1}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="text-xs sm:text-sm font-bold text-stone-800 truncate">
-                        {item.title}
-                      </p>
-                      <p className="text-[11px] text-stone-500 truncate mt-0.5">
-                        {item.desc}
-                      </p>
-                    </div>
-                  </button>
-                ))}
+              <div className="space-y-4">
+                {/* 路线规划板块 */}
+                <div>
+                  <div className="flex items-center gap-1.5 mb-2.5 text-xs font-bold text-emerald-900">
+                    <Compass className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>🧭 行程路线规划定制（联动大地图与手账）</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {ITINERARY_QUICK_PROMPTS.map((item, index) => (
+                      <button
+                        className="flex items-start gap-3 rounded-2xl border border-stone-200/90 bg-white p-3.5 text-left shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-600 hover:bg-emerald-50/40 hover:shadow-md cursor-pointer"
+                        key={item.title}
+                        onClick={() => sendMessage({ text: item.title })}
+                        type="button"
+                      >
+                        <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-lg bg-emerald-800 text-[11px] font-bold text-white shadow-2xs mt-0.5">
+                          {index + 1}
+                        </span>
+                        <div className="min-w-0">
+                          <p className="text-xs sm:text-sm font-bold text-stone-800 truncate">
+                            {item.title}
+                          </p>
+                          <p className="text-[11px] text-stone-500 truncate mt-0.5">
+                            {item.desc}
+                          </p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 日常问答板块 */}
+                <div>
+                  <div className="flex items-center gap-1.5 mb-2.5 text-xs font-bold text-amber-900">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                    <span>💡 旅行百宝箱问答（快速获取门票/避坑/美食攻略）</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {CONSULTATION_QUICK_PROMPTS.map((item, index) => (
+                      <button
+                        className="flex items-start gap-3 rounded-2xl border border-stone-200/90 bg-white p-3.5 text-left shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-amber-500 hover:bg-amber-50/40 hover:shadow-md cursor-pointer"
+                        key={item.title}
+                        onClick={() => sendMessage({ text: item.title })}
+                        type="button"
+                      >
+                        <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-lg bg-amber-600 text-[11px] font-bold text-white shadow-2xs mt-0.5">
+                          {index + 1}
+                        </span>
+                        <div className="min-w-0">
+                          <p className="text-xs sm:text-sm font-bold text-stone-800 truncate">
+                            {item.title}
+                          </p>
+                          <p className="text-[11px] text-stone-500 truncate mt-0.5">
+                            {item.desc}
+                          </p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -995,8 +1066,9 @@ function ChatContent() {
                     detectedCity || undefined,
                   )
                 : null;
+            const isItinerary = Boolean(parsedRoute?.isItinerary);
             const hasSpots = Boolean(
-              parsedRoute && parsedRoute.spots.length >= 2,
+              isItinerary && parsedRoute && parsedRoute.spots.length >= 1,
             );
             const isLastAssistant =
               message.id === messages[messages.length - 1]?.id &&
@@ -1049,25 +1121,27 @@ function ChatContent() {
                           <div className="flex flex-wrap items-center justify-between border-b border-stone-200/80 pb-3 mb-4 text-xs text-stone-500 gap-2">
                             <div className="flex items-center gap-1.5 font-bold text-emerald-800">
                               <Sparkles className="w-3.5 h-3.5 text-emerald-700" />
-                              <span>远方 AI · 行程手账建议</span>
+                              <span>{isItinerary ? '远方 AI · 行程手账方案' : '远方 AI · 旅行出行解答'}</span>
                             </div>
 
                             <div className="flex items-center gap-2">
-                              {/* 生成路线卡片 */}
-                              <button
-                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition-colors cursor-pointer"
-                                onClick={() =>
-                                  handleOpenRouteCard(
-                                    cleanedText,
-                                    detectedCity || undefined,
-                                  )
-                                }
-                                title="生成可保存为图片或分享的手账卡片"
-                                type="button"
-                              >
-                                <Share2 className="w-3.5 h-3.5" />
-                                <span>生成手账卡片</span>
-                              </button>
+                              {/* 仅在识别为行程规划时提供生成手账卡片入口 */}
+                              {isItinerary && (
+                                <button
+                                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition-colors cursor-pointer"
+                                  onClick={() =>
+                                    handleOpenRouteCard(
+                                      cleanedText,
+                                      detectedCity || undefined,
+                                    )
+                                  }
+                                  title="生成可保存为图片或分享的手账卡片"
+                                  type="button"
+                                >
+                                  <Share2 className="w-3.5 h-3.5" />
+                                  <span>生成手账卡片</span>
+                                </button>
+                              )}
 
                               {/* 复制文案 */}
                               <button
@@ -1248,6 +1322,23 @@ function ChatContent() {
                                 ))}
                               </div>
                             </div>
+                          )}
+
+                          {/* 移动端行程大地图直达快捷条 */}
+                          {isItinerary && (
+                            <button
+                              className="lg:hidden w-full flex items-center justify-between p-2.5 px-3.5 rounded-2xl bg-emerald-50/90 border border-emerald-200/80 text-emerald-900 text-xs font-bold hover:bg-emerald-100 transition-colors shadow-2xs mt-3 cursor-pointer"
+                              onClick={() => setMobileActiveTab('map')}
+                              type="button"
+                            >
+                              <span className="flex items-center gap-1.5">
+                                <Compass className="w-3.5 h-3.5 text-emerald-700" />
+                                <span>AI 已为你规划路线地图</span>
+                              </span>
+                              <span className="text-[11px] text-emerald-700 font-semibold">
+                                查看地图 →
+                              </span>
+                            </button>
                           )}
 
 

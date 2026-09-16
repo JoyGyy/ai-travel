@@ -3,82 +3,102 @@
  * 提供统一的错误类型、Next.js Route Handler 的响应封装、
  * 认证+CSRF+限流的组合 wrapper
  */
-import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
 
-import { checkRateLimit } from '@/lib/rate-limit'
-import { getAuthFromHeaders } from '@/lib/services/auth'
+import { checkRateLimit } from '@/lib/rate-limit';
+import { getAuthFromHeaders } from '@/lib/services/auth';
 
-import { extractCsrfCookie, verifyCsrfToken } from './csrf'
-import { createLogger } from './logger'
+import { extractCsrfCookie, verifyCsrfToken } from './csrf';
+import { createLogger } from './logger';
 
-const log = createLogger('http')
+const log = createLogger('http');
 
 /** 认证结果 */
 export interface AuthUser {
-  id: string
-  role?: string
-  username: string
+  id: string;
+  role?: string;
+  username: string;
 }
 
 /** 自定义 HTTP 错误类，携带状态码和可选的配额信息 */
 export class HttpError extends Error {
-  quota?: { limit: number, remaining: number, used: number }
-  status: number
+  quota?: { limit: number; remaining: number; used: number };
+  status: number;
 
   constructor(status: number, message: string) {
-    super(message)
-    this.name = 'HttpError'
-    this.status = status
+    super(message);
+    this.name = 'HttpError';
+    this.status = status;
   }
 }
 
 /** 将错误转换为 Next.js JSON 响应 */
 export function errorResponse(err: unknown): NextResponse {
   if (err instanceof HttpError) {
-    const payload: Record<string, unknown> = { message: err.message, success: false }
-    if (err.quota)
-      payload.quota = err.quota
-    return NextResponse.json(payload, { status: err.status })
+    const payload: Record<string, unknown> = {
+      message: err.message,
+      success: false,
+    };
+    if (err.quota) payload.quota = err.quota;
+    return NextResponse.json(payload, { status: err.status });
   }
 
   // 业务服务可能使用带 status/quota 字段的 Error（例如 AI 配额超限）。
   // 保留其明确的 HTTP 状态，避免把客户端可处理的 429 错误误报成 500。
   if (err instanceof Error && isStatusError(err)) {
-    const payload: Record<string, unknown> = { message: err.message, success: false }
-    if (err.quota)
-      payload.quota = err.quota
-    return NextResponse.json(payload, { status: err.status })
+    const payload: Record<string, unknown> = {
+      message: err.message,
+      success: false,
+    };
+    if (err.quota) payload.quota = err.quota;
+    return NextResponse.json(payload, { status: err.status });
   }
 
   if (err instanceof Error) {
     if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
-      return NextResponse.json({ message: '令牌无效或已过期', success: false }, { status: 401 })
+      return NextResponse.json(
+        { message: '令牌无效或已过期', success: false },
+        { status: 401 },
+      );
     }
 
-    log.error('服务器错误:', err)
+    log.error('服务器错误:', err);
 
     // 敏感错误信息脱敏，避免暴露数据库查询等内部细节
-    const clientMessage = isSensitiveError(err) ? '服务器内部错误' : err.message || '服务器内部错误'
-    return NextResponse.json({ message: clientMessage, success: false }, { status: 500 })
+    const clientMessage = isSensitiveError(err)
+      ? '服务器内部错误'
+      : err.message || '服务器内部错误';
+    return NextResponse.json(
+      { message: clientMessage, success: false },
+      { status: 500 },
+    );
   }
 
-  log.error('未知错误:', err)
-  return NextResponse.json({ message: '服务器内部错误', success: false }, { status: 500 })
+  log.error('未知错误:', err);
+  return NextResponse.json(
+    { message: '服务器内部错误', success: false },
+    { status: 500 },
+  );
 }
 
 function isStatusError(
   err: Error,
-): err is Error & { quota?: { limit: number, remaining: number, used: number }, status: number } {
-  return 'status' in err
-    && typeof (err as Error & { status?: unknown }).status === 'number'
-    && Number.isInteger((err as Error & { status: number }).status)
-    && (err as Error & { status: number }).status >= 400
-    && (err as Error & { status: number }).status < 600
+): err is Error & {
+  quota?: { limit: number; remaining: number; used: number };
+  status: number;
+} {
+  return (
+    'status' in err &&
+    typeof (err as Error & { status?: unknown }).status === 'number' &&
+    Number.isInteger((err as Error & { status: number }).status) &&
+    (err as Error & { status: number }).status >= 400 &&
+    (err as Error & { status: number }).status < 600
+  );
 }
 
 /** 创建 HttpError 的便捷工厂函数 */
 export function httpError(status: number, message: string): HttpError {
-  return new HttpError(status, message)
+  return new HttpError(status, message);
 }
 
 /**
@@ -86,10 +106,9 @@ export function httpError(status: number, message: string): HttpError {
  * 未登录时抛出 401 HttpError
  */
 export async function requireAuth(req: Request): Promise<AuthUser> {
-  const user = await getAuthFromHeaders(req.headers)
-  if (!user)
-    throw httpError(401, '未登录')
-  return user
+  const user = await getAuthFromHeaders(req.headers);
+  if (!user) throw httpError(401, '未登录');
+  return user;
 }
 
 /**
@@ -98,24 +117,25 @@ export async function requireAuth(req: Request): Promise<AuthUser> {
  */
 export function requireCsrf(req: Request): void {
   // 原生移动端/API 客户端若携带 Bearer Token，跳过浏览器专属 CSRF Cookie 校验
-  const authHeader = req.headers.get('authorization')
+  const authHeader = req.headers.get('authorization');
   if (authHeader?.startsWith('Bearer ')) {
-    return
+    return;
   }
 
-  const headerToken = req.headers.get('x-csrf-token') || req.headers.get('x-xsrf-token')
-  const cookieToken = extractCsrfCookie(req.headers.get('cookie') || undefined)
+  const headerToken =
+    req.headers.get('x-csrf-token') || req.headers.get('x-xsrf-token');
+  const cookieToken = extractCsrfCookie(req.headers.get('cookie') || undefined);
 
   // 严格要求 Double Submit 模式：Header 与 Cookie 必须同时存在、匹配且签名有效
   if (headerToken && cookieToken) {
-    const rawHeader = decodeURIComponent(headerToken)
-    const rawCookie = decodeURIComponent(cookieToken)
+    const rawHeader = decodeURIComponent(headerToken);
+    const rawCookie = decodeURIComponent(cookieToken);
     if (rawHeader === rawCookie && verifyCsrfToken(rawHeader)) {
-      return
+      return;
     }
   }
 
-  throw httpError(403, 'CSRF token 无效')
+  throw httpError(403, 'CSRF token 无效');
 }
 
 /** 设置认证 cookie 的统一配置 */
@@ -126,7 +146,7 @@ export function setAuthCookie(response: NextResponse, token: string): void {
     path: '/',
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
-  })
+  });
 }
 
 /**
@@ -138,30 +158,35 @@ export function setAuthCookie(response: NextResponse, token: string): void {
  * })
  */
 export function withAuth<TContext = unknown>(
-  handler: (req: Request, ctx: TContext & { user: AuthUser }) => Promise<NextResponse>,
+  handler: (
+    req: Request,
+    ctx: TContext & { user: AuthUser },
+  ) => Promise<NextResponse>,
 ) {
   return async (req: Request, context?: TContext): Promise<NextResponse> => {
     try {
-      const user = await requireAuth(req)
-      return await handler(req, { user, ...context } as TContext & { user: AuthUser })
+      const user = await requireAuth(req);
+      return await handler(req, { user, ...context } as TContext & {
+        user: AuthUser;
+      });
+    } catch (err) {
+      return errorResponse(err);
     }
-    catch (err) {
-      return errorResponse(err)
-    }
-  }
+  };
 }
 
 /** 包装需要认证且返回原始 Response 的 Route Handler（SSE 流等） */
-export function withAuthRaw(handler: (req: Request, ctx: { user: AuthUser }) => Promise<Response>) {
+export function withAuthRaw(
+  handler: (req: Request, ctx: { user: AuthUser }) => Promise<Response>,
+) {
   return async (req: Request): Promise<Response> => {
     try {
-      const user = await requireAuth(req)
-      return await handler(req, { user })
+      const user = await requireAuth(req);
+      return await handler(req, { user });
+    } catch (err) {
+      return errorResponse(err);
     }
-    catch (err) {
-      return errorResponse(err)
-    }
-  }
+  };
 }
 
 /**
@@ -170,24 +195,22 @@ export function withAuthRaw(handler: (req: Request, ctx: { user: AuthUser }) => 
  */
 export function withProtectedRaw(
   handler: (req: Request, ctx: { user: AuthUser }) => Promise<Response>,
-  options: { rateLimit: { max: number, name: string, windowMs?: number } },
+  options: { rateLimit: { max: number; name: string; windowMs?: number } },
 ) {
   return async (req: Request): Promise<Response> => {
     try {
-      const user = await requireAuth(req)
-      requireCsrf(req)
+      const user = await requireAuth(req);
+      requireCsrf(req);
 
-      const { max, name, windowMs } = options.rateLimit
-      const blocked = await checkRateLimit(req, name, max, windowMs, user.id)
-      if (blocked)
-        return blocked
+      const { max, name, windowMs } = options.rateLimit;
+      const blocked = await checkRateLimit(req, name, max, windowMs, user.id);
+      if (blocked) return blocked;
 
-      return await handler(req, { user })
+      return await handler(req, { user });
+    } catch (err) {
+      return errorResponse(err);
     }
-    catch (err) {
-      return errorResponse(err)
-    }
-  }
+  };
 }
 
 /** 包装 Route Handler，自动捕获错误并返回统一格式 */
@@ -196,12 +219,11 @@ export function withErrorHandler(
 ) {
   return async (req: Request, context?: unknown): Promise<NextResponse> => {
     try {
-      return await handler(req, context)
+      return await handler(req, context);
+    } catch (err) {
+      return errorResponse(err);
     }
-    catch (err) {
-      return errorResponse(err)
-    }
-  }
+  };
 }
 
 /**
@@ -217,29 +239,32 @@ export function withErrorHandler(
  * )
  */
 export function withProtected<TContext = unknown>(
-  handler: (req: Request, ctx: TContext & { user: AuthUser }) => Promise<NextResponse>,
+  handler: (
+    req: Request,
+    ctx: TContext & { user: AuthUser },
+  ) => Promise<NextResponse>,
   options?: {
-    rateLimit?: { max: number, name: string, windowMs?: number }
+    rateLimit?: { max: number; name: string; windowMs?: number };
   },
 ) {
   return async (req: Request, context?: TContext): Promise<NextResponse> => {
     try {
-      const user = await requireAuth(req)
-      requireCsrf(req)
+      const user = await requireAuth(req);
+      requireCsrf(req);
 
       if (options?.rateLimit) {
-        const { max, name, windowMs } = options.rateLimit
-        const blocked = await checkRateLimit(req, name, max, windowMs, user.id)
-        if (blocked)
-          return blocked
+        const { max, name, windowMs } = options.rateLimit;
+        const blocked = await checkRateLimit(req, name, max, windowMs, user.id);
+        if (blocked) return blocked;
       }
 
-      return await handler(req, { user, ...context } as TContext & { user: AuthUser })
+      return await handler(req, { user, ...context } as TContext & {
+        user: AuthUser;
+      });
+    } catch (err) {
+      return errorResponse(err);
     }
-    catch (err) {
-      return errorResponse(err)
-    }
-  }
+  };
 }
 
 /**
@@ -254,23 +279,22 @@ export function withPublicPost(
 ) {
   return async (req: Request): Promise<Response> => {
     try {
-      const blocked = await checkRateLimit(req, name, max, windowMs)
-      if (blocked)
-        return blocked
+      const blocked = await checkRateLimit(req, name, max, windowMs);
+      if (blocked) return blocked;
 
       // 公开接口（登录/注册）：
       // 当客户端显式传递了 CSRF Header 时验证其有效性；若无 Header 或仅携带过期旧 Cookie 时放行
-      const headerToken = req.headers.get('x-csrf-token') || req.headers.get('x-xsrf-token')
+      const headerToken =
+        req.headers.get('x-csrf-token') || req.headers.get('x-xsrf-token');
       if (headerToken && !verifyCsrfToken(headerToken)) {
-        throw httpError(403, 'CSRF token 无效')
+        throw httpError(403, 'CSRF token 无效');
       }
 
-      return await handler(req)
+      return await handler(req);
+    } catch (err) {
+      return errorResponse(err);
     }
-    catch (err) {
-      return errorResponse(err)
-    }
-  }
+  };
 }
 
 /** 包装需要限流但不需要认证的 Route Handler（公开接口） */
@@ -282,25 +306,26 @@ export function withRateLimit(
 ) {
   return async (req: Request): Promise<Response> => {
     try {
-      const blocked = await checkRateLimit(req, name, max, windowMs)
-      if (blocked)
-        return blocked
-      return await handler(req)
+      const blocked = await checkRateLimit(req, name, max, windowMs);
+      if (blocked) return blocked;
+      return await handler(req);
+    } catch (err) {
+      return errorResponse(err);
     }
-    catch (err) {
-      return errorResponse(err)
-    }
-  }
+  };
 }
 
 /** 判断是否为敏感错误（数据库、驱动等），不应暴露给客户端 */
 function isSensitiveError(err: Error): boolean {
   // 生产环境默认脱敏 500 内部异常，除非显式标记为客户端安全
   if (process.env.NODE_ENV === 'production') {
-    if ('isClientSafe' in err && Boolean((err as Record<string, unknown>).isClientSafe)) {
-      return false
+    if (
+      'isClientSafe' in err &&
+      Boolean((err as Record<string, unknown>).isClientSafe)
+    ) {
+      return false;
     }
-    return true
+    return true;
   }
 
   // 数据库/驱动错误特征
@@ -317,7 +342,7 @@ function isSensitiveError(err: Error): boolean {
     'connect econnrefused',
     'password',
     'secret',
-  ]
-  const msg = err.message.toLowerCase()
-  return sensitivePatterns.some(p => msg.includes(p.toLowerCase()))
+  ];
+  const msg = err.message.toLowerCase();
+  return sensitivePatterns.some((p) => msg.includes(p.toLowerCase()));
 }

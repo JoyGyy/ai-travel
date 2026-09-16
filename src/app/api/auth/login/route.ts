@@ -1,31 +1,30 @@
 /**
  * 用户登录 API
  */
-import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
 
-import { login } from '@/lib/services/auth'
-import { httpError, setAuthCookie, withPublicPost } from '@/lib/utils/http'
+import { login } from '@/lib/services/auth';
+import { httpError, setAuthCookie, withPublicPost } from '@/lib/utils/http';
 
 export const POST = withPublicPost('auth-login', 10, 60_000, async (req) => {
   const body = await req.json().catch(() => {
-    throw httpError(400, '请求格式无效')
-  })
+    throw httpError(400, '请求格式无效');
+  });
   // 支持通过 username、account 或 email 字段传入登录账号
-  const account = body.account || body.username || body.email
-  let result: Awaited<ReturnType<typeof login>>
+  const account = body.account || body.username || body.email;
+  let result: Awaited<ReturnType<typeof login>>;
   try {
-    result = await login(account, body.password)
-  }
-  catch (err) {
+    result = await login(account, body.password);
+  } catch (err) {
     if (err instanceof Error && err.message === '用户名或密码错误')
-      throw httpError(401, '用户名或密码错误')
+      throw httpError(401, '用户名或密码错误');
     if (err instanceof Error && err.message === '用户名和密码不能为空')
-      throw httpError(400, '用户名和密码不能为空')
-    throw err
+      throw httpError(400, '用户名和密码不能为空');
+    throw err;
   }
 
-  const response = NextResponse.json({ success: true, ...result })
-  setAuthCookie(response, result.token)
+  const response = NextResponse.json({ success: true, ...result });
+  setAuthCookie(response, result.token);
 
-  return response
-})
+  return response;
+});

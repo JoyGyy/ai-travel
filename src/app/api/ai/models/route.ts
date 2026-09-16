@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
 
-import { env } from '@/lib/env'
+import { env } from '@/lib/env';
 
 /** 返回当前可用的 AI 模型配置（仅公开是否可用，不暴露 API Key） */
 export async function GET() {
@@ -12,7 +12,7 @@ export async function GET() {
       model: env.SILICONFLOW_MODEL,
       name: 'siliconflow',
     },
-  ]
+  ];
 
-  return NextResponse.json({ models })
+  return NextResponse.json({ models });
 }

@@ -352,7 +352,10 @@ function parseChineseNum(str: string): number {
 /**
  * 检验文本是否具备明确的旅行行程规划与路线时序特征
  */
-export function hasItineraryFeatures(text: string, dayBlocksCount = 0): boolean {
+export function hasItineraryFeatures(
+  text: string,
+  dayBlocksCount = 0,
+): boolean {
   // 1. 包含日程分日块 (Day 1, 第1天, D1)
   if (dayBlocksCount > 0) return true;
 
@@ -587,7 +590,9 @@ export function parseItineraryFromMarkdown(
     }
   }
 
-  const routeString = isItinerary ? allSpots.map((s) => s.name).join(' ➔ ') : '';
+  const routeString = isItinerary
+    ? allSpots.map((s) => s.name).join(' ➔ ')
+    : '';
 
   return {
     city: detectedCity,

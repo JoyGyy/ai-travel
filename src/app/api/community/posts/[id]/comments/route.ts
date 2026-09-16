@@ -16,7 +16,7 @@ interface Context { params: Promise<{ id: string }> }
 
 export const GET = withErrorHandler(async (req: Request, context?: unknown) => {
   const { params } = context as Context
-  const rateLimited = await checkRateLimit(req, 'community:read', 60, 60_000)
+  const rateLimited = await checkRateLimit(req, 'community:post:comments', 120, 60_000)
   if (rateLimited)
     return rateLimited
 

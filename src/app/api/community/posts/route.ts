@@ -103,7 +103,7 @@ function validatePostPayload(payload: unknown): CreateCommunityPostInput {
 // ========== 路由处理 ==========
 
 export const GET = withErrorHandler(async (req: Request) => {
-  const rateLimited = await checkRateLimit(req, 'community:read', 60, 60_000)
+  const rateLimited = await checkRateLimit(req, 'community:posts:list', 120, 60_000)
   if (rateLimited)
     return rateLimited
 

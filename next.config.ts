@@ -1,5 +1,5 @@
-import type { NextConfig } from 'next'
-import { withSentryConfig } from '@sentry/nextjs'
+import type { NextConfig } from 'next';
+import { withSentryConfig } from '@sentry/nextjs';
 
 const nextConfig: NextConfig = {
   // Turbopack 配置 - 明确指定项目根目录
@@ -36,7 +36,7 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-    ]
+    ];
   },
 
   // 实验性功能
@@ -50,26 +50,24 @@ const nextConfig: NextConfig = {
       validationLevel: 'warning',
     },
   },
-}
+};
 
 // 开发环境跳过 Sentry 包装，避免 WebSocket payload 超限
 // @see https://docs.sentry.io/platforms/javascript/guides/nextjs/
-const config = process.env.NODE_ENV === 'development'
-  ? nextConfig
-  : withSentryConfig(nextConfig, {
-    // Source Map 上传配置
-    // 配置 SENTRY_AUTH_TOKEN 后可启用自动上传
-    // authToken: process.env.SENTRY_AUTH_TOKEN,
+const config =
+  process.env.NODE_ENV === 'development'
+    ? nextConfig
+    : withSentryConfig(nextConfig, {
+        // Source Map 上传配置
+        // 配置 SENTRY_AUTH_TOKEN 后可启用自动上传
+        // authToken: process.env.SENTRY_AUTH_TOKEN,
+        // 组织和项目名称（需要在 Sentry 中创建）
+        // org: process.env.SENTRY_ORG,
+        // project: process.env.SENTRY_PROJECT,
+        // 仅在生产环境上传 Source Map
+        // hideSourceMaps: true,
+        // 自动创建 Release
+        // autoInstrumentServerFunctions: true,
+      });
 
-    // 组织和项目名称（需要在 Sentry 中创建）
-    // org: process.env.SENTRY_ORG,
-    // project: process.env.SENTRY_PROJECT,
-
-    // 仅在生产环境上传 Source Map
-    // hideSourceMaps: true,
-
-    // 自动创建 Release
-    // autoInstrumentServerFunctions: true,
-  })
-
-export default config
+export default config;

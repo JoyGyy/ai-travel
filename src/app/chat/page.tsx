@@ -1076,7 +1076,10 @@ function ChatContent() {
                 .map((part) => (part as { output?: unknown }).output),
             );
             const userPromptBefore = messages
-              .slice(0, messages.findIndex((m) => m.id === message.id))
+              .slice(
+                0,
+                messages.findIndex((m) => m.id === message.id),
+              )
               .reverse()
               .find((m) => m.role === 'user');
             const userTextBefore =
@@ -1420,17 +1423,19 @@ function ChatContent() {
 
                       {/* 快捷微调指令胶囊 / 向导式澄清胶囊 */}
                       <div className="flex flex-wrap gap-1.5 pt-1">
-                        {getSuggestedPills(detectedCity, hasSpots).map((pill) => (
-                          <button
-                            className="inline-flex items-center gap-1 rounded-full border border-stone-200/90 bg-white/90 px-3 py-1 text-[11px] font-bold text-stone-700 shadow-2xs transition-all hover:-translate-y-0.5 hover:border-emerald-700/60 hover:bg-emerald-50 hover:text-emerald-900 cursor-pointer"
-                            disabled={isGenerating}
-                            key={pill}
-                            onClick={() => sendMessage({ text: pill })}
-                            type="button"
-                          >
-                            <span>{pill}</span>
-                          </button>
-                        ))}
+                        {getSuggestedPills(detectedCity, hasSpots).map(
+                          (pill) => (
+                            <button
+                              className="inline-flex items-center gap-1 rounded-full border border-stone-200/90 bg-white/90 px-3 py-1 text-[11px] font-bold text-stone-700 shadow-2xs transition-all hover:-translate-y-0.5 hover:border-emerald-700/60 hover:bg-emerald-50 hover:text-emerald-900 cursor-pointer"
+                              disabled={isGenerating}
+                              key={pill}
+                              onClick={() => sendMessage({ text: pill })}
+                              type="button"
+                            >
+                              <span>{pill}</span>
+                            </button>
+                          ),
+                        )}
                       </div>
                     </div>
                   </div>

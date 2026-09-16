@@ -1,4 +1,4 @@
-import type { FC } from 'react'
+import type { FC } from 'react';
 import {
   AlertTriangle,
   Bot,
@@ -6,16 +6,16 @@ import {
   Clock,
   Sparkles,
   Users,
-} from 'lucide-react'
+} from 'lucide-react';
 
-import { Badge } from '@/components/ui/badge'
+import { Badge } from '@/components/ui/badge';
 
 export interface AttractionAiSummaryCardProps {
-  className?: string
-  highlights?: string[]
-  recommendedDuration?: string
-  suitableFor?: string[]
-  tips?: string[]
+  className?: string;
+  highlights?: string[];
+  recommendedDuration?: string;
+  suitableFor?: string[];
+  tips?: string[];
 }
 
 /**
@@ -31,8 +31,12 @@ export const AttractionAiSummaryCard: FC<AttractionAiSummaryCardProps> = ({
   suitableFor = [],
   tips = [],
 }) => {
-  if (highlights.length === 0 && tips.length === 0 && suitableFor.length === 0) {
-    return null
+  if (
+    highlights.length === 0 &&
+    tips.length === 0 &&
+    suitableFor.length === 0
+  ) {
+    return null;
   }
 
   return (
@@ -105,7 +109,9 @@ export const AttractionAiSummaryCard: FC<AttractionAiSummaryCardProps> = ({
                   <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-amber-100 text-[10px] font-bold text-amber-800">
                     !
                   </span>
-                  <span className="flex-1 font-medium text-stone-700">{item}</span>
+                  <span className="flex-1 font-medium text-stone-700">
+                    {item}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -121,7 +127,7 @@ export const AttractionAiSummaryCard: FC<AttractionAiSummaryCardProps> = ({
             <span>出行适宜：</span>
           </div>
           <div className="flex flex-wrap gap-1.5">
-            {suitableFor.map(target => (
+            {suitableFor.map((target) => (
               <Badge
                 className="bg-emerald-100/70 text-emerald-900 border-emerald-200 text-[11px] font-medium px-2.5 py-0.5 rounded-md"
                 key={target}
@@ -133,5 +139,5 @@ export const AttractionAiSummaryCard: FC<AttractionAiSummaryCardProps> = ({
         </div>
       )}
     </section>
-  )
-}
+  );
+};

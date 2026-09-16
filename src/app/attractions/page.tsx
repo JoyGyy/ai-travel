@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 /**
  * 景点列表页面
@@ -6,7 +6,11 @@
  * 采用双栏工作台布局：左侧主景点画廊网格与搜索，右侧常驻城市索引、
  * 门票与主题标签筛选、AI 路线编排及当季热门推荐。
  */
-import type { Attraction, AttractionFilters, AttractionTicketType } from '@/types/attraction'
+import type {
+  Attraction,
+  AttractionFilters,
+  AttractionTicketType,
+} from '@/types/attraction';
 import {
   ArrowRight,
   Bot,
@@ -18,146 +22,152 @@ import {
   Star,
   Tag,
   Ticket,
-} from 'lucide-react'
-import Image from 'next/image'
-import Link from 'next/link'
+} from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { fetchAttractions } from '@/api/attractions'
-import { Pagination } from '@/components/Pagination'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { useAttractionFavorite } from '@/hooks/useAttractionFavorite'
-import { useDebounce } from '@/hooks/useDebounce'
+import { fetchAttractions } from '@/api/attractions';
+import { Pagination } from '@/components/Pagination';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useAttractionFavorite } from '@/hooks/useAttractionFavorite';
+import { useDebounce } from '@/hooks/useDebounce';
 
-import { AttractionCard } from '@/components/attractions/AttractionCard'
-import { AttractionCardSkeleton } from './AttractionCardSkeleton'
+import { AttractionCard } from '@/components/attractions/AttractionCard';
+import { AttractionCardSkeleton } from './AttractionCardSkeleton';
 
 const ticketOptions = [
   { label: '全部门票', value: '' },
   { label: '免费开放', value: 'free' },
   { label: '收费门票', value: 'paid' },
-]
+];
 
 export default function Attractions() {
-  const [items, setItems] = useState<Attraction[]>([])
-  const [total, setTotal] = useState(0)
-  const [cities, setCities] = useState<string[]>([])
-  const [tags, setTags] = useState<string[]>([])
-  const [filters, setFilters] = useState<AttractionFilters>({})
-  const [keywordInput, setKeywordInput] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [favoritePendingIds, setFavoritePendingIds] = useState<Set<string>>(() => new Set())
+  const [items, setItems] = useState<Attraction[]>([]);
+  const [total, setTotal] = useState(0);
+  const [cities, setCities] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
+  const [filters, setFilters] = useState<AttractionFilters>({});
+  const [keywordInput, setKeywordInput] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [favoritePendingIds, setFavoritePendingIds] = useState<Set<string>>(
+    () => new Set(),
+  );
 
   const { toggleFavorite } = useAttractionFavorite({
     onFavoriteSuccess: (attractionId, isFavorite) => {
-      setItems(prev =>
-        prev.map(current => (current.id === attractionId ? { ...current, isFavorite } : current)),
-      )
+      setItems((prev) =>
+        prev.map((current) =>
+          current.id === attractionId ? { ...current, isFavorite } : current,
+        ),
+      );
     },
-  })
+  });
 
-  const PAGE_SIZE = 9
+  const PAGE_SIZE = 9;
 
   // ---- 数据加载 ----
   const load = useCallback(async (nextFilters: AttractionFilters) => {
-    setLoading(true)
-    setError('')
+    setLoading(true);
+    setError('');
     try {
-      const data = await fetchAttractions({ ...nextFilters, pageSize: PAGE_SIZE })
-      setItems(data.items)
-      setTotal(data.total)
-      setCities(data.cities)
-      setTags(data.tags)
+      const data = await fetchAttractions({
+        ...nextFilters,
+        pageSize: PAGE_SIZE,
+      });
+      setItems(data.items);
+      setTotal(data.total);
+      setCities(data.cities);
+      setTags(data.tags);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : '景点加载失败');
+    } finally {
+      setLoading(false);
     }
-    catch (err: unknown) {
-      setError(err instanceof Error ? err.message : '景点加载失败')
-    }
-    finally {
-      setLoading(false)
-    }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    queueMicrotask(() => load({}))
-  }, [load])
+    queueMicrotask(() => load({}));
+  }, [load]);
 
   // ---- 筛选条件管理 ----
   const updateFilters = useCallback(
     (patch: AttractionFilters) => {
-      const next = { ...filters, ...patch, page: patch.page || 1 }
-      setFilters(next)
-      load(next)
+      const next = { ...filters, ...patch, page: patch.page || 1 };
+      setFilters(next);
+      load(next);
     },
     [filters, load],
-  )
+  );
 
   // 防抖搜索：输入关键词后 300ms 自动触发搜索
   const debouncedSearch = useDebounce((keyword: string) => {
-    updateFilters({ keyword: keyword.trim() })
-  }, 300)
+    updateFilters({ keyword: keyword.trim() });
+  }, 300);
 
   // 关键词输入处理
   const handleKeywordChange = useCallback(
     (value: string) => {
-      setKeywordInput(value)
+      setKeywordInput(value);
       if (!value.trim()) {
-        updateFilters({ keyword: '' })
-      }
-      else {
-        debouncedSearch(value)
+        updateFilters({ keyword: '' });
+      } else {
+        debouncedSearch(value);
       }
     },
     [debouncedSearch, updateFilters],
-  )
+  );
 
   const handleSearchSubmit = useCallback(
     (event: { preventDefault: () => void }) => {
-      event.preventDefault()
-      updateFilters({ keyword: keywordInput.trim() })
+      event.preventDefault();
+      updateFilters({ keyword: keywordInput.trim() });
     },
     [updateFilters, keywordInput],
-  )
+  );
 
   const handleClearFilters = useCallback(() => {
-    setKeywordInput('')
-    const next: AttractionFilters = {}
-    setFilters(next)
-    load(next)
-  }, [load])
+    setKeywordInput('');
+    const next: AttractionFilters = {};
+    setFilters(next);
+    load(next);
+  }, [load]);
 
   const handlePageChange = useCallback(
     (page: number) => {
-      updateFilters({ page })
+      updateFilters({ page });
     },
     [updateFilters],
-  )
+  );
 
   // ---- 收藏切换 ----
   const handleToggleFavorite = useCallback(
     async (item: Attraction) => {
-      setFavoritePendingIds(prev => new Set(prev).add(item.id))
+      setFavoritePendingIds((prev) => new Set(prev).add(item.id));
       try {
-        await toggleFavorite(item.id, item.isFavorite ?? false)
-      }
-      finally {
+        await toggleFavorite(item.id, item.isFavorite ?? false);
+      } finally {
         setFavoritePendingIds((prev) => {
-          const next = new Set(prev)
-          next.delete(item.id)
-          return next
-        })
+          const next = new Set(prev);
+          next.delete(item.id);
+          return next;
+        });
       }
     },
     [toggleFavorite],
-  )
+  );
 
   const hasActiveFilters = useMemo(
-    () => Boolean(filters.keyword || filters.city || filters.ticketType || filters.tag),
+    () =>
+      Boolean(
+        filters.keyword || filters.city || filters.ticketType || filters.tag,
+      ),
     [filters],
-  )
+  );
 
   return (
     <div className="min-h-[calc(100dvh-4rem)] bg-[#FAF7F0] pb-16">
@@ -175,7 +185,8 @@ export default function Attractions() {
             探索精选目的地与人文宝藏
           </h1>
           <p className="mt-2 max-w-2xl text-xs sm:text-sm leading-relaxed text-stone-500">
-            像翻阅旅行手账一样发现各地自然与人文胜地，收藏心动打卡点，随时让 AI 为你串联进路线。
+            像翻阅旅行手账一样发现各地自然与人文胜地，收藏心动打卡点，随时让 AI
+            为你串联进路线。
           </p>
         </div>
       </div>
@@ -189,18 +200,26 @@ export default function Attractions() {
           <div className="lg:col-span-8 space-y-6">
             {/* 搜索与当前状态条 */}
             <div className="rounded-3xl border border-stone-200/90 bg-[#FDFBF7] p-4 sm:p-5 shadow-sm space-y-3">
-              <form className="flex items-center gap-2.5" onSubmit={handleSearchSubmit}>
+              <form
+                className="flex items-center gap-2.5"
+                onSubmit={handleSearchSubmit}
+              >
                 <div className="relative flex-1">
                   <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-800" />
                   <Input
                     className="h-11 rounded-2xl bg-white border-stone-200 pl-10 text-xs sm:text-sm text-stone-900 shadow-2xs placeholder:text-stone-400 focus-visible:ring-emerald-700"
                     id="attractions-keyword"
-                    onChange={event => handleKeywordChange(event.target.value)}
+                    onChange={(event) =>
+                      handleKeywordChange(event.target.value)
+                    }
                     placeholder="搜索景点名称、城市或标签（输入自动搜索）"
                     value={keywordInput}
                   />
                 </div>
-                <Button className="h-11 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-5 cursor-pointer text-xs sm:text-sm" type="submit">
+                <Button
+                  className="h-11 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-5 cursor-pointer text-xs sm:text-sm"
+                  type="submit"
+                >
                   搜索
                 </Button>
               </form>
@@ -209,10 +228,10 @@ export default function Attractions() {
               <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-stone-100 text-xs">
                 <div className="flex items-center gap-2 text-stone-500">
                   <span>
-                    找到
-                    {' '}
-                    <strong className="font-serif text-emerald-800 text-sm">{total}</strong>
-                    {' '}
+                    找到{' '}
+                    <strong className="font-serif text-emerald-800 text-sm">
+                      {total}
+                    </strong>{' '}
                     处心动打卡点
                   </span>
                   {hasActiveFilters && (
@@ -241,7 +260,11 @@ export default function Attractions() {
             {!loading && error && (
               <div className="flex items-center justify-between rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-700 font-bold">
                 <span>{error}</span>
-                <Button className="rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs" onClick={() => load(filters)} size="sm">
+                <Button
+                  className="rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs"
+                  onClick={() => load(filters)}
+                  size="sm"
+                >
                   重试
                 </Button>
               </div>
@@ -251,10 +274,17 @@ export default function Attractions() {
             {!loading && !error && items.length === 0 && (
               <div className="flex flex-col items-center gap-3 rounded-3xl border border-stone-200/90 bg-[#FDFBF7] p-10 text-center">
                 <Compass className="h-10 w-10 text-stone-300 mx-auto mb-1" />
-                <p className="font-bold text-base text-stone-800">没有找到符合条件的景点手账</p>
-                <p className="text-xs text-stone-400 max-w-sm">试试减少筛选条件、搜索其他城市，或在右侧切换主题标签</p>
+                <p className="font-bold text-base text-stone-800">
+                  没有找到符合条件的景点手账
+                </p>
+                <p className="text-xs text-stone-400 max-w-sm">
+                  试试减少筛选条件、搜索其他城市，或在右侧切换主题标签
+                </p>
                 {hasActiveFilters && (
-                  <Button className="rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold mt-2" onClick={handleClearFilters}>
+                  <Button
+                    className="rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold mt-2"
+                    onClick={handleClearFilters}
+                  >
                     清空筛选条件
                   </Button>
                 )}
@@ -265,7 +295,7 @@ export default function Attractions() {
             {!loading && !error && items.length > 0 && (
               <>
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
-                  {items.map(item => (
+                  {items.map((item) => (
                     <AttractionCard
                       attraction={item}
                       isFavoritePending={favoritePendingIds.has(item.id)}
@@ -297,11 +327,10 @@ export default function Attractions() {
                 <Sparkles className="w-4 h-4" />
                 <span>AI 路线编排助手</span>
               </div>
-              <h3 className="font-serif text-lg font-bold">
-                选中心仪景点？
-              </h3>
+              <h3 className="font-serif text-lg font-bold">选中心仪景点？</h3>
               <p className="text-xs text-emerald-100/80 leading-relaxed">
-                无需手动计算导航顺序，AI 将为你规划最顺路的多日行程，包含沿途地道美食与门票预约建议。
+                无需手动计算导航顺序，AI
+                将为你规划最顺路的多日行程，包含沿途地道美食与门票预约建议。
               </p>
               <Link
                 className="inline-flex items-center justify-between w-full rounded-2xl bg-amber-400 hover:bg-amber-300 text-stone-950 px-4 py-2.5 text-xs font-black shadow-sm transition-all hover:scale-[1.02]"
@@ -334,7 +363,7 @@ export default function Attractions() {
                   )}
                 </div>
                 <div className="flex flex-wrap gap-1.5">
-                  {cities.map(city => (
+                  {cities.map((city) => (
                     <button
                       className={`px-3 py-1 rounded-full text-xs font-bold transition-all border cursor-pointer ${
                         filters.city === city
@@ -342,7 +371,11 @@ export default function Attractions() {
                           : 'bg-white border-stone-200 text-stone-700 hover:border-emerald-600 hover:text-emerald-800'
                       }`}
                       key={city}
-                      onClick={() => updateFilters({ city: filters.city === city ? '' : city })}
+                      onClick={() =>
+                        updateFilters({
+                          city: filters.city === city ? '' : city,
+                        })
+                      }
                       type="button"
                     >
                       {city}
@@ -356,10 +389,12 @@ export default function Attractions() {
             <div className="rounded-3xl border border-stone-200/90 bg-[#FDFBF7] p-5 shadow-sm space-y-3">
               <div className="flex items-center gap-1.5">
                 <Ticket className="w-3.5 h-3.5 text-emerald-700" />
-                <span className="font-serif text-xs font-bold text-stone-900">门票类型</span>
+                <span className="font-serif text-xs font-bold text-stone-900">
+                  门票类型
+                </span>
               </div>
               <div className="grid grid-cols-3 gap-1.5">
-                {ticketOptions.map(opt => (
+                {ticketOptions.map((opt) => (
                   <button
                     className={`py-2 px-1 rounded-2xl text-xs font-bold text-center transition-all border cursor-pointer ${
                       (filters.ticketType || '') === opt.value
@@ -367,7 +402,11 @@ export default function Attractions() {
                         : 'bg-white border-stone-200 text-stone-700 hover:bg-stone-50'
                     }`}
                     key={opt.value}
-                    onClick={() => updateFilters({ ticketType: opt.value as '' | AttractionTicketType })}
+                    onClick={() =>
+                      updateFilters({
+                        ticketType: opt.value as '' | AttractionTicketType,
+                      })
+                    }
                     type="button"
                   >
                     {opt.label}
@@ -395,7 +434,7 @@ export default function Attractions() {
                   )}
                 </div>
                 <div className="flex flex-wrap gap-1.5">
-                  {tags.map(tag => (
+                  {tags.map((tag) => (
                     <button
                       className={`px-2.5 py-1 rounded-full text-xs font-bold transition-all border cursor-pointer ${
                         filters.tag === tag
@@ -403,12 +442,12 @@ export default function Attractions() {
                           : 'bg-white border-stone-200 text-stone-700 hover:border-amber-500 hover:text-amber-900'
                       }`}
                       key={tag}
-                      onClick={() => updateFilters({ tag: filters.tag === tag ? '' : tag })}
+                      onClick={() =>
+                        updateFilters({ tag: filters.tag === tag ? '' : tag })
+                      }
                       type="button"
                     >
-                      #
-                      {' '}
-                      {tag}
+                      # {tag}
                     </button>
                   ))}
                 </div>
@@ -422,12 +461,13 @@ export default function Attractions() {
                 <span>游玩贴士</span>
               </div>
               <p className="text-[11px] text-stone-500 leading-relaxed">
-                国家级博物馆与古城热门景区建议提前至少 3 天线上实名预约；山岳类景区出行前请务必确认索道与气象开放状态。
+                国家级博物馆与古城热门景区建议提前至少 3
+                天线上实名预约；山岳类景区出行前请务必确认索道与气象开放状态。
               </p>
             </div>
           </aside>
         </div>
       </div>
     </div>
-  )
+  );
 }

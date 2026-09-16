@@ -156,7 +156,9 @@ export function AttractionCard<
             </button>
           ) : (
             <button
-              aria-label={attraction.isFavorite ? '取消心愿收藏' : '添加至心愿收藏'}
+              aria-label={
+                attraction.isFavorite ? '取消心愿收藏' : '添加至心愿收藏'
+              }
               className="absolute right-3 top-3 rounded-full p-2 bg-white/90 backdrop-blur-md text-stone-400 shadow-sm transition-all hover:scale-110 hover:text-red-500 cursor-pointer"
               disabled={isFavoritePending}
               onClick={(e) => {

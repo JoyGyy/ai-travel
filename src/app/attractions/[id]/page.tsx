@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 /**
  * 景点详情页面
@@ -6,7 +6,7 @@
  * 根据 URL 参数加载景点详情，展示封面、介绍、实用信息、
  * 游玩亮点和注意事项，支持收藏和 AI 行程规划跳转。
  */
-import type { Attraction } from '@/types/attraction'
+import type { Attraction } from '@/types/attraction';
 import {
   ArrowLeft,
   CheckCircle2,
@@ -14,74 +14,69 @@ import {
   Heart,
   MapPin,
   Ticket,
-} from 'lucide-react'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
+} from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 
-import { fetchAttractionDetail } from '@/api/attractions'
-import { AttractionAiSummaryCard } from '@/components/attractions/AttractionAiSummaryCard'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { useAttractionFavorite } from '@/hooks/useAttractionFavorite'
+import { fetchAttractionDetail } from '@/api/attractions';
+import { AttractionAiSummaryCard } from '@/components/attractions/AttractionAiSummaryCard';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { useAttractionFavorite } from '@/hooks/useAttractionFavorite';
 
 export default function AttractionDetail() {
   // ---- 路由参数与状态 ----
-  const params = useParams()
-  const id = (params?.id as string) || ''
-  const router = useRouter()
-  const [attraction, setAttraction] = useState<Attraction | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [favoritePending, setFavoritePending] = useState(false)
-  const [reloadKey, setReloadKey] = useState(0)
+  const params = useParams();
+  const id = (params?.id as string) || '';
+  const router = useRouter();
+  const [attraction, setAttraction] = useState<Attraction | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [favoritePending, setFavoritePending] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
 
   const { toggleFavorite } = useAttractionFavorite({
     onFavoriteSuccess: (_attractionId, isFavorite) => {
       if (attraction) {
-        setAttraction({ ...attraction, isFavorite })
+        setAttraction({ ...attraction, isFavorite });
       }
     },
-  })
+  });
 
   // ---- 加载景点数据 ----
   useEffect(() => {
-    let cancelled = false
+    let cancelled = false;
     async function loadData() {
-      setLoading(true)
-      setError('')
+      setLoading(true);
+      setError('');
       try {
-        const data = await fetchAttractionDetail(id)
+        const data = await fetchAttractionDetail(id);
         if (!cancelled)
-          setAttraction({ ...data.attraction, isFavorite: data.isFavorite })
-      }
-      catch (err: unknown) {
+          setAttraction({ ...data.attraction, isFavorite: data.isFavorite });
+      } catch (err: unknown) {
         if (!cancelled)
-          setError(err instanceof Error ? err.message : '景点加载失败')
-      }
-      finally {
-        if (!cancelled)
-          setLoading(false)
+          setError(err instanceof Error ? err.message : '景点加载失败');
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     }
-    loadData()
+    loadData();
     return () => {
-      cancelled = true
-    }
-  }, [id, reloadKey])
+      cancelled = true;
+    };
+  }, [id, reloadKey]);
 
   /** 切换收藏状态 */
   async function handleToggleFavorite() {
-    if (!attraction)
-      return
-    setFavoritePending(true)
+    if (!attraction) return;
+    setFavoritePending(true);
     try {
-      await toggleFavorite(attraction.id, attraction.isFavorite ?? false)
-    }
-    finally {
-      setFavoritePending(false)
+      await toggleFavorite(attraction.id, attraction.isFavorite ?? false);
+    } finally {
+      setFavoritePending(false);
     }
   }
 
@@ -89,33 +84,37 @@ export default function AttractionDetail() {
   if (loading) {
     return (
       <main className="travel-page-shell">
-        <div
-          className="flex flex-col items-center gap-3 rounded-xl p-6"
-        >
+        <div className="flex flex-col items-center gap-3 rounded-xl p-6">
           <div className="flex items-center justify-center py-12">
             <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
           </div>
-          <h1 className="text-xl font-bold text-travel-ink" id="attraction-loading-title">
+          <h1
+            className="text-xl font-bold text-travel-ink"
+            id="attraction-loading-title"
+          >
             加载景点详情中...
           </h1>
           <p className="text-travel-muted">正在取出这张目的地票根。</p>
         </div>
       </main>
-    )
+    );
   }
   // ---- 错误/空数据状态 ----
   if (error || !attraction) {
     return (
       <main className="travel-page-shell">
         <div className="flex flex-col items-center gap-3 rounded-xl p-6">
-          <h1 className="text-xl font-bold text-travel-ink" id="attraction-error-title">
+          <h1
+            className="text-xl font-bold text-travel-ink"
+            id="attraction-error-title"
+          >
             景点暂时无法打开
           </h1>
           <p className="text-travel-muted">{error || '景点不存在或已下架'}</p>
           <div className="flex gap-3">
             <Button
               className="bg-primary text-primary-foreground hover:bg-primary/90"
-              onClick={() => setReloadKey(prev => prev + 1)}
+              onClick={() => setReloadKey((prev) => prev + 1)}
             >
               重试
             </Button>
@@ -128,14 +127,15 @@ export default function AttractionDetail() {
           </div>
         </div>
       </main>
-    )
+    );
   }
 
   // ---- 构建 AI 规划跳转参数 ----
   const prompt = encodeURIComponent(
     `帮我规划一个包含${attraction.city}${attraction.name}的旅行行程`,
-  )
-  const ticketTypeClass = attraction.ticketType === 'free' ? 'travel-tag--free' : 'travel-tag--paid'
+  );
+  const ticketTypeClass =
+    attraction.ticketType === 'free' ? 'travel-tag--free' : 'travel-tag--paid';
 
   return (
     <main className="travel-page-shell">
@@ -160,8 +160,13 @@ export default function AttractionDetail() {
           width={800}
         />
         <div className="p-6">
-          <p className="mb-2 text-sm font-medium text-primary">{attraction.city}</p>
-          <h1 className="mb-3 text-2xl font-bold text-travel-ink md:text-3xl" id="attraction-detail-title">
+          <p className="mb-2 text-sm font-medium text-primary">
+            {attraction.city}
+          </p>
+          <h1
+            className="mb-3 text-2xl font-bold text-travel-ink md:text-3xl"
+            id="attraction-detail-title"
+          >
             {attraction.name}
           </h1>
           <p className="mb-4 text-travel-muted">{attraction.summary}</p>
@@ -169,8 +174,10 @@ export default function AttractionDetail() {
             <Badge className={`travel-tag ${ticketTypeClass}`}>
               {attraction.ticketType === 'free' ? '免费' : '收费'}
             </Badge>
-            <Badge className="travel-tag travel-tag--warning">{attraction.priceText}</Badge>
-            {attraction.tags.map(tag => (
+            <Badge className="travel-tag travel-tag--warning">
+              {attraction.priceText}
+            </Badge>
+            {attraction.tags.map((tag) => (
               <Badge className="travel-tag travel-tag--info" key={tag}>
                 {tag}
               </Badge>
@@ -179,9 +186,14 @@ export default function AttractionDetail() {
 
           {attraction.suitableFor && attraction.suitableFor.length > 0 && (
             <div className="mb-5 flex flex-wrap items-center gap-1.5 text-xs text-stone-500">
-              <span className="text-[11px] font-medium text-stone-400">出行人群：</span>
-              {attraction.suitableFor.map(item => (
-                <span className="rounded-md bg-stone-100 px-2 py-0.5 text-[11px] font-medium text-stone-600 border border-stone-200/60" key={item}>
+              <span className="text-[11px] font-medium text-stone-400">
+                出行人群：
+              </span>
+              {attraction.suitableFor.map((item) => (
+                <span
+                  className="rounded-md bg-stone-100 px-2 py-0.5 text-[11px] font-medium text-stone-600 border border-stone-200/60"
+                  key={item}
+                >
                   {item}
                 </span>
               ))}
@@ -198,7 +210,11 @@ export default function AttractionDetail() {
               <Heart
                 className={`mr-2 h-4 w-4 ${attraction.isFavorite ? 'fill-current' : ''}`}
               />
-              {favoritePending ? '处理中...' : attraction.isFavorite ? '已收藏' : '收藏'}
+              {favoritePending
+                ? '处理中...'
+                : attraction.isFavorite
+                  ? '已收藏'
+                  : '收藏'}
             </Button>
 
             <Link
@@ -242,7 +258,9 @@ export default function AttractionDetail() {
       {/* ---- 景点介绍 ---- */}
       <section className="travel-surface-card p-6">
         <h2 className="mb-4 text-xl font-bold text-travel-ink">景点介绍</h2>
-        <p className="leading-relaxed text-travel-muted">{attraction.description}</p>
+        <p className="leading-relaxed text-travel-muted">
+          {attraction.description}
+        </p>
       </section>
 
       {/* ---- 实用信息 ---- */}
@@ -273,7 +291,9 @@ export default function AttractionDetail() {
           </div>
           <div>
             <dt className="text-sm font-medium text-travel-muted">建议游玩</dt>
-            <dd className="mt-1 text-travel-ink">{attraction.recommendedDuration}</dd>
+            <dd className="mt-1 text-travel-ink">
+              {attraction.recommendedDuration}
+            </dd>
           </div>
           <div>
             <dt className="text-sm font-medium text-travel-muted">票价</dt>
@@ -286,7 +306,7 @@ export default function AttractionDetail() {
       <section className="travel-surface-card p-6">
         <h2 className="mb-4 text-xl font-bold text-travel-ink">游玩亮点</h2>
         <ul className="list-inside list-disc space-y-2 text-travel-muted">
-          {attraction.highlights.map(item => (
+          {attraction.highlights.map((item) => (
             <li key={item}>{item}</li>
           ))}
         </ul>
@@ -296,11 +316,11 @@ export default function AttractionDetail() {
       <section className="travel-surface-card p-6">
         <h2 className="mb-4 text-xl font-bold text-travel-ink">注意事项</h2>
         <ul className="list-inside list-disc space-y-2 text-travel-muted">
-          {attraction.tips.map(item => (
+          {attraction.tips.map((item) => (
             <li key={item}>{item}</li>
           ))}
         </ul>
       </section>
     </main>
-  )
+  );
 }

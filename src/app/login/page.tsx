@@ -370,7 +370,9 @@ export default function Login() {
                     }));
                   if (formError) setFormError('');
                 }}
-                placeholder={tab === 'login' ? '请输入用户名或电子邮箱' : '请输入用户名'}
+                placeholder={
+                  tab === 'login' ? '请输入用户名或电子邮箱' : '请输入用户名'
+                }
                 ref={usernameRef}
                 spellCheck={false}
                 type="text"

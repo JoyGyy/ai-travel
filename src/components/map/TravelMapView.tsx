@@ -835,7 +835,6 @@ export function TravelMapView({
         </div>
       </div>
 
-
       {/* 地图核心视窗 */}
       <div className="relative flex-1 min-h-[350px] w-full bg-stone-100 overflow-hidden">
         <div className="h-full w-full" ref={mapContainerRef} />

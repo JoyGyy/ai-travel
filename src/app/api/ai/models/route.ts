@@ -8,6 +8,7 @@ export async function GET() {
     {
       available: Boolean(env.SILICONFLOW_API_KEY),
       baseUrl: env.SILICONFLOW_BASE_URL,
+      fallbackModel: env.SILICONFLOW_FALLBACK_MODEL,
       model: env.SILICONFLOW_MODEL,
       name: 'siliconflow',
     },

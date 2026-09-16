@@ -9,13 +9,23 @@ const siliconflow = createOpenAICompatible({
 })
 
 export function getTravelModel(modelName?: string) {
-  if ((modelName === undefined || modelName === 'siliconflow') && env.SILICONFLOW_API_KEY) {
-    return siliconflow(env.SILICONFLOW_MODEL)
+  if (!env.SILICONFLOW_API_KEY) {
+    throw new Error('未配置可用的 AI 模型，请设置 SILICONFLOW_API_KEY')
   }
 
-  if (env.SILICONFLOW_API_KEY)
-    return siliconflow(env.SILICONFLOW_MODEL)
-  throw new Error('未配置可用的 AI 模型，请设置 SILICONFLOW_API_KEY')
+  if (modelName === 'fallback') {
+    return siliconflow(env.SILICONFLOW_FALLBACK_MODEL || env.SILICONFLOW_MODEL)
+  }
+
+  if (modelName && modelName !== 'siliconflow' && modelName !== 'primary') {
+    return siliconflow(modelName)
+  }
+
+  return siliconflow(env.SILICONFLOW_MODEL)
+}
+
+export function getFallbackTravelModel() {
+  return getTravelModel('fallback')
 }
 
 export { siliconflow }

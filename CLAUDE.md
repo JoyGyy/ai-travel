@@ -11,7 +11,6 @@ AI 驱动的智能旅行规划助手，基于 Next.js 16 全栈框架，集成 S
 - `pnpm dev` — 启动 Next.js 开发服务器（端口 3000）
 - `pnpm build` — 生产构建
 - `pnpm start` — 启动生产服务器
-- `pnpm lint` — ESLint 检查并自动修复
 - `pnpm typecheck` — TypeScript 类型检查
 - `pnpm test` — 启动 Vitest 测试（watch 模式）
 - `pnpm test:run` — 运行一次测试
@@ -34,7 +33,7 @@ AI 驱动的智能旅行规划助手，基于 Next.js 16 全栈框架，集成 S
 - **AI**: SiliconFlow/DeepSeek LLM、ReAct Agent、RAG
 - **认证**: jose (JWT)、bcryptjs
 - **测试**: Vitest
-- **代码规范**: ESLint + Prettier、Husky + lint-staged
+- **代码规范**: Prettier、Husky
 
 ### 样式方案
 项目采用 **Tailwind CSS** 为主：
@@ -86,8 +85,8 @@ src/
 ## 代码规范
 
 - 格式化工具：Prettier（配置见 `.prettierrc`）
-- Lint：ESLint（配置见 `eslint.config.mjs`），含 React、TypeScript、perfectionist 插件
-- Git hooks：Husky + lint-staged，提交前自动运行 ESLint 和测试
+- 类型检查：TypeScript（`tsc --noEmit`）
+- Git hooks：Husky，提交前自动运行类型校验与单元测试
 
 ## 环境变量
 

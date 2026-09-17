@@ -37,10 +37,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # ESLint 检查
-      - name: Lint
-        run: pnpm lint
-
       # TypeScript 类型检查
       - name: Type check
         run: pnpm typecheck

@@ -28,6 +28,7 @@ AI 驱动的智能旅行规划助手，基于 Next.js 16 全栈框架，集成 S
 ## 架构要点
 
 ### 技术栈
+
 - **前端**: Next.js 16、React 19、TypeScript、Tailwind CSS v4、shadcn/ui、Zustand 5
 - **后端**: Next.js Route Handlers、PostgreSQL (pg)
 - **AI**: SiliconFlow/DeepSeek LLM、ReAct Agent、RAG
@@ -36,13 +37,16 @@ AI 驱动的智能旅行规划助手，基于 Next.js 16 全栈框架，集成 S
 - **代码规范**: Prettier、Husky
 
 ### 样式方案
+
 项目采用 **Tailwind CSS** 为主：
+
 - `src/app/` 页面 — 使用 **Tailwind CSS 工具类**
 - `src/components/ui/` — shadcn/ui 组件，使用 **Tailwind CSS**
 - `src/components/` 其他组件 — 部分仍使用传统 CSS 文件（BEM 风格类名）
 - `src/app/globals.css` — 定义全局变量、自定义工具类和动画
 
 ### 目录结构
+
 ```
 src/
 ├── app/              # App Router 页面 + API Routes
@@ -67,6 +71,7 @@ src/
 ```
 
 ### 关键特性
+
 - 流式 AI 响应（SSE）
 - JWT 认证（jose 库，支持 Edge Runtime）
 - CSRF 防护（HMAC-SHA256 + Double Submit Cookie）
@@ -76,6 +81,7 @@ src/
 - 景点收藏和社区分享
 
 ### 安全机制
+
 - Middleware 层 JWT 有效性验证（使用 jose）
 - 生产环境缺少 JWT_SECRET 时阻止启动
 - 密码策略：至少 8 位，包含大小写字母和数字
@@ -91,6 +97,7 @@ src/
 ## 环境变量
 
 参考 `.env.example` 配置必要的 API 密钥：
+
 - `JWT_SECRET` — JWT 签名密钥（至少 32 字符，生产环境必须）
 - `DATABASE_URL` — PostgreSQL 连接串
 - `SILICONFLOW_API_KEY` — SiliconFlow API 密钥

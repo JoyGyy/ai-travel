@@ -273,7 +273,7 @@ export function TravelMapView({
   // 6. 监听地图容器 resize 变化，确保拖拽分栏或折叠时 Leaflet 立即平滑刷新视窗尺寸
   useEffect(() => {
     const container = mapContainerRef.current;
-    if (!container) return;
+    if (!container || typeof ResizeObserver === 'undefined') return;
 
     const ro = new ResizeObserver(() => {
       if (mapInstanceRef.current) {
@@ -658,11 +658,16 @@ export function TravelMapView({
 
   // 7.5 全屏切换与重算尺寸
   useEffect(() => {
-    if (!mapInstanceRef.current) return;
     if (isExpanded) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
+    }
+
+    if (!mapInstanceRef.current) {
+      return () => {
+        document.body.style.overflow = '';
+      };
     }
 
     const timer = setTimeout(() => {
@@ -682,8 +687,27 @@ export function TravelMapView({
       }
     }, 250);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      document.body.style.overflow = '';
+    };
   }, [isExpanded, routePoints]);
+
+  // 全屏状态下监听 ESC 键一键退出全屏
+  useEffect(() => {
+    if (!isExpanded) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsExpanded(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isExpanded]);
 
   function handleFocusSpot(spotIndex: number) {
     setActiveSpotIndex(spotIndex);
@@ -740,7 +764,7 @@ export function TravelMapView({
     <div
       className={
         isExpanded
-          ? `fixed inset-0 z-40 isolate flex flex-col bg-[#FAF7F0] shadow-2xl h-dvh w-screen overflow-hidden ${className}`
+          ? `fixed inset-0 z-[60] isolate flex flex-col bg-[#FAF7F0] shadow-2xl h-dvh w-screen overflow-hidden ${className}`
           : `relative z-0 isolate flex flex-col h-full overflow-hidden rounded-3xl border border-stone-200/90 bg-[#FDFBF7] shadow-sm transition-all ${className}`
       }
     >
@@ -901,13 +925,20 @@ export function TravelMapView({
           {/* 展开/全屏切换 */}
           <button
             aria-label={isExpanded ? '退出全屏' : '全屏地图'}
-            className="flex h-7 w-7 items-center justify-center rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-600 transition-colors cursor-pointer shrink-0"
+            className={`flex items-center gap-1.5 h-7 rounded-xl transition-all cursor-pointer shrink-0 text-xs font-bold ${
+              isExpanded
+                ? 'px-2.5 bg-emerald-700 hover:bg-emerald-800 text-white shadow-2xs'
+                : 'w-7 justify-center bg-stone-100 hover:bg-stone-200 text-stone-600'
+            }`}
             onClick={() => setIsExpanded(!isExpanded)}
-            title={isExpanded ? '退出全屏' : '全屏模式'}
+            title={isExpanded ? '退出全屏 (Esc)' : '全屏模式'}
             type="button"
           >
             {isExpanded ? (
-              <Minimize2 className="h-3.5 w-3.5" />
+              <>
+                <Minimize2 className="h-3.5 w-3.5" />
+                <span>退出全屏</span>
+              </>
             ) : (
               <Maximize2 className="h-3.5 w-3.5" />
             )}
@@ -931,6 +962,23 @@ export function TravelMapView({
       {/* 地图核心视窗 */}
       <div className="relative flex-1 min-h-[350px] w-full bg-stone-100 overflow-hidden">
         <div className="h-full w-full" ref={mapContainerRef} />
+
+        {/* 全屏模式下的醒目快捷退出全屏悬浮胶囊 */}
+        {isExpanded && (
+          <button
+            aria-label="退出全屏"
+            className="absolute top-3 right-3 z-30 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-stone-900/85 hover:bg-stone-900 text-white text-xs font-semibold backdrop-blur-md shadow-lg transition-all hover:scale-105 active:scale-95 cursor-pointer border border-white/20"
+            onClick={() => setIsExpanded(false)}
+            title="退出全屏 (按 Esc 键亦可退出)"
+            type="button"
+          >
+            <Minimize2 className="h-3.5 w-3.5" />
+            <span>退出全屏</span>
+            <kbd className="hidden sm:inline-block px-1 py-0.5 text-[10px] bg-white/20 rounded font-mono leading-none">
+              ESC
+            </kbd>
+          </button>
+        )}
 
         {/* 无打卡点时的友好浮动徽章 */}
         {routePoints.length === 0 && (

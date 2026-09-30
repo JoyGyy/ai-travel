@@ -400,6 +400,9 @@ export function TravelMapView({
       const markers: LeafletMarker[] = [];
 
       routePoints.forEach((pt, idx) => {
+        if (!Number.isFinite(pt.lat) || !Number.isFinite(pt.lng)) {
+          return;
+        }
         const pos: [number, number] = [pt.lat, pt.lng];
         latlngs.push(pos);
 
@@ -454,41 +457,64 @@ export function TravelMapView({
       if (latlngs.length > 1) {
         const smoothLatLngs = generateSmoothRoutePolyline(routePoints, 0.08);
 
-        // 1. 底层白色轮廓垫底
-        bgPolylineRef.current = L.polyline(smoothLatLngs, {
-          color: '#ffffff',
-          opacity: 0.95,
-          weight: 7,
-        }).addTo(map);
+        // 校验确保所有坐标合法，严格杜绝任何 (NaN, NaN) 传递给 Leaflet 导致崩溃
+        const validSmoothLatLngs = smoothLatLngs.filter(
+          (pt) =>
+            Array.isArray(pt) &&
+            pt.length >= 2 &&
+            Number.isFinite(pt[0]) &&
+            Number.isFinite(pt[1]),
+        );
 
-        // 2. 核心主色调路线
-        const routeColor =
-          mode === 'walking'
-            ? '#059669'
-            : mode === 'transit'
-              ? '#0284c7'
-              : '#047857';
+        if (validSmoothLatLngs.length > 1) {
+          // 1. 底层白色轮廓垫底
+          bgPolylineRef.current = L.polyline(validSmoothLatLngs, {
+            color: '#ffffff',
+            opacity: 0.95,
+            weight: 7,
+          }).addTo(map);
 
-        fullPolylineRef.current = L.polyline(smoothLatLngs, {
-          color: routeColor,
-          opacity: 0.85,
-          weight: 4.5,
-        }).addTo(map);
+          // 2. 核心主色调路线
+          const routeColor =
+            mode === 'walking'
+              ? '#059669'
+              : mode === 'transit'
+                ? '#0284c7'
+                : '#047857';
 
-        // 3. 流动蚂蚁线光效 (带沿线行进生命力动效)
-        flowPolylineRef.current = L.polyline(smoothLatLngs, {
-          className: 'flowing-route-dash',
-          color: '#a7f3d0',
-          dashArray: '8, 12',
-          opacity: 0.95,
-          weight: 2.5,
-        }).addTo(map);
+          fullPolylineRef.current = L.polyline(validSmoothLatLngs, {
+            color: routeColor,
+            opacity: 0.85,
+            weight: 4.5,
+          }).addTo(map);
+
+          // 3. 流动蚂蚁线光效 (带沿线行进生命力动效)
+          flowPolylineRef.current = L.polyline(validSmoothLatLngs, {
+            className: 'flowing-route-dash',
+            color: '#a7f3d0',
+            dashArray: '8, 12',
+            opacity: 0.95,
+            weight: 2.5,
+          }).addTo(map);
+        }
 
         // 绘制折线中点通勤耗时标牌气泡 (垂直法线避让 + 智能抽稀，彻底杜绝重合黑块)
         for (let i = 0; i < routePoints.length - 1; i++) {
           const p1 = routePoints[i];
           const p2 = routePoints[i + 1];
+          if (
+            !Number.isFinite(p1.lat) ||
+            !Number.isFinite(p1.lng) ||
+            !Number.isFinite(p2.lat) ||
+            !Number.isFinite(p2.lng)
+          ) {
+            continue;
+          }
+
           const dist = calculateDistanceKm(p1.lat, p1.lng, p2.lat, p2.lng);
+          if (dist === 0) {
+            continue;
+          }
           const duration = estimateDurationMinutes(dist, mode);
 
           // 智能抽稀避让：当景点较多 (>=4) 且两点直线距离非常近 (<1.2km) 时，默认隐藏常驻气泡，防止与标点踩踏
@@ -505,6 +531,13 @@ export function TravelMapView({
             p2.lng,
             0.08,
           );
+
+          if (
+            !Number.isFinite(offsetPos.lat) ||
+            !Number.isFinite(offsetPos.lng)
+          ) {
+            continue;
+          }
 
           const badgeHtml = `
             <div class="px-2.5 py-0.5 rounded-full bg-white/95 backdrop-blur-xs border border-stone-200/90 shadow-sm text-[10px] font-bold text-stone-700 flex items-center gap-1.5 whitespace-nowrap -translate-x-1/2 -translate-y-1/2 hover:scale-110 hover:border-emerald-500 hover:text-emerald-800 transition-all cursor-pointer">

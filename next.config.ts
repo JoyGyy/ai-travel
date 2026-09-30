@@ -7,10 +7,34 @@ const nextConfig: NextConfig = {
     root: import.meta.dirname,
   },
 
-  // 图片域名白名单
-  // 景点图片已全部改为本地 /images/attractions/，远程图片源已移除。
+  // 图片域名白名单：支持本地 WebP 静态图片及主流高清旅游图床（Unsplash、高德地图、携程）
   images: {
-    remotePatterns: [],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.autonavi.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.amap.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.c-ctrip.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.tripcdn.cn',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.tripcdn.com',
+      },
+    ],
   },
 
   // 安全响应头
@@ -28,7 +52,7 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline'",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob:",
+              "img-src 'self' data: blob: https://images.unsplash.com https://*.autonavi.com https://*.amap.com https://*.c-ctrip.com https://*.tripcdn.cn https://*.tripcdn.com",
               "font-src 'self' data:",
               "connect-src 'self' https://api.siliconflow.cn",
               "frame-ancestors 'none'",

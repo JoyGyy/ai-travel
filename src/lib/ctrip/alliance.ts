@@ -164,8 +164,9 @@ export function attachCtripAllianceParams(
 
 /**
  * 1. 景点门票 / 景区特惠预订链接自适应生成器
- * - 移动端：落地 m.ctrip.com 门票搜索直达页（支持触屏购买与 App 唤起）；
- * - PC 桌面端：落地 you.ctrip.com 宽屏攻略与门票目的地搜索页。
+ * - 统一落地携程官方 Tangram 智能门票中台（https://m.ctrip.com/tangram/ticket）；
+ * - 自动识别设备并自适应展示（移动端触屏/唤起携程 App，PC 桌面端自适应宽屏呈现并下单），彻底解决旧版 you.ctrip.com 静态搜索下线导致的 404 问题；
+ * - 完整透传 keyword 与联盟追踪参数（allianceid, sid, ouid）。
  */
 export function buildCtripTicketLink({
   city,
@@ -178,17 +179,10 @@ export function buildCtripTicketLink({
   })
 
   const queryTerm = [city, spotName].filter(Boolean).join(' ').trim()
-  const encodedKeyword = encodeURIComponent(queryTerm || spotName)
+  const keyword = queryTerm || spotName
 
-  let url: URL
-  if (config.device === 'mobile') {
-    url = new URL('https://m.ctrip.com/webapp/ticket/ticketdetail/search.html')
-    url.searchParams.set('keyword', decodeURIComponent(encodedKeyword))
-  }
-  else {
-    url = new URL('https://you.ctrip.com/searchsite/district.html')
-    url.searchParams.set('query', decodeURIComponent(encodedKeyword))
-  }
+  const url = new URL('https://m.ctrip.com/tangram/ticket')
+  url.searchParams.set('keyword', keyword)
 
   url.searchParams.set('allianceid', config.allianceid)
   url.searchParams.set('sid', config.sid)
@@ -415,15 +409,28 @@ export function adaptCtripUrlForDevice(
     const targetDevice = resolveEffectiveDevice(device, userAgent)
     const url = new URL(rawUrl)
 
+    // 0. 门票兜底纠偏：you.ctrip.com 官方旧搜索页已全面下线并返回 404，全平台纠偏至官方 Tangram 门票活链
+    if (url.hostname.includes('you.ctrip.com')) {
+      const keyword = url.searchParams.get('query') || url.searchParams.get('keyword') || ''
+      const safeTicketUrl = new URL('https://m.ctrip.com/tangram/ticket')
+      if (keyword) {
+        safeTicketUrl.searchParams.set('keyword', keyword)
+      }
+      copyTrackingParams(url, safeTicketUrl)
+      return safeTicketUrl.toString()
+    }
+
     // 1. 目标是 PC 端，但链接是移动端 m.ctrip.com
     if (targetDevice === 'pc' && url.hostname === 'm.ctrip.com') {
-      // 门票：m.ctrip.com/webapp/ticket/... -> you.ctrip.com/searchsite/district.html
-      if (url.pathname.includes('/webapp/ticket')) {
+      // 门票：旧版 webapp/ticket 统一规范化为 tangram/ticket（PC 桌面端自适应呈现并保证 200 OK，避免 you.ctrip.com 404）
+      if (url.pathname.includes('/webapp/ticket') || url.pathname.includes('/tangram/ticket')) {
         const keyword = url.searchParams.get('keyword') || ''
-        const pcUrl = new URL('https://you.ctrip.com/searchsite/district.html')
-        pcUrl.searchParams.set('query', keyword)
-        copyTrackingParams(url, pcUrl)
-        return pcUrl.toString()
+        const ticketUrl = new URL('https://m.ctrip.com/tangram/ticket')
+        if (keyword) {
+          ticketUrl.searchParams.set('keyword', keyword)
+        }
+        copyTrackingParams(url, ticketUrl)
+        return ticketUrl.toString()
       }
       // 酒店：m.ctrip.com/webapp/hotel/... -> hotels.ctrip.com/hotels/list
       if (url.pathname.includes('/webapp/hotel')) {
@@ -458,13 +465,6 @@ export function adaptCtripUrlForDevice(
 
     // 2. 目标是移动端，但链接是 PC 宽屏站
     if (targetDevice === 'mobile' && url.hostname !== 'm.ctrip.com') {
-      if (url.hostname.includes('you.ctrip.com')) {
-        const query = url.searchParams.get('query') || ''
-        const mUrl = new URL('https://m.ctrip.com/webapp/ticket/ticketdetail/search.html')
-        mUrl.searchParams.set('keyword', query)
-        copyTrackingParams(url, mUrl)
-        return mUrl.toString()
-      }
       if (url.hostname.includes('hotels.ctrip.com')) {
         const query = url.searchParams.get('keyword') || url.searchParams.get('city') || ''
         const mUrl = new URL('https://m.ctrip.com/webapp/hotel/hotellist')

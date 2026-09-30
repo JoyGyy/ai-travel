@@ -37,7 +37,7 @@ describe('Ctrip Alliance (携程开放联盟) 设备自适应分发引擎', () =
     expect(resolveEffectiveDevice('pc', mobileUa)).toBe('pc')
   })
 
-  it('门票链接：手机端落地 m.ctrip.com，PC 端落地 you.ctrip.com 宽屏攻略页', () => {
+  it('门票链接：全端统一落地携程官方 Tangram 门票中台（自适应呈现，彻底杜绝 you.ctrip.com 404）', () => {
     // 移动端分发
     const mobileLink = buildCtripTicketLink({
       city: '成都',
@@ -46,21 +46,21 @@ describe('Ctrip Alliance (携程开放联盟) 设备自适应分发引擎', () =
     })
     const mobileUrl = new URL(mobileLink)
     expect(mobileUrl.origin).toBe('https://m.ctrip.com')
-    expect(mobileUrl.pathname).toBe('/webapp/ticket/ticketdetail/search.html')
+    expect(mobileUrl.pathname).toBe('/tangram/ticket')
     expect(mobileUrl.searchParams.get('keyword')).toBe('成都 大熊猫繁育研究基地')
     expect(mobileUrl.searchParams.get('allianceid')).toBe(DEFAULT_CTRIP_ALLIANCE_ID)
     expect(mobileUrl.searchParams.get('sid')).toBe('attraction_ticket')
 
-    // PC 端分发
+    // PC 端分发（由于旧版 you.ctrip.com 404，PC 端统一由携程官方自适应 tangram/ticket 承接）
     const pcLink = buildCtripTicketLink({
       city: '成都',
       device: 'pc',
       spotName: '大熊猫繁育研究基地',
     })
     const pcUrl = new URL(pcLink)
-    expect(pcUrl.origin).toBe('https://you.ctrip.com')
-    expect(pcUrl.pathname).toBe('/searchsite/district.html')
-    expect(pcUrl.searchParams.get('query')).toBe('成都 大熊猫繁育研究基地')
+    expect(pcUrl.origin).toBe('https://m.ctrip.com')
+    expect(pcUrl.pathname).toBe('/tangram/ticket')
+    expect(pcUrl.searchParams.get('keyword')).toBe('成都 大熊猫繁育研究基地')
     expect(pcUrl.searchParams.get('allianceid')).toBe(DEFAULT_CTRIP_ALLIANCE_ID)
   })
 
@@ -163,22 +163,31 @@ describe('Ctrip Alliance (携程开放联盟) 设备自适应分发引擎', () =
     expect(url.searchParams.get('ouid')).toBe('u_123')
   })
 
-  it('adaptCtripUrlForDevice 能够智能在 PC 宽屏官网与移动端 H5 间双向转换并保留渠道追踪', () => {
-    // 1. 移动端链接在 PC 端打开时转为 PC 宽屏官网
+  it('adaptCtripUrlForDevice 能够智能在 PC 宽屏官网与移动端 H5 间双向转换，并救助 404 门票链接', () => {
+    // 1. 移动端旧版门票链接在全端打开时规范化为官方 tangram/ticket 活链
     const mobileTicket = 'https://m.ctrip.com/webapp/ticket/ticketdetail/search.html?keyword=%E6%88%90%E9%83%BD%20%E9%94%A6%E9%87%8C&allianceid=4897000&sid=spot'
     const pcAdaptedTicket = adaptCtripUrlForDevice(mobileTicket, 'pc')
-    expect(pcAdaptedTicket).toContain('https://you.ctrip.com/searchsite/district.html')
-    expect(pcAdaptedTicket).toContain('query=%E6%88%90%E9%83%BD+%E9%94%A6%E9%87%8C')
+    expect(pcAdaptedTicket).toContain('https://m.ctrip.com/tangram/ticket')
+    expect(pcAdaptedTicket).toContain('keyword=%E6%88%90%E9%83%BD+%E9%94%A6%E9%87%8C')
     expect(pcAdaptedTicket).toContain('allianceid=4897000')
     expect(pcAdaptedTicket).toContain('sid=spot')
 
+    // 2. 已下线 404 的 you.ctrip.com 门票链接被自动纠偏保活
+    const old404Ticket = 'https://you.ctrip.com/searchsite/district.html?query=%E4%B8%BD%E6%B1%9F+%E7%8E%89%E9%BE%99%E9%9B%AA%E5%B1%B1&allianceid=4897000&sid=attraction_detail_ticket'
+    const rescuedTicket = adaptCtripUrlForDevice(old404Ticket, 'pc')
+    expect(rescuedTicket).toContain('https://m.ctrip.com/tangram/ticket')
+    expect(rescuedTicket).toContain('keyword=%E4%B8%BD%E6%B1%9F+%E7%8E%89%E9%BE%99%E9%9B%AA%E5%B1%B1')
+    expect(rescuedTicket).toContain('allianceid=4897000')
+    expect(rescuedTicket).toContain('sid=attraction_detail_ticket')
+
+    // 3. 酒店：移动端转 PC 宽屏官网
     const mobileHotel = 'https://m.ctrip.com/webapp/hotel/hotellist?cityName=%E6%88%90%E9%83%BD&keywords=%E6%98%A5%E7%86%99%E8%B7%AF&checkInDate=2026-10-01&checkOutDate=2026-10-03&allianceid=4897000&sid=hotel'
     const pcAdaptedHotel = adaptCtripUrlForDevice(mobileHotel, 'pc')
     expect(pcAdaptedHotel).toContain('https://hotels.ctrip.com/hotels/list')
     expect(pcAdaptedHotel).toContain('checkin=2026-10-01')
     expect(pcAdaptedHotel).toContain('checkout=2026-10-03')
 
-    // 2. PC 端链接在移动端打开时转为移动端触屏 H5
+    // 4. PC 端链接在移动端打开时转为移动端触屏 H5
     const pcHotel = 'https://hotels.ctrip.com/hotels/list?keyword=%E6%88%90%E9%83%BD&checkin=2026-10-01&checkout=2026-10-03&allianceid=4897000&sid=hotel'
     const mobileAdaptedHotel = adaptCtripUrlForDevice(pcHotel, 'mobile')
     expect(mobileAdaptedHotel).toContain('https://m.ctrip.com/webapp/hotel/hotellist')

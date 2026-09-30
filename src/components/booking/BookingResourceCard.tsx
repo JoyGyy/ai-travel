@@ -3,13 +3,17 @@
 import React, { useState } from 'react';
 import {
   AlertCircle,
+  Car,
   CheckCircle2,
   ChevronDown,
   ChevronUp,
   ExternalLink,
+  Hotel,
+  Plane,
   ShieldCheck,
   Sparkles,
   Ticket,
+  Train,
   Zap,
 } from 'lucide-react';
 import type { DomesticBookingResource } from '@/types/booking';
@@ -17,6 +21,38 @@ import type { DomesticBookingResource } from '@/types/booking';
 interface BookingResourceCardProps {
   resource: DomesticBookingResource;
   className?: string;
+}
+
+function getResourceIcon(type: DomesticBookingResource['type']) {
+  switch (type) {
+    case 'hotel':
+      return <Hotel className="h-3 w-3" />;
+    case 'train':
+      return <Train className="h-3 w-3" />;
+    case 'flight':
+      return <Plane className="h-3 w-3" />;
+    case 'taxi':
+      return <Car className="h-3 w-3" />;
+    case 'ticket':
+    default:
+      return <Ticket className="h-3 w-3" />;
+  }
+}
+
+function getActionLabel(type: DomesticBookingResource['type']) {
+  switch (type) {
+    case 'hotel':
+      return '携程特惠订房';
+    case 'train':
+      return '携程车票查询';
+    case 'flight':
+      return '携程机票比价';
+    case 'taxi':
+      return '携程打车/租车';
+    case 'ticket':
+    default:
+      return '携程特惠购票';
+  }
 }
 
 export function BookingResourceCard({
@@ -41,7 +77,7 @@ export function BookingResourceCard({
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-1.5 min-w-0">
           <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-amber-500 text-white shadow-2xs">
-            <Ticket className="h-3 w-3" />
+            {getResourceIcon(resource.type)}
           </div>
           <span className="font-bold text-stone-800 truncate">
             {resource.title}
@@ -158,7 +194,7 @@ export function BookingResourceCard({
             onClick={(e) => e.stopPropagation()}
             className="flex items-center gap-1 rounded-lg bg-linear-to-r from-orange-500 to-amber-600 px-2.5 py-1 text-xs font-bold text-white shadow-2xs transition-transform hover:scale-[1.02] active:scale-[0.98]"
           >
-            <span>携程门票直达</span>
+            <span>{getActionLabel(resource.type)}</span>
             <ExternalLink className="h-3 w-3" />
           </a>
         )}

@@ -12,20 +12,29 @@ import {
   CheckCircle2,
   ExternalLink,
   Heart,
+  Hotel,
   MapPin,
+  Sparkles,
   Ticket,
+  Train,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { fetchAttractionDetail } from '@/api/attractions';
 import { AttractionAiSummaryCard } from '@/components/attractions/AttractionAiSummaryCard';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAttractionFavorite } from '@/hooks/useAttractionFavorite';
+import {
+  attachCtripAllianceParams,
+  buildCtripHotelLink,
+  buildCtripTicketLink,
+  buildCtripTrainLink,
+} from '@/lib/ctrip/alliance';
 
 export default function AttractionDetail() {
   // ---- 路由参数与状态 ----
@@ -79,6 +88,31 @@ export default function AttractionDetail() {
       setFavoritePending(false);
     }
   }
+
+  /** 处理返回逻辑：优先回退上一页（保留筛选/滚动历史），兜底直接跳转到景点列表页 */
+  const handleBack = useCallback(() => {
+    if (
+      typeof window !== 'undefined' &&
+      window.history.length > 1 &&
+      document.referrer &&
+      document.referrer.includes('/attractions')
+    ) {
+      router.back();
+    } else {
+      router.push('/attractions');
+    }
+  }, [router]);
+
+  // 快捷键支持：按 ESC 键也可快速返回景点列表
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        handleBack();
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleBack]);
 
   // ---- 加载中状态 ----
   if (loading) {
@@ -137,16 +171,49 @@ export default function AttractionDetail() {
   const ticketTypeClass =
     attraction.ticketType === 'free' ? 'travel-tag--free' : 'travel-tag--paid';
 
+  // ---- 携程开放联盟推广跳转参数 ----
+  const ctripTicketUrl = attraction.bookingLinks?.ctrip
+    ? attachCtripAllianceParams(attraction.bookingLinks.ctrip, {
+        sid: 'attraction_detail_ticket',
+      })
+    : attraction.ticketType === 'paid'
+      ? buildCtripTicketLink({
+          city: attraction.city,
+          sid: 'attraction_detail_ticket',
+          spotName: attraction.name,
+        })
+      : null;
+
+  const ctripHotelUrl = buildCtripHotelLink({
+    city: attraction.city,
+    keyword: `${attraction.name}周边`,
+    sid: 'attraction_detail_hotel',
+  });
+
+  const ctripTrainUrl = buildCtripTrainLink({
+    arrival: attraction.city,
+    departure: '全国出发',
+    sid: 'attraction_detail_train',
+  });
+
+
   return (
     <main className="travel-page-shell">
+      {/* 固定状态返回按钮：方便用户在翻到某个景点的底部时也可以随时直接返回到景点列表页面 */}
       <button
-        className="inline-flex w-fit items-center gap-2 rounded-lg border border-travel-ink/10 bg-white px-4 py-2.5 text-sm font-semibold text-travel-ink shadow-sm transition-all hover:-translate-x-1 hover:border-primary/25 hover:text-primary hover:shadow-md"
-        onClick={() => router.back()}
+        aria-label="返回景点列表"
+        className="fixed top-[74px] left-4 sm:left-6 lg:left-8 z-40 inline-flex items-center gap-2 rounded-full border border-stone-200/90 bg-white/92 px-4 py-2 text-xs md:text-sm font-semibold text-stone-700 shadow-md backdrop-blur-md transition-all hover:bg-white hover:text-primary hover:border-primary/30 hover:shadow-lg active:scale-95 cursor-pointer"
+        onClick={handleBack}
+        title="返回景点列表 (Esc)"
         type="button"
       >
-        <ArrowLeft />
-        <span>返回</span>
+        <ArrowLeft className="h-4 w-4" />
+        <span className="hidden sm:inline">返回景点列表</span>
+        <span className="sm:hidden">返回列表</span>
       </button>
+
+      {/* 顶部占位符：防止 fixed 返回按钮在页面首屏与封面卡片产生重叠冲突 */}
+      <div aria-hidden="true" className="h-11 mb-2" />
 
       {/* ---- 封面与操作区 ---- */}
       <section className="travel-surface-card travel-ticket-edge travel-route-line overflow-hidden">
@@ -224,10 +291,10 @@ export default function AttractionDetail() {
               让 AI 规划这站
             </Link>
 
-            {attraction.bookingLinks?.ctrip && (
+            {ctripTicketUrl && (
               <a
                 className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg border border-amber-400/80 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-900 shadow-2xs transition-all hover:bg-amber-100 hover:border-amber-500"
-                href={attraction.bookingLinks.ctrip}
+                href={ctripTicketUrl}
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -320,6 +387,74 @@ export default function AttractionDetail() {
             <li key={item}>{item}</li>
           ))}
         </ul>
+      </section>
+
+      {/* ---- 携程开放联盟精选出行配套 ---- */}
+      <section className="travel-surface-card p-6">
+        <div className="flex items-center justify-between gap-2 mb-4">
+          <div className="flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-600 text-white shadow-2xs">
+              <Sparkles className="h-4 w-4 text-amber-200" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-travel-ink leading-tight">
+                携程旅行特惠与周边出行配套
+              </h2>
+              <p className="text-xs text-travel-muted">
+                携程开放联盟官方直通 · 享专属底价保障与极速出票
+              </p>
+            </div>
+          </div>
+          <span className="text-[11px] font-semibold text-orange-700 bg-orange-50 px-2 py-0.5 rounded-md border border-orange-200/80">
+            携程官方合作
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          {/* 酒店推荐卡片 */}
+          <div className="flex flex-col justify-between rounded-xl border border-stone-200/90 bg-stone-50/60 p-4 transition-all hover:border-orange-300 hover:bg-orange-50/30">
+            <div>
+              <div className="flex items-center gap-1.5 text-sm font-bold text-stone-900 mb-1.5">
+                <Hotel className="h-4 w-4 text-orange-600" />
+                <span>{attraction.name}周边精选酒店</span>
+              </div>
+              <p className="text-xs text-stone-500 leading-relaxed mb-3">
+                一键检索核心景区周边的携程高分酒店与特色民宿，支持连住特惠与免费取消。
+              </p>
+            </div>
+            <a
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-white border border-stone-200 px-3.5 py-1.5 text-xs font-bold text-stone-800 shadow-2xs transition-all hover:bg-orange-600 hover:text-white hover:border-orange-600"
+              href={ctripHotelUrl}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <span>查看周边酒店</span>
+              <ExternalLink className="h-3 w-3" />
+            </a>
+          </div>
+
+          {/* 高铁车票卡片 */}
+          <div className="flex flex-col justify-between rounded-xl border border-stone-200/90 bg-stone-50/60 p-4 transition-all hover:border-orange-300 hover:bg-orange-50/30">
+            <div>
+              <div className="flex items-center gap-1.5 text-sm font-bold text-stone-900 mb-1.5">
+                <Train className="h-4 w-4 text-orange-600" />
+                <span>直达{attraction.city}高铁车票查询</span>
+              </div>
+              <p className="text-xs text-stone-500 leading-relaxed mb-3">
+                全国各站直达{attraction.city}的高铁动车时刻表与余票监控，支持智能候补代订。
+              </p>
+            </div>
+            <a
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-white border border-stone-200 px-3.5 py-1.5 text-xs font-bold text-stone-800 shadow-2xs transition-all hover:bg-orange-600 hover:text-white hover:border-orange-600"
+              href={ctripTrainUrl}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <span>查询携程车票</span>
+              <ExternalLink className="h-3 w-3" />
+            </a>
+          </div>
+        </div>
       </section>
     </main>
   );

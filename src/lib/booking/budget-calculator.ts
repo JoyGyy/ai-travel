@@ -1,3 +1,8 @@
+import {
+  buildCtripHotelLink,
+  buildCtripTicketLink,
+  buildCtripTrainLink,
+} from '@/lib/ctrip/alliance';
 import type {
   DayBudgetBreakdown,
   DomesticBookingResource,
@@ -96,7 +101,7 @@ const KNOWN_SPOT_PRESETS: KnownSpotPreset[] = [
 ];
 
 /**
- * 根据景点名称、城市与预估价格生成国内 OTA 预订微卡数据
+ * 根据景点名称、城市与预估价格生成国内 OTA 预订微卡数据（接入携程开放联盟）
  */
 export function resolveSpotBookingResource(
   spotName: string,
@@ -104,6 +109,12 @@ export function resolveSpotBookingResource(
   ticketType: 'free' | 'paid' = 'free',
   rawPriceText?: string,
 ): DomesticBookingResource {
+  const bookingUrl = buildCtripTicketLink({
+    city,
+    sid: 'itinerary_spot_ticket',
+    spotName,
+  });
+
   // 1. 优先从精选 5A/热门景点库匹配
   const matchedPreset = KNOWN_SPOT_PRESETS.find((preset) =>
     preset.keywords.some((kw) => spotName.includes(kw)),
@@ -123,9 +134,7 @@ export function resolveSpotBookingResource(
       bookingNote: matchedPreset.bookingNote,
       salesVolume: matchedPreset.sales,
       ratingScore: matchedPreset.rating,
-      bookingUrl: `https://m.ctrip.com/webapp/ticket/ticketdetail/search.html?keyword=${encodeURIComponent(
-        spotName,
-      )}`,
+      bookingUrl,
     };
   }
 
@@ -143,9 +152,7 @@ export function resolveSpotBookingResource(
       bookingNote: '该景点无需购买门票，建议错开节假日高峰期入园',
       salesVolume: '热门打卡地',
       ratingScore: 4.7,
-      bookingUrl: `https://m.ctrip.com/webapp/ticket/ticketdetail/search.html?keyword=${encodeURIComponent(
-        spotName,
-      )}`,
+      bookingUrl,
     };
   }
 
@@ -170,9 +177,74 @@ export function resolveSpotBookingResource(
     bookingNote: '预订成功后凭短信电子码或身份证至景区闸机直接核销',
     salesVolume: '月订 3000+',
     ratingScore: 4.6,
-    bookingUrl: `https://m.ctrip.com/webapp/ticket/ticketdetail/search.html?keyword=${encodeURIComponent(
-      spotName,
-    )}`,
+    bookingUrl,
+  };
+}
+
+/**
+ * 依据城市与区域生成携程酒店预订资源
+ */
+export function resolveHotelBookingResource(
+  city: string,
+  areaOrKeyword?: string,
+  checkInDate?: string,
+  checkOutDate?: string,
+): DomesticBookingResource {
+  const query = areaOrKeyword || `${city}热门商圈`;
+  const bookingUrl = buildCtripHotelLink({
+    checkInDate,
+    checkOutDate,
+    city,
+    keyword: query,
+    sid: 'itinerary_hotel_card',
+  });
+
+  return {
+    id: `hotel-${encodeURIComponent(city)}-${encodeURIComponent(query)}`,
+    type: 'hotel',
+    title: `${city} · ${query}精选高分酒店/民宿`,
+    provider: '携程优选',
+    originalPrice: 420,
+    discountPrice: 358,
+    couponAmount: 30,
+    stockStatus: 'available',
+    tags: ['近核心景区', '免费取消', '携程连住特惠', '高分榜单'],
+    bookingNote: '支持连住优惠，建议提前3天以上锁定房源以享底价保障',
+    salesVolume: '热订 1.5万+',
+    ratingScore: 4.8,
+    bookingUrl,
+  };
+}
+
+/**
+ * 依据出发城市与到达城市生成携程高铁/车票预订资源
+ */
+export function resolveTrainBookingResource(
+  departure: string,
+  arrival: string,
+  date?: string,
+): DomesticBookingResource {
+  const bookingUrl = buildCtripTrainLink({
+    arrival,
+    date,
+    departure,
+    sid: 'itinerary_train_card',
+  });
+
+  return {
+    id: `train-${encodeURIComponent(departure)}-${encodeURIComponent(arrival)}`,
+    type: 'train',
+    title: `${departure} ➔ ${arrival} 高铁/动车直达`,
+    provider: '携程优选',
+    originalPrice: 320,
+    discountPrice: 320,
+    couponAmount: 5,
+    stockStatus: 'available',
+    tags: ['直达车次', '极速抢票', '支持退改', '余票监控'],
+    bookingNote: '全国铁路网实时余票，支持智能候补抢票与无座换座提醒',
+    salesVolume: '每日万次查询',
+    ratingScore: 4.9,
+    bookingUrl,
   };
 }
 

@@ -84,6 +84,11 @@ import { useAuthStore } from '@/stores/auth';
 import { useChatHistoryStore } from '@/stores/chatHistory';
 import { useItineraryWorkspaceStore } from '@/stores/itineraryWorkspace';
 import { recordTTFT } from '@/lib/telemetry/metrics';
+import {
+  calculateThinkingDuration,
+  extractModelReasoning,
+  generateDynamicThinking,
+} from '@/lib/ai/thinking-engine';
 
 const KNOWN_CITIES = [
   '成都',
@@ -371,7 +376,7 @@ function ChatContent() {
             cleaned,
             activeCity || undefined,
           );
-          if (parsed.isItinerary && parsed.spots.length >= 1) {
+          if (parsed.isItinerary && parsed.spots.length >= 2) {
             return parsed;
           }
         }
@@ -922,7 +927,7 @@ function ChatContent() {
             {/* 桌面端大地图展开快捷入口（仅在右侧地图收起时在对话栏呈现；地图开启时由地图顶栏自身收起） */}
             {!showRightMap && (
               <Button
-                className="gap-1.5 rounded-xl text-xs font-bold h-8 px-2.5 bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100 shadow-2xs cursor-pointer transition-all"
+                className="hidden lg:inline-flex gap-1.5 rounded-xl text-xs font-bold h-8 px-2.5 bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100 shadow-2xs cursor-pointer transition-all"
                 onClick={() => setShowRightMap(true)}
                 size="sm"
                 title="展开联动大地图"
@@ -1061,7 +1066,19 @@ function ChatContent() {
               .filter((part) => part.type === 'text')
               .map((part) => (part as { text: string }).text)
               .join('\n\n');
-            const cleanedText = sanitizeAiResponse(rawText);
+
+            // 1. 优先提取模型原生思考流（Reasoning 部件或 <think> 标签）
+            const { cleanText: textWithoutThink, reasoning: modelReasoning } =
+              extractModelReasoning(
+                rawText,
+                message.parts as Array<{
+                  reasoning?: string;
+                  text?: string;
+                  type: string;
+                }>,
+              );
+            const cleanedText = sanitizeAiResponse(textWithoutThink);
+
             const isToolExecuting = message.parts.some(
               (part) =>
                 part.type.startsWith('tool-') || part.type === 'dynamic-tool',
@@ -1101,12 +1118,28 @@ function ChatContent() {
                 : null;
             const isItinerary = Boolean(parsedRoute?.isItinerary);
             const hasSpots = Boolean(
-              isItinerary && parsedRoute && parsedRoute.spots.length >= 1,
+              isItinerary && parsedRoute && parsedRoute.spots.length >= 2,
             );
             const isLastAssistant =
               message.id === messages[messages.length - 1]?.id &&
               message.role === 'assistant';
             const isStillGenerating = isGenerating && isLastAssistant;
+
+            // 2. 深度思考内容：若模型输出原生推理则优先呈现；若无则根据本轮真实提问实时生成
+            const thinkingContent =
+              modelReasoning ||
+              generateDynamicThinking({
+                aiResponse: cleanedText,
+                city: detectedCity,
+                detectedSpots: parsedRoute?.spots.map((s) => s.name),
+                userPrompt: userTextBefore,
+              });
+
+            // 3. 动态真实耗时，避免死板固定 2.4s
+            const thinkingDurationMs = calculateThinkingDuration(
+              userTextBefore,
+              cleanedText,
+            );
 
             return (
               <div
@@ -1206,7 +1239,11 @@ function ChatContent() {
                           </div>
 
                           {/* 深度思考推演折叠区 (对标 DeepSeek-R1 / 携程深度思考) */}
-                          <ThinkingAccordion isGenerating={isStillGenerating} />
+                          <ThinkingAccordion
+                            content={thinkingContent}
+                            durationMs={thinkingDurationMs}
+                            isGenerating={isStillGenerating}
+                          />
 
                           {/* Markdown 富文本 */}
                           <div className="text-sm leading-relaxed text-stone-800 space-y-3">
@@ -1591,19 +1628,6 @@ function ChatContent() {
         />
       </section>
 
-      {/* 桌面端地图收起后的右侧快捷展开悬浮入口 */}
-      {!showRightMap && (
-        <button
-          aria-label="展开联动大地图"
-          className="hidden lg:flex fixed right-3 top-20 z-30 items-center gap-1.5 px-3 py-2 rounded-2xl bg-white/95 backdrop-blur-md border border-stone-200/90 shadow-md hover:shadow-lg text-emerald-800 hover:bg-emerald-50 text-xs font-bold transition-all cursor-pointer hover:scale-105"
-          onClick={() => setShowRightMap(true)}
-          title="展开联动大地图"
-          type="button"
-        >
-          <PanelRightOpen className="h-4 w-4" />
-          <span>展开地图</span>
-        </button>
-      )}
 
       {/* ======================================================== */}
       {/* 4. 手账路线卡片生成与分享弹窗                            */}

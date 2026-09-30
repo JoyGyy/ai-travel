@@ -34,6 +34,8 @@ import {
   generateTencentSpotUrl,
   getSpotCoordinates,
 } from '@/lib/map/amap';
+import { fetchRoutePolylineApi } from '@/api/map';
+import type { MultiPointRouteResult } from '@/lib/services/amapService';
 import { useItineraryWorkspaceStore } from '@/stores/itineraryWorkspace';
 import { FloatingPoiCard } from './FloatingPoiCard';
 import 'leaflet/dist/leaflet.css';
@@ -77,6 +79,7 @@ export function TravelMapView({
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMapReady, setIsMapReady] = useState(false);
   const [showItineraryDrawer, setShowItineraryDrawer] = useState(false);
+  const [realRouteData, setRealRouteData] = useState<MultiPointRouteResult | null>(null);
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<LeafletMap | null>(null);
@@ -158,6 +161,38 @@ export function TravelMapView({
     return null;
   }, [activeSpotId, workspaceDays, routePoints, city]);
 
+  // 3.2 异步调用高德开放平台官方 API 规划真实沿路行进轨迹
+  useEffect(() => {
+    if (routePoints.length < 2) {
+      setRealRouteData(null);
+      return;
+    }
+
+    const controller = new AbortController();
+    const validPts = routePoints
+      .filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lng))
+      .map((p) => ({ lat: p.lat, lng: p.lng }));
+
+    if (validPts.length < 2) {
+      setRealRouteData(null);
+      return;
+    }
+
+    fetchRoutePolylineApi(validPts, mode, city, { signal: controller.signal })
+      .then((res) => {
+        if (res && res.polyline && res.polyline.length >= 2) {
+          setRealRouteData(res);
+        }
+      })
+      .catch(() => {
+        // 网络异常或超时静默保持平滑降级
+      });
+
+    return () => {
+      controller.abort();
+    };
+  }, [routePoints, mode, city]);
+
   // 4. 计算分段路书导航段落 (Legs: 点A -> 点B, 点B -> 点C)
   const routeLegs = useMemo(() => {
     if (routePoints.length < 2) return [];
@@ -166,8 +201,12 @@ export function TravelMapView({
     for (let i = 0; i < routePoints.length - 1; i++) {
       const from = routePoints[i];
       const to = routePoints[i + 1];
-      const distKm = calculateDistanceKm(from.lat, from.lng, to.lat, to.lng);
-      const durationMins = estimateDurationMinutes(distKm, mode);
+      const realLeg = realRouteData?.legs?.[i];
+      const distKm =
+        realLeg?.distanceKm ??
+        calculateDistanceKm(from.lat, from.lng, to.lat, to.lng);
+      const durationMins =
+        realLeg?.durationMins ?? estimateDurationMinutes(distKm, mode);
       const bearing = calculateBearing(from.lat, from.lng, to.lat, to.lng);
 
       legs.push({
@@ -203,10 +242,17 @@ export function TravelMapView({
       });
     }
     return legs;
-  }, [routePoints, mode, city]);
+  }, [routePoints, mode, city, realRouteData]);
 
-  // 5. 计算全程总里程与总耗时
+  // 5. 计算全程总里程与总耗时 (优先取自高德官方规划综合里程与耗时)
   const totalMetrics = useMemo(() => {
+    if (realRouteData && realRouteData.legs.length > 0) {
+      return {
+        totalKm: realRouteData.totalDistanceKm,
+        totalMinutes: realRouteData.totalDurationMins,
+        totalTimeText: formatMinutesText(realRouteData.totalDurationMins),
+      };
+    }
     if (routeLegs.length === 0) {
       return { totalKm: 8, totalMinutes: 30, totalTimeText: '约 30 分钟' };
     }
@@ -222,7 +268,7 @@ export function TravelMapView({
       totalMinutes,
       totalTimeText: formatMinutesText(totalMinutes),
     };
-  }, [routeLegs]);
+  }, [routeLegs, realRouteData]);
 
   // 6. 监听地图容器 resize 变化，确保拖拽分栏或折叠时 Leaflet 立即平滑刷新视窗尺寸
   useEffect(() => {
@@ -453,12 +499,15 @@ export function TravelMapView({
         markers.push(marker);
       });
 
-      // 绘制平滑贝塞尔曲线路径 Polyline (告别生硬直戳城市的直线)
+      // 绘制路线 Polyline (优先渲染高德官方真实沿路行进轨迹，未完成时平滑降级为贝塞尔曲线)
       if (latlngs.length > 1) {
-        const smoothLatLngs = generateSmoothRoutePolyline(routePoints, 0.08);
+        const polylineCoords =
+          realRouteData?.polyline && realRouteData.polyline.length >= 2
+            ? realRouteData.polyline
+            : generateSmoothRoutePolyline(routePoints, 0.08);
 
         // 校验确保所有坐标合法，严格杜绝任何 (NaN, NaN) 传递给 Leaflet 导致崩溃
-        const validSmoothLatLngs = smoothLatLngs.filter(
+        const validSmoothLatLngs = polylineCoords.filter(
           (pt) =>
             Array.isArray(pt) &&
             pt.length >= 2 &&
@@ -511,11 +560,15 @@ export function TravelMapView({
             continue;
           }
 
-          const dist = calculateDistanceKm(p1.lat, p1.lng, p2.lat, p2.lng);
+          const realLeg = realRouteData?.legs?.[i];
+          const dist =
+            realLeg?.distanceKm ??
+            calculateDistanceKm(p1.lat, p1.lng, p2.lat, p2.lng);
           if (dist === 0) {
             continue;
           }
-          const duration = estimateDurationMinutes(dist, mode);
+          const duration =
+            realLeg?.durationMins ?? estimateDurationMinutes(dist, mode);
 
           // 智能抽稀避让：当景点较多 (>=4) 且两点直线距离非常近 (<1.2km) 时，默认隐藏常驻气泡，防止与标点踩踏
           const isLegActive = activeSpotIndex === i;
@@ -582,6 +635,7 @@ export function TravelMapView({
     setActiveSpotId,
     activeSpotIndex,
     activeSpotId,
+    realRouteData,
   ]);
 
   // 7.4 监听 activeSpotId 变更，平滑移动地图视角 (flyTo 代替 panTo，带来沉浸式无人机航拍级俯冲运镜)
@@ -728,6 +782,12 @@ export function TravelMapView({
                   {totalMetrics.totalKm}km
                 </span>
               </>
+            )}
+            {realRouteData?.source === 'amap' && (
+              <span className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-medium border border-emerald-200/80 shrink-0">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                高德沿路轨迹
+              </span>
             )}
           </div>
 

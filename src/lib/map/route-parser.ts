@@ -90,8 +90,21 @@ const TIME_OR_HEADER_PREFIXES = [
   /^Day\s*\d+$/i,
 ];
 
-/** 元数据/非景点版块（如：预算、季节、体验、贴士、穿搭等，整行不作为景点提取） */
-const META_SECTION_PATTERNS = [
+/** 意向询问、澄清引导及非景点问答句模式（绝对不能提取为景点） */
+const INQUIRY_OR_QUESTION_PATTERNS: RegExp[] = [
+  /[？?]/,
+  /几天|几日|多长时间|何时|几号/,
+  /和谁|同行|几人|人数|伴侣|情侣|亲子|带娃|长辈|独自/,
+  /偏好|意向|需求|要求|节奏|风格|方向/,
+  /预算|开销|花费|花销|价格|人均/,
+  /打算|计划.*[去玩出]|选择|考虑|希望/,
+  /怎么|如何|什么|哪些|哪种|去哪|怎样/,
+  /点击下方|回复|补充.*信息|为你定制|为你规划|定制.*行程|生成.*行程/,
+  /手账贴士|避坑指南|友好提醒|温馨提示|注意事项/,
+];
+
+/** 元数据/非景点版块及体验维度标签（如：预算、季节、体验、贴士、穿搭、分类维度等，整行不作为景点提取） */
+const META_SECTION_PATTERNS: RegExp[] = [
   // 预算与费用
   /预算/,
   /费用/,
@@ -135,6 +148,30 @@ const META_SECTION_PATTERNS = [
   /最佳月份/,
   /游玩天数/,
   /行程天数/,
+  // 分类维度与体验主题（非实体景点）
+  /经典地标/,
+  /地标打卡/,
+  /市井寻味/,
+  /老街市井/,
+  /老街寻味/,
+  /自然风光/,
+  /人文历史/,
+  /历史人文/,
+  /文化古迹/,
+  /休闲度假/,
+  /亲子游乐/,
+  /特色体验/,
+  /打卡胜地/,
+  /网红打卡/,
+  /夜游风光/,
+  /夜生活/,
+  /购物天地/,
+  /漫步路线/,
+  /游玩方向/,
+  /出行规划/,
+  /游玩节奏/,
+  /同行人员/,
+  /出行伙伴/,
   // 准备与穿搭
   /穿搭建议/,
   /装备清单/,
@@ -204,9 +241,19 @@ function isMetaSection(name: string): boolean {
   return META_SECTION_PATTERNS.some((p) => p.test(name));
 }
 
+function isInquiryOrQuestion(text: string): boolean {
+  if (!text) return false;
+  return INQUIRY_OR_QUESTION_PATTERNS.some((p) => p.test(text));
+}
+
 /** 提取单个可能包含时间前缀的文本中的真实景点名称 */
 function extractSpotCandidate(raw: string): string {
   if (!raw) return '';
+
+  // 0. 若整句包含问询/引导/疑问特征，直接跳过
+  if (isInquiryOrQuestion(raw)) {
+    return '';
+  }
 
   const cleaned = raw
     .replace(/\*\*/g, '')
@@ -221,8 +268,8 @@ function extractSpotCandidate(raw: string): string {
     const titlePart = cleanSpotName(parts[0]);
     const contentPart = parts.slice(1).join('：').trim();
 
-    // 1. 如果冒号前是元数据/非景点版块（预算、核心体验、最佳季节等），整行废弃
-    if (isMetaSection(titlePart)) {
+    // 1. 如果冒号前是元数据/非景点版块/分类维度或问句，整行废弃
+    if (isMetaSection(titlePart) || isInquiryOrQuestion(titlePart)) {
       return '';
     }
 
@@ -306,6 +353,11 @@ function extractSpotsFromLines(
       }
 
       if (rawContent) {
+        // 关键防护：如果行内容包含问句或澄清意向，严禁提取为景点
+        if (isInquiryOrQuestion(rawContent)) {
+          continue;
+        }
+
         let period: ParsedRouteSpot['period'];
         if (trimmed.includes('早晨') || trimmed.includes('清晨'))
           period = '早晨';
@@ -356,18 +408,54 @@ export function hasItineraryFeatures(
   text: string,
   dayBlocksCount = 0,
 ): boolean {
-  // 1. 包含日程分日块 (Day 1, 第1天, D1)
+  if (!text) return false;
+
+  const hasArrowChain = /[➔➜→]|(?:->)|(?:-->)/.test(text);
+
+  // 1. 负向拦截：若无明确路线连线且无分日块，且通篇属于向导澄清问答（如询问天数、出行伴侣、偏好节奏），绝不作为行程规划
+  if (!hasArrowChain && dayBlocksCount === 0) {
+    const isClarificationQuestionnaire =
+      text.includes('计划游玩几天') ||
+      text.includes('和谁一起出行') ||
+      text.includes('偏好哪种游玩节奏') ||
+      text.includes('友好提醒：点击下方推荐胶囊') ||
+      /(?:请告诉我|为你定制.*行程|补充.*信息|澄清引导)/.test(text) ||
+      (text.match(/[？?]/g) || []).length >= 2;
+
+    if (isClarificationQuestionnaire) {
+      return false;
+    }
+  }
+
+  // 2. 包含日程分日块 (Day 1, 第1天, D1)
   if (dayBlocksCount > 0) return true;
 
-  // 2. 包含显式路线连线箭头 (A ➔ B 或 A → B 或 A -> B)
-  if (/[➔➜→]|(?:->)|(?:-->)/.test(text)) return true;
+  // 3. 包含显式路线连线箭头 (A ➔ B 或 A → B 或 A -> B)
+  if (hasArrowChain) return true;
 
-  // 3. 包含明确的路线或行程标题/栏目
+  // 4. 包含明确的路线或行程标题/栏目（支持 【城市】路线规划、标题行冒号漫游、精选游等）
   const itineraryKeywords =
-    /(?:游览路线|行程规划|游玩路线|路线推荐|路线设计|行程安排|路线安排|精选路线|打卡路线|漫游路线|旅游路线|旅行路书|游览行程|玩转路线|精选游|[一二两三四五六七八九十\d]+[日天步]游|[一二两三四五六七八九十\d]+天.*[晚夜]游?|周末.*游|漫游[：:])/i;
-  if (itineraryKeywords.test(text)) return true;
+    /(?:详细游览路线|游览路线|行程规划|路线规划|游玩路线|路线推荐|路线设计|行程安排|路线安排|精选路线|打卡路线|漫游路线|旅游路线|旅行路书|游览行程|玩转路线|精选游|[一二两三四五六七八九十\d]+[日天步]游|[一二两三四五六七八九十\d]+天.*[晚夜]游?|周末.*游|漫游[：:])/i;
 
-  // 4. 包含按时间段游览多个景点的结构（至少2个时段标记，如 早晨/上午/下午/傍晚/夜间）
+  const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+  const hasItineraryTitleLine = lines.some((line) => {
+    const cleanLine = line
+      .replace(/^[#*`\s\u{1F300}-\u{1FAFF}]+/u, '')
+      .replace(/【[^】]*】/g, '')
+      .trim();
+    return (
+      itineraryKeywords.test(cleanLine) &&
+      (line.startsWith('#') ||
+        line.startsWith('【') ||
+        line.endsWith('：') ||
+        line.endsWith(':') ||
+        line.length <= 35)
+    );
+  });
+
+  if (hasItineraryTitleLine) return true;
+
+  // 5. 包含按时间段游览多个景点的结构（至少2个时段标记，如 早晨/上午/下午/傍晚/夜间）
   const timeSlotCount = (
     text.match(
       /(?:^|\n)\s*[*#-]?\s*\*{0,2}(?:早晨|清晨|上午|中午|下午|傍晚|夜间|晚上)\*{0,2}[:：]/g,
@@ -501,8 +589,9 @@ export function parseItineraryFromMarkdown(
   // 兜底：如果明确有行程特征，但未明确分天或分天未提取出景点，全篇提取归入第 1 天
   if (hasItinerary && allSpots.length === 0) {
     const fallbackSpots = extractSpotsFromLines(lines, detectedCity);
-    allSpots.push(...fallbackSpots);
-    if (fallbackSpots.length > 0) {
+    // 关键约束：单点问答不构成路线，至少要有 2 个合法景点打卡点才算一条游玩路线
+    if (fallbackSpots.length >= 2) {
+      allSpots.push(...fallbackSpots);
       parsedDays.push({
         day: 1,
         spots: fallbackSpots,
@@ -511,8 +600,8 @@ export function parseItineraryFromMarkdown(
     }
   }
 
-  // 若不是真实行程，清空可能误提取的假点位和假路线
-  const isItinerary = hasItinerary && allSpots.length > 0;
+  // 若不是真实行程或有效打卡点少于 2 处，清空可能误提取的假点位和假路线
+  const isItinerary = hasItinerary && allSpots.length >= 2;
   if (!isItinerary) {
     allSpots.length = 0;
     parsedDays.length = 0;
@@ -635,7 +724,23 @@ function cleanSpotName(raw: string): string {
 function isValidSpotName(name: string): boolean {
   if (!name || name.length < 2 || name.length > 20) return false;
 
+  // 必须不含各类问号、感叹号、冒号、逗号、分号等标点
+  if (/[？?！!。，,;；:：]/g.test(name)) return false;
+
+  // 必须不属于问询意向模式
+  if (isInquiryOrQuestion(name)) return false;
+
+  // 必须不属于非景点元数据或时段标题
   if (isMetaSection(name) || isTimeOrHeaderPrefix(name)) return false;
+
+  // 排除指示性动宾短语或客套祈使短语
+  if (
+    /^(?:感受|体验|享受|探索|品尝|游览|前往|出发|打卡|建议|推荐|定制|提供|选择|按照|根据|如果|欢迎)/.test(
+      name,
+    )
+  ) {
+    return false;
+  }
 
   return true;
 }

@@ -193,4 +193,35 @@ describe('route-parser', () => {
     expect(parsed.food).toContain('椰子鸡');
     expect(parsed.food).toContain('清补凉');
   });
+
+  it('对于向导式澄清引导回复，严禁将出行天数/出行同伴/游玩节奏问句及分类维度误解析为打卡点位', () => {
+    const text = `
+上海是一座充满活力与魅力的现代大都市，海派风情与前沿潮流在此交相辉映。
+经典地标打卡：外滩、东方明珠、南京路步行街、城隍庙等，感受上海的现代与历史交融。
+老街市井寻味：城隍庙、豫园、新天地等，体验上海地道的美食和市井生活。
+自然风光：上海植物园、崇明岛、世纪公园等，享受大自然的宁静与美丽。
+
+如果你能提供更多详细信息，我会为你定制一份完美的行程！😊
+
+- 计划游玩几天？（如周末 1~2 天、3 天小长假还是 4~5 天深度游）；
+- 和谁一起出行？（独自放空、情侣浪漫、带父母长辈还是亲子带娃）；
+- 偏好哪种游玩节奏？（经典地标打卡、老街市井寻味、自然风光还是慢调度假）；
+
+友好提醒：点击下方推荐胶囊或直接回复相关信息即可立即生成完整行程！
+`;
+    const parsed = parseItineraryFromMarkdown(text, '上海');
+    expect(parsed.city).toBe('上海');
+    expect(parsed.isItinerary).toBe(false);
+    expect(parsed.spots).toEqual([]);
+    expect(parsed.days).toEqual([]);
+    expect(parsed.routeString).toBe('');
+
+    const spotNames = parsed.spots.map((s) => s.name);
+    expect(spotNames).not.toContain('计划游玩几天');
+    expect(spotNames).not.toContain('和谁一起出行');
+    expect(spotNames).not.toContain('偏好哪种游玩节奏');
+    expect(spotNames).not.toContain('经典地标打卡');
+    expect(spotNames).not.toContain('老街市井寻味');
+    expect(spotNames).not.toContain('自然风光');
+  });
 });

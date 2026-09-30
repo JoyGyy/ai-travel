@@ -63,6 +63,19 @@ export function TravelRouteCardModal({
     transportMode = 'driving',
   } = routeData || {}
 
+  const rawTips = tips as unknown
+  const safeTips = Array.isArray(rawTips)
+    ? (rawTips as string[])
+    : typeof rawTips === 'string' && rawTips.trim()
+      ? [rawTips.trim()]
+      : []
+  const rawFood = food as unknown
+  const safeFood = Array.isArray(rawFood)
+    ? (rawFood as string[])
+    : typeof rawFood === 'string' && rawFood.trim()
+      ? [rawFood.trim()]
+      : []
+
   const todayStr = new Date().toLocaleDateString('zh-CN', {
     day: 'numeric',
     month: 'long',
@@ -417,14 +430,14 @@ export function TravelRouteCardModal({
             )}
 
             {/* 出行贴士 & 避坑指南 */}
-            {tips.length > 0 && (
+            {safeTips.length > 0 && (
               <div className="relative z-1 mb-5 rounded-2xl bg-white/90 border border-stone-200/90 p-5 text-sm">
                 <div className="flex items-center gap-2 font-bold text-stone-900 mb-2 text-base">
                   <Sparkles className="w-4 h-4 text-emerald-700" />
                   <span>出行贴士 & 避坑指南</span>
                 </div>
                 <ul className="space-y-1.5 text-stone-600 text-sm sm:text-base">
-                  {tips.map(tip => (
+                  {safeTips.map(tip => (
                     <li className="flex items-start gap-2" key={tip}>
                       <span className="text-emerald-700 font-bold">•</span>
                       <span>{tip}</span>

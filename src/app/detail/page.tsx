@@ -95,6 +95,12 @@ export default function Detail() {
   const itinerary = useItineraryStore(s => s.itinerary)
   const budgetBreakdown = useItineraryStore(s => s.budgetBreakdown)
   const tips = useItineraryStore(s => s.tips)
+  const rawTips = tips as unknown
+  const safeTips = Array.isArray(rawTips)
+    ? (rawTips as string[])
+    : typeof rawTips === 'string' && rawTips.trim()
+      ? [rawTips.trim()]
+      : []
   const weather = useItineraryStore(s => s.weather)
   const accommodation = useItineraryStore(s => s.accommodation)
   const nightlife = useItineraryStore(s => s.nightlife)
@@ -471,11 +477,11 @@ export default function Detail() {
             {budgetBreakdown && <BudgetTable data={budgetBreakdown} />}
 
             {/* 温馨提示 */}
-            {tips.length > 0 && (
+            {safeTips.length > 0 && (
               <section className="pt-6">
                 <SectionTitle id="detail-tips-title">顾问温馨贴士</SectionTitle>
                 <div className="rounded-3xl border border-stone-200/90 bg-[#FDFBF7] p-5 shadow-sm space-y-2">
-                  {tips.map(tip => (
+                  {safeTips.map(tip => (
                     <div
                       className="flex items-start gap-3 py-1.5 text-xs sm:text-sm leading-relaxed text-stone-700"
                       key={tip}

@@ -81,8 +81,10 @@ export default function HomePage() {
       toast.info('加载中...')
       return
     }
-    if (!user)
-      return router.push('/login')
+    if (!user) {
+      toast.info('请先登录后开启智能行程规划')
+      return router.push('/login?from=/chat')
+    }
     router.push('/chat')
   }
 

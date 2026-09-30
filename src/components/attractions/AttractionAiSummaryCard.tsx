@@ -26,15 +26,31 @@ export interface AttractionAiSummaryCardProps {
  */
 export const AttractionAiSummaryCard: FC<AttractionAiSummaryCardProps> = ({
   className = '',
-  highlights = [],
+  highlights,
   recommendedDuration,
-  suitableFor = [],
-  tips = [],
+  suitableFor,
+  tips,
 }) => {
+  const safeHighlights = Array.isArray(highlights)
+    ? highlights
+    : typeof highlights === 'string' && (highlights as string).trim()
+      ? [(highlights as string).trim()]
+      : [];
+  const safeTips = Array.isArray(tips)
+    ? tips
+    : typeof tips === 'string' && (tips as string).trim()
+      ? [(tips as string).trim()]
+      : [];
+  const safeSuitableFor = Array.isArray(suitableFor)
+    ? suitableFor
+    : typeof suitableFor === 'string' && (suitableFor as string).trim()
+      ? [(suitableFor as string).trim()]
+      : [];
+
   if (
-    highlights.length === 0 &&
-    tips.length === 0 &&
-    suitableFor.length === 0
+    safeHighlights.length === 0 &&
+    safeTips.length === 0 &&
+    safeSuitableFor.length === 0
   ) {
     return null;
   }
@@ -77,14 +93,14 @@ export const AttractionAiSummaryCard: FC<AttractionAiSummaryCardProps> = ({
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         {/* 模块 1: 核心好评与打卡看点 */}
-        {highlights.length > 0 && (
+        {safeHighlights.length > 0 && (
           <div className="rounded-2xl border border-emerald-200/70 bg-white/80 p-4 shadow-2xs">
             <div className="mb-2.5 flex items-center gap-1.5 text-xs font-bold text-emerald-800">
               <CheckCircle2 className="h-4 w-4 text-emerald-700 shrink-0" />
-              <span>游客高赞看点 Top {highlights.length}</span>
+              <span>游客高赞看点 Top {safeHighlights.length}</span>
             </div>
             <ul className="space-y-2 text-xs leading-relaxed text-stone-600">
-              {highlights.map((item, idx) => (
+              {safeHighlights.map((item, idx) => (
                 <li className="flex items-start gap-2" key={idx}>
                   <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-[10px] font-bold text-emerald-800">
                     {idx + 1}
@@ -97,14 +113,14 @@ export const AttractionAiSummaryCard: FC<AttractionAiSummaryCardProps> = ({
         )}
 
         {/* 模块 2: 行前避坑与预警 */}
-        {tips.length > 0 && (
+        {safeTips.length > 0 && (
           <div className="rounded-2xl border border-amber-200/80 bg-white/80 p-4 shadow-2xs">
             <div className="mb-2.5 flex items-center gap-1.5 text-xs font-bold text-amber-800">
               <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0" />
               <span>行前避坑与必知提醒</span>
             </div>
             <ul className="space-y-2 text-xs leading-relaxed text-stone-600">
-              {tips.map((item, idx) => (
+              {safeTips.map((item, idx) => (
                 <li className="flex items-start gap-2" key={idx}>
                   <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-amber-100 text-[10px] font-bold text-amber-800">
                     !
@@ -120,14 +136,14 @@ export const AttractionAiSummaryCard: FC<AttractionAiSummaryCardProps> = ({
       </div>
 
       {/* 模块 3: 人群画像与适宜场景 */}
-      {suitableFor.length > 0 && (
+      {safeSuitableFor.length > 0 && (
         <div className="mt-4 flex flex-wrap items-center gap-2 pt-3 border-t border-stone-200/60">
           <div className="flex items-center gap-1 text-xs font-bold text-stone-500">
             <Users className="h-3.5 w-3.5 text-stone-400" />
             <span>出行适宜：</span>
           </div>
           <div className="flex flex-wrap gap-1.5">
-            {suitableFor.map((target) => (
+            {safeSuitableFor.map((target) => (
               <Badge
                 className="bg-emerald-100/70 text-emerald-900 border-emerald-200 text-[11px] font-medium px-2.5 py-0.5 rounded-md"
                 key={target}
@@ -138,6 +154,7 @@ export const AttractionAiSummaryCard: FC<AttractionAiSummaryCardProps> = ({
           </div>
         </div>
       )}
+
     </section>
   );
 };

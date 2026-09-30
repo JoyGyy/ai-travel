@@ -24,7 +24,7 @@ export const POST = withPublicPost('auth-login', 10, 60_000, async (req) => {
   }
 
   const response = NextResponse.json({ success: true, ...result });
-  setAuthCookie(response, result.token);
+  setAuthCookie(response, result.token, req);
 
   return response;
 });

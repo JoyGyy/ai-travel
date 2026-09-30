@@ -141,6 +141,18 @@ describe('useAuthStore', () => {
       expect(getMeApi).toHaveBeenCalled();
     });
 
+    it('服务端返回 user 为 null（未登录）时应清空 user 状态', async () => {
+      useAuthStore.setState({ user: mockUser });
+      vi.mocked(getMeApi).mockResolvedValue({
+        success: true,
+        user: null,
+      });
+
+      await useAuthStore.getState().checkAuth();
+
+      expect(useAuthStore.getState().user).toBeNull();
+    });
+
     it('服务端抛错（如 401 凭证失效）时应同步清空 user 状态', async () => {
       useAuthStore.setState({ user: mockUser });
       vi.mocked(getMeApi).mockRejectedValue(new Error('未登录'));
@@ -162,7 +174,7 @@ describe('useAuthStore', () => {
   });
 
   describe('persist 持久化', () => {
-    it('localStorage 只持久化 user，不持久化 token', async () => {
+    it('localStorage 只持久化 user 与 expiresAt，不持久化 token', async () => {
       vi.mocked(loginApi).mockResolvedValue({
         success: true,
         token: mockToken,
@@ -173,7 +185,24 @@ describe('useAuthStore', () => {
 
       const persistedState = readPersistedState();
       expect(persistedState.user).toEqual(mockUser);
+      expect(persistedState.expiresAt).toBeDefined();
       expect(persistedState).not.toHaveProperty('token');
+    });
+
+    it('加载已过期 localStorage 数据时不恢复旧 user，避免 UI 假登录', async () => {
+      localStorage.setItem(
+        'travel_auth',
+        JSON.stringify({
+          state: {
+            expiresAt: Date.now() - 10_000, // 已过期 10 秒
+            user: mockUser,
+          },
+        }),
+      );
+
+      await useAuthStore.persist.rehydrate();
+
+      expect(useAuthStore.getState().user).toBeNull();
     });
 
     it('加载旧版 localStorage 时会清理遗留 token', async () => {

@@ -166,6 +166,31 @@ export default function AttractionDetail() {
     );
   }
 
+  // ---- 防御性规范化数组属性（杜绝 string/null 导致的 .map is not a function 异常） ----
+  const safeTips = Array.isArray(attraction.tips)
+    ? attraction.tips
+    : typeof attraction.tips === 'string' && (attraction.tips as string).trim()
+      ? [(attraction.tips as string).trim()]
+      : [];
+
+  const safeHighlights = Array.isArray(attraction.highlights)
+    ? attraction.highlights
+    : typeof attraction.highlights === 'string' && (attraction.highlights as string).trim()
+      ? [(attraction.highlights as string).trim()]
+      : [];
+
+  const safeTags = Array.isArray(attraction.tags)
+    ? attraction.tags
+    : typeof attraction.tags === 'string' && (attraction.tags as string).trim()
+      ? [(attraction.tags as string).trim()]
+      : [];
+
+  const safeSuitableFor = Array.isArray(attraction.suitableFor)
+    ? attraction.suitableFor
+    : typeof attraction.suitableFor === 'string' && (attraction.suitableFor as string).trim()
+      ? [(attraction.suitableFor as string).trim()]
+      : [];
+
   // ---- 构建 AI 规划跳转参数 ----
   const prompt = encodeURIComponent(
     `帮我规划一个包含${attraction.city}${attraction.name}的旅行行程`,
@@ -208,6 +233,7 @@ export default function AttractionDetail() {
       {/* 固定状态返回按钮：方便用户在翻到某个景点的底部时也可以随时直接返回到景点列表页面 */}
       <button
         aria-label="返回景点列表"
+
         className="fixed top-[74px] left-4 sm:left-6 lg:left-8 z-40 inline-flex items-center gap-2 rounded-full border border-stone-200/90 bg-white/92 px-4 py-2 text-xs md:text-sm font-semibold text-stone-700 shadow-md backdrop-blur-md transition-all hover:bg-white hover:text-primary hover:border-primary/30 hover:shadow-lg active:scale-95 cursor-pointer"
         onClick={handleBack}
         title="返回景点列表 (Esc)"
@@ -250,19 +276,19 @@ export default function AttractionDetail() {
             <Badge className="travel-tag travel-tag--warning">
               {attraction.priceText}
             </Badge>
-            {attraction.tags.map((tag) => (
+            {safeTags.map((tag) => (
               <Badge className="travel-tag travel-tag--info" key={tag}>
                 {tag}
               </Badge>
             ))}
           </div>
 
-          {attraction.suitableFor && attraction.suitableFor.length > 0 && (
+          {safeSuitableFor.length > 0 && (
             <div className="mb-5 flex flex-wrap items-center gap-1.5 text-xs text-stone-500">
               <span className="text-[11px] font-medium text-stone-400">
                 出行人群：
               </span>
-              {attraction.suitableFor.map((item) => (
+              {safeSuitableFor.map((item) => (
                 <span
                   className="rounded-md bg-stone-100 px-2 py-0.5 text-[11px] font-medium text-stone-600 border border-stone-200/60"
                   key={item}
@@ -322,10 +348,10 @@ export default function AttractionDetail() {
 
       {/* ---- AI 导游速览与避坑手账 ---- */}
       <AttractionAiSummaryCard
-        highlights={attraction.highlights}
+        highlights={safeHighlights}
         recommendedDuration={attraction.recommendedDuration}
-        suitableFor={attraction.suitableFor}
-        tips={attraction.tips}
+        suitableFor={safeSuitableFor}
+        tips={safeTips}
       />
 
       {/* ---- 景点介绍 ---- */}
@@ -376,24 +402,29 @@ export default function AttractionDetail() {
       </section>
 
       {/* ---- 游玩亮点 ---- */}
-      <section className="travel-surface-card p-6">
-        <h2 className="mb-4 text-xl font-bold text-travel-ink">游玩亮点</h2>
-        <ul className="list-inside list-disc space-y-2 text-travel-muted">
-          {attraction.highlights.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-      </section>
+      {safeHighlights.length > 0 && (
+        <section className="travel-surface-card p-6">
+          <h2 className="mb-4 text-xl font-bold text-travel-ink">游玩亮点</h2>
+          <ul className="list-inside list-disc space-y-2 text-travel-muted">
+            {safeHighlights.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {/* ---- 注意事项 ---- */}
-      <section className="travel-surface-card p-6">
-        <h2 className="mb-4 text-xl font-bold text-travel-ink">注意事项</h2>
-        <ul className="list-inside list-disc space-y-2 text-travel-muted">
-          {attraction.tips.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-      </section>
+      {safeTips.length > 0 && (
+        <section className="travel-surface-card p-6">
+          <h2 className="mb-4 text-xl font-bold text-travel-ink">注意事项</h2>
+          <ul className="list-inside list-disc space-y-2 text-travel-muted">
+            {safeTips.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </section>
+      )}
+
 
       {/* ---- 携程开放联盟精选出行配套 ---- */}
       <section className="travel-surface-card p-6">

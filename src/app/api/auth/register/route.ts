@@ -31,7 +31,7 @@ export const POST = withPublicPost(
     const result = await register(username, password, email);
 
     const response = NextResponse.json({ success: true, ...result });
-    setAuthCookie(response, result.token);
+    setAuthCookie(response, result.token, req);
 
     return response;
   },

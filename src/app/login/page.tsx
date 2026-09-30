@@ -7,8 +7,8 @@
  */
 import { ArrowLeft, Compass, Eye, EyeOff } from 'lucide-react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useRef, useState } from 'react';
 
 import { sendCodeApi } from '@/api/auth';
 import { ComplianceFooter } from '@/components/ComplianceFooter';
@@ -39,10 +39,22 @@ const formCopy = {
   },
 };
 
-export default function Login() {
+function LoginFormContent() {
   /* ---------- 状态与 Store ---------- */
 
   const router = useRouter();
+  let rawFrom: string | null = null;
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const searchParams = useSearchParams?.();
+    rawFrom = searchParams ? searchParams.get('from') : null;
+  } catch {
+    rawFrom = null;
+  }
+  const redirectTarget =
+    rawFrom && rawFrom.startsWith('/') && !rawFrom.startsWith('//')
+      ? rawFrom
+      : '/';
   const toast = useAppToast();
   const { login, register } = useAuthStore();
   const [tab, setTab] = useState<'login' | 'register'>('login');
@@ -216,7 +228,7 @@ export default function Login() {
         await register(username.trim(), password, email.trim(), code.trim());
       }
       toast.success(tab === 'login' ? '登录成功' : '注册成功');
-      router.push('/');
+      router.push(redirectTarget);
     } catch (err: unknown) {
       setFieldErrors({});
       setFormError(
@@ -553,5 +565,13 @@ export default function Login() {
         </div>
       </section>
     </main>
+  );
+}
+
+export default function Login() {
+  return (
+    <Suspense fallback={null}>
+      <LoginFormContent />
+    </Suspense>
   );
 }

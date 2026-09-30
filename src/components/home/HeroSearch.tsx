@@ -298,16 +298,22 @@ export function HeroSearch() {
       toast.info('加载中...')
       return
     }
-    if (!user)
-      return router.push('/login')
     const { budgetNum, isValid } = validatePlanner()
     if (!isValid)
       return
-    setIsSubmitting(true)
+
     const days = differenceInDays(dateRange!.to!, dateRange!.from!) + 1
     const prefLabel = TRAVEL_PREFERENCES.find(p => p.key === selectedPreference)?.label || '深度体验'
     const prompt = `请帮我规划一份前往【${city.trim()}】的${days}天深度旅行手账路线，总预算约 ${budgetNum} 元，出行风格偏好【${prefLabel}】。请提供详细游览路线、景点打卡时间线、地道美食推荐与交通避坑指南。`
-    router.push(`/chat?city=${encodeURIComponent(city.trim())}&prompt=${encodeURIComponent(prompt)}`)
+    const targetUrl = `/chat?city=${encodeURIComponent(city.trim())}&prompt=${encodeURIComponent(prompt)}`
+
+    if (!user) {
+      toast.info('请先登录后开启智能行程规划')
+      return router.push(`/login?from=${encodeURIComponent(targetUrl)}`)
+    }
+
+    setIsSubmitting(true)
+    router.push(targetUrl)
   }, [hasHydrated, user, validatePlanner, toast, dateRange, router, city, selectedPreference])
 
   const handleApplyMystery = useCallback((dest: MysteryDestination) => {

@@ -138,14 +138,33 @@ export function requireCsrf(req: Request): void {
   throw httpError(403, 'CSRF token 无效');
 }
 
+/** 判断当前请求是否应使用 Secure Cookie 标记 */
+export function isSecureCookie(req?: Request): boolean {
+  const proto =
+    req?.headers.get('x-forwarded-proto') ||
+    (req?.url?.startsWith('https') ? 'https' : undefined);
+  const isHttps = proto === 'https';
+  const isLocal =
+    req?.headers.get('host')?.includes('localhost') ||
+    req?.headers.get('host')?.includes('127.0.0.1');
+  return (
+    isHttps ||
+    (process.env.NODE_ENV === 'production' && !isLocal && proto !== 'http')
+  );
+}
+
 /** 设置认证 cookie 的统一配置 */
-export function setAuthCookie(response: NextResponse, token: string): void {
+export function setAuthCookie(
+  response: NextResponse,
+  token: string,
+  req?: Request,
+): void {
   response.cookies.set('token', token, {
     httpOnly: true,
     maxAge: 7 * 24 * 60 * 60, // 7 天
     path: '/',
     sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    secure: isSecureCookie(req),
   });
 }
 

@@ -24,6 +24,7 @@ import { useChatHistoryStore } from './chatHistory';
 interface AuthState {
   _hasHydrated: boolean;
   checkAuth: () => Promise<void>;
+  expiresAt: number | null;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   register: (
@@ -44,6 +45,7 @@ export const useAuthStore = create<AuthState>()(
       (set) => ({
         // --- 初始状态 ---
         _hasHydrated: false,
+        expiresAt: null,
 
         /** 静默校验并与服务端 Session 同步 */
         async checkAuth() {
@@ -56,7 +58,7 @@ export const useAuthStore = create<AuthState>()(
                 .initForUser(data.user.id)
                 .catch(() => {});
             } else {
-              set({ user: null });
+              set({ expiresAt: null, user: null });
               useChatHistoryStore
                 .getState()
                 .initForUser(null)
@@ -64,7 +66,7 @@ export const useAuthStore = create<AuthState>()(
             }
           } catch {
             // 服务端 Cookie 无效或过期，清空前端 user，避免 UI 假登录
-            set({ user: null });
+            set({ expiresAt: null, user: null });
             useChatHistoryStore
               .getState()
               .initForUser(null)
@@ -75,7 +77,8 @@ export const useAuthStore = create<AuthState>()(
         async login(username, password) {
           const data = await loginApi(username, password);
           if (data) {
-            set({ user: data.user });
+            const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
+            set({ expiresAt, user: data.user });
             useChatHistoryStore
               .getState()
               .initForUser(data.user.id)
@@ -90,7 +93,7 @@ export const useAuthStore = create<AuthState>()(
           } catch {
             // 忽略网络错误，确保本地状态清空
           } finally {
-            set({ user: null });
+            set({ expiresAt: null, user: null });
             useChatHistoryStore
               .getState()
               .initForUser(null)
@@ -103,7 +106,8 @@ export const useAuthStore = create<AuthState>()(
             ? await registerApi(username, password, email, code)
             : await registerApi(username, password);
           if (data) {
-            set({ user: data.user });
+            const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
+            set({ expiresAt, user: data.user });
             useChatHistoryStore
               .getState()
               .initForUser(data.user.id)
@@ -119,11 +123,22 @@ export const useAuthStore = create<AuthState>()(
       {
         merge: (persistedState, currentState) => {
           const state = persistedState as Partial<AuthState> | undefined;
-          return { ...currentState, user: state?.user ?? null };
+          if (state?.expiresAt && Date.now() > state.expiresAt) {
+            return { ...currentState, expiresAt: null, user: null };
+          }
+          return {
+            ...currentState,
+            expiresAt: state?.expiresAt ?? null,
+            user: state?.user ?? null,
+          };
         },
         name: 'travel_auth',
         onRehydrateStorage: () => (state) => {
           state?.setHasHydrated(true);
+          if (state?.expiresAt && Date.now() > state.expiresAt) {
+            state.logout().catch(() => {});
+            return;
+          }
           if (state?.user?.id) {
             useChatHistoryStore
               .getState()
@@ -140,7 +155,7 @@ export const useAuthStore = create<AuthState>()(
             state.checkAuth();
           }
         },
-        partialize: (state) => ({ user: state.user }),
+        partialize: (state) => ({ expiresAt: state.expiresAt, user: state.user }),
       },
     ),
     { name: 'AuthStore' },

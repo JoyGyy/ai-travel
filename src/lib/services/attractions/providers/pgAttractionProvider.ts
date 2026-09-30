@@ -156,26 +156,81 @@ async function listAttractions(
   }
 }
 
+/** 安全地将可能为 string、JSON 字符串、PostgreSQL array 字面量或数组的数据规范化为 string[] */
+export function normalizeStringArray(val: unknown): string[] {
+  if (Array.isArray(val)) {
+    return val
+      .map(item => (typeof item === 'string' ? item.trim() : String(item ?? '').trim()))
+      .filter(Boolean)
+  }
+  if (typeof val === 'string') {
+    const trimmed = val.trim()
+    if (!trimmed || trimmed === '{}' || trimmed === '[]') return []
+    // JSON 数组格式
+    if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+      try {
+        const parsed = JSON.parse(trimmed)
+        if (Array.isArray(parsed)) {
+          return parsed
+            .map(item => (typeof item === 'string' ? item.trim() : String(item ?? '').trim()))
+            .filter(Boolean)
+        }
+      } catch {
+        // ignore JSON parse error
+      }
+    }
+    // PostgreSQL array 字面量格式，形如 {"tip 1","tip 2"} 或 {tip1,tip2}
+    if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+      const inner = trimmed.slice(1, -1).trim()
+      if (!inner) return []
+      return inner
+        .split(',')
+        .map(s => s.replace(/^"(.*)"$/, '$1').trim())
+        .filter(Boolean)
+    }
+    return [trimmed]
+  }
+  return []
+}
+
+/** 安全解析 booking_links 对象 */
+function normalizeBookingLinks(val: unknown): Record<string, unknown> {
+  if (val && typeof val === 'object' && !Array.isArray(val)) {
+    return val as Record<string, unknown>
+  }
+  if (typeof val === 'string') {
+    try {
+      const parsed = JSON.parse(val)
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        return parsed
+      }
+    } catch {
+      // ignore JSON parse error
+    }
+  }
+  return {}
+}
+
 /** 将数据库行映射为 AttractionItem（snake_case → camelCase） */
 function mapRow(row: AttractionRow): AttractionItem {
   return {
-    address: row.address,
-    aliases: row.aliases || [],
-    bookingLinks: row.booking_links || {},
-    city: row.city,
-    coverImage: row.cover_image,
-    description: row.description,
-    highlights: row.highlights || [],
+    address: row.address || '',
+    aliases: normalizeStringArray(row.aliases),
+    bookingLinks: normalizeBookingLinks(row.booking_links),
+    city: row.city || '',
+    coverImage: row.cover_image || '',
+    description: row.description || '',
+    highlights: normalizeStringArray(row.highlights),
     id: row.id,
     name: row.name,
-    openingHours: row.opening_hours,
-    priceText: row.price_text,
-    recommendedDuration: row.recommended_duration,
-    suitableFor: row.suitable_for || [],
-    summary: row.summary,
-    tags: row.tags || [],
-    ticketType: row.ticket_type,
-    tips: row.tips || [],
+    openingHours: row.opening_hours || '',
+    priceText: row.price_text || '',
+    recommendedDuration: row.recommended_duration || '',
+    suitableFor: normalizeStringArray(row.suitable_for),
+    summary: row.summary || '',
+    tags: normalizeStringArray(row.tags),
+    ticketType: row.ticket_type || 'free',
+    tips: normalizeStringArray(row.tips),
   }
 }
 
@@ -186,3 +241,4 @@ async function searchAttractions(
 }
 
 export { getAttractionById, getAttractionMeta, listAttractions, searchAttractions }
+

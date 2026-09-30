@@ -2,9 +2,8 @@
  * 获取当前用户信息 API 测试
  * GET /api/auth/me
  */
-import type * as httpUtils from '@/lib/utils/http'
-
 import { query } from '@/lib/db'
+import { getAuthFromHeaders } from '@/lib/services/auth'
 
 import { GET } from './route'
 
@@ -12,36 +11,23 @@ vi.mock('@/lib/db', () => ({
   query: vi.fn(),
 }))
 
-vi.mock('@/lib/utils/http', async (importOriginal) => {
-  const actual: typeof httpUtils = await importOriginal()
-  return {
-    ...actual,
-    withAuth:
-      (
-        handler: (
-          req: Request,
-          ctx: { user: { id: string, username: string } },
-        ) => Promise<Response>,
-      ) =>
-        async (req: Request) => {
-          try {
-            return await handler(req, { user: { id: 'u1', username: 'testuser' } })
-          }
-          catch (err) {
-            return actual.errorResponse(err)
-          }
-        },
-  }
-})
+vi.mock('@/lib/services/auth', () => ({
+  getAuthFromHeaders: vi.fn(),
+}))
 
 const mockQuery = vi.mocked(query)
+const mockGetAuth = vi.mocked(getAuthFromHeaders)
 
-describe('gET /api/auth/me', () => {
+describe('GET /api/auth/me', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
   it('用户存在返回用户信息', async () => {
+    mockGetAuth.mockResolvedValueOnce({
+      id: 'u1',
+      username: 'testuser',
+    })
     mockQuery.mockResolvedValueOnce({
       rows: [{ created_at: new Date('2024-01-01'), id: 'u1', username: 'testuser' }],
     } as never)
@@ -57,15 +43,32 @@ describe('gET /api/auth/me', () => {
     expect(data.user.createdAt).toBeDefined()
   })
 
-  it('用户不存在返回 401', async () => {
+  it('未登录时返回 200 且 user 为 null', async () => {
+    mockGetAuth.mockResolvedValueOnce(null)
+
+    const req = new Request('http://localhost/api/auth/me')
+    const res = await GET(req)
+    const data = await res.json()
+
+    expect(res.status).toBe(200)
+    expect(data.success).toBe(true)
+    expect(data.user).toBeNull()
+  })
+
+  it('用户在数据库中不存在时清除 Cookie 并返回 user 为 null', async () => {
+    mockGetAuth.mockResolvedValueOnce({
+      id: 'deleted-user',
+      username: 'ghost',
+    })
     mockQuery.mockResolvedValueOnce({ rows: [] } as never)
 
     const req = new Request('http://localhost/api/auth/me')
     const res = await GET(req)
     const data = await res.json()
 
-    expect(res.status).toBe(401)
-    expect(data.success).toBe(false)
-    expect(data.message).toBe('用户不存在')
+    expect(res.status).toBe(200)
+    expect(data.success).toBe(true)
+    expect(data.user).toBeNull()
+    expect(res.headers.get('set-cookie')).toContain('token=;')
   })
 })

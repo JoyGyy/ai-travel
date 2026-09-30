@@ -19,8 +19,8 @@ export async function changePasswordApi(
   );
 }
 
-/** 获取当前登录用户信息（需认证） */
-export async function getMeApi(): Promise<{ success: true; user: AuthUser }> {
+/** 获取当前登录用户信息（需认证，未登录或失效返回 null） */
+export async function getMeApi(): Promise<{ success: true; user: AuthUser | null }> {
   return get('/api/auth/me', { auth: true });
 }
 

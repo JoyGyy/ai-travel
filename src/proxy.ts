@@ -44,7 +44,7 @@ export async function proxy(request: NextRequest) {
 
 // 从环境变量获取 JWT_SECRET（proxy 中无法使用 env.ts）
 function getJwtSecret(): Uint8Array {
-  const secret = process.env.JWT_SECRET || 'dev-secret-key-change-in-production-min32chars'
+  const secret = (process.env.JWT_SECRET || 'dev-secret-key-change-in-production-min32chars').trim()
   return new TextEncoder().encode(secret)
 }
 

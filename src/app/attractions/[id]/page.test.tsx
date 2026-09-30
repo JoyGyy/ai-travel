@@ -121,4 +121,37 @@ describe('AttractionDetail Page', () => {
     expect(trainLink).toHaveAttribute('href', expect.stringContaining('trains.ctrip.com'));
     expect(trainLink).toHaveAttribute('href', expect.stringContaining('sid=attraction_detail_train'));
   });
+
+  it('当后端返回的 tips/highlights/tags 为字符串或非数组时能够防御性降级并不崩溃', async () => {
+    const { fetchAttractionDetail } = await import('@/api/attractions');
+    vi.mocked(fetchAttractionDetail).mockResolvedValueOnce({
+      attraction: {
+        id: 'chengdu-jinli',
+        name: '锦里古街',
+        city: '成都',
+        summary: '西蜀街区',
+        description: '测试描述',
+        coverImage: 'https://example.com/test.webp',
+        address: '成都市武侯区',
+        openingHours: '全天开放',
+        recommendedDuration: '2-3小时',
+        ticketType: 'free',
+        priceText: '免费开放',
+        bookingLinks: {},
+        tags: '历史街区' as unknown as string[],
+        highlights: '单条亮点文本' as unknown as string[],
+        suitableFor: '所有人' as unknown as string[],
+        tips: '单条注意事项字符串' as unknown as string[],
+      },
+      isFavorite: false,
+    });
+
+    render(<AttractionDetail />);
+
+    // 应该正常渲染页面，不崩溃抛出 TypeError: tips.map is not a function
+    await screen.findByText('注意事项');
+    expect(screen.getAllByText('单条注意事项字符串').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('单条亮点文本').length).toBeGreaterThanOrEqual(1);
+  });
 });
+

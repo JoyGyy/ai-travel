@@ -5,8 +5,9 @@
 import { NextResponse } from 'next/server'
 
 import { generateCsrfToken } from '@/lib/utils/csrf'
+import { isSecureCookie } from '@/lib/utils/http'
 
-export async function GET() {
+export async function GET(req?: Request) {
   const token = generateCsrfToken()
 
   const response = NextResponse.json({ csrfToken: token })
@@ -15,7 +16,7 @@ export async function GET() {
     maxAge: 24 * 60 * 60, // 24 小时
     path: '/',
     sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    secure: isSecureCookie(req),
   })
 
   return response

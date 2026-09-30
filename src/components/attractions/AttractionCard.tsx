@@ -112,12 +112,18 @@ export function AttractionCard<
     attraction.ticketType,
     attraction.priceText,
   );
+  const safeTags = Array.isArray(attraction.tags)
+    ? attraction.tags
+    : typeof attraction.tags === 'string' && (attraction.tags as string).trim()
+      ? [(attraction.tags as string).trim()]
+      : [];
 
   return (
     <Link
       className={`group block h-full ${className}`}
       href={`/attractions/${attraction.id}`}
     >
+
       <article className="h-full overflow-hidden rounded-3xl border border-stone-200/90 bg-[#FDFBF7] shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-700/60 hover:shadow-xl flex flex-col justify-between">
         {/* 顶部封面图与悬浮操作栏 */}
         <div
@@ -233,7 +239,7 @@ export function AttractionCard<
           {/* 行 4: 标签与查看详情直达底栏 */}
           <div className="mt-3.5 pt-3 border-t border-stone-200/70 flex items-center justify-between gap-2">
             <div className="flex flex-wrap gap-1 min-w-0">
-              {attraction.tags.slice(0, 3).map((tag) => (
+              {safeTags.slice(0, 3).map((tag) => (
                 <span
                   className="bg-stone-100/90 text-stone-600 text-[10px] font-medium rounded-md px-2 py-0.5 shrink-0"
                   key={tag}

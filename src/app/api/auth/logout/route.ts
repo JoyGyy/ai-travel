@@ -4,7 +4,9 @@
  */
 import { NextResponse } from 'next/server'
 
-export async function POST() {
+import { isSecureCookie } from '@/lib/utils/http'
+
+export async function POST(req?: Request) {
   const response = NextResponse.json({
     message: '退出登录成功',
     success: true,
@@ -15,7 +17,7 @@ export async function POST() {
     maxAge: 0,
     path: '/',
     sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    secure: isSecureCookie(req),
   })
 
   return response

@@ -52,4 +52,19 @@ describe('AttractionAiSummaryCard', () => {
     expect(screen.queryByText(/游客高赞看点/)).not.toBeInTheDocument();
     expect(screen.queryByText('出行适宜：')).not.toBeInTheDocument();
   });
+
+  it('在传入非数组（如单个字符串）时防御性包装为数组，杜绝 map is not a function 异常', () => {
+    render(
+      <AttractionAiSummaryCard
+        highlights={'单条亮点字符串' as unknown as string[]}
+        suitableFor={'家庭出行' as unknown as string[]}
+        tips={'单条避坑提醒字符串' as unknown as string[]}
+      />,
+    );
+
+    expect(screen.getByText('单条亮点字符串')).toBeInTheDocument();
+    expect(screen.getByText('单条避坑提醒字符串')).toBeInTheDocument();
+    expect(screen.getByText('✓ 家庭出行')).toBeInTheDocument();
+  });
 });
+

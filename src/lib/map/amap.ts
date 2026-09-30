@@ -297,6 +297,17 @@ export function calculateDistanceKm(
   lat2: number,
   lng2: number,
 ): number {
+  if (
+    !Number.isFinite(lat1) ||
+    !Number.isFinite(lng1) ||
+    !Number.isFinite(lat2) ||
+    !Number.isFinite(lng2)
+  ) {
+    return 0;
+  }
+  if (lat1 === lat2 && lng1 === lng2) {
+    return 0;
+  }
   const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLng = ((lng2 - lng1) * Math.PI) / 180;
@@ -306,9 +317,10 @@ export function calculateDistanceKm(
       Math.cos((lat2 * Math.PI) / 180) *
       Math.sin(dLng / 2) *
       Math.sin(dLng / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const c = 2 * Math.atan2(Math.sqrt(Math.max(0, a)), Math.sqrt(Math.max(0, 1 - a)));
   const dist = R * c;
-  return Number(Math.max(dist, 0.8).toFixed(1));
+  if (dist === 0) return 0;
+  return Number(Math.max(dist, 0.1).toFixed(1));
 }
 
 /**
@@ -320,6 +332,14 @@ export function calculateBearing(
   lat2: number,
   lng2: number,
 ): number {
+  if (
+    !Number.isFinite(lat1) ||
+    !Number.isFinite(lng1) ||
+    !Number.isFinite(lat2) ||
+    !Number.isFinite(lng2)
+  ) {
+    return 0;
+  }
   const dLng = ((lng2 - lng1) * Math.PI) / 180;
   const y = Math.sin(dLng) * Math.cos((lat2 * Math.PI) / 180);
   const x =
@@ -340,9 +360,13 @@ export function calculateMidPoint(
   lat2: number,
   lng2: number,
 ): { lat: number; lng: number } {
+  const safeLat1 = Number.isFinite(lat1) ? lat1 : 0;
+  const safeLng1 = Number.isFinite(lng1) ? lng1 : 0;
+  const safeLat2 = Number.isFinite(lat2) ? lat2 : 0;
+  const safeLng2 = Number.isFinite(lng2) ? lng2 : 0;
   return {
-    lat: Number(((lat1 + lat2) / 2).toFixed(6)),
-    lng: Number(((lng1 + lng2) / 2).toFixed(6)),
+    lat: Number(((safeLat1 + safeLat2) / 2).toFixed(6)),
+    lng: Number(((safeLng1 + safeLng2) / 2).toFixed(6)),
   };
 }
 
@@ -356,23 +380,43 @@ export function calculateNormalOffset(
   lng2: number,
   offsetRatio = 0.08,
 ): { lat: number; lng: number } {
+  if (
+    !Number.isFinite(lat1) ||
+    !Number.isFinite(lng1) ||
+    !Number.isFinite(lat2) ||
+    !Number.isFinite(lng2)
+  ) {
+    return {
+      lat: Number.isFinite(lat1) ? lat1 : 0,
+      lng: Number.isFinite(lng1) ? lng1 : 0,
+    };
+  }
+
   const mid = calculateMidPoint(lat1, lng1, lat2, lng2);
   const dLat = lat2 - lat1;
   const avgLatRad = (mid.lat * Math.PI) / 180;
-  const dLng = (lng2 - lng1) * Math.cos(avgLatRad);
+  const cosLat = Math.cos(avgLatRad);
+  const dLng = (lng2 - lng1) * cosLat;
   const len = Math.sqrt(dLat * dLat + dLng * dLng);
 
-  if (len < 1e-6) {
+  if (len < 1e-5) {
     return mid;
   }
 
   const normLat = -dLng / len;
-  const normLng = dLat / len / Math.cos(avgLatRad);
+  const normLng = dLat / len / (cosLat || 1);
 
   const offsetMagnitude = len * offsetRatio;
+  const finalLat = Number((mid.lat + normLat * offsetMagnitude).toFixed(6));
+  const finalLng = Number((mid.lng + normLng * offsetMagnitude).toFixed(6));
+
+  if (!Number.isFinite(finalLat) || !Number.isFinite(finalLng)) {
+    return mid;
+  }
+
   return {
-    lat: Number((mid.lat + normLat * offsetMagnitude).toFixed(6)),
-    lng: Number((mid.lng + normLng * offsetMagnitude).toFixed(6)),
+    lat: finalLat,
+    lng: finalLng,
   };
 }
 
@@ -385,8 +429,27 @@ export function generateCurvedSegmentPoints(
   curvature = 0.12,
   numSegments = 16,
 ): [number, number][] {
-  const dist = calculateDistanceKm(p1.lat, p1.lng, p2.lat, p2.lng);
-  if (dist < 0.8 || curvature === 0) {
+  if (
+    !p1 ||
+    !p2 ||
+    !Number.isFinite(p1.lat) ||
+    !Number.isFinite(p1.lng) ||
+    !Number.isFinite(p2.lat) ||
+    !Number.isFinite(p2.lng)
+  ) {
+    return [];
+  }
+
+  const dLat = p2.lat - p1.lat;
+  const avgLat = (p1.lat + p2.lat) / 2;
+  const avgLatRad = (avgLat * Math.PI) / 180;
+  const cosLat = Math.cos(avgLatRad);
+  const dLng = (p2.lng - p1.lng) * cosLat;
+  const len = Math.sqrt(dLat * dLat + dLng * dLng);
+
+  // 若两点极度接近或重合 (经纬度欧氏距离 < 0.005，约 500米以内) 或不需要弧度，直接走直线
+  // 必须严格避开 len === 0 导致的除零 (0 / 0 = NaN)
+  if (len < 0.005 || Math.abs(curvature) < 1e-4) {
     return [
       [p1.lat, p1.lng],
       [p2.lat, p2.lng],
@@ -394,16 +457,19 @@ export function generateCurvedSegmentPoints(
   }
 
   const mid = calculateMidPoint(p1.lat, p1.lng, p2.lat, p2.lng);
-  const dLat = p2.lat - p1.lat;
-  const avgLatRad = (mid.lat * Math.PI) / 180;
-  const dLng = (p2.lng - p1.lng) * Math.cos(avgLatRad);
-  const len = Math.sqrt(dLat * dLat + dLng * dLng);
-
   const normLat = -dLng / len;
-  const normLng = dLat / len / Math.cos(avgLatRad);
+  const normLng = dLat / len / (cosLat || 1);
 
   const ctrlLat = mid.lat + normLat * len * curvature;
   const ctrlLng = mid.lng + normLng * len * curvature;
+
+  // 如果控制点依然出现了异常，退回直线端点
+  if (!Number.isFinite(ctrlLat) || !Number.isFinite(ctrlLng)) {
+    return [
+      [p1.lat, p1.lng],
+      [p2.lat, p2.lng],
+    ];
+  }
 
   const points: [number, number][] = [];
   for (let i = 0; i <= numSegments; i++) {
@@ -411,9 +477,17 @@ export function generateCurvedSegmentPoints(
     const invT = 1 - t;
     const lat = invT * invT * p1.lat + 2 * invT * t * ctrlLat + t * t * p2.lat;
     const lng = invT * invT * p1.lng + 2 * invT * t * ctrlLng + t * t * p2.lng;
-    points.push([Number(lat.toFixed(6)), Number(lng.toFixed(6))]);
+    if (Number.isFinite(lat) && Number.isFinite(lng)) {
+      points.push([Number(lat.toFixed(6)), Number(lng.toFixed(6))]);
+    }
   }
-  return points;
+
+  return points.length >= 2
+    ? points
+    : [
+        [p1.lat, p1.lng],
+        [p2.lat, p2.lng],
+      ];
 }
 
 /**
@@ -423,26 +497,48 @@ export function generateSmoothRoutePolyline(
   points: { lat: number; lng: number }[],
   curvature = 0.08,
 ): [number, number][] {
-  if (points.length < 2) {
-    return points.map((p) => [p.lat, p.lng]);
+  if (!points || !Array.isArray(points)) {
+    return [];
+  }
+
+  // 1. 过滤掉坐标非有效数字的点
+  const validPoints = points.filter(
+    (p) => p && Number.isFinite(p.lat) && Number.isFinite(p.lng),
+  );
+
+  if (validPoints.length < 2) {
+    return validPoints.map((p) => [p.lat, p.lng]);
   }
 
   const fullPath: [number, number][] = [];
-  for (let i = 0; i < points.length - 1; i++) {
+  for (let i = 0; i < validPoints.length - 1; i++) {
     const sign = i % 2 === 0 ? 1 : -0.7;
     const segment = generateCurvedSegmentPoints(
-      points[i],
-      points[i + 1],
+      validPoints[i],
+      validPoints[i + 1],
       curvature * sign,
       12,
     );
-    if (i > 0) {
+    if (!segment || segment.length === 0) continue;
+    if (fullPath.length > 0) {
       fullPath.push(...segment.slice(1));
     } else {
       fullPath.push(...segment);
     }
   }
-  return fullPath;
+
+  // 兜底再次过滤任何可能产生的非合法坐标
+  const safePath = fullPath.filter(
+    (pt) =>
+      Array.isArray(pt) &&
+      pt.length >= 2 &&
+      Number.isFinite(pt[0]) &&
+      Number.isFinite(pt[1]),
+  );
+
+  return safePath.length >= 2
+    ? safePath
+    : validPoints.map((p) => [p.lat, p.lng]);
 }
 
 /**
@@ -452,6 +548,9 @@ export function estimateDurationMinutes(
   distanceKm: number,
   mode: 'driving' | 'transit' | 'walking' = 'driving',
 ): number {
+  if (!Number.isFinite(distanceKm) || distanceKm <= 0) {
+    return 0;
+  }
   if (mode === 'driving') {
     // 市区平均 35km/h + 5分钟红绿灯等待
     return Math.max(Math.round((distanceKm / 35) * 60) + 4, 6);
@@ -482,20 +581,22 @@ export function getSpotCoordinates(
   cityName: string,
   index = 0,
 ): { lat: number; lng: number } {
-  const cleanName = spotName.trim();
-  if (SPOT_COORDINATES[cleanName]) {
+  const cleanName = typeof spotName === 'string' ? spotName.trim() : '';
+  if (cleanName && SPOT_COORDINATES[cleanName]) {
     return SPOT_COORDINATES[cleanName];
   }
 
-  // 模糊匹配
-  for (const [key, coord] of Object.entries(SPOT_COORDINATES)) {
-    if (cleanName.includes(key) || key.includes(cleanName)) {
-      return coord;
+  // 模糊匹配 (仅当 cleanName 非空时进行)
+  if (cleanName) {
+    for (const [key, coord] of Object.entries(SPOT_COORDINATES)) {
+      if (cleanName.includes(key) || key.includes(cleanName)) {
+        return coord;
+      }
     }
   }
 
   // 降级使用城市中心并围绕排布
-  const cityCenter = CITY_COORDINATES[cityName] || {
+  const cityCenter = (cityName && CITY_COORDINATES[cityName]) || {
     lat: 39.9042,
     lng: 116.4074,
   };

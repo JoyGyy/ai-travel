@@ -48,6 +48,10 @@ const cacheStore = new Map<string, CacheEntry<unknown>>();
 const CACHE_TTL_MS = 60 * 60 * 1000;
 const MAX_CACHE_SIZE = 1000;
 
+export function clearAmapCache(): void {
+  cacheStore.clear();
+}
+
 function getCached<T>(key: string): null | T {
   const entry = cacheStore.get(key);
   if (!entry) return null;

@@ -8,6 +8,8 @@
  * 需要 DATABASE_URL 环境变量：
  *   pnpm exec tsx --env-file=.env scripts/seed-attractions.ts
  */
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import pg from 'pg'
 
 import { env } from '../src/lib/env'
@@ -212,7 +214,9 @@ async function main(): Promise<void> {
   }
 }
 
-main().catch((error) => {
-  console.error(error instanceof Error ? error.message : error)
-  process.exitCode = 1
-})
+if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
+  main().catch((error) => {
+    console.error(error instanceof Error ? error.message : error)
+    process.exitCode = 1
+  })
+}

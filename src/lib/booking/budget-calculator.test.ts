@@ -47,7 +47,8 @@ describe('budget-calculator', () => {
       expect(res.originalPrice).toBe(85);
       expect(res.discountPrice).toBe(80);
       expect(res.provider).toBe('携程自营');
-      expect(res.bookingUrl).toContain('m.ctrip.com');
+      expect(res.bookingUrl).toContain('ctrip.com');
+      expect(res.bookingUrl).toContain('allianceid=');
     });
   });
 

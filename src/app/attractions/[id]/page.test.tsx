@@ -104,4 +104,21 @@ describe('AttractionDetail Page', () => {
       expect(mockRouterPush).toHaveBeenCalledWith('/attractions');
     });
   });
+
+  it('正确渲染携程开放联盟周边酒店与车票配套自适应直通入口', async () => {
+    render(<AttractionDetail />);
+
+    await screen.findByText('携程旅行特惠与周边出行配套');
+    expect(screen.getByText('携程官方合作')).toBeInTheDocument();
+    expect(screen.getByText('锦里古街周边精选酒店')).toBeInTheDocument();
+    expect(screen.getByText('直达成都高铁车票查询')).toBeInTheDocument();
+
+    const hotelLink = screen.getByRole('link', { name: /查看周边酒店/i });
+    expect(hotelLink).toHaveAttribute('href', expect.stringContaining('hotels.ctrip.com'));
+    expect(hotelLink).toHaveAttribute('href', expect.stringContaining('sid=attraction_detail_hotel'));
+
+    const trainLink = screen.getByRole('link', { name: /查询携程车票/i });
+    expect(trainLink).toHaveAttribute('href', expect.stringContaining('trains.ctrip.com'));
+    expect(trainLink).toHaveAttribute('href', expect.stringContaining('sid=attraction_detail_train'));
+  });
 });

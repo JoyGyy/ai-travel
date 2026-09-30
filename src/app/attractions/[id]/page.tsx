@@ -34,10 +34,12 @@ import {
   buildCtripHotelLink,
   buildCtripTicketLink,
   buildCtripTrainLink,
+  useCtripDevice,
 } from '@/lib/ctrip/alliance';
 
 export default function AttractionDetail() {
-  // ---- 路由参数与状态 ----
+  // ---- 设备自适应监听与路由参数状态 ----
+  const device = useCtripDevice();
   const params = useParams();
   const id = (params?.id as string) || '';
   const router = useRouter();
@@ -171,14 +173,16 @@ export default function AttractionDetail() {
   const ticketTypeClass =
     attraction.ticketType === 'free' ? 'travel-tag--free' : 'travel-tag--paid';
 
-  // ---- 携程开放联盟推广跳转参数 ----
+  // ---- 携程开放联盟推广跳转参数 (根据用户设备自适应 PC 宽屏官网 vs 手机端 H5/App 唤起) ----
   const ctripTicketUrl = attraction.bookingLinks?.ctrip
     ? attachCtripAllianceParams(attraction.bookingLinks.ctrip, {
+        device,
         sid: 'attraction_detail_ticket',
       })
     : attraction.ticketType === 'paid'
       ? buildCtripTicketLink({
           city: attraction.city,
+          device,
           sid: 'attraction_detail_ticket',
           spotName: attraction.name,
         })
@@ -186,6 +190,7 @@ export default function AttractionDetail() {
 
   const ctripHotelUrl = buildCtripHotelLink({
     city: attraction.city,
+    device,
     keyword: `${attraction.name}周边`,
     sid: 'attraction_detail_hotel',
   });
@@ -193,6 +198,7 @@ export default function AttractionDetail() {
   const ctripTrainUrl = buildCtripTrainLink({
     arrival: attraction.city,
     departure: '全国出发',
+    device,
     sid: 'attraction_detail_train',
   });
 

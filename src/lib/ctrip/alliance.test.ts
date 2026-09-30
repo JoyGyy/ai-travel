@@ -1,6 +1,7 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest'
 
 import {
+  adaptCtripUrlForDevice,
   attachCtripAllianceParams,
   buildCtripCarLink,
   buildCtripFlightLink,
@@ -10,109 +11,178 @@ import {
   DEFAULT_CTRIP_ALLIANCE_ID,
   DEFAULT_CTRIP_SID,
   getCtripAllianceConfig,
-} from './alliance';
+  isMobileDevice,
+  resolveEffectiveDevice,
+} from './alliance'
 
-describe('Ctrip Alliance (携程开放联盟) 引擎', () => {
+describe('Ctrip Alliance (携程开放联盟) 设备自适应分发引擎', () => {
   beforeEach(() => {
-    delete process.env.NEXT_PUBLIC_CTRIP_ALLIANCE_ID;
-    delete process.env.NEXT_PUBLIC_CTRIP_SID;
-  });
+    delete process.env.NEXT_PUBLIC_CTRIP_ALLIANCE_ID
+    delete process.env.NEXT_PUBLIC_CTRIP_SID
+  })
 
-  it('默认情况下应返回兜底 allianceid 与 sid', () => {
-    const config = getCtripAllianceConfig();
-    expect(config.allianceid).toBe(DEFAULT_CTRIP_ALLIANCE_ID);
-    expect(config.sid).toBe(DEFAULT_CTRIP_SID);
-  });
+  it('设备识别函数 isMobileDevice 与 resolveEffectiveDevice 表现正确', () => {
+    // 桌面端 UA
+    const desktopUa = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36'
+    expect(isMobileDevice(desktopUa)).toBe(false)
+    expect(resolveEffectiveDevice('auto', desktopUa)).toBe('pc')
 
-  it('读取环境变量中的自定义联盟参数', () => {
-    process.env.NEXT_PUBLIC_CTRIP_ALLIANCE_ID = '999888';
-    process.env.NEXT_PUBLIC_CTRIP_SID = 'my_custom_channel';
+    // 移动端 iPhone UA
+    const mobileUa = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1'
+    expect(isMobileDevice(mobileUa)).toBe(true)
+    expect(resolveEffectiveDevice('auto', mobileUa)).toBe('mobile')
 
-    const config = getCtripAllianceConfig();
-    expect(config.allianceid).toBe('999888');
-    expect(config.sid).toBe('my_custom_channel');
-  });
+    // 显式指定强制目标
+    expect(resolveEffectiveDevice('mobile', desktopUa)).toBe('mobile')
+    expect(resolveEffectiveDevice('pc', mobileUa)).toBe('pc')
+  })
 
-  it('buildCtripTicketLink 应生成合法的门票直达链接与追踪参数', () => {
-    const link = buildCtripTicketLink({
+  it('门票链接：手机端落地 m.ctrip.com，PC 端落地 you.ctrip.com 宽屏攻略页', () => {
+    // 移动端分发
+    const mobileLink = buildCtripTicketLink({
       city: '成都',
+      device: 'mobile',
       spotName: '大熊猫繁育研究基地',
-    });
+    })
+    const mobileUrl = new URL(mobileLink)
+    expect(mobileUrl.origin).toBe('https://m.ctrip.com')
+    expect(mobileUrl.pathname).toBe('/webapp/ticket/ticketdetail/search.html')
+    expect(mobileUrl.searchParams.get('keyword')).toBe('成都 大熊猫繁育研究基地')
+    expect(mobileUrl.searchParams.get('allianceid')).toBe(DEFAULT_CTRIP_ALLIANCE_ID)
+    expect(mobileUrl.searchParams.get('sid')).toBe('attraction_ticket')
 
-    const url = new URL(link);
-    expect(url.origin).toBe('https://m.ctrip.com');
-    expect(url.pathname).toBe('/webapp/ticket/ticketdetail/search.html');
-    expect(url.searchParams.get('keyword')).toBe('成都 大熊猫繁育研究基地');
-    expect(url.searchParams.get('allianceid')).toBe(DEFAULT_CTRIP_ALLIANCE_ID);
-    expect(url.searchParams.get('sid')).toBe('attraction_ticket');
-  });
+    // PC 端分发
+    const pcLink = buildCtripTicketLink({
+      city: '成都',
+      device: 'pc',
+      spotName: '大熊猫繁育研究基地',
+    })
+    const pcUrl = new URL(pcLink)
+    expect(pcUrl.origin).toBe('https://you.ctrip.com')
+    expect(pcUrl.pathname).toBe('/searchsite/district.html')
+    expect(pcUrl.searchParams.get('query')).toBe('成都 大熊猫繁育研究基地')
+    expect(pcUrl.searchParams.get('allianceid')).toBe(DEFAULT_CTRIP_ALLIANCE_ID)
+  })
 
-  it('buildCtripHotelLink 应生成合法的酒店直达与入住离店参数', () => {
-    const link = buildCtripHotelLink({
+  it('酒店链接：手机端落地 m.ctrip.com，PC 端落地 hotels.ctrip.com 宽屏列表', () => {
+    // 移动端
+    const mobileLink = buildCtripHotelLink({
       checkInDate: '2026-10-01',
       checkOutDate: '2026-10-03',
       city: '杭州',
+      device: 'mobile',
       keyword: '西湖景区周边',
-      sid: 'itinerary_hotel_card',
-    });
+    })
+    const mobileUrl = new URL(mobileLink)
+    expect(mobileUrl.origin).toBe('https://m.ctrip.com')
+    expect(mobileUrl.pathname).toBe('/webapp/hotel/hotellist')
+    expect(mobileUrl.searchParams.get('cityName')).toBe('杭州')
 
-    const url = new URL(link);
-    expect(url.origin).toBe('https://m.ctrip.com');
-    expect(url.pathname).toBe('/webapp/hotel/hotellist');
-    expect(url.searchParams.get('cityName')).toBe('杭州');
-    expect(url.searchParams.get('keywords')).toBe('西湖景区周边');
-    expect(url.searchParams.get('checkInDate')).toBe('2026-10-01');
-    expect(url.searchParams.get('checkOutDate')).toBe('2026-10-03');
-    expect(url.searchParams.get('sid')).toBe('itinerary_hotel_card');
-  });
+    // PC 端
+    const pcLink = buildCtripHotelLink({
+      checkInDate: '2026-10-01',
+      checkOutDate: '2026-10-03',
+      city: '杭州',
+      device: 'pc',
+      keyword: '西湖景区周边',
+    })
+    const pcUrl = new URL(pcLink)
+    expect(pcUrl.origin).toBe('https://hotels.ctrip.com')
+    expect(pcUrl.pathname).toBe('/hotels/list')
+    expect(pcUrl.searchParams.get('city')).toBe('杭州')
+    expect(pcUrl.searchParams.get('keyword')).toBe('西湖景区周边')
+    expect(pcUrl.searchParams.get('checkin')).toBe('2026-10-01')
+    expect(pcUrl.searchParams.get('checkout')).toBe('2026-10-03')
+  })
 
-  it('buildCtripTrainLink 应生成合法的出发与到达站查询链接', () => {
-    const link = buildCtripTrainLink({
+  it('车票链接：手机端落地 m.ctrip.com，PC 端落地 trains.ctrip.com 宽屏时刻表', () => {
+    // 移动端
+    const mobileLink = buildCtripTrainLink({
       arrival: '成都东',
       date: '2026-10-01',
       departure: '西安北',
-    });
+      device: 'mobile',
+    })
+    const mobileUrl = new URL(mobileLink)
+    expect(mobileUrl.origin).toBe('https://m.ctrip.com')
+    expect(mobileUrl.pathname).toBe('/webapp/train/')
 
-    const url = new URL(link);
-    expect(url.origin).toBe('https://m.ctrip.com');
-    expect(url.pathname).toBe('/webapp/train/');
-    expect(url.searchParams.get('dStation')).toBe('西安北');
-    expect(url.searchParams.get('aStation')).toBe('成都东');
-    expect(url.searchParams.get('date')).toBe('2026-10-01');
-    expect(url.searchParams.get('sid')).toBe('train_ticket');
-  });
+    // PC 端
+    const pcLink = buildCtripTrainLink({
+      arrival: '成都东',
+      date: '2026-10-01',
+      departure: '西安北',
+      device: 'pc',
+    })
+    const pcUrl = new URL(pcLink)
+    expect(pcUrl.origin).toBe('https://trains.ctrip.com')
+    expect(pcUrl.pathname).toBe('/pages/booking/search')
+    expect(pcUrl.searchParams.get('dStation')).toBe('西安北')
+    expect(pcUrl.searchParams.get('aStation')).toBe('成都东')
+    expect(pcUrl.searchParams.get('date')).toBe('2026-10-01')
+  })
 
-  it('buildCtripFlightLink 应生成机票查询链接', () => {
-    const link = buildCtripFlightLink({
+  it('机票链接：手机端落地 m.ctrip.com，PC 端落地 flights.ctrip.com 宽屏航线', () => {
+    // 移动端
+    const mobileLink = buildCtripFlightLink({
       arrival: '三亚',
       date: '2026-10-01',
       departure: '北京',
-    });
+      device: 'mobile',
+    })
+    expect(mobileLink).toContain('https://m.ctrip.com/webapp/flight/index.html')
 
-    const url = new URL(link);
-    expect(url.searchParams.get('dcity')).toBe('北京');
-    expect(url.searchParams.get('acity')).toBe('三亚');
-    expect(url.searchParams.get('ddate')).toBe('2026-10-01');
-  });
+    // PC 端
+    const pcLink = buildCtripFlightLink({
+      arrival: '三亚',
+      date: '2026-10-01',
+      departure: '北京',
+      device: 'pc',
+    })
+    expect(pcLink).toContain('https://flights.ctrip.com/online/channel/domestic')
+  })
 
-  it('buildCtripCarLink 应生成用车租车直达链接', () => {
-    const link = buildCtripCarLink({ city: '大理' });
-    const url = new URL(link);
-    expect(url.searchParams.get('city')).toBe('大理');
-    expect(url.searchParams.get('sid')).toBe('car_rental');
-  });
+  it('用车链接：手机端落地 m.ctrip.com，PC 端落地 car.ctrip.com', () => {
+    const mobileLink = buildCtripCarLink({ city: '大理', device: 'mobile' })
+    expect(mobileLink).toContain('https://m.ctrip.com/webapp/car/index')
 
-  it('attachCtripAllianceParams 应为已有 URL 追加联盟追踪参数且不重复覆盖', () => {
-    const base = 'https://m.ctrip.com/webapp/ticket/dest/t230.html?foo=bar';
+    const pcLink = buildCtripCarLink({ city: '大理', device: 'pc' })
+    expect(pcLink).toContain('https://car.ctrip.com/')
+  })
+
+  it('attachCtripAllianceParams 应保留原 URL 查询参数并追加追踪参数', () => {
+    const base = 'https://hotels.ctrip.com/hotels/list?city=1'
     const enriched = attachCtripAllianceParams(base, {
-      ouid: 'user_hash_123',
-      sid: 'custom_banner',
-    });
+      ouid: 'u_123',
+      sid: 'pc_banner',
+    })
+    const url = new URL(enriched)
+    expect(url.searchParams.get('city')).toBe('1')
+    expect(url.searchParams.get('allianceid')).toBe(DEFAULT_CTRIP_ALLIANCE_ID)
+    expect(url.searchParams.get('sid')).toBe('pc_banner')
+    expect(url.searchParams.get('ouid')).toBe('u_123')
+  })
 
-    const url = new URL(enriched);
-    expect(url.searchParams.get('foo')).toBe('bar');
-    expect(url.searchParams.get('allianceid')).toBe(DEFAULT_CTRIP_ALLIANCE_ID);
-    expect(url.searchParams.get('sid')).toBe('custom_banner');
-    expect(url.searchParams.get('ouid')).toBe('user_hash_123');
-  });
-});
+  it('adaptCtripUrlForDevice 能够智能在 PC 宽屏官网与移动端 H5 间双向转换并保留渠道追踪', () => {
+    // 1. 移动端链接在 PC 端打开时转为 PC 宽屏官网
+    const mobileTicket = 'https://m.ctrip.com/webapp/ticket/ticketdetail/search.html?keyword=%E6%88%90%E9%83%BD%20%E9%94%A6%E9%87%8C&allianceid=4897000&sid=spot'
+    const pcAdaptedTicket = adaptCtripUrlForDevice(mobileTicket, 'pc')
+    expect(pcAdaptedTicket).toContain('https://you.ctrip.com/searchsite/district.html')
+    expect(pcAdaptedTicket).toContain('query=%E6%88%90%E9%83%BD+%E9%94%A6%E9%87%8C')
+    expect(pcAdaptedTicket).toContain('allianceid=4897000')
+    expect(pcAdaptedTicket).toContain('sid=spot')
+
+    const mobileHotel = 'https://m.ctrip.com/webapp/hotel/hotellist?cityName=%E6%88%90%E9%83%BD&keywords=%E6%98%A5%E7%86%99%E8%B7%AF&checkInDate=2026-10-01&checkOutDate=2026-10-03&allianceid=4897000&sid=hotel'
+    const pcAdaptedHotel = adaptCtripUrlForDevice(mobileHotel, 'pc')
+    expect(pcAdaptedHotel).toContain('https://hotels.ctrip.com/hotels/list')
+    expect(pcAdaptedHotel).toContain('checkin=2026-10-01')
+    expect(pcAdaptedHotel).toContain('checkout=2026-10-03')
+
+    // 2. PC 端链接在移动端打开时转为移动端触屏 H5
+    const pcHotel = 'https://hotels.ctrip.com/hotels/list?keyword=%E6%88%90%E9%83%BD&checkin=2026-10-01&checkout=2026-10-03&allianceid=4897000&sid=hotel'
+    const mobileAdaptedHotel = adaptCtripUrlForDevice(pcHotel, 'mobile')
+    expect(mobileAdaptedHotel).toContain('https://m.ctrip.com/webapp/hotel/hotellist')
+    expect(mobileAdaptedHotel).toContain('checkInDate=2026-10-01')
+    expect(mobileAdaptedHotel).toContain('checkOutDate=2026-10-03')
+  })
+})

@@ -61,4 +61,25 @@ describe('BookingResourceCard', () => {
     fireEvent.click(lockBtn);
     expect(screen.getByText('加入预算清单')).toBeInTheDocument();
   });
+
+  it('针对酒店与车票类型资源自适应显示对应的携程直达文案与链接', () => {
+    const hotelResource: DomesticBookingResource = {
+      ...mockResource,
+      id: 'hotel-1',
+      title: '西湖湖滨精选民宿',
+      type: 'hotel',
+    };
+    const { unmount } = render(<BookingResourceCard resource={hotelResource} />);
+    expect(screen.getByText('携程特惠订房')).toBeInTheDocument();
+    unmount();
+
+    const trainResource: DomesticBookingResource = {
+      ...mockResource,
+      id: 'train-1',
+      title: '上海虹桥 ➔ 杭州东',
+      type: 'train',
+    };
+    render(<BookingResourceCard resource={trainResource} />);
+    expect(screen.getByText('携程车票查询')).toBeInTheDocument();
+  });
 });

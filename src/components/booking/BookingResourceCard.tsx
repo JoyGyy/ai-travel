@@ -17,6 +17,7 @@ import {
   Zap,
 } from 'lucide-react';
 import type { DomesticBookingResource } from '@/types/booking';
+import { adaptCtripUrlForDevice, useCtripDevice } from '@/lib/ctrip/alliance';
 
 interface BookingResourceCardProps {
   resource: DomesticBookingResource;
@@ -59,10 +60,14 @@ export function BookingResourceCard({
   resource,
   className = '',
 }: BookingResourceCardProps) {
+  const device = useCtripDevice();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
 
   const isFree = resource.discountPrice === 0;
+  const finalBookingUrl = resource.bookingUrl
+    ? adaptCtripUrlForDevice(resource.bookingUrl, device)
+    : '';
 
   const handleLockBooking = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -186,9 +191,9 @@ export function BookingResourceCard({
           <span>{isLocked ? '已加入清单' : '加入预算清单'}</span>
         </button>
 
-        {resource.bookingUrl && (
+        {finalBookingUrl && (
           <a
-            href={resource.bookingUrl}
+            href={finalBookingUrl}
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}

@@ -156,4 +156,63 @@ describe('amap 工具与地理计算测试', () => {
     expect(smooth[smooth.length - 1][0]).toBeCloseTo(points[2].lat, 4);
     expect(smooth[smooth.length - 1][1]).toBeCloseTo(points[2].lng, 4);
   });
+
+  it('generateSmoothRoutePolyline 面对重合坐标或完全相同的相邻点，绝不产生 (NaN, NaN)', () => {
+    // 两个完全相同的坐标点（如天安门与天安门广场、或大明宫与大明宫国家遗址公园）
+    const duplicatePoints = [
+      { lat: 39.9054, lng: 116.3976 },
+      { lat: 39.9054, lng: 116.3976 },
+    ];
+    const smooth = generateSmoothRoutePolyline(duplicatePoints, 0.08);
+
+    expect(smooth.length).toBeGreaterThanOrEqual(2);
+    smooth.forEach(([lat, lng]) => {
+      expect(Number.isFinite(lat)).toBe(true);
+      expect(Number.isFinite(lng)).toBe(true);
+      expect(Number.isNaN(lat)).toBe(false);
+      expect(Number.isNaN(lng)).toBe(false);
+    });
+  });
+
+  it('generateSmoothRoutePolyline 面对非法坐标或少于2个点时优雅降级', () => {
+    // 空数组
+    expect(generateSmoothRoutePolyline([])).toEqual([]);
+
+    // 单点
+    const single = [{ lat: 30.25, lng: 120.15 }];
+    expect(generateSmoothRoutePolyline(single)).toEqual([[30.25, 120.15]]);
+
+    // 含有 NaN 的脏数据
+    const dirtyPoints = [
+      { lat: 30.25, lng: 120.15 },
+      { lat: Number.NaN, lng: Number.NaN },
+      { lat: 30.28, lng: 120.18 },
+    ];
+    const safeResult = generateSmoothRoutePolyline(dirtyPoints, 0.08);
+    expect(safeResult.length).toBeGreaterThanOrEqual(2);
+    safeResult.forEach(([lat, lng]) => {
+      expect(Number.isFinite(lat)).toBe(true);
+      expect(Number.isFinite(lng)).toBe(true);
+    });
+  });
+
+  it('calculateDistanceKm 与 calculateNormalOffset 处理重合点不发生除零与 NaN', () => {
+    // 重合点距离应为 0
+    expect(calculateDistanceKm(30.25, 120.15, 30.25, 120.15)).toBe(0);
+
+    // 重合点法线偏移应安全返回中点，不出现 NaN
+    const offset = calculateNormalOffset(30.25, 120.15, 30.25, 120.15, 0.08);
+    expect(Number.isFinite(offset.lat)).toBe(true);
+    expect(Number.isFinite(offset.lng)).toBe(true);
+    expect(offset.lat).toBe(30.25);
+    expect(offset.lng).toBe(120.15);
+  });
+
+  it('getSpotCoordinates 传入空字符串或空格时不误匹配首个景点', () => {
+    const emptyResult = getSpotCoordinates('   ', '杭州');
+    // 应该回退到城市中心周围排布，而不是匹配到西安的兵马俑
+    expect(emptyResult.lat).toBeCloseTo(30.2741, 1);
+    expect(emptyResult.lng).toBeCloseTo(120.1551, 1);
+  });
 });
+
